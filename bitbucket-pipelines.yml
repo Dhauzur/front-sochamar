@@ -17,7 +17,7 @@ pipelines:
             - echo "This script runs only on commit to the master branch."
             - npm install
             - npm run build
-    development:
+    develop:
       - step:
           script:
             - echo "This script runs only on commit to development. (feature/* to others branchs)"
