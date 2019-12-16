@@ -13,6 +13,11 @@ export default {
   name: 'home',
   components: {
     HelloWorld
+  },
+  beforeCreate() {
+    this.$store.dispatch("CleanLiness/fetchActivities").then((val) => {
+      console.log("OK " + val);
+    })
   }
 }
 </script>
