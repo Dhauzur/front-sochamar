@@ -74,48 +74,60 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        form: {
-          lugardetrabajo: '',
-          quesehizo: '',
-          ncamas: null,
+import { api  } from '@/config/index.js';
+import Axios from 'axios';
 
-        },
-        spaces: [
-          { text: 'Selecione uno', value: '', disabled: true},
-          'Habitación 1',
-          'Habitación 2',
-          'Habitación 3',
-          'Habitación 4',
-          'Habitación 5',
-          'Habitación 6',
-          'Habitación 7',
-          'Living',
-          'Comedor',
-          'Patio trasero',
-          'Patio delantero',
-          'Camarines'],
-        show: true
-      }
-    },
-    methods: {
-      onSubmit(evt) {
-        evt.preventDefault()
-        alert(JSON.stringify(this.form))
+export default {
+  data() {
+    return {
+      form: {
+        lugardetrabajo: '',
+        quesehizo: '',
+        ncamas: null,
+
       },
-      onReset(evt) {
-        evt.preventDefault()
-        // Reset our form values
-        this.form.lugardetrabajo = ''
-        this.form.quesehizo = ''
-        this.form.ncamas = null
-        this.show = false
-        this.$nextTick(() => {
-          this.show = true
-        })
-      }
+      spaces: [
+        { text: 'Selecione uno', value: '', disabled: true},
+        'Habitación 1',
+        'Habitación 2',
+        'Habitación 3',
+        'Habitación 4',
+        'Habitación 5',
+        'Habitación 6',
+        'Habitación 7',
+        'Living',
+        'Comedor',
+        'Patio trasero',
+        'Patio delantero',
+        'Camarines'],
+      show: true
+    }
+  },
+  methods: {
+    onSubmit(evt) {
+      evt.preventDefault()
+      let formData = new FormData();
+      formData.append('workPlace',this.form.lugardetrabajo);
+      formData.append('whatWasDone',this.form.quesehizo);
+      formData.append('ncamas',this.form.ncamas);
+      Axios.post(api + '/activities/create', formData).then(response => {
+        console.log("Created<")
+      }).catch(error => {
+        console.error("Error al subir " + error);
+      });
+    },
+
+    onReset(evt) {
+      evt.preventDefault()
+      // Reset our form values
+      this.form.lugardetrabajo = ''
+      this.form.quesehizo = ''
+      this.form.ncamas = null
+      this.show = false
+      this.$nextTick(() => {
+        this.show = true
+      })
     }
   }
+}
 </script>
