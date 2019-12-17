@@ -15,7 +15,11 @@
             <tr >
               <td>{{ activities.date }}</td>
               <td>{{ activities.workPlace }}</td>
-              <td>{{ activities.whatWasDone }}</td>
+              <td>
+                <span v-for="(act, index) in activities.whatWasDone" :key="index">
+                  {{ act }}
+                </span>
+              </td>
               <td>{{ activities.ncamas }}</td>
             </tr>
             <tr v-if="activities.result">

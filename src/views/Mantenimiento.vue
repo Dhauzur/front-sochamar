@@ -10,13 +10,13 @@
         <b-form-select
           id="input-1"
           class="col-xs-2"
-          v-model="form.lugardetrabajo"
+          v-model="form.workPlace"
           :options="spaces"
           required/>
         </b-form-group>
 
         <b-form-group
-          v-if="form.lugardetrabajo && form.lugardetrabajo.includes('Habitación')"
+          v-if="form.workPlace && form.workPlace.includes('Habitación')"
           id="input-group-1"
           label="¿Cúantas camas se hicieron?"
           label-for="input-1" >
@@ -32,22 +32,22 @@
 
         <b-form-group
           id="input-group-1"
-          v-if="form.lugardetrabajo"
+          v-if="form.workPlace"
           label="¿Qué se hizo?"
           label-for="input-1" >
-          <b-form-checkbox-group v-model="form.quesehizo" id="checkboxes-4">
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Hacer la cama">Hacer la cama</b-form-checkbox>
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Cambio de sábanas">Cambio de sábanas</b-form-checkbox>
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Cambio funda almohada">Cambio funda almohada</b-form-checkbox>
+          <b-form-checkbox-group v-model="form.whatWasDone" id="checkboxes-4">
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Hacer la cama">Hacer la cama</b-form-checkbox>
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Cambio de sábanas">Cambio de sábanas</b-form-checkbox>
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Cambio funda almohada">Cambio funda almohada</b-form-checkbox>
             <b-form-checkbox value="Limpieza ventana">Limpieza ventana</b-form-checkbox>
             <b-form-checkbox value="Limpieza muebles">Limpieza muebles</b-form-checkbox>
             <b-form-checkbox value="Barrido de piso">Barrido de piso</b-form-checkbox>
             <b-form-checkbox value="Trapeado de piso">Trapeado de piso </b-form-checkbox>
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Trapeado piso baño">Trapeado piso baño</b-form-checkbox>
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Limpieza espejo baño">Limpieza espejo baño</b-form-checkbox>
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Limpieza ducha">Limpieza ducha</b-form-checkbox>
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Limpieza tasa de baño">Limpieza tasa de baño</b-form-checkbox>
-            <b-form-checkbox v-if="form.lugardetrabajo.includes('Habitación')" value="Limpieza lavamanos">Limpieza lavamanos</b-form-checkbox>
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Trapeado piso baño">Trapeado piso baño</b-form-checkbox>
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Limpieza espejo baño">Limpieza espejo baño</b-form-checkbox>
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Limpieza ducha">Limpieza ducha</b-form-checkbox>
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Limpieza tasa de baño">Limpieza tasa de baño</b-form-checkbox>
+            <b-form-checkbox v-if="form.workPlace.includes('Habitación')" value="Limpieza lavamanos">Limpieza lavamanos</b-form-checkbox>
           </b-form-checkbox-group>
         </b-form-group>
 
@@ -64,10 +64,10 @@
         <b-button class="m-2" type="reset" variant="danger">Borrar todo</b-button>
       </b-form>
       <b-card class="mt-3"  header="Datos a enviar">
-        <pre class="m-0" >{{ form.lugardetrabajo }}</pre>
+        <pre class="m-0" >{{ form.workPlace }}</pre>
         <pre class="m-0" v-if="form.ncamas">N° de camas {{ form.ncamas }}</pre>
         ==========================
-        <pre class="m-0" v-for="(q, index) in form.quesehizo" v-bind:key="index">{{ q }}</pre>
+        <pre class="m-0" v-for="(q, index) in form.whatWasDone" v-bind:key="index">{{ q }}</pre>
       </b-card>
     </b-col>
   </b-row>
@@ -81,10 +81,9 @@ export default {
   data() {
     return {
       form: {
-        lugardetrabajo: '',
-        quesehizo: '',
+        workPlace: '',
+        whatWasDone: '',
         ncamas: null,
-
       },
       spaces: [
         { text: 'Selecione uno', value: '', disabled: true},
@@ -106,12 +105,21 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault()
-      let formData = new FormData();
-      formData.append('workPlace',this.form.lugardetrabajo);
-      formData.append('whatWasDone',this.form.quesehizo);
-      formData.append('ncamas',this.form.ncamas);
-      Axios.post(api + '/activities/create', formData).then(response => {
-        console.log("Created<")
+      const data = new URLSearchParams();
+      data.append('workPlace', this.form.workPlace);
+      data.append('whatWasDone', this.form.whatWasDone);
+      data.append('ncamas', this.form.ncamas);
+      // formData.append('workPlace',this.form.workPlace);
+      // formData.append('whatWasDone',JSON.stringify(this.form.whatWasDone));
+      // formData.append('ncamas',this.form.ncamas);
+      Axios({
+        method: 'POST',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data,
+        url: api + '/activities/create'
+      }).then(response => {
+        console.log("Created:")
+        console.log(response);
       }).catch(error => {
         console.error("Error al subir " + error);
       });
@@ -120,8 +128,8 @@ export default {
     onReset(evt) {
       evt.preventDefault()
       // Reset our form values
-      this.form.lugardetrabajo = ''
-      this.form.quesehizo = ''
+      this.form.workPlace = ''
+      this.form.whatWasDone = ''
       this.form.ncamas = null
       this.show = false
       this.$nextTick(() => {
