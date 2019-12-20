@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import BootstrapVue from 'bootstrap-vue'
+import Toasted from 'vue-toasted';
 
 // app.js
 import 'bootstrap/dist/css/bootstrap.css'
@@ -25,6 +26,9 @@ Vue.use(ModalPlugin)
 Vue.use(VBScrollspyPlugin)
 Vue.use(DropdownPlugin)
 Vue.use(TablePlugin)
+Vue.use(Toasted, {
+  duration: 3000
+})
 
 Vue.use(BootstrapVue)
 Vue.config.productionTip = false

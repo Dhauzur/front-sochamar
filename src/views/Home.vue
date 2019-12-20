@@ -2,7 +2,7 @@
   <b-container class="bv-example-row">
     <b-row class="justify-content-md-center">
       <b-col col lg="10" class="minWidth">
-        <table class="col-12 table-bordered ">
+        <table class="col-12 table-bordered table-hover ">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -13,8 +13,8 @@
           </thead>
           <tbody v-for="(activities, index) in activities" :key="index">
             <tr >
-              <td>{{ activities.date }}</td>
-              <td>{{ activities.workPlace }}</td>
+              <td style="min-width: 90px;">{{ activities.date }}</td>
+              <td style="min-width: 120px;">{{ activities.workPlace }}</td>
               <td>
                 <span v-for="(act, index) in activities.whatWasDone" :key="index">
                   {{ act }}

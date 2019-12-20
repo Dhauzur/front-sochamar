@@ -109,24 +109,20 @@ export default {
       data.append('workPlace', this.form.workPlace);
       data.append('whatWasDone', this.form.whatWasDone);
       data.append('ncamas', this.form.ncamas);
-      // formData.append('workPlace',this.form.workPlace);
-      // formData.append('whatWasDone',JSON.stringify(this.form.whatWasDone));
-      // formData.append('ncamas',this.form.ncamas);
       Axios({
         method: 'POST',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         data,
         url: api + '/activities/create'
       }).then(response => {
-        console.log("Created:")
-        console.log(response);
+        this.$toasted.show('Formulario enviado con exito !')
+        this.onReset()
       }).catch(error => {
         console.error("Error al subir " + error);
       });
     },
 
     onReset(evt) {
-      evt.preventDefault()
       // Reset our form values
       this.form.workPlace = ''
       this.form.whatWasDone = ''
