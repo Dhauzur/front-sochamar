@@ -2,7 +2,9 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Ver registros de trabajo</router-link> |
-      <router-link to="/mantenimiento">Enviar trabajo</router-link>
+      <router-link to="/mantenimiento">Enviar trabajo</router-link> |
+      <router-link to="/estadias">Ver estadias</router-link> 
+
     </div>
     <router-view/>
   </div>

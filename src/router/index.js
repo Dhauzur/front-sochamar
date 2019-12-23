@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Mantenimiento from '../views/Mantenimiento.vue';
-
+import Estadias from '../views/Estadias.vue';
 
 Vue.use(VueRouter)
 
@@ -16,6 +16,11 @@ const routes = [
     path: '/mantenimiento',
     name: 'mantenimiento',
     component: Mantenimiento
+  },
+  {
+    path: '/estadias',
+    name: 'estadias',
+    component: Estadias
   }
 ]
 
