@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Mantenimiento from '../views/Mantenimiento.vue';
-import Estadias from '../views/Estadias.vue';
+import Hosts from '../views/Hosts.vue';
 
 Vue.use(VueRouter)
 
@@ -18,9 +18,9 @@ const routes = [
     component: Mantenimiento
   },
   {
-    path: '/estadias',
-    name: 'estadias',
-    component: Estadias
+    path: '/hospedaje',
+    name: 'hospedaje',
+    component: Hosts
   }
 ]
 
