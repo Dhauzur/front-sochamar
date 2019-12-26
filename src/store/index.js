@@ -1,11 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import CleanLiness from './modules/cleanLiness';
+import Maintenance from './modules/Maintenance';
+import Lodging from './modules/Lodging';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    CleanLiness
+    Lodging,
+    Maintenance
   },
 });

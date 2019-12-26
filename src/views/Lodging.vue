@@ -1,11 +1,11 @@
 <template>
   <b-row class="justify-content-center">
     <b-col md="10" class="ml-3" >
-      <h4>Estadias</h4>
-      <div id="app">
+      <h4>Hospedaje</h4>
+      <div>
         <timeline ref="timeline"
         @items-update="itemUpdate"
-        :items="items"
+        :items="lodgings"
         :groups="groups"
         :options="options">
         </timeline>
@@ -17,10 +17,19 @@
 <script>
 import { Timeline, DataSet }  from 'vue2vis';
 import moment from "moment"
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   components: {
     Timeline
+  },
+  created() {
+    this.$store.dispatch("Lodging/fetchLodgings")
+  },
+  computed: {
+    ...mapGetters({
+      lodgings: 'Lodging/lodgings',
+    })
   },
   data() {
     return {
@@ -40,19 +49,7 @@ export default {
         id: 4,
         content: 'Habitación 5'
       }]),
-      items: new DataSet([{
-      	id: 0,
-        group: 0,
-        start: moment('2019-01-02'),
-        end: moment('2019-01-06'),
-        content: 'Item 1'
-      }, {
-      	id: 1,
-        group: 0,
-        start: moment('2019-01-01'),
-        end: moment('2019-01-15'),
-        content: 'Item 2'
-      }]),
+      items: null,
       options: {
         stack: true,
         editable: true,
@@ -83,8 +80,16 @@ export default {
   },
   methods: {
     itemUpdate(payload) {
-      this.items[payload.properties.data[0].id] = payload.properties.data[0]
+      console.log("upd");
+      this.updateLodgings({
+        id: payload.properties.data[0].id,
+        payload: payload.properties.data[0]
+      })
+      // this.items[payload.properties.data[0].id] = payload.properties.data[0]
     },
+    ...mapMutations({
+      updateLodgings: 'Lodging/updateLodgings',
+    }),
   }
 }
 </script>
