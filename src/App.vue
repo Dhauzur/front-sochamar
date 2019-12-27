@@ -3,7 +3,7 @@
     <div id="nav">
       <router-link to="/">Ver registros de trabajo</router-link> |
       <router-link to="/mantenimiento">Enviar trabajo</router-link> |
-      <router-link to="/hospedaje">Ver estadias</router-link> 
+      <router-link to="/hospedaje">Ver estadias</router-link>
 
     </div>
     <router-view/>
@@ -11,6 +11,7 @@
 </template>
 
 <style lang="scss">
+
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

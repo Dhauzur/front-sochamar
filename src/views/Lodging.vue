@@ -4,12 +4,50 @@
       <h4>Hospedaje</h4>
       <div>
         <timeline ref="timeline"
+        v-if="rooms.length > 0"
         @items-update="itemUpdate"
         :items="lodgings"
-        :groups="groups"
+        :groups="rooms"
         :options="options">
         </timeline>
       </div>
+      <table class="table table-bordered mt-2">
+        <thead>
+          <tr>
+            <td>Actividad</td>
+            <td v-for="(d, index) in rangeDateTable" :key="index">
+              {{ d.numberDay }}
+              <br>
+              {{ d.nameDay }}
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-bordered table-md m-2">
+        <thead>
+          <tr>
+            <th>Habitación</th>
+            <th>Pasajeros</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Pension</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(l, index) in lodgings._data" :key="index">
+            <td>{{ l.group }}</td>
+            <td>{{ l.numberPassanger }}</td>
+            <td>{{ l.start }}</td>
+            <td>{{ l.end }}</td>
+            <td>{{ l.typePension }}</td>
+          </tr>
+        </tbody>
+      </table>
     </b-col>
   </b-row>
 </template>
@@ -24,37 +62,37 @@ export default {
     Timeline
   },
   created() {
+    this.$store.dispatch("Lodging/fetchRooms")
     this.$store.dispatch("Lodging/fetchLodgings")
+    this.setRangeDate({
+      start: moment(),
+      end: moment().add(15, 'day'),
+    })
   },
   computed: {
     ...mapGetters({
-      lodgings: 'Lodging/lodgings',
-    })
+      rooms: 'Lodging/rooms',
+      rangeDate: 'Lodging/rangeDate',
+      lodgings: 'Lodging/lodgings'
+    }),
+    rangeDateTable() {
+      var dates = []
+      var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days')
+      if(numberDays >= 7) numberDays = 7
+      for (var i = 0; i < numberDays; i++) dates.push({
+        numberDay: moment(this.rangeDate.start).add(i, 'day').format('MM/DD'),
+        nameDay: moment(this.rangeDate.start).add(i, 'day').format('ddd')
+      })
+      return dates
+    }
   },
   data() {
     return {
-      groups: new DataSet([{
-      	id: 0,
-        content: 'Habitación 1'
-      }, {
-        id: 1,
-        content: 'Habitación 2'
-      }, {
-        id: 2,
-        content: 'Habitación 3'
-      }, {
-        id: 3,
-        content: 'Habitación 4'
-      }, {
-        id: 4,
-        content: 'Habitación 5'
-      }]),
-      items: null,
       options: {
         stack: true,
         editable: true,
-        start: moment('2019-01-01'),
-        end: moment('2019-01-07'),
+        start: moment(),
+        end: moment().add(7, 'day'),
         zoomMin: 259200000,
         zoomMax: 5184000000,
         editable: true,
@@ -89,6 +127,7 @@ export default {
     },
     ...mapMutations({
       updateLodgings: 'Lodging/updateLodgings',
+      setRangeDate: 'Lodging/setRangeDate'
     }),
   }
 }

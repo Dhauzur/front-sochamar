@@ -4,20 +4,42 @@ import moment from 'moment'
 import { DataSet }  from 'vue2vis';
 
 const state = {
-  lodgings: new DataSet([])
+  lodgings: new DataSet([]),
+  rangeDate: {
+    start: null,
+    end: null
+  },
+  rooms: new DataSet([])
 }
 
 const getters = {
   lodgings: state => state.lodgings,
+  rangeDate: state => state.rangeDate,
+  rooms: state => state.rooms,
 }
 
 const actions = {
+  async fetchRooms({ commit }, value) {
+    commit('setRooms', null)
+    return Axios.get(api + "/rooms")
+    .then(response => {
+      commit('setRooms', response.data.rooms)
+      console.log("Habitaciones obtenidas: " + response.data.length);
+      console.log(response.data.rooms);
+    })
+    .catch(error => {
+      commit('setRooms', null)
+      console.log(error)
+    })
+  },
+
   async fetchLodgings({ commit }, value) {
+    commit('setLodgings', null)
     return Axios.get(api + "/lodgings")
     .then(response => {
       commit('setLodgings', response.data.lodgings)
       console.log("Hospedajes obtenidos: " + response.data.length);
-      console.log(response.data.lodging);
+      console.log(response.data.lodgings);
     })
     .catch(error => {
       commit('setLodgings', null)
@@ -38,6 +60,19 @@ const actions = {
 }
 
 const mutations = {
+  setRooms(state, value) {
+    if(value) value.forEach((v) => {
+      state.rooms.add({
+        id: v.id,
+        content: v.name,
+        numberPassangerMax: v.numberPassangerMax
+      })
+    })
+    else state.rooms = new DataSet([])
+  },
+  setRangeDate(state, value) {
+    state.rangeDate = value
+  },
   setLodgings(state, value) {
     if(value) value.forEach((v) => {
       state.lodgings.add({
@@ -45,14 +80,14 @@ const mutations = {
         group: v.idGroup,
         start: moment(v.start).format('YYYY-MM-DD'),
         end: moment(v.end).format('YYYY-MM-DD'),
-        content: v.content
+        content: v.content,
+        numberPassanger: v.numberPassanger,
+        typePension: v.typePension
       })
     })
     else state.lodgings = new DataSet([])
   },
   updateLodgings(state, value) {
-    console.log("upd2");
-
     state.lodgings[value.id] = value.payload
   }
 }

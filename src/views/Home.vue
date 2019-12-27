@@ -44,10 +44,10 @@ import { mapGetters } from "vuex"
 export default {
   name: 'home',
   beforeCreate() {
-    this.$store.dispatch("CleanLiness/fetchActivities")
+    this.$store.dispatch("Maintenance/fetchActivities")
   },
   computed: mapGetters({
-    activities: "CleanLiness/activities",
+    activities: "Maintenance/activities",
   }),
 }
 </script>
