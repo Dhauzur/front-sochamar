@@ -5,12 +5,14 @@
       <div>
         <timeline ref="timeline"
         v-if="rooms.length > 0"
+        @rangechanged="rangechanged"
         @items-update="itemUpdate"
         :items="lodgings"
         :groups="rooms"
         :options="options">
         </timeline>
       </div>
+
       <table class="table table-bordered mt-2">
         <thead>
           <tr>
@@ -24,7 +26,8 @@
         </thead>
         <tbody>
           <tr>
-
+            <td>TOTAL</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.numberPassanger  }}</td>
           </tr>
         </tbody>
       </table>
@@ -73,8 +76,23 @@ export default {
     ...mapGetters({
       rooms: 'Lodging/rooms',
       rangeDate: 'Lodging/rangeDate',
-      lodgings: 'Lodging/lodgings'
+      lodgings: 'Lodging/lodgings',
+      listLodgings: 'Lodging/listLodgings'
     }),
+    proyectionTable() {
+      var proyectionTable = []
+      var daysLodging = []
+      for (var i = 0; i < 7; i++) daysLodging.push({
+        date: moment(this.rangeDate.start).add(i, 'day').format('YYYY-MM-DD'),
+        numberPassanger: 0
+      })
+      daysLodging.forEach((day) => {
+        this.listLodgings.forEach((l) => {
+          if(moment(day.date).isSameOrAfter(l.start) && moment(day.date).isSameOrBefore(l.end)) day.numberPassanger = day.numberPassanger + l.numberPassanger
+        })
+      })
+      return daysLodging
+    },
     rangeDateTable() {
       var dates = []
       var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days')
@@ -84,7 +102,8 @@ export default {
         nameDay: moment(this.rangeDate.start).add(i, 'day').format('ddd')
       })
       return dates
-    }
+    },
+
   },
   data() {
     return {
@@ -93,7 +112,7 @@ export default {
         editable: true,
         start: moment(),
         end: moment().add(7, 'day'),
-        zoomMin: 259200000,
+        zoomMin: 604800000,
         zoomMax: 5184000000,
         editable: true,
         hiddenDates: {
@@ -103,27 +122,34 @@ export default {
         },
         onAdd: function(item, callback) {
           item.group = item.group
-          item.start = moment(item.start).hours(12)
-          item.end = moment(item.start).hours(12).add(1, 'day')
+          item.start = moment(item.start).hours(0)
+          item.end = moment(item.start).hours(24).add(1, 'day')
           item.content = 'Habitación ' + item.group
           callback(item); // send back adjusted new item
         },
         onMove: function(item, callback) {
-          item.start = moment(item.start).hours(12)
-          item.end = moment(item.end).hours(12)
+          item.start = moment(item.start).hours(0)
+          item.end = moment(item.end).hours(24)
           callback(item); // send back adjusted item
         },
       }
     }
   },
   methods: {
+    rangechanged(payload) {
+      if(payload) {
+        this.setRangeDate({
+          start: moment(payload.start),
+          end: moment(payload.end).add(7, 'day'),
+        })
+      }
+    },
     itemUpdate(payload) {
       console.log("upd");
       this.updateLodgings({
         id: payload.properties.data[0].id,
         payload: payload.properties.data[0]
       })
-      // this.items[payload.properties.data[0].id] = payload.properties.data[0]
     },
     ...mapMutations({
       updateLodgings: 'Lodging/updateLodgings',
@@ -134,3 +160,17 @@ export default {
 </script>
 
 <style src="vue2vis/dist/vue2vis.css"/>;
+<style lang="css">
+.vis-time-axis .vis-grid.vis-odd {
+  background: #f5f5f5;
+}
+
+.vis-time-axis .vis-grid.vis-saturday,
+.vis-time-axis .vis-grid.vis-sunday {
+  background: #8080808f;
+}
+.vis-time-axis .vis-text.vis-saturday,
+.vis-time-axis .vis-text.vis-sunday {
+  color: white;
+}
+</style>

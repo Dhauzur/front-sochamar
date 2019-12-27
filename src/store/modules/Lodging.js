@@ -5,17 +5,20 @@ import { DataSet }  from 'vue2vis';
 
 const state = {
   lodgings: new DataSet([]),
+  rooms: new DataSet([]),
   rangeDate: {
     start: null,
     end: null
   },
-  rooms: new DataSet([])
+  listLodgings: []
 }
 
 const getters = {
   lodgings: state => state.lodgings,
   rangeDate: state => state.rangeDate,
   rooms: state => state.rooms,
+  listLodgings: state => state.listLodgings,
+
 }
 
 const actions = {
@@ -74,8 +77,9 @@ const mutations = {
     state.rangeDate = value
   },
   setLodgings(state, value) {
-    if(value) value.forEach((v) => {
-      state.lodgings.add({
+    if(value) {
+      state.listLodgings = value
+      value.forEach((v) => state.lodgings.add({
         id: v.id,
         group: v.idGroup,
         start: moment(v.start).format('YYYY-MM-DD'),
@@ -83,8 +87,8 @@ const mutations = {
         content: v.content,
         numberPassanger: v.numberPassanger,
         typePension: v.typePension
-      })
-    })
+      }))
+    }
     else state.lodgings = new DataSet([])
   },
   updateLodgings(state, value) {
