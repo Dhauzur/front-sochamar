@@ -50,11 +50,27 @@ const actions = {
     })
   },
 
-  async createLodging({ commit }, value) {
-    return Axios.post(api + "/lodging/create", value)
+  async createLodging({ commit }) {
+    Axios.delete(api + "/lodging/delete/all")
     .then(response => {
-      console.log("Hospedaje creada (Sin validaciones)");
-      console.log(response.data.lodgings);
+      console.log("Hospedajes eliminados")
+      console.log(state.lodgings);
+      state.lodgings._data.forEach((l) => {
+        Axios.post(api + "/lodging/create", {
+          id: l.id,
+          group: l.group,
+          start: l.start,
+          end: l.end,
+          service: l.service
+        })
+        .then(response => {
+          console.log("Hospedaje creada (Sin validaciones)");
+          console.log(response.data.lodgings);
+        })
+        .catch(error => {
+          console.log(error)
+        })
+      })
     })
     .catch(error => {
       console.log(error)
@@ -78,15 +94,15 @@ const mutations = {
   },
   setLodgings(state, value) {
     if(value) {
+      state.lodgings = new DataSet([])
       state.listLodgings = value
       value.forEach((v) => state.lodgings.add({
         id: v.id,
-        group: v.idGroup,
+        group: v.group,
         start: moment(v.start).format('YYYY-MM-DD'),
         end: moment(v.end).format('YYYY-MM-DD'),
-        content: v.content,
-        numberPassanger: v.numberPassanger,
-        typePension: v.typePension
+        content: v.group + ' Hab',
+        service: v.service,
       }))
     }
     else state.lodgings = new DataSet([])

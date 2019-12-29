@@ -12,7 +12,7 @@
         :options="options">
         </timeline>
       </div>
-
+      <button type="button" class="btn btn-primary mt-2" @click="saveLodging">Guardar</button>
       <table class="table table-bordered mt-2">
         <thead>
           <tr>
@@ -136,6 +136,9 @@ export default {
     }
   },
   methods: {
+    saveLodging() {
+      this.$store.dispatch("Lodging/createLodging")
+    },
     rangechanged(payload) {
       if(payload) {
         this.setRangeDate({
@@ -145,7 +148,6 @@ export default {
       }
     },
     itemUpdate(payload) {
-      console.log("upd");
       this.updateLodgings({
         id: payload.properties.data[0].id,
         payload: payload.properties.data[0]

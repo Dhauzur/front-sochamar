@@ -2,6 +2,7 @@
   <b-container class="bv-example-row">
     <b-row class="justify-content-md-center">
       <b-col col lg="10" class="minWidth">
+        <h4 v-if="activities == 0">No existen trabajos</h4>
         <table class="col-12 table-bordered table-hover ">
           <thead>
             <tr>
@@ -12,7 +13,7 @@
             </tr>
           </thead>
           <tbody v-for="(activities, index) in activities" :key="index">
-            <tr >
+            <tr :class="{ 'bgRepeat': activities.repeat  }">
               <td style="min-width: 90px;">{{ activities.date }}</td>
               <td style="min-width: 120px;">{{ activities.workPlace }}</td>
               <td>
@@ -22,7 +23,7 @@
               </td>
               <td>{{ activities.ncamas }}</td>
             </tr>
-            <tr v-if="activities.result">
+            <tr v-if="activities.result" :class="{ 'endWeek': activities.result  }">
               <td colspan="2">CANTIDAD DE CAMAS: {{ activities.numbersOfBeds }}</td>
               <td colspan="2">VALOR: {{ activities.valueOfBeds }}</td>
             </tr>
@@ -46,9 +47,14 @@ export default {
   beforeCreate() {
     this.$store.dispatch("Maintenance/fetchActivities")
   },
+  data() {
+    return {
+      beds: new Set()
+    }
+  },
   computed: mapGetters({
     activities: "Maintenance/activities",
-  }),
+  })
 }
 </script>
 
@@ -56,5 +62,12 @@ export default {
   .minWidth {
     min-width: 650px !important;
     overflow-x: auto;
+  }
+  .bgRepeat {
+    background-color: #ff00001f;
+  }
+
+  .endWeek {
+    border-bottom: 2px solid black;
   }
 </style>

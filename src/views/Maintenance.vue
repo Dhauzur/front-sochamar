@@ -15,23 +15,19 @@
           required/>
         </b-form-group>
 
-        <b-form-group
-          v-if="form.workPlace && form.workPlace.includes('Habitación')"
-          id="input-group-1"
-          label="¿Cúantas camas se hicieron?"
-          label-for="input-1" >
-          <b-form-group>
-            <b-form-radio v-model="form.ncamas" name="some-radios" value="1">1</b-form-radio>
-            <b-form-radio v-model="form.ncamas" name="some-radios" value="2">2</b-form-radio>
-            <b-form-radio v-model="form.ncamas" name="some-radios" value="3">3</b-form-radio>
-            <b-form-radio v-model="form.ncamas" name="some-radios" value="4">4</b-form-radio>
-            <b-form-radio v-model="form.ncamas" name="some-radios" value="5">5</b-form-radio>
-            <b-form-radio v-model="form.ncamas" name="some-radios" value="6">6</b-form-radio>
-          </b-form-group>
+        <b-form-group   v-if="form.workPlace && form.workPlace.includes('Habitación')" label="¿Cúantas camas se hicieron?">
+          <b-form-radio-group id="input-group-2" v-model="form.ncamas"  name="some-radios-number-beds">
+            <b-form-radio  value="1">1</b-form-radio>
+            <b-form-radio  value="2">2</b-form-radio>
+            <b-form-radio  value="3">3</b-form-radio>
+            <b-form-radio  value="4">4</b-form-radio>
+            <b-form-radio  value="5">5</b-form-radio>
+            <b-form-radio  value="6">33</b-form-radio>
+          </b-form-radio-group>
         </b-form-group>
 
         <b-form-group
-          id="input-group-1"
+          id="input-group-3"
           v-if="form.workPlace"
           label="¿Qué se hizo?"
           label-for="input-1" >
