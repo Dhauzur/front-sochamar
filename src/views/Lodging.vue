@@ -122,14 +122,14 @@ export default {
         },
         onAdd: function(item, callback) {
           item.group = item.group
-          item.start = moment(item.start).hours(0)
-          item.end = moment(item.start).hours(24).add(1, 'day')
+          item.start = moment(item.start).hours(0).format('YYYY-MM-DD')
+          item.end = moment(item.start).hours(24).add(1, 'day').format('YYYY-MM-DD')
           item.content = 'Habitación ' + item.group
           callback(item); // send back adjusted new item
         },
         onMove: function(item, callback) {
-          item.start = moment(item.start).hours(0)
-          item.end = moment(item.end).hours(24)
+          item.start = moment(item.start).hours(0).format('YYYY-MM-DD')
+          item.end = moment(item.end).hours(24).format('YYYY-MM-DD')
           callback(item); // send back adjusted item
         },
       }
