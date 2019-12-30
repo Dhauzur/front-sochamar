@@ -22,13 +22,14 @@ const getters = {
 }
 
 const actions = {
-  async fetchRooms({ commit }, value) {
+  async fetchRooms({ commit, dispatch }, value) {
     commit('setRooms', null)
     return Axios.get(api + "/rooms")
     .then(response => {
       commit('setRooms', response.data.rooms)
       console.log("Habitaciones obtenidas: " + response.data.length);
-      console.log(response.data.rooms);
+      console.log(state.rooms);
+      dispatch('fetchLodgings');
     })
     .catch(error => {
       commit('setRooms', null)
@@ -42,7 +43,7 @@ const actions = {
     .then(response => {
       commit('setLodgings', response.data.lodgings)
       console.log("Hospedajes obtenidos: " + response.data.length);
-      console.log(response.data.lodgings);
+      console.log(state.lodgings);
     })
     .catch(error => {
       commit('setLodgings', null)
@@ -99,8 +100,8 @@ const mutations = {
       value.forEach((v) => state.lodgings.add({
         id: v.id,
         group: v.group,
-        start: moment(v.start).format('YYYY-MM-DD'),
-        end: moment(v.end).format('YYYY-MM-DD'),
+        start: moment(v.start).hours(0).format('YYYY-MM-DD'),
+        end: moment(v.end).hours(24).format('YYYY-MM-DD'),
         content: v.group + ' Hab',
         service: v.service,
       }))

@@ -4,7 +4,7 @@
       <h4>Hospedaje</h4>
       <div>
         <timeline ref="timeline"
-        v-if="rooms.length > 0"
+        v-if="rooms.length > 0 && lodgings.length > 0"
         @rangechanged="rangechanged"
         @items-update="itemUpdate"
         :items="lodgings"
@@ -26,8 +26,20 @@
         </thead>
         <tbody>
           <tr>
-            <td>TOTAL</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.numberPassanger  }}</td>
+            <td>ALOJAMIENTO</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.accommodation }}</td>
+          </tr>
+          <tr>
+            <td>DESAYUNO</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.breakfast }}</td>
+          </tr>
+          <tr>
+            <td>ALMUERZO</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.lunch }}</td>
+          </tr>
+          <tr>
+            <td>CENA</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.dinner }}</td>
           </tr>
         </tbody>
       </table>
@@ -66,7 +78,6 @@ export default {
   },
   created() {
     this.$store.dispatch("Lodging/fetchRooms")
-    this.$store.dispatch("Lodging/fetchLodgings")
     this.setRangeDate({
       start: moment(),
       end: moment().add(15, 'day'),
@@ -84,11 +95,22 @@ export default {
       var daysLodging = []
       for (var i = 0; i < 7; i++) daysLodging.push({
         date: moment(this.rangeDate.start).add(i, 'day').format('YYYY-MM-DD'),
-        numberPassanger: 0
+        service: []
       })
       daysLodging.forEach((day) => {
+        var index = 0
         this.listLodgings.forEach((l) => {
-          if(moment(day.date).isSameOrAfter(l.start) && moment(day.date).isSameOrBefore(l.end)) day.numberPassanger = day.numberPassanger + l.numberPassanger
+          if(moment(day.date).isSameOrAfter(l.start) && moment(day.date).isSameOrBefore(l.end)) {
+            var service = JSON.parse(l.service)
+            day.service = {
+              breakfast: day.service.breakfast ? service[index][0] + day.service.breakfast : service[index][0],
+              lunch: day.service.lunch ? service[index][1] + day.service.lunch : service[index][1],
+              dinner: day.service.dinner ? service[index][2] + day.service.dinner : service[index][2],
+              accommodation: day.service.accommodation ? service[index][3] + day.service.accommodation : service[index][3]
+            }
+            index++
+          }
+          // else day.service = ''
         })
       })
       return daysLodging
@@ -98,7 +120,7 @@ export default {
       var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days')
       if(numberDays >= 7) numberDays = 7
       for (var i = 0; i < numberDays; i++) dates.push({
-        numberDay: moment(this.rangeDate.start).add(i, 'day').format('MM/DD'),
+        numberDay: moment(this.rangeDate.start).add(i, 'day').format('DD MMM'),
         nameDay: moment(this.rangeDate.start).add(i, 'day').format('ddd')
       })
       return dates
