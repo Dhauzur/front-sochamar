@@ -17,11 +17,11 @@
               <td style="min-width: 90px;">{{ act.date }}</td>
               <td style="min-width: 120px;"><span v-if="act.repeat">Rep: </span>{{ act.workPlace }}</td>
               <td>
-                <span v-for="(act, index) in act.whatWasDone" :key="index">
+                <div class="listActivities" v-for="(act, index) in act.whatWasDone" :key="index">
                   <ul v-for="(a, index) in act.split(',')" :key="index">
                     <li >{{ a }}</li>
                   </ul>
-                </span>
+                </div>
               </td>
               <td>{{ act.ncamas }}</td>
             </tr>
@@ -30,7 +30,7 @@
               <td colspan="2">VALOR: {{ act.valueOfBeds }}</td>
             </tr>
             <tr v-if="act.result" :class="{ 'bg-warning': !act.state, 'bg-primary': act.state  }">
-              <td colspan="4">{{ activities.state ? 'PAGADO' : 'PENDIENTE' }}</td>
+              <td colspan="4">{{ activities.state ? 'PAGADO' : 'VALOR' }}</td>
             </tr>
           </tbody>
         </table>
@@ -41,11 +41,9 @@
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 import { mapGetters } from "vuex"
 
 export default {
-  name: 'home',
   mounted() {
     this.$store.dispatch("Maintenance/fetchActivities")
   },
@@ -54,12 +52,7 @@ export default {
   }),
   methods: {
     endWeek(act, index) {
-      if(index >= 1) {
-        console.log(act.date);
-        console.log(this.activities[index-1].date);
-        console.log("lllll");
-        return act.date != this.activities[index-1].date ? true : false
-      }
+      if(index >= 1) return act.date != this.activities[index-1].date ? true : false
       else return false
     }
   }
@@ -80,8 +73,15 @@ export default {
   }
 
   ul {
-    font-size: 12px;
+    font-size: 14px;
     margin: 0px;
     list-style-type: none;
   }
+
+  .listActivities {
+    max-height: 50px;
+    overflow-y: auto;
+  }
+
+
 </style>
