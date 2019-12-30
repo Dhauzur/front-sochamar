@@ -12,22 +12,24 @@
               <th>Numero de camas</th>
             </tr>
           </thead>
-          <tbody v-for="(activities, index) in activities" :key="index">
-            <tr :class="{ 'bgRepeat': activities.repeat  }">
-              <td style="min-width: 90px;">{{ activities.date }}</td>
-              <td style="min-width: 120px;">{{ activities.workPlace }}</td>
+          <tbody v-for="(act, index) in activities" :key="index">
+            <tr :class="{ 'bgRepeat': act.repeat, 'endWeek': act.date != activities[index-1].date  }">
+              <td style="min-width: 90px;">{{ act.date }}</td>
+              <td style="min-width: 120px;"><span v-if="act.repeat">Rep: </span>{{ act.workPlace }}</td>
               <td>
-                <span v-for="(act, index) in activities.whatWasDone" :key="index">
-                  {{ act }}
+                <span v-for="(act, index) in act.whatWasDone" :key="index">
+                  <ul v-for="(a, index) in act.split(',')" :key="index">
+                    <li >{{ a }}</li>
+                  </ul>
                 </span>
               </td>
-              <td>{{ activities.ncamas }}</td>
+              <td>{{ act.ncamas }}</td>
             </tr>
-            <tr v-if="activities.result" :class="{ 'endWeek': activities.result  }">
-              <td colspan="2">CANTIDAD DE CAMAS: {{ activities.numbersOfBeds }}</td>
-              <td colspan="2">VALOR: {{ activities.valueOfBeds }}</td>
+            <tr v-if="act.result" :class="{   }">
+              <td colspan="2">CANTIDAD DE CAMAS: {{ act.numbersOfBeds }}</td>
+              <td colspan="2">VALOR: {{ act.valueOfBeds }}</td>
             </tr>
-            <tr v-if="activities.result" :class="{ 'bg-warning': !activities.state, 'bg-primary': activities.state  }">
+            <tr v-if="act.result" :class="{ 'bg-warning': !act.state, 'bg-primary': act.state  }">
               <td colspan="4">{{ activities.state ? 'PAGADO' : 'PENDIENTE' }}</td>
             </tr>
           </tbody>
@@ -69,5 +71,11 @@ export default {
 
   .endWeek {
     border-bottom: 2px solid black;
+  }
+
+  ul {
+    font-size: 12px;
+    margin: 0px;
+    list-style-type: none;
   }
 </style>

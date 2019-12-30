@@ -15,8 +15,8 @@ const getters = {
     if(state.activities.activities) state.activities.activities.forEach((act) => {
       act.date = moments(act.date).format("YYYY-MM-DD")
       dates.add(moments(moments(act.date).format("YYYY-MM-DD")).format("WW"))
-      if(!beds.has(act.workPlace)) {
-        beds.add(act.workPlace)
+      if(!beds.has(act.workPlace + ' ' + moments(act.date).format("YYYY-MM-DD"))) {
+        beds.add(act.workPlace + ' ' + moments(act.date).format("YYYY-MM-DD"))
         act.repeat = false
       }
       else act.repeat = true
