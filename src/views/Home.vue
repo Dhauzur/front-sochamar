@@ -3,7 +3,7 @@
     <b-row class="justify-content-md-center">
       <b-col col lg="10" class="minWidth">
         <h4 v-if="activities == 0">No existen trabajos</h4>
-        <table class="col-12 table-bordered table-hover ">
+        <table v-else class="col-12 table-bordered table-hover ">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -13,7 +13,7 @@
             </tr>
           </thead>
           <tbody v-for="(act, index) in activities" :key="index">
-            <tr :class="{ 'bgRepeat': act.repeat, 'endWeek': act.date != activities[index-1].date  }">
+            <tr :class="{ 'bgRepeat': act.repeat, 'endWeek': endWeek(act, index)  }">
               <td style="min-width: 90px;">{{ act.date }}</td>
               <td style="min-width: 120px;"><span v-if="act.repeat">Rep: </span>{{ act.workPlace }}</td>
               <td>
@@ -46,17 +46,23 @@ import { mapGetters } from "vuex"
 
 export default {
   name: 'home',
-  beforeCreate() {
+  mounted() {
     this.$store.dispatch("Maintenance/fetchActivities")
-  },
-  data() {
-    return {
-      beds: new Set()
-    }
   },
   computed: mapGetters({
     activities: "Maintenance/activities",
-  })
+  }),
+  methods: {
+    endWeek(act, index) {
+      if(index >= 1) {
+        console.log(act.date);
+        console.log(this.activities[index-1].date);
+        console.log("lllll");
+        return act.date != this.activities[index-1].date ? true : false
+      }
+      else return false
+    }
+  }
 }
 </script>
 
@@ -70,7 +76,7 @@ export default {
   }
 
   .endWeek {
-    border-bottom: 2px solid black;
+    border-top: 2px solid black;
   }
 
   ul {
