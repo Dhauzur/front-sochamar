@@ -7,7 +7,6 @@
         v-if="rooms.length > 0 && lodgings.length > 0"
         @rangechanged="rangechanged"
         @items-update="itemUpdate"
-        @double-click="addLodging"
         :items="lodgings"
         :groups="rooms"
         :options="options">
@@ -111,20 +110,19 @@ export default {
         date: moment(this.rangeDate.start).add(i, 'day').format('YYYY-MM-DD'),
         service: []
       })
-      daysLodging.forEach((day) => {
+      this.lodgings.forEach((l, il) => {
         var index = 0
-        this.listLodgings.forEach((l) => {
-          if(moment(day.date).isSameOrAfter(l.start) && moment(day.date).isSameOrBefore(l.end)) {
-            var service = JSON.parse(l.service)
+        daysLodging.forEach((day) => {
+          if(moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) && moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))) {
+            var service = JSON.parse(l.service[0])
             day.service = {
               breakfast: day.service.breakfast ? service[index][0] + day.service.breakfast : service[index][0],
-              lunch: day.service.lunch ? service[index][1] + day.service.lunch : service[index][1],
-              dinner: day.service.dinner ? service[index][2] + day.service.dinner : service[index][2],
+              lunch: day.service.lunch ? service[index][1] + day.service.lunch : service[index][1] ,
+              dinner: day.service.dinner ? service[index][2] + day.service.dinner : service[index][2] ,
               accommodation: day.service.accommodation ? service[index][3] + day.service.accommodation : service[index][3]
             }
             index++
           }
-          // else day.service = ''
         })
       })
       return daysLodging
@@ -159,15 +157,15 @@ export default {
         },
         onAdd: function(item, callback) {
           item.group = item.group
-          item.start = moment(item.start).hours(0).format('YYYY-MM-DD')
-          item.end = moment(item.start).hours(24).add(1, 'day').format('YYYY-MM-DD')
-          item.content = 'Habitación ' + item.group
-          // this.addLodging(item)
+          item.start = moment(item.start).hours(16)
+          item.end = moment(item.start).hours(12).add(1, 'day')
+          item.content = item.group + 'Hab.'
+          item.service = ["[[1,1,1,1],[1,1,1,1]]"]
           callback(item); // send back adjusted new item
         },
         onMove: function(item, callback) {
-          item.start = moment(item.start).hours(0).format('YYYY-MM-DD')
-          item.end = moment(item.end).hours(24).format('YYYY-MM-DD')
+          item.start = moment(item.start).hours(16)
+          item.end = moment(item.end).hours(12)
           callback(item); // send back adjusted item
         },
       }

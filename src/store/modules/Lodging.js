@@ -94,6 +94,7 @@ const mutations = {
         accommodation: '0'
       }
     })
+
   },
   setRooms(state, value) {
     if(value) value.forEach((v) => {
@@ -115,8 +116,8 @@ const mutations = {
       value.forEach((v) => state.lodgings.add({
         id: v.id,
         group: v.group,
-        start: moment(v.start).hours(24).format('YYYY-MM-DD'),
-        end: moment(v.end).hours(24).format('YYYY-MM-DD'),
+        start: moment(v.start).hours(16),
+        end: moment(v.end).hours(13),
         content: v.group + ' Hab',
         service: v.service,
       }))
