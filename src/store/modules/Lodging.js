@@ -18,7 +18,6 @@ const getters = {
   rangeDate: state => state.rangeDate,
   rooms: state => state.rooms,
   listLodgings: state => state.listLodgings,
-
 }
 
 const actions = {
@@ -51,22 +50,23 @@ const actions = {
     })
   },
 
-  async createLodging({ commit }) {
+  async createLodging({ commit, dispatch }) {
     Axios.delete(api + "/lodging/delete/all")
     .then(response => {
       console.log("Hospedajes eliminados")
-      console.log(state.lodgings);
-      state.lodgings._data.forEach((l) => {
+      state.lodgings.forEach((l) => {
         Axios.post(api + "/lodging/create", {
           id: l.id,
           group: l.group,
           start: l.start,
           end: l.end,
-          service: l.service
+          service: l.service[0]
         })
         .then(response => {
-          console.log("Hospedaje creada (Sin validaciones)");
-          console.log(response.data.lodgings);
+          console.log("Hospedaje creado (Sin validaciones)");
+          console.log(response);
+          dispatch('fetchLodgings');
+
         })
         .catch(error => {
           console.log(error)
@@ -80,6 +80,21 @@ const actions = {
 }
 
 const mutations = {
+  addLodging(state, v) {
+    state.lodgings.add({
+      // id: v.id,
+      group: v.group,
+      start: moment(v.time).hours(0).format('YYYY-MM-DD'),
+      end: moment(v.time).hours(23).add(1, 'day').format('YYYY-MM-DD'),
+      content: v.group + ' Hab',
+      service: {
+        breakfast: '0',
+        lunch: '0',
+        dinner: '0',
+        accommodation: '0'
+      }
+    })
+  },
   setRooms(state, value) {
     if(value) value.forEach((v) => {
       state.rooms.add({
@@ -100,7 +115,7 @@ const mutations = {
       value.forEach((v) => state.lodgings.add({
         id: v.id,
         group: v.group,
-        start: moment(v.start).hours(0).format('YYYY-MM-DD'),
+        start: moment(v.start).hours(24).format('YYYY-MM-DD'),
         end: moment(v.end).hours(24).format('YYYY-MM-DD'),
         content: v.group + ' Hab',
         service: v.service,

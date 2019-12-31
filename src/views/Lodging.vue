@@ -1,18 +1,18 @@
 <template>
   <b-row class="justify-content-center">
-    <b-col md="10" class="ml-3" >
+    <b-col md="10" class="ml-3">
       <h4>Hospedaje</h4>
       <div>
         <timeline ref="timeline"
         v-if="rooms.length > 0 && lodgings.length > 0"
         @rangechanged="rangechanged"
         @items-update="itemUpdate"
+        @double-click="addLodging"
         :items="lodgings"
         :groups="rooms"
         :options="options">
         </timeline>
       </div>
-      <button type="button" class="btn btn-primary mt-2" @click="saveLodging">Guardar</button>
       <table class="table table-bordered mt-2">
         <thead>
           <tr>
@@ -27,42 +27,56 @@
         <tbody>
           <tr>
             <td>ALOJAMIENTO</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.accommodation }}</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">
+              <span v-if="!editMode">{{ p.service.accommodation }}</span>
+              <input v-if="editMode && p.service.accommodation"
+                     type="number"
+                     class="inputService"
+                     name="accommodation"
+                     :value="p.service.accommodation">
+            </td>
           </tr>
           <tr>
             <td>DESAYUNO</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.breakfast }}</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">
+              <span v-if="!editMode">{{ p.service.breakfast }}</span>
+              <input v-if="editMode && p.service.breakfast"
+                     type="number"
+                     class="inputService"
+                     name="breakfast"
+                     :value="p.service.breakfast">
+            </td>
           </tr>
           <tr>
             <td>ALMUERZO</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.lunch }}</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">
+              <span v-if="!editMode">{{ p.service.lunch }}</span>
+              <input v-if="editMode && p.service.lunch"
+                     type="number"
+                     class="inputService"
+                     name="lunch"
+                     :value="p.service.lunch">
+            </td>
           </tr>
           <tr>
             <td>CENA</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">{{ p.service.dinner }}</td>
+            <td v-for="(p, index) in proyectionTable" :key="index">
+              <span v-if="!editMode">{{ p.service.dinner }}</span>
+              <input v-if="editMode && p.service.dinner"
+                     type="number"
+                     class="inputService"
+                     name="dinner"
+                     :value="p.service.dinner">
+            </td>
           </tr>
         </tbody>
       </table>
-      <table class="table table-bordered table-md m-2">
-        <thead>
-          <tr>
-            <th>Habitación</th>
-            <th>Pasajeros</th>
-            <th>Inicio</th>
-            <th>Fin</th>
-            <th>Pension</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(l, index) in lodgings._data" :key="index">
-            <td>{{ l.group }}</td>
-            <td>{{ l.numberPassanger }}</td>
-            <td>{{ l.start }}</td>
-            <td>{{ l.end }}</td>
-            <td>{{ l.typePension }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <button v-if="!editMode" type="button" class="btn btn-primary mt-2" @click="enableEdit()">
+        Editar servicios
+      </button>
+      <button v-else  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
+        Guardar
+      </button>
     </b-col>
   </b-row>
 </template>
@@ -129,6 +143,7 @@ export default {
   },
   data() {
     return {
+      editMode: false,
       options: {
         stack: true,
         editable: true,
@@ -147,6 +162,7 @@ export default {
           item.start = moment(item.start).hours(0).format('YYYY-MM-DD')
           item.end = moment(item.start).hours(24).add(1, 'day').format('YYYY-MM-DD')
           item.content = 'Habitación ' + item.group
+          // this.addLodging(item)
           callback(item); // send back adjusted new item
         },
         onMove: function(item, callback) {
@@ -158,7 +174,11 @@ export default {
     }
   },
   methods: {
+    enableEdit() {
+      this.editMode = !this.editMode
+    },
     saveLodging() {
+      this.editMode = !this.editMode
       this.$store.dispatch("Lodging/createLodging")
     },
     rangechanged(payload) {
@@ -177,7 +197,8 @@ export default {
     },
     ...mapMutations({
       updateLodgings: 'Lodging/updateLodgings',
-      setRangeDate: 'Lodging/setRangeDate'
+      setRangeDate: 'Lodging/setRangeDate',
+      addLodging: 'Lodging/addLodging'
     }),
   }
 }
@@ -196,5 +217,11 @@ export default {
 .vis-time-axis .vis-text.vis-saturday,
 .vis-time-axis .vis-text.vis-sunday {
   color: white;
+}
+.inputService {
+  max-width: 60px;
+}
+td, th {
+  padding: 2px !important;
 }
 </style>
