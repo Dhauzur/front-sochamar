@@ -79,7 +79,9 @@ const actions = {
 
 const mutations = {
   updateService(state, v, number) {
-    if(v) state.lodgings.forEach((l, index) => {
+    var tempLodging = state.lodgings
+    state.lodgings = new DataSet([])
+    if(v) tempLodging.forEach((l, index) => {
       if(v.id.split(',')[0] == l.id) {
         for (var i = 0; i < 7; i++) {
           if(moment(l.start).add(i, 'day').format('YYYY-MM-DD') == v.id.split(',')[1]) {
@@ -93,21 +95,7 @@ const mutations = {
         }
       }
     })
-  },
-  addLodging(state, v) {
-    state.lodgings.add({
-      group: v.group,
-      start: moment(v.time).hours(0).format('YYYY-MM-DD'),
-      end: moment(v.time).hours(23).add(1, 'day').format('YYYY-MM-DD'),
-      content: v.group + ' Hab',
-      service: {
-        breakfast: '0',
-        lunch: '0',
-        dinner: '0',
-        accommodation: '0'
-      }
-    })
-
+    state.lodgings = tempLodging
   },
   setRooms(state, value) {
     if(value) value.forEach((v) => {
@@ -123,9 +111,11 @@ const mutations = {
     state.rangeDate = value
   },
   setLodgings(state, value) {
+    var tempLodging = state.lodgings
+    state.lodgings = new DataSet([])
     if(value) {
-      state.lodgings = new DataSet([])
-      value.forEach((v) => state.lodgings.add({
+      tempLodging = new DataSet([])
+      value.forEach((v) => tempLodging.add({
         id: v.id,
         group: v.group,
         start: moment(v.start).hours(16),
@@ -133,6 +123,7 @@ const mutations = {
         content: v.group + ' Hab',
         service: v.service,
       }))
+      state.lodgings = tempLodging
     }
     else state.lodgings = new DataSet([])
   },
