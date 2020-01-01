@@ -7,6 +7,7 @@
         v-if="rooms.length > 0 && lodgings.length > 0"
         @rangechanged="rangechanged"
         @items-update="itemUpdate"
+        @select="enableEdit"
         :items="lodgings"
         :groups="rooms"
         :options="options">
@@ -32,7 +33,10 @@
                      type="number"
                      class="inputService"
                      name="accommodation"
-                     :value="p.service.accommodation">
+                     :id="p.id + ',' + p.date"
+                     @change="detectInputChange"
+                     v-model="p.service.accommodation"
+                     :placeholder="p.service.accommodation">
             </td>
           </tr>
           <tr>
@@ -43,7 +47,10 @@
                      type="number"
                      class="inputService"
                      name="breakfast"
-                     :value="p.service.breakfast">
+                     :id="p.id + ',' + p.date"
+                     @change="detectInputChange"
+                     v-model="p.service.breakfast"
+                     :placeholder="p.service.breakfast">
             </td>
           </tr>
           <tr>
@@ -54,7 +61,10 @@
                      type="number"
                      class="inputService"
                      name="lunch"
-                     :value="p.service.lunch">
+                     :id="p.id + ',' + p.date"
+                     @change="detectInputChange"
+                     v-model="p.service.lunch"
+                     :placeholder="p.service.lunch">
             </td>
           </tr>
           <tr>
@@ -65,15 +75,15 @@
                      type="number"
                      class="inputService"
                      name="dinner"
-                     :value="p.service.dinner">
+                     :id="p.id + ',' + p.date"
+                     @change="detectInputChange"
+                     v-model="p.service.dinner"
+                     :placeholder="p.service.dinner">
             </td>
           </tr>
         </tbody>
       </table>
-      <button v-if="!editMode" type="button" class="btn btn-primary mt-2" @click="enableEdit()">
-        Editar servicios
-      </button>
-      <button v-else  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
+      <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
         Guardar
       </button>
     </b-col>
@@ -101,18 +111,19 @@ export default {
       rooms: 'Lodging/rooms',
       rangeDate: 'Lodging/rangeDate',
       lodgings: 'Lodging/lodgings',
-      listLodgings: 'Lodging/listLodgings'
     }),
     proyectionTable() {
       var proyectionTable = []
       var daysLodging = []
       for (var i = 0; i < 7; i++) daysLodging.push({
         date: moment(this.rangeDate.start).add(i, 'day').format('YYYY-MM-DD'),
-        service: []
+        service: [],
+        id: null
       })
+
       this.lodgings.forEach((l, il) => {
         var index = 0
-        daysLodging.forEach((day) => {
+        if(!this.editMode) daysLodging.forEach((day) => {
           if(moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) && moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))) {
             var service = JSON.parse(l.service[0])
             day.service = {
@@ -124,6 +135,21 @@ export default {
             index++
           }
         })
+        if(this.editMode && this.lodgingSelect.items[0] == l.id) {
+          daysLodging.forEach((day) => {
+            if(moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) && moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))) {
+              var service = JSON.parse(l.service[0])
+              day.service = {
+                breakfast:  service[index][0],
+                lunch: service[index][1] ,
+                dinner:  service[index][2] ,
+                accommodation:  service[index][3]
+              }
+              day.id = l.id
+              index++
+            }
+          })
+        }
       })
       return daysLodging
     },
@@ -142,6 +168,7 @@ export default {
   data() {
     return {
       editMode: false,
+      lodgingSelect: null,
       options: {
         stack: true,
         editable: true,
@@ -164,15 +191,34 @@ export default {
           callback(item); // send back adjusted new item
         },
         onMove: function(item, callback) {
+          var service = []
+          var numberDays = moment(item.end).diff(moment(item.start), 'days')
+          var oldService = JSON.parse(item.service[0])
+          for (var i = 0; i <= (numberDays+1); i++)
+            service.push(
+              [
+                oldService[i] ? oldService[i][0] : 1,
+                oldService[i] ? oldService[i][1] : 1,
+                oldService[i] ? oldService[i][2] : 1,
+                oldService[i] ? oldService[i][3] : 1
+              ]
+            )
+          var itemService = []
+          itemService.push(JSON.stringify(service))
           item.start = moment(item.start).hours(16)
           item.end = moment(item.end).hours(12)
+          item.service = itemService
           callback(item); // send back adjusted item
         },
       }
     }
   },
   methods: {
-    enableEdit() {
+    detectInputChange(payload) {
+      this.updateService(payload.target, payload.target.value)
+    },
+    enableEdit(payload) {
+      this.lodgingSelect = payload
       this.editMode = !this.editMode
     },
     saveLodging() {
@@ -196,7 +242,7 @@ export default {
     ...mapMutations({
       updateLodgings: 'Lodging/updateLodgings',
       setRangeDate: 'Lodging/setRangeDate',
-      addLodging: 'Lodging/addLodging'
+      updateService: 'Lodging/updateService'
     }),
   }
 }
