@@ -6,8 +6,7 @@
         <timeline ref="timeline"
         v-if="rooms.length > 0 && lodgings.length > 0"
         @rangechanged="rangechanged"
-        @items-update="itemUpdate"
-        @select="enableEdit"
+        @click="enableEdit"
         :items="lodgings"
         :groups="rooms"
         :options="options">
@@ -83,6 +82,9 @@
           </tr>
         </tbody>
       </table>
+      <button  type="button" class="btn btn-primary mt-2 ml-2" @click="log()">
+        Gulogardar
+      </button>
       <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
         Guardar
       </button>
@@ -106,6 +108,7 @@ export default {
       end: moment().add(15, 'day'),
     })
   },
+
   computed: {
     ...mapGetters({
       rooms: 'Lodging/rooms',
@@ -135,7 +138,7 @@ export default {
             index++
           }
         })
-        if(this.editMode && this.lodgingSelect.items[0] == l.id) {
+        if(this.editMode && this.lodgingSelect == l.id) {
           daysLodging.forEach((day) => {
             if(moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) && moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))) {
               var service = JSON.parse(l.service[0])
@@ -182,7 +185,10 @@ export default {
           end: '2019-01-01 11:00:00',
           repeat:'daily'
         },
-        onAdd: function(item, callback) {
+        onRemove: (item, callback) => {
+          if(this.lodgings.length > 1) callback(item)
+        },
+        onAdd: (item, callback) => {
           item.group = item.group
           item.start = moment(item.start).hours(16)
           item.end = moment(item.start).hours(12).add(1, 'day')
@@ -190,25 +196,23 @@ export default {
           item.service = ["[[1,1,1,1],[1,1,1,1]]"]
           callback(item); // send back adjusted new item
         },
-        onMove: function(item, callback) {
+        onMove: (item, callback) => {
           var service = []
-          var numberDays = moment(item.end).diff(moment(item.start), 'days')
+          var numberDays = moment(item.end).diff(moment(item.start).format('YYYY-MM-DD'), 'days')
           var oldService = JSON.parse(item.service[0])
-          for (var i = 0; i <= (numberDays+1); i++)
-            service.push(
-              [
-                oldService[i] ? oldService[i][0] : 1,
-                oldService[i] ? oldService[i][1] : 1,
-                oldService[i] ? oldService[i][2] : 1,
-                oldService[i] ? oldService[i][3] : 1
-              ]
-            )
+          for (var i = 0; i <= (numberDays); i++)
+            service.push([
+              oldService[i] ? oldService[i][0] : 1,
+              oldService[i] ? oldService[i][1] : 1,
+              oldService[i] ? oldService[i][2] : 1,
+              oldService[i] ? oldService[i][3] : 1
+            ])
           var itemService = []
           itemService.push(JSON.stringify(service))
           item.start = moment(item.start).hours(16)
           item.end = moment(item.end).hours(12)
           item.service = itemService
-          callback(item); // send back adjusted item
+          callback(item);
         },
       }
     }
@@ -218,8 +222,9 @@ export default {
       this.updateService(payload.target, payload.target.value)
     },
     enableEdit(payload) {
-      this.lodgingSelect = payload
-      this.editMode = !this.editMode
+      this.lodgingSelect = payload.item
+      if(payload.item) this.editMode = true
+      else this.editMode = false
     },
     saveLodging() {
       this.editMode = !this.editMode
@@ -233,14 +238,7 @@ export default {
         })
       }
     },
-    itemUpdate(payload) {
-      this.updateLodgings({
-        id: payload.properties.data[0].id,
-        payload: payload.properties.data[0]
-      })
-    },
     ...mapMutations({
-      updateLodgings: 'Lodging/updateLodgings',
       setRangeDate: 'Lodging/setRangeDate',
       updateService: 'Lodging/updateService'
     }),

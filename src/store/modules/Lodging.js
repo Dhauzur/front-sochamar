@@ -115,6 +115,9 @@ const mutations = {
     state.lodgings = new DataSet([])
     if(value) {
       tempLodging = new DataSet([])
+      tempLodging.on('*', function (event, properties, senderId) {
+        if(event == 'remove') tempLodging.remove(properties.items);                                 // triggers an 'remove' event
+      });
       value.forEach((v) => tempLodging.add({
         id: v.id,
         group: v.group,
@@ -126,9 +129,6 @@ const mutations = {
       state.lodgings = tempLodging
     }
     else state.lodgings = new DataSet([])
-  },
-  updateLodgings(state, value) {
-    state.lodgings[value.id] = value.payload
   }
 }
 

@@ -22,7 +22,13 @@
             <b-form-radio  value="3">3</b-form-radio>
             <b-form-radio  value="4">4</b-form-radio>
             <b-form-radio  value="5">5</b-form-radio>
-            <b-form-radio  value="6">33</b-form-radio>
+            <b-form-radio  value="6">6</b-form-radio>
+            <b-form-radio  value="1">7</b-form-radio>
+            <b-form-radio  value="2">8</b-form-radio>
+            <b-form-radio  value="3">9</b-form-radio>
+            <b-form-radio  value="4">10</b-form-radio>
+            <b-form-radio  value="5">11</b-form-radio>
+            <b-form-radio  value="6">12</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
 
@@ -79,7 +85,7 @@ export default {
       form: {
         workPlace: '',
         whatWasDone: '',
-        ncamas: null,
+        ncamas: 0,
       },
       spaces: [
         { text: 'Selecione uno', value: '', disabled: true},
