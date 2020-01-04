@@ -6,6 +6,8 @@ import { DataSet }  from 'vue2vis';
 const state = {
   lodgings: new DataSet([]),
   rooms: new DataSet([]),
+  companies: [],
+  company: null,
   rangeDate: {
     start: null,
     end: null
@@ -16,9 +18,26 @@ const getters = {
   lodgings: state => state.lodgings,
   rangeDate: state => state.rangeDate,
   rooms: state => state.rooms,
+  companies: state => state.companies,
+  company: state => state.company,
 }
 
 const actions = {
+  async fetchCompany({ commit, dispatch }, value) {
+    commit('setCompanies', null)
+    return Axios.get(api + "/company")
+    .then(response => {
+      commit('setCompanies', response.data.company)
+      console.log("Empresas obtenidas: " + response.data.length);
+      console.log(state.company);
+      dispatch('fetchRooms');
+    })
+    .catch(error => {
+      commit('setCompanies', null)
+      console.log(error)
+    })
+  },
+
   async fetchRooms({ commit, dispatch }, value) {
     commit('setRooms', null)
     return Axios.get(api + "/rooms")
@@ -58,7 +77,8 @@ const actions = {
           group: l.group,
           start: l.start,
           end: l.end,
-          service: l.service[0]
+          service: l.service[0],
+          company: state.company
         })
         .then(response => {
           console.log("Hospedaje creado (Sin validaciones)");
@@ -78,6 +98,33 @@ const actions = {
 }
 
 const mutations = {
+  createFirstLodging(state, value) {
+    state.lodgings.add({
+      group: 1,
+      start: moment().hours(16),
+      end: moment().hours(13).add(1, 'day'),
+      content: 1 + ' Hab',
+      service: ["[[1,1,1,1],[1,1,1,1]]"],
+      company: state.company
+    })
+  },
+  setCompanyLodging(state, value) {
+    state.company = value
+  },
+  setCompanies(state, value) {
+    var companies = []
+    companies.push({
+      value: null,
+      text: 'Todas las empresas',
+    })
+    if(value) value.forEach((v) => {
+      companies.push({
+        value: v._id,
+        text: v.name
+      })
+    })
+    state.companies = companies
+  },
   updateService(state, v, number) {
     var tempLodging = state.lodgings
     state.lodgings = new DataSet([])
@@ -118,14 +165,28 @@ const mutations = {
       tempLodging.on('*', function (event, properties, senderId) {
         if(event == 'remove') tempLodging.remove(properties.items);                                 // triggers an 'remove' event
       });
-      value.forEach((v) => tempLodging.add({
-        id: v.id,
-        group: v.group,
-        start: moment(v.start).hours(16),
-        end: moment(v.end).hours(13),
-        content: v.group + ' Hab',
-        service: v.service,
-      }))
+      value.forEach((v) => {
+        if(state.company) {
+          if(state.company == v.company) tempLodging.add({
+            id: v.id,
+            group: v.group,
+            start: moment(v.start).hours(16),
+            end: moment(v.end).hours(13),
+            content: v.group + ' Hab',
+            service: v.service,
+            company: v.company
+          })
+        }
+        else tempLodging.add({
+          id: v.id,
+          group: v.group,
+          start: moment(v.start).hours(16),
+          end: moment(v.end).hours(13),
+          content: v.group + ' Hab',
+          service: v.service,
+          company: v.company
+        })
+      })
       state.lodgings = tempLodging
     }
     else state.lodgings = new DataSet([])

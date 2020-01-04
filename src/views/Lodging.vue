@@ -3,6 +3,16 @@
     <b-col md="10" class="ml-3">
       <h4>Hospedaje</h4>
       <div>
+        <label>Selecione empresa</label>
+        <b-form-select v-model="selectCompany"
+                       @change="setCompany"
+                       :options="companies"
+                       size="sm"
+                       class="col-5 m-3"/>
+
+         <b-button v-if="lodgings.length == 0 && company" @click="createFirstLodging" size="sm">Crear hospedaje</b-button>
+      </div>
+      <div>
         <timeline ref="timeline"
         v-if="rooms.length > 0 && lodgings.length > 0"
         @rangechanged="rangechanged"
@@ -82,9 +92,6 @@
           </tr>
         </tbody>
       </table>
-      <button  type="button" class="btn btn-primary mt-2 ml-2" @click="log()">
-        Gulogardar
-      </button>
       <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
         Guardar
       </button>
@@ -102,7 +109,7 @@ export default {
     Timeline
   },
   created() {
-    this.$store.dispatch("Lodging/fetchRooms")
+    this.$store.dispatch("Lodging/fetchCompany")
     this.setRangeDate({
       start: moment(),
       end: moment().add(15, 'day'),
@@ -114,6 +121,8 @@ export default {
       rooms: 'Lodging/rooms',
       rangeDate: 'Lodging/rangeDate',
       lodgings: 'Lodging/lodgings',
+      companies: 'Lodging/companies',
+      company: 'Lodging/company',
     }),
     proyectionTable() {
       var proyectionTable = []
@@ -170,6 +179,7 @@ export default {
   },
   data() {
     return {
+      selectCompany: null,
       editMode: false,
       lodgingSelect: null,
       options: {
@@ -185,16 +195,24 @@ export default {
           end: '2019-01-01 11:00:00',
           repeat:'daily'
         },
+        onUpdate: (item, callback) => {
+          if(this.company) callback(item)
+        },
+        onMoving: (item, callback) => {
+          if(this.company) callback(item)
+        },
         onRemove: (item, callback) => {
-          if(this.lodgings.length > 1) callback(item)
+          if(this.lodgings.length > 1 && this.company) callback(item)
         },
         onAdd: (item, callback) => {
-          item.group = item.group
-          item.start = moment(item.start).hours(16)
-          item.end = moment(item.start).hours(12).add(1, 'day')
-          item.content = item.group + 'Hab.'
-          item.service = ["[[1,1,1,1],[1,1,1,1]]"]
-          callback(item); // send back adjusted new item
+          if(this.company) {
+            item.group = item.group
+            item.start = moment(item.start).hours(16)
+            item.end = moment(item.start).hours(12).add(1, 'day')
+            item.content = item.group + 'Hab.'
+            item.service = ["[[1,1,1,1],[1,1,1,1]]"]
+            callback(item); // send back adjusted new item
+          }
         },
         onMove: (item, callback) => {
           var service = []
@@ -212,23 +230,29 @@ export default {
           item.start = moment(item.start).hours(16)
           item.end = moment(item.end).hours(12)
           item.service = itemService
-          callback(item);
+          if(this.company) callback(item);
         },
       }
     }
   },
   methods: {
+    setCompany(payload) {
+      this.setCompanyLodging(payload)
+      this.$store.dispatch("Lodging/fetchCompany")
+    },
     detectInputChange(payload) {
       this.updateService(payload.target, payload.target.value)
     },
     enableEdit(payload) {
-      this.lodgingSelect = payload.item
-      if(payload.item) this.editMode = true
-      else this.editMode = false
+      if(this.company) {
+        this.lodgingSelect = payload.item
+        if(payload.item) this.editMode = true
+        else this.editMode = false
+      }
     },
     saveLodging() {
       this.editMode = !this.editMode
-      this.$store.dispatch("Lodging/createLodging")
+      if(this.company) this.$store.dispatch("Lodging/createLodging")
     },
     rangechanged(payload) {
       if(payload) {
@@ -240,7 +264,9 @@ export default {
     },
     ...mapMutations({
       setRangeDate: 'Lodging/setRangeDate',
-      updateService: 'Lodging/updateService'
+      updateService: 'Lodging/updateService',
+      setCompanyLodging: 'Lodging/setCompanyLodging',
+      createFirstLodging: 'Lodging/createFirstLodging'
     }),
   }
 }
