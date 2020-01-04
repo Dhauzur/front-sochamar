@@ -1,102 +1,100 @@
 <template>
-  <b-row class="justify-content-center">
-    <b-col md="10" class="ml-3">
-      <h4>Hospedaje</h4>
-      <div>
-        <label>Selecione empresa</label>
-        <b-form-select v-model="selectCompany"
-                       @change="setCompany"
-                       :options="companies"
-                       size="sm"
-                       class="col-5 m-3"/>
+  <b-col  >
+    <h4>Hospedaje</h4>
+    <div>
+      <label>Selecione empresa</label>
+      <b-form-select v-model="selectCompany"
+                     @change="setCompany"
+                     :options="companies"
+                     size="sm"
+                     class="col-5 m-3"/>
 
-         <b-button v-if="lodgings.length == 0 && company" @click="createFirstLodging" size="sm">Crear hospedaje</b-button>
-      </div>
-      <div>
-        <timeline ref="timeline"
-        v-if="rooms.length > 0 && lodgings.length > 0"
-        @rangechanged="rangechanged"
-        @click="enableEdit"
-        :items="lodgings"
-        :groups="rooms"
-        :options="options">
-        </timeline>
-      </div>
-      <table class="table table-bordered mt-2">
-        <thead>
-          <tr>
-            <td>Actividad</td>
-            <td v-for="(d, index) in rangeDateTable" :key="index">
-              {{ d.numberDay }}
-              <br>
-              {{ d.nameDay }}
-            </td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>ALOJAMIENTO</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">
-              <span v-if="!editMode">{{ p.service.accommodation }}</span>
-              <input v-if="editMode && p.service.accommodation"
-                     type="number"
-                     class="inputService"
-                     name="accommodation"
-                     :id="p.id + ',' + p.date"
-                     @change="detectInputChange"
-                     v-model="p.service.accommodation"
-                     :placeholder="p.service.accommodation">
-            </td>
-          </tr>
-          <tr>
-            <td>DESAYUNO</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">
-              <span v-if="!editMode">{{ p.service.breakfast }}</span>
-              <input v-if="editMode && p.service.breakfast"
-                     type="number"
-                     class="inputService"
-                     name="breakfast"
-                     :id="p.id + ',' + p.date"
-                     @change="detectInputChange"
-                     v-model="p.service.breakfast"
-                     :placeholder="p.service.breakfast">
-            </td>
-          </tr>
-          <tr>
-            <td>ALMUERZO</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">
-              <span v-if="!editMode">{{ p.service.lunch }}</span>
-              <input v-if="editMode && p.service.lunch"
-                     type="number"
-                     class="inputService"
-                     name="lunch"
-                     :id="p.id + ',' + p.date"
-                     @change="detectInputChange"
-                     v-model="p.service.lunch"
-                     :placeholder="p.service.lunch">
-            </td>
-          </tr>
-          <tr>
-            <td>CENA</td>
-            <td v-for="(p, index) in proyectionTable" :key="index">
-              <span v-if="!editMode">{{ p.service.dinner }}</span>
-              <input v-if="editMode && p.service.dinner"
-                     type="number"
-                     class="inputService"
-                     name="dinner"
-                     :id="p.id + ',' + p.date"
-                     @change="detectInputChange"
-                     v-model="p.service.dinner"
-                     :placeholder="p.service.dinner">
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
-        Guardar
-      </button>
-    </b-col>
-  </b-row>
+       <b-button v-if="lodgings.length == 0 && company" @click="createFirstLodging" size="sm">Crear hospedaje</b-button>
+    </div>
+    <div>
+      <timeline ref="timeline"
+      v-if="rooms.length > 0 && lodgings.length > 0"
+      @rangechanged="rangechanged"
+      @click="enableEdit"
+      :items="lodgings"
+      :groups="rooms"
+      :options="options">
+      </timeline>
+    </div>
+    <table class="table table-bordered mt-2">
+      <thead>
+        <tr>
+          <td>Actividad</td>
+          <td v-for="(d, index) in rangeDateTable" :key="index">
+            {{ d.numberDay }}
+            <br>
+            {{ d.nameDay }}
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ALOJAMIENTO</td>
+          <td v-for="(p, index) in proyectionTable" :key="index">
+            <span v-if="!editMode">{{ p.service.accommodation }}</span>
+            <input v-if="editMode && p.service.accommodation"
+                   type="number"
+                   class="inputService"
+                   name="accommodation"
+                   :id="p.id + ',' + p.date"
+                   @change="detectInputChange"
+                   v-model="p.service.accommodation"
+                   :placeholder="p.service.accommodation">
+          </td>
+        </tr>
+        <tr>
+          <td>DESAYUNO</td>
+          <td v-for="(p, index) in proyectionTable" :key="index">
+            <span v-if="!editMode">{{ p.service.breakfast }}</span>
+            <input v-if="editMode && p.service.breakfast"
+                   type="number"
+                   class="inputService"
+                   name="breakfast"
+                   :id="p.id + ',' + p.date"
+                   @change="detectInputChange"
+                   v-model="p.service.breakfast"
+                   :placeholder="p.service.breakfast">
+          </td>
+        </tr>
+        <tr>
+          <td>ALMUERZO</td>
+          <td v-for="(p, index) in proyectionTable" :key="index">
+            <span v-if="!editMode">{{ p.service.lunch }}</span>
+            <input v-if="editMode && p.service.lunch"
+                   type="number"
+                   class="inputService"
+                   name="lunch"
+                   :id="p.id + ',' + p.date"
+                   @change="detectInputChange"
+                   v-model="p.service.lunch"
+                   :placeholder="p.service.lunch">
+          </td>
+        </tr>
+        <tr>
+          <td>CENA</td>
+          <td v-for="(p, index) in proyectionTable" :key="index">
+            <span v-if="!editMode">{{ p.service.dinner }}</span>
+            <input v-if="editMode && p.service.dinner"
+                   type="number"
+                   class="inputService"
+                   name="dinner"
+                   :id="p.id + ',' + p.date"
+                   @change="detectInputChange"
+                   v-model="p.service.dinner"
+                   :placeholder="p.service.dinner">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
+      Guardar
+    </button>
+  </b-col>
 </template>
 
 <script>
