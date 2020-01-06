@@ -1,7 +1,8 @@
 <template>
-  <b-col  >
+  <b-row class="justify-content-center">
+    <b-col md="10" class="ml-3">
     <h4>Hospedaje</h4>
-    <!-- <div>
+    <div>
       <label>Selecione empresa</label>
       <b-form-select v-model="selectCompany"
                      @change="setCompany"
@@ -10,7 +11,7 @@
                      class="col-5 m-3"/>
 
        <b-button v-if="lodgings.length == 0 && company" @click="createFirstLodging" size="sm">Crear hospedaje</b-button>
-    </div> -->
+    </div>
     <div>
       <timeline ref="timeline"
       v-if="rooms.length > 0 && lodgings.length > 0"
@@ -110,6 +111,7 @@
       Guardar
     </button>
   </b-col>
+  </b-row>
 </template>
 
 <script>

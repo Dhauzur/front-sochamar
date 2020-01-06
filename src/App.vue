@@ -6,11 +6,7 @@
       <router-link to="/hospedaje">Ver estadias</router-link>
 
     </div>
-    <b-container >
-      <b-row class="justify-content-center overflow-auto">
-        <router-view/>
-      </b-row>
-    </b-container>
+    <router-view/>
   </div>
 </template>
 
