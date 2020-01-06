@@ -29,7 +29,7 @@ const actions = {
     .then(response => {
       commit('setCompanies', response.data.company)
       console.log("Empresas obtenidas: " + response.data.length);
-      console.log(state.company);
+      console.log(state.companies);
       dispatch('fetchRooms');
     })
     .catch(error => {
@@ -120,7 +120,8 @@ const mutations = {
     if(value) value.forEach((v) => {
       companies.push({
         value: v._id,
-        text: v.name
+        text: v.name,
+        prices: v.prices
       })
     })
     state.companies = companies

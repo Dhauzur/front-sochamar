@@ -1,7 +1,7 @@
 <template>
   <b-col  >
     <h4>Hospedaje</h4>
-    <div>
+    <!-- <div>
       <label>Selecione empresa</label>
       <b-form-select v-model="selectCompany"
                      @change="setCompany"
@@ -10,7 +10,7 @@
                      class="col-5 m-3"/>
 
        <b-button v-if="lodgings.length == 0 && company" @click="createFirstLodging" size="sm">Crear hospedaje</b-button>
-    </div>
+    </div> -->
     <div>
       <timeline ref="timeline"
       v-if="rooms.length > 0 && lodgings.length > 0"
@@ -25,6 +25,7 @@
       <thead>
         <tr>
           <td>Actividad</td>
+          <!-- <td v-if="company">Precios</td> -->
           <td v-for="(d, index) in rangeDateTable" :key="index">
             {{ d.numberDay }}
             <br>
@@ -35,6 +36,7 @@
       <tbody>
         <tr>
           <td>ALOJAMIENTO</td>
+          <!-- <td v-if="company">{{ prices.prices[3] }}</td> -->
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.accommodation }}</span>
             <input v-if="editMode && p.service.accommodation"
@@ -49,6 +51,7 @@
         </tr>
         <tr>
           <td>DESAYUNO</td>
+          <!-- <td v-if="company">{{ prices.prices[0] }}</td> -->
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.breakfast }}</span>
             <input v-if="editMode && p.service.breakfast"
@@ -63,6 +66,7 @@
         </tr>
         <tr>
           <td>ALMUERZO</td>
+          <!-- <td v-if="company">{{ prices.prices[1] }}</td> -->
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.lunch }}</span>
             <input v-if="editMode && p.service.lunch"
@@ -77,6 +81,7 @@
         </tr>
         <tr>
           <td>CENA</td>
+          <!-- <td v-if="company">{{ prices.prices[2] }}</td> -->
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.dinner }}</span>
             <input v-if="editMode && p.service.dinner"
@@ -89,6 +94,16 @@
                    :placeholder="p.service.dinner">
           </td>
         </tr>
+        <!-- <tr>
+          <td v-if="company" colspan="2">TOTAL</td>
+          <td v-if="company">{{ finalyPrice[0] }}</td>
+          <td v-if="company">{{ finalyPrice[1] }}</td>
+          <td v-if="company">{{ finalyPrice[2] }}</td>
+          <td v-if="company">{{ finalyPrice[3] }}</td>
+          <td v-if="company">{{ finalyPrice[4] }}</td>
+          <td v-if="company">{{ finalyPrice[5] }}</td>
+          <td v-if="company">{{ finalyPrice[6] }}</td>
+        </tr> -->
       </tbody>
     </table>
     <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
@@ -122,6 +137,21 @@ export default {
       companies: 'Lodging/companies',
       company: 'Lodging/company',
     }),
+    // finalyPrice() {
+    //   var prices = []
+    //   var dayPrice = 0
+    //   this.proyectionTable.forEach((dailyService) => {
+    //     dayPrice =  (dailyService.service.breakfast * this.prices.prices[0]) +
+    //                 (dailyService.service.lunch * this.prices.prices[1]) +
+    //                 (dailyService.service.dinner * this.prices.prices[2]) +
+    //                 (dailyService.service.accommodation * this.prices.prices[3])
+    //     prices.push(dayPrice)
+    //   })
+    //   return prices
+    // },
+    // prices() {
+    //   return this.companies.find((c) => c.value == this.company)
+    // },
     proyectionTable() {
       var proyectionTable = []
       var daysLodging = []
