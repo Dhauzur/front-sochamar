@@ -4,6 +4,7 @@ import moment from 'moment'
 import { DataSet }  from 'vue2vis';
 
 const state = {
+  editMode: false,
   lodgings: new DataSet([]),
   rooms: new DataSet([]),
   companies: [],
@@ -15,6 +16,7 @@ const state = {
 }
 
 const getters = {
+  editMode: state => state.editMode,
   lodgings: state => state.lodgings,
   rangeDate: state => state.rangeDate,
   rooms: state => state.rooms,
@@ -24,6 +26,7 @@ const getters = {
 
 const actions = {
   async fetchCompany({ commit, dispatch }, value) {
+    commit('setModeEdit', false)
     commit('setCompanies', null)
     return Axios.get(api + "/company")
     .then(response => {
@@ -39,6 +42,7 @@ const actions = {
   },
 
   async fetchRooms({ commit, dispatch }, value) {
+    commit('setModeEdit', false)
     commit('setRooms', null)
     return Axios.get(api + "/rooms")
     .then(response => {
@@ -54,6 +58,7 @@ const actions = {
   },
 
   async fetchLodgings({ commit }, value) {
+    commit('setModeEdit', false)
     commit('setLodgings', null)
     return Axios.get(api + "/lodgings")
     .then(response => {
@@ -68,6 +73,7 @@ const actions = {
   },
 
   async createLodging({ commit, dispatch }) {
+    commit('setModeEdit', false)
     Axios.delete(api + "/lodging/delete/all")
     .then(response => {
       console.log("Hospedajes eliminados")
@@ -98,7 +104,11 @@ const actions = {
 }
 
 const mutations = {
+  setModeEdit(state, value) {
+    state.editMode = value
+  },
   createFirstLodging(state, value) {
+    state.editMode = false
     state.lodgings.add({
       group: 1,
       start: moment().hours(16),
@@ -126,18 +136,18 @@ const mutations = {
     })
     state.companies = companies
   },
-  updateService(state, v, number) {
+  updateService(state, value) {
     var tempLodging = state.lodgings
     state.lodgings = new DataSet([])
-    if(v) tempLodging.forEach((l, index) => {
-      if(v.id.split(',')[0] == l.id) {
+    if(value) tempLodging.forEach((l, index) => {
+      if(value.id.split(',')[0] == l.id) {
         for (var i = 0; i < 7; i++) {
-          if(moment(l.start).add(i, 'day').format('YYYY-MM-DD') == v.id.split(',')[1]) {
+          if(moment(l.start).add(i, 'day').format('YYYY-MM-DD') == value.id.split(',')[1]) {
             var service = JSON.parse(l.service[0])
-            if(v.name == 'dinner') service[i][2] = parseInt(v.value)
-            if(v.name == 'lunch') service[i][1] = parseInt(v.value)
-            if(v.name == 'accommodation') service[i][3] = parseInt(v.value)
-            if(v.name == 'breakfast') service[i][0] = parseInt(v.value)
+            if(value.name == 'dinner') service[i][2] = parseInt(value.value)
+            if(value.name == 'lunch') service[i][1] = parseInt(value.value)
+            if(value.name == 'accommodation') service[i][3] = parseInt(value.value)
+            if(value.name == 'breakfast') service[i][0] = parseInt(value.value)
             l.service[0] = JSON.stringify(service)
           }
         }
@@ -160,6 +170,7 @@ const mutations = {
   },
   setLodgings(state, value) {
     var tempLodging = state.lodgings
+    state.editMode = false
     state.lodgings = new DataSet([])
     if(value) {
       tempLodging = new DataSet([])

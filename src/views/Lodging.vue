@@ -26,7 +26,7 @@
       <thead>
         <tr>
           <td>Actividad</td>
-          <!-- <td v-if="company">Precios</td> -->
+          <td v-if="company">Precios</td>
           <td v-for="(d, index) in rangeDateTable" :key="index">
             {{ d.numberDay }}
             <br>
@@ -37,10 +37,10 @@
       <tbody>
         <tr>
           <td>ALOJAMIENTO</td>
-          <!-- <td v-if="company">{{ prices.prices[3] }}</td> -->
+          <td v-if="company">{{ prices.prices[3] }}</td>
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.accommodation }}</span>
-            <input v-if="editMode && p.service.accommodation"
+            <input v-if="editMode && p.service.accommodation !== null"
                    type="number"
                    class="inputService"
                    name="accommodation"
@@ -52,10 +52,10 @@
         </tr>
         <tr>
           <td>DESAYUNO</td>
-          <!-- <td v-if="company">{{ prices.prices[0] }}</td> -->
+          <td v-if="company">{{ prices.prices[0] }}</td>
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.breakfast }}</span>
-            <input v-if="editMode && p.service.breakfast"
+            <input v-if="editMode && p.service.breakfast !== null"
                    type="number"
                    class="inputService"
                    name="breakfast"
@@ -67,10 +67,10 @@
         </tr>
         <tr>
           <td>ALMUERZO</td>
-          <!-- <td v-if="company">{{ prices.prices[1] }}</td> -->
+          <td v-if="company">{{ prices.prices[1] }}</td>
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.lunch }}</span>
-            <input v-if="editMode && p.service.lunch"
+            <input v-if="editMode && p.service.lunch !== null"
                    type="number"
                    class="inputService"
                    name="lunch"
@@ -82,10 +82,10 @@
         </tr>
         <tr>
           <td>CENA</td>
-          <!-- <td v-if="company">{{ prices.prices[2] }}</td> -->
+          <td v-if="company">{{ prices.prices[2] }}</td>
           <td v-for="(p, index) in proyectionTable" :key="index">
             <span v-if="!editMode">{{ p.service.dinner }}</span>
-            <input v-if="editMode && p.service.dinner"
+            <input v-if="editMode && p.service.dinner !== null"
                    type="number"
                    class="inputService"
                    name="dinner"
@@ -95,7 +95,7 @@
                    :placeholder="p.service.dinner">
           </td>
         </tr>
-        <!-- <tr>
+        <tr>
           <td v-if="company" colspan="2">TOTAL</td>
           <td v-if="company">{{ finalyPrice[0] }}</td>
           <td v-if="company">{{ finalyPrice[1] }}</td>
@@ -104,7 +104,7 @@
           <td v-if="company">{{ finalyPrice[4] }}</td>
           <td v-if="company">{{ finalyPrice[5] }}</td>
           <td v-if="company">{{ finalyPrice[6] }}</td>
-        </tr> -->
+        </tr>
       </tbody>
     </table>
     <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
@@ -138,22 +138,23 @@ export default {
       lodgings: 'Lodging/lodgings',
       companies: 'Lodging/companies',
       company: 'Lodging/company',
+      editMode: 'Lodging/editMode',
     }),
-    // finalyPrice() {
-    //   var prices = []
-    //   var dayPrice = 0
-    //   this.proyectionTable.forEach((dailyService) => {
-    //     dayPrice =  (dailyService.service.breakfast * this.prices.prices[0]) +
-    //                 (dailyService.service.lunch * this.prices.prices[1]) +
-    //                 (dailyService.service.dinner * this.prices.prices[2]) +
-    //                 (dailyService.service.accommodation * this.prices.prices[3])
-    //     prices.push(dayPrice)
-    //   })
-    //   return prices
-    // },
-    // prices() {
-    //   return this.companies.find((c) => c.value == this.company)
-    // },
+    finalyPrice() {
+      var prices = []
+      var dayPrice = 0
+      this.proyectionTable.forEach((dailyService) => {
+        dayPrice =  (dailyService.service.breakfast * this.prices.prices[0]) +
+                    (dailyService.service.lunch * this.prices.prices[1]) +
+                    (dailyService.service.dinner * this.prices.prices[2]) +
+                    (dailyService.service.accommodation * this.prices.prices[3])
+        prices.push(dayPrice)
+      })
+      return prices
+    },
+    prices() {
+      return this.companies.find((c) => c.value == this.company)
+    },
     proyectionTable() {
       var proyectionTable = []
       var daysLodging = []
@@ -210,7 +211,6 @@ export default {
   data() {
     return {
       selectCompany: null,
-      editMode: false,
       lodgingSelect: null,
       options: {
         stack: true,
@@ -226,16 +226,23 @@ export default {
           repeat:'daily'
         },
         onUpdate: (item, callback) => {
-          if(this.company) callback(item)
+          this.setModeEdit(true)
+          if(this.company) {
+            callback(item)
+            this.$store.commit("Lodging/updateService", item)
+          }
         },
         onMoving: (item, callback) => {
+          this.setModeEdit(false)
           if(this.company) callback(item)
         },
         onRemove: (item, callback) => {
+          this.setModeEdit(false)
           if(this.lodgings.length > 1 && this.company) callback(item)
         },
         onAdd: (item, callback) => {
           if(this.company) {
+            this.setModeEdit(false)
             item.group = item.group
             item.start = moment(item.start).hours(16)
             item.end = moment(item.start).hours(12).add(1, 'day')
@@ -260,7 +267,13 @@ export default {
           item.start = moment(item.start).hours(16)
           item.end = moment(item.end).hours(12)
           item.service = itemService
-          if(this.company) callback(item);
+          console.log("UPDATE");
+          console.log(item);
+          this.setModeEdit(true)
+          if(this.company) {
+            this.$store.commit("Lodging/updateService", item)
+            callback(item);
+          }
         },
       }
     }
@@ -268,20 +281,23 @@ export default {
   methods: {
     setCompany(payload) {
       this.setCompanyLodging(payload)
+      this.setModeEdit(false)
       this.$store.dispatch("Lodging/fetchCompany")
     },
     detectInputChange(payload) {
+      if(payload.target.value == '' || payload.target.value == 0) payload.target.value = 0
+      console.log("deptec");
+      console.log(payload.target.value);
       this.updateService(payload.target, payload.target.value)
     },
     enableEdit(payload) {
       if(this.company) {
         this.lodgingSelect = payload.item
-        if(payload.item) this.editMode = true
-        else this.editMode = false
+        if(payload.item) this.setModeEdit(true)
+        else this.setModeEdit(false)
       }
     },
     saveLodging() {
-      this.editMode = !this.editMode
       if(this.company) this.$store.dispatch("Lodging/createLodging")
     },
     rangechanged(payload) {
@@ -296,7 +312,8 @@ export default {
       setRangeDate: 'Lodging/setRangeDate',
       updateService: 'Lodging/updateService',
       setCompanyLodging: 'Lodging/setCompanyLodging',
-      createFirstLodging: 'Lodging/createFirstLodging'
+      createFirstLodging: 'Lodging/createFirstLodging',
+      setModeEdit: 'Lodging/setModeEdit'
     }),
   }
 }
