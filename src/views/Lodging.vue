@@ -237,8 +237,10 @@ export default {
           if(this.company) callback(item)
         },
         onRemove: (item, callback) => {
-          this.setModeEdit(false)
-          if(this.lodgings.length > 1 && this.company) callback(item)
+          if(this.lodgings.length > 1 && this.company) {
+            this.setModeEdit(true)
+            callback(item)
+          }
         },
         onAdd: (item, callback) => {
           if(this.company) {
@@ -267,8 +269,6 @@ export default {
           item.start = moment(item.start).hours(16)
           item.end = moment(item.end).hours(12)
           item.service = itemService
-          console.log("UPDATE");
-          console.log(item);
           this.setModeEdit(true)
           if(this.company) {
             this.$store.commit("Lodging/updateService", item)
@@ -286,8 +286,6 @@ export default {
     },
     detectInputChange(payload) {
       if(payload.target.value == '' || payload.target.value == 0) payload.target.value = 0
-      console.log("deptec");
-      console.log(payload.target.value);
       this.updateService(payload.target, payload.target.value)
     },
     enableEdit(payload) {

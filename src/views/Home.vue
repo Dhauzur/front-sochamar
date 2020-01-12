@@ -17,9 +17,14 @@
               <td style="min-width: 90px;">{{ act.date }}</td>
               <td style="min-width: 120px;"><span v-if="act.repeat">Rep: </span>{{ act.workPlace }}</td>
               <td>
-                <div class="listActivities" v-for="(act, index) in act.whatWasDone" :key="index">
-                  <ul v-for="(a, index) in act.split(',')" :key="index">
+                <div class="listActivities" v-for="(acti, index) in act.whatWasDone" :key="index">
+                  <ul v-for="(a, index) in acti.split(',')" :key="index">
                     <li >{{ a }}</li>
+                  </ul>
+                  <ul style="color: grey">
+                    <li>
+                      {{ act._id }}
+                    </li>
                   </ul>
                 </div>
               </td>
