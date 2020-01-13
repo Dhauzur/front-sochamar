@@ -10,6 +10,10 @@
   </div>
 </template>
 
+<style lang="css">
+@import '../node_modules/vue2vis/dist/vue2vis.css';
+
+</style>
 <style lang="scss">
 
 

@@ -35,7 +35,7 @@
               <td colspan="2">VALOR: {{ act.valueOfBeds }}</td>
             </tr>
             <tr v-if="act.result" :class="{ 'bg-warning': !act.state, 'bg-primary': act.state  }">
-              <td colspan="4">{{ activities.state ? 'PAGADO' : 'VALOR' }}</td>
+              <td colspan="4">{{ !activities.state ? 'PAGADO' : 'VALOR' }}</td>
             </tr>
           </tbody>
         </table>

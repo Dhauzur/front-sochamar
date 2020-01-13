@@ -4,6 +4,8 @@ import moment from 'moment'
 import { DataSet }  from 'vue2vis';
 
 const state = {
+  lodgingSelect: null,
+  loading: false,
   editMode: false,
   lodgings: new DataSet([]),
   rooms: new DataSet([]),
@@ -16,6 +18,8 @@ const state = {
 }
 
 const getters = {
+  lodgingSelect: state => state.lodgingSelect,
+  loading: state => state.loading,
   editMode: state => state.editMode,
   lodgings: state => state.lodgings,
   rangeDate: state => state.rangeDate,
@@ -28,8 +32,10 @@ const actions = {
   async fetchCompany({ commit, dispatch }, value) {
     commit('setModeEdit', false)
     commit('setCompanies', null)
+    commit('setLoading', true)
     return Axios.get(api + "/company")
     .then(response => {
+      commit('setLoading', false)
       commit('setCompanies', response.data.company)
       console.log("Empresas obtenidas: " + response.data.length);
       console.log(state.companies);
@@ -42,10 +48,12 @@ const actions = {
   },
 
   async fetchRooms({ commit, dispatch }, value) {
+    commit('setLoading', true)
     commit('setModeEdit', false)
     commit('setRooms', null)
     return Axios.get(api + "/rooms")
     .then(response => {
+      commit('setLoading', false)
       commit('setRooms', response.data.rooms)
       console.log("Habitaciones obtenidas: " + response.data.length);
       console.log(state.rooms);
@@ -58,10 +66,12 @@ const actions = {
   },
 
   async fetchLodgings({ commit }, value) {
+    commit('setLoading', true)
     commit('setModeEdit', false)
     commit('setLodgings', null)
     return Axios.get(api + "/lodgings")
     .then(response => {
+      commit('setLoading', false)
       commit('setLodgings', response.data.lodgings)
       console.log("Hospedajes obtenidos: " + response.data.length);
       console.log(state.lodgings);
@@ -73,6 +83,7 @@ const actions = {
   },
 
   async createLodging({ commit, dispatch }) {
+    commit('setLoading', true)
     commit('setModeEdit', false)
     Axios.delete(api + "/lodging/delete/all")
     .then(response => {
@@ -96,6 +107,7 @@ const actions = {
           console.log(error)
         })
       })
+      commit('setLoading', false)
     })
     .catch(error => {
       console.log(error)
@@ -104,8 +116,15 @@ const actions = {
 }
 
 const mutations = {
+  setLodgingSelect(state, value) {
+    state.lodgingSelect = value
+  },
+  setLoading(state, value) {
+    state.loading = value
+  },
   setModeEdit(state, value) {
     state.editMode = value
+    if(!value) state.lodgingSelect = null
   },
   createFirstLodging(state, value) {
     state.editMode = false
