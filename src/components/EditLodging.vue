@@ -3,7 +3,6 @@
     <b-col class="borderEdit m-3">
       <h4>
         Edición de "{{ lodgingSelect.content }}"
-        {{ lodgingSelect.service[0] }}
       </h4>
       <b-row>
         <b-col md="4">
@@ -59,7 +58,7 @@
           <button  type="button" class="float-left btn btn-primary btn-md mt-2 col-xs-12" @click="addOneService(serviceSelected)">
             Agregar un pasajero todos los dias a {{ serviceSelected }}
           </button>
-          <button   type="button" class="float-left btn btn-primary btn-md mt-2 ml-md-2 col-xs-12" @click="saveLodging()">
+          <button   type="button" class="float-left btn btn-primary btn-md mt-2 ml-md-2 col-xs-12" @click="subOneService(serviceSelected)">
             Disminuir un pasajero todos los dias a {{ serviceSelected }}
           </button>
           <button   type="button" class="float-left btn btn-danger btn-md mt-2 ml-md-2 col-xs-12 d-block" @click="saveLodging()">
@@ -101,7 +100,8 @@ export default {
   },
   methods: {
     ...mapMutations({
-      addOneService: 'Lodging/addOneService'
+      addOneService: 'Lodging/addOneService',
+      subOneService: 'Lodging/subOneService'
     }),
   }
 }

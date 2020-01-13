@@ -14,11 +14,6 @@
          <b-button v-if="lodgings.length == 0 && company" @click="createFirstLodging" size="sm">Crear hospedaje</b-button>
       </div>
       <b-row>
-        <b-col class="p-4">
-          <EditLodging v-if="lodgingSelect" :lodgingSelect="lodgingSelect"/>
-        </b-col>
-      </b-row>
-      <b-row>
         <b-col>
         <timeline class="p-2"
           v-if="rooms.length > 0 && lodgings.length > 0"
@@ -31,7 +26,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col class="p-4 overflow-auto">
+        <b-col class="px-4 overflow-auto">
           <table class="table table-bordered ">
             <thead>
               <tr>
@@ -119,11 +114,21 @@
           </table>
         </b-col>
       </b-row>
+
+      <b-row>
+        <b-col class=" px-4">
+          <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
+            Guardar
+          </button>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col class=" px-4">
+          <EditLodging v-if="lodgingSelect"/>
+        </b-col>
+      </b-row>
     </template>
 
-    <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
-      Guardar
-    </button>
   </b-col>
   </b-row>
 </template>
@@ -305,7 +310,6 @@ export default {
     },
     detectInputChange(payload) {
       if(payload.target.value == '' || payload.target.value == 0) payload.target.value = 0
-      console.log(payload.target);
       this.updateService(payload.target)
     },
     enableEdit(payload) {
