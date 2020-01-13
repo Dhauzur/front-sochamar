@@ -305,7 +305,8 @@ export default {
     },
     detectInputChange(payload) {
       if(payload.target.value == '' || payload.target.value == 0) payload.target.value = 0
-      this.updateService(payload.target, payload.target.value)
+      console.log(payload.target);
+      this.updateService(payload.target)
     },
     enableEdit(payload) {
       if(this.company && payload.item) {

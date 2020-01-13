@@ -116,6 +116,22 @@ const actions = {
 }
 
 const mutations = {
+  addOneService(state, serviceSelected) {
+    var service = JSON.parse(state.lodgingSelect.service[0])
+    for (var i = 0; i < state.lodgingSelect.end.diff(state.lodgingSelect.start, 'days'); i++)  {
+      for (var u = 0; u < 3; u++) {
+        if(service[i][u] == null) service[i][u] = 0
+      }
+      if(serviceSelected == 'desayuno' || serviceSelected == 'todos los servicios') service[i][0] = service[i][0] + 1
+      if(serviceSelected == 'almuerzo' || serviceSelected == 'todos los servicios') service[i][1] = service[i][1] + 1
+      if(serviceSelected == 'cena' || serviceSelected == 'todos los servicios') service[i][2] = service[i][2] + 1
+      if(serviceSelected == 'alojamiento' || serviceSelected == 'todos los servicios') service[i][3] = service[i][3] + 1
+    }
+    console.log(state.lodgingSelect.service[0]);
+    state.lodgingSelect.service[0] = JSON.stringify(service)
+    console.log(state.lodgingSelect.service[0]);
+
+  },
   setLodgingSelect(state, value) {
     state.lodgingSelect = value
   },
