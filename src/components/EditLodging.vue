@@ -1,5 +1,5 @@
 <template lang="html">
-  <b-row class="">
+  <b-row v-if="lodgingSelect">
     <b-col class="borderEdit m-3">
       <h4>
         Edición de "{{ lodgingSelect.content }}"
@@ -17,6 +17,7 @@
             class="col-xs-2 "
             style="text-align: center; text-align-last:center;"
             v-model="dateStart"
+            @change="dateChange({ dateStart, dateEnd })"
             required/>
           </b-form-group>
         </b-col>
@@ -31,6 +32,7 @@
             type="date"
             class="col-xs-2 "
             style="text-align: center; text-align-last:center;"
+            @change="dateChange({ dateStart, dateEnd })"
             v-model="dateEnd"
             required/>
           </b-form-group>
@@ -61,8 +63,8 @@
           <button   type="button" class="float-left btn btn-primary btn-md mt-2 ml-md-2 col-xs-12" @click="subOneService(serviceSelected)">
             Disminuir un pasajero todos los dias a {{ serviceSelected }}
           </button>
-          <button   type="button" class="float-left btn btn-danger btn-md mt-2 ml-md-2 col-xs-12 d-block" @click="saveLodging()">
-            Guardar
+          <button   type="button" class="float-left btn btn-danger btn-md mt-2 ml-md-2 col-xs-12 d-block" @click="deleteLodging()">
+            Eliminar
           </button>
         </b-col>
       </b-row>
@@ -99,9 +101,14 @@ export default {
     }),
   },
   methods: {
+    saveLodging() {
+      this.$store.dispatch("Lodging/createLodging")
+    },
     ...mapMutations({
       addOneService: 'Lodging/addOneService',
-      subOneService: 'Lodging/subOneService'
+      subOneService: 'Lodging/subOneService',
+      dateChange: 'Lodging/dateChange',
+      deleteLodging: 'Lodging/deleteLodging'
     }),
   }
 }

@@ -4,6 +4,7 @@ import moment from 'moment'
 import { DataSet }  from 'vue2vis';
 
 const state = {
+  mirrorLodging: null,
   lodgingSelect: null,
   loading: false,
   editMode: false,
@@ -18,6 +19,7 @@ const state = {
 }
 
 const getters = {
+  mirrorLodging: state => state.mirrorLodging,
   lodgingSelect: state => state.lodgingSelect,
   loading: state => state.loading,
   editMode: state => state.editMode,
@@ -37,8 +39,6 @@ const actions = {
     .then(response => {
       commit('setLoading', false)
       commit('setCompanies', response.data.company)
-      console.log("Empresas obtenidas: " + response.data.length);
-      console.log(state.companies);
       dispatch('fetchRooms');
     })
     .catch(error => {
@@ -55,8 +55,6 @@ const actions = {
     .then(response => {
       commit('setLoading', false)
       commit('setRooms', response.data.rooms)
-      console.log("Habitaciones obtenidas: " + response.data.length);
-      console.log(state.rooms);
       dispatch('fetchLodgings');
     })
     .catch(error => {
@@ -73,8 +71,6 @@ const actions = {
     .then(response => {
       commit('setLoading', false)
       commit('setLodgings', response.data.lodgings)
-      console.log("Hospedajes obtenidos: " + response.data.length);
-      console.log(state.lodgings);
     })
     .catch(error => {
       commit('setLodgings', null)
@@ -87,7 +83,6 @@ const actions = {
     commit('setModeEdit', false)
     Axios.delete(api + "/lodging/delete/all")
     .then(response => {
-      console.log("Hospedajes eliminados")
       state.lodgings.forEach((l) => {
         Axios.post(api + "/lodging/create", {
           id: l.id,
@@ -98,10 +93,7 @@ const actions = {
           company: state.company
         })
         .then(response => {
-          console.log("Hospedaje creado (Sin validaciones)");
-          console.log(response);
           dispatch('fetchLodgings');
-
         })
         .catch(error => {
           console.log(error)
@@ -116,11 +108,55 @@ const actions = {
 }
 
 const mutations = {
+  setMirrorLodging(state, value) {
+    state.mirrorLodging = value
+  },
+  deleteLodging(state, value) {
+    var tempLodging = state.lodgingSelect
+    var tempLodgings = state.lodgings
+    state.editMode = false
+    state.lodgingSelect = null
+    state.lodgings = new DataSet([])
+    tempLodgings.remove(tempLodging.id)
+    state.lodgings = tempLodgings
+  },
+  dateChange(state, value) {
+    var tempLodging = state.lodgingSelect
+    var tempLodgings = state.lodgings
+    state.lodgings = new DataSet([])
+    tempLodgings.update({
+      id: state.lodgingSelect.id,
+      start: moment(value.dateStart).hours(16),
+      end: moment(value.dateEnd).hours(12)
+    });
+    var service = []
+    var numberDays = moment(value.dateEnd).diff(moment(value.dateStart).format('YYYY-MM-DD'), 'days')
+    var oldService = JSON.parse(state.lodgingSelect.service[0])
+    for (var i = 0; i <= (numberDays); i++)
+      service.push([
+        oldService[i] ? oldService[i][0] : 1,
+        oldService[i] ? oldService[i][1] : 1,
+        oldService[i] ? oldService[i][2] : 1,
+        oldService[i] ? oldService[i][3] : 1
+      ])
+    var itemService = []
+    itemService.push(JSON.stringify(service))
+    tempLodgings.update({
+      id: state.lodgingSelect.id,
+      service: itemService
+    });
+    tempLodging.start = moment(value.dateStart).hours(16)
+    tempLodging.end = moment(value.dateEnd).hours(12)
+    tempLodging.service = itemService
+    state.lodgingSelect = tempLodging
+    state.lodgings = tempLodgings
+  },
   subOneService(state, serviceSelected) {
     var tempLodging = state.lodgingSelect
     state.lodgingSelect = null
     var service = JSON.parse(tempLodging.service[0])
-    for (var i = 0; i < tempLodging.end.diff(tempLodging.start+1, 'days'); i++)  {
+    var numberDays = moment(tempLodging.end).diff(moment(tempLodging.start).format('YYYY-MM-DD'), 'days')
+    for (var i = 0; i <= numberDays; i++)  {
       for (var u = 0; u <= 3; u++) {
         if(service[i][u] == null) service[i][u] = 0
       }
@@ -139,7 +175,8 @@ const mutations = {
     var tempLodging = state.lodgingSelect
     state.lodgingSelect = null
     var service = JSON.parse(tempLodging.service[0])
-    for (var i = 0; i < tempLodging.end.diff(tempLodging.start+1, 'days'); i++)  {
+    var numberDays = moment(tempLodging.end).diff(moment(tempLodging.start).format('YYYY-MM-DD'), 'days')
+    for (var i = 0; i <= numberDays; i++)  {
       for (var u = 0; u <= 3; u++) {
         if(service[i][u] == null) service[i][u] = 0
         if(service[i][u] >= 20) service[i][u] = 0
@@ -255,6 +292,7 @@ const mutations = {
         })
       })
       state.lodgings = tempLodging
+      state.mirrorLodging =  JSON.stringify(tempLodging)
     }
     else state.lodgings = new DataSet([])
   }

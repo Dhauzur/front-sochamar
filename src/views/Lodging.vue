@@ -117,7 +117,7 @@
 
       <b-row>
         <b-col class=" px-4">
-          <button v-if="editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
+          <button v-if="getMirrorLodging"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
             Guardar
           </button>
         </b-col>
@@ -156,6 +156,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      mirrorLodging: 'Lodging/mirrorLodging',
       lodgingSelect: 'Lodging/lodgingSelect',
       loading: 'Lodging/loading',
       rooms: 'Lodging/rooms',
@@ -165,6 +166,11 @@ export default {
       company: 'Lodging/company',
       editMode: 'Lodging/editMode',
     }),
+    getMirrorLodging() {
+      var hola =  JSON.stringify(this.lodgings)
+      if(hola == this.mirrorLodging) return false
+      else return true
+    },
     finalyPrice() {
       var prices = []
       var dayPrice = 0
@@ -274,6 +280,11 @@ export default {
             item.end = moment(item.start).hours(12).add(1, 'day')
             item.content = item.group + 'Hab.'
             item.service = ["[[1,1,1,1],[1,1,1,1]]"]
+            var timestamp = (new Date().getTime()).toString(16);
+            timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
+                return (Math.random() * 16 | 0).toString(16);
+            }).toLowerCase()
+            item.id = timestamp
             callback(item); // send back adjusted new item
           }
         },
@@ -290,9 +301,9 @@ export default {
             ])
           var itemService = []
           itemService.push(JSON.stringify(service))
+          item.service = itemService
           item.start = moment(item.start).hours(16)
           item.end = moment(item.end).hours(12)
-          item.service = itemService
           this.setModeEdit(true)
           if(this.company) {
             this.$store.commit("Lodging/updateService", item)
