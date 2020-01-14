@@ -108,16 +108,18 @@ const actions = {
 }
 
 const mutations = {
+  addLodging(state, value) {
+    if(!state.lodgings.get(value.id)) state.lodgings.add(value)
+  },
   setMirrorLodging(state, value) {
     state.mirrorLodging = value
   },
   deleteLodging(state, value) {
-    var tempLodging = state.lodgingSelect
     var tempLodgings = state.lodgings
     state.editMode = false
     state.lodgingSelect = null
     state.lodgings = new DataSet([])
-    tempLodgings.remove(tempLodging.id)
+    tempLodgings.remove(value.id)
     state.lodgings = tempLodgings
   },
   dateChange(state, value) {
@@ -190,7 +192,8 @@ const mutations = {
     state.lodgingSelect = tempLodging
   },
   setLodgingSelect(state, value) {
-    state.lodgingSelect = value
+    var lodSel = state.lodgings.get(value)
+    lodSel ? state.lodgingSelect = lodSel : console.log("No se enceuntra lod");
   },
   setLoading(state, value) {
     state.loading = value
@@ -233,7 +236,9 @@ const mutations = {
     state.lodgings = new DataSet([])
     if(value) tempLodging.forEach((l, index) => {
       if(value.id.split(',')[0] == l.id) {
-        for (var i = 0; i < 7; i++) {
+        var numberDays = moment(l.end).diff(moment(l.start).format('YYYY-MM-DD'), 'days')
+        for (var i = 0; i < numberDays; i++) {
+          console.log(moment(l.start).add(i, 'day').format('YYYY-MM-DD') , value.id.split(',')[1]);
           if(moment(l.start).add(i, 'day').format('YYYY-MM-DD') == value.id.split(',')[1]) {
             var service = JSON.parse(l.service[0])
             if(value.name == 'dinner') service[i][2] = parseInt(value.value)
@@ -251,7 +256,7 @@ const mutations = {
     if(value) value.forEach((v) => {
       state.rooms.add({
         id: v.id,
-        content: v.name,
+        content: v.id,
         numberPassangerMax: v.numberPassangerMax
       })
     })
@@ -266,9 +271,9 @@ const mutations = {
     state.lodgings = new DataSet([])
     if(value) {
       tempLodging = new DataSet([])
-      tempLodging.on('*', function (event, properties, senderId) {
-        if(event == 'remove') tempLodging.remove(properties.items);                                 // triggers an 'remove' event
-      });
+      // tempLodging.on('*', function (event, properties, senderId) {
+      //   if(event == 'remove') tempLodging.remove(properties.items);                                 // triggers an 'remove' event
+      // });
       value.forEach((v) => {
         if(state.company) {
           if(state.company == v.company) tempLodging.add({

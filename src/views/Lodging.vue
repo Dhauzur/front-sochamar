@@ -209,15 +209,16 @@ export default {
             index++
           }
         })
+        if(this.lodgingSelect)
         if(this.editMode && this.lodgingSelect.id == l.id) {
           daysLodging.forEach((day) => {
             if(moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) && moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))) {
               var service = JSON.parse(l.service[0])
               day.service = {
-                breakfast:  service[index][0],
-                lunch: service[index][1] ,
-                dinner:  service[index][2] ,
-                accommodation:  service[index][3]
+                breakfast: day.service.breakfast ? service[index][0] + day.service.breakfast : service[index][0],
+                lunch: day.service.lunch ? service[index][1] + day.service.lunch : service[index][1] ,
+                dinner: day.service.dinner ? service[index][2] + day.service.dinner : service[index][2] ,
+                accommodation: day.service.accommodation ? service[index][3] + day.service.accommodation : service[index][3]
               }
               day.id = l.id
               index++
@@ -241,6 +242,7 @@ export default {
   },
   data() {
     return {
+      JSONlodging: null,
       selectCompany: null,
       options: {
         stack: true,
@@ -268,7 +270,8 @@ export default {
         },
         onRemove: (item, callback) => {
           if(this.lodgings.length > 1 && this.company) {
-            this.setModeEdit(true)
+            this.setModeEdit(false)
+            this.$store.commit("Lodging/deleteLodging", item)
             callback(item)
           }
         },
@@ -285,6 +288,7 @@ export default {
                 return (Math.random() * 16 | 0).toString(16);
             }).toLowerCase()
             item.id = timestamp
+            this.$store.commit("Lodging/addLodging", item)
             callback(item); // send back adjusted new item
           }
         },
@@ -325,7 +329,7 @@ export default {
     },
     enableEdit(payload) {
       if(this.company && payload.item) {
-        this.setLodgingSelect(this.lodgings.get(payload.item))
+        this.setLodgingSelect(payload.item)
         this.setModeEdit(true)
       }
       else this.setModeEdit(false)
@@ -342,6 +346,7 @@ export default {
       }
     },
     ...mapMutations({
+      addLodging: 'Lodging/addLodging',
       setLodgingSelect: 'Lodging/setLodgingSelect',
       setRangeDate: 'Lodging/setRangeDate',
       updateService: 'Lodging/updateService',
