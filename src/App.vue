@@ -1,10 +1,24 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Ver registros de trabajo</router-link> |
-      <router-link to="/mantenimiento">Enviar trabajo</router-link> |
-      <router-link to="/hospedaje">.</router-link>
-
+    <div class="shadoNavBar">
+      <b-navbar toggleable="sm" type="light" variant="light">
+        <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
+        <b-navbar-brand>Sochamar</b-navbar-brand>
+        <b-collapse id="nav-text-collapse" is-nav >
+          <b-navbar-nav >
+            <b-nav-text class="mr-2">
+              <router-link to="/">
+                Ver registros de trabajo
+              </router-link>
+            </b-nav-text>
+            <b-nav-text class="mr-2" >
+              <router-link to="/mantenimiento">
+                Enviar trabajo
+              </router-link>
+            </b-nav-text>
+          </b-navbar-nav>
+        </b-collapse>
+      </b-navbar>
     </div>
     <router-view/>
   </div>
@@ -23,10 +37,18 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  overflow: hidden !important;
-  background-image: linear-gradient(-125deg, #e8f0f9, #295173, #192835);
-  background-image: linear-gradient(50deg, #502d55, #502d55, #8e4b71, #e7c8b7);
-  background-image: linear-gradient(50deg, #7b77c1, #908ac7d9, #dcccf173, #f5e9f38a);
+  overflow-x: hidden !important;
+  // background-image: linear-gradient(-125deg, #e8f0f9, #295173, #192835);
+  // background-image: linear-gradient(50deg, #502d55, #502d55, #8e4b71, #e7c8b7);
+  // background-image: linear-gradient(50deg, #7b77c1, #908ac7d9, #dcccf173, #f5e9f38a);
+  background-image: linear-gradient(50deg, #6266e2d4, #8b8ac7d9, #e5dce673, #e9ecf58a);
+  height: 100vh;
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    color: #8483e0;
+  }
 }
 
 #nav {
@@ -34,11 +56,13 @@
   a {
     font-weight: bold;
     color: #2c3e50;
-
     &.router-link-exact-active {
       color: #42b983;
     }
   }
 }
 
+.shadoNavBar {
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+}
 </style>

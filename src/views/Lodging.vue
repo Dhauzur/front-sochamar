@@ -1,18 +1,31 @@
 <template>
-  <b-row class="justify-content-center">
-    <b-col class="m-3 p-3">
+  <b-row id="nav" class="justify-content-center">
+    <b-col >
     <Loading v-if="loading" />
     <template v-else >
-      <div>
-        <label>Selecione empresa</label>
-        <b-form-select v-model="selectCompany"
+      <b-row class="mx-1">
+        <div>
+          <label class="text-white">Selecione empresa</label>
+          <b-form-select v-model="selectCompany"
                        @change="setCompany"
                        :options="companies"
                        size="sm"
                        class="col-5 m-3"/>
-
-         <b-button v-if="lodgings.length == 0 && company" @click="createFirstLodging" size="sm">Crear hospedaje</b-button>
-      </div>
+          <b-button v-if="lodgings.length == 0 && company"
+                  @click="createLodging()"
+                  size="sm"
+                  variant="primary" >
+                  Crear hospedaje
+          </b-button>
+        </div>
+        <div>
+          <b-dropdown class="m-3"  variant="primary" id="dropdown-1" text="Acciones" size="sm">
+            <b-dropdown-item @click="createLodging()">Agregar hospedaje</b-dropdown-item>
+            <b-dropdown-item @click="$router.push({ name: 'grupos' })">Gestionar grupos</b-dropdown-item>
+            <b-dropdown-item @click="$router.push({ name: 'entidades' })">Gestionar entidades</b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </b-row>
       <b-row>
         <b-col>
         <timeline class="p-2"
@@ -117,7 +130,7 @@
 
       <b-row>
         <b-col class=" px-4">
-          <button v-if="getMirrorLodging"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
+          <button v-if="getMirrorLodging || editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
             Guardar
           </button>
         </b-col>
@@ -351,7 +364,7 @@ export default {
       setRangeDate: 'Lodging/setRangeDate',
       updateService: 'Lodging/updateService',
       setCompanyLodging: 'Lodging/setCompanyLodging',
-      createFirstLodging: 'Lodging/createFirstLodging',
+      createLodging: 'Lodging/createLodging',
       setModeEdit: 'Lodging/setModeEdit'
     }),
   }

@@ -1,5 +1,5 @@
 <template>
-  <b-container >
+  <b-container id="nav">
     <b-row class="justify-content-center overflow-auto">
       <b-col >
         <h4 v-if="activities == 0">No existen trabajos</h4>
@@ -41,6 +41,9 @@
         </table>
       </b-col>
     </b-row>
+    <router-link to="/hospedaje">
+      Hospedaje Sochamar
+    </router-link>
   </b-container>
 </template>
 
