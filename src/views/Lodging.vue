@@ -359,14 +359,15 @@ export default {
 </script>
 
 <style lang="css">
-
-.vis-time-axis .vis-grid.vis-odd {
-  background: #f5f5f5;
+.vis-foreground .vis-group {
+  border: 1px solid #ffffff7a;
 }
-
+.vis-time-axis .vis-grid.vis-odd {
+  background: #ffffff7a;
+}
 .vis-time-axis .vis-grid.vis-saturday,
 .vis-time-axis .vis-grid.vis-sunday {
-  background: #8080808f;
+  background: #ffffff7a;
 }
 .vis-time-axis .vis-text.vis-saturday,
 .vis-time-axis .vis-text.vis-sunday {
@@ -375,7 +376,14 @@ export default {
 .inputService {
   max-width: 60px;
 }
+
+.vis-item {
+  border-color: #2e4052;
+  border-width: 2px;
+  background-color: #e6e9ec;
+}
 td, th {
   padding: 2px !important;
+  color: #1c1e21;
 }
 </style>

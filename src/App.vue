@@ -24,6 +24,9 @@
   text-align: center;
   color: #2c3e50;
   overflow: hidden !important;
+  background-image: linear-gradient(-125deg, #e8f0f9, #295173, #192835);
+  background-image: linear-gradient(50deg, #502d55, #502d55, #8e4b71, #e7c8b7);
+  background-image: linear-gradient(50deg, #7b77c1, #908ac7d9, #dcccf173, #f5e9f38a);
 }
 
 #nav {
