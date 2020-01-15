@@ -6,12 +6,12 @@
         <b-navbar-brand>Sochamar</b-navbar-brand>
         <b-collapse id="nav-text-collapse" is-nav >
           <b-navbar-nav >
-            <b-nav-text class="mr-2">
+            <b-nav-text class="mr-3">
               <router-link to="/">
                 Ver registros de trabajo
               </router-link>
             </b-nav-text>
-            <b-nav-text class="mr-2" >
+            <b-nav-text class="mr-3" >
               <router-link to="/mantenimiento">
                 Enviar trabajo
               </router-link>

@@ -399,4 +399,10 @@ td, th {
   padding: 2px !important;
   color: #1c1e21;
 }
+.vis-labelset .vis-label .vis-inner {
+  max-width: 30px;
+}
+.vis.timeline .labelset .inner {
+  width: 30px;
+}
 </style>
