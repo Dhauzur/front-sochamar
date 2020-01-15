@@ -1,9 +1,9 @@
 <template>
   <b-container id="nav">
-    <b-row class="justify-content-center overflow-auto">
+    <b-row class="justify-content-center overflow-auto" style="max-height: 500px; overflow-y: auto;">
       <b-col >
         <h4 v-if="activities == 0">No existen trabajos</h4>
-        <table v-else class="table  table-hover">
+        <table v-else class="table  table-hover" >
           <thead >
             <tr>
               <th>Fecha</th>
