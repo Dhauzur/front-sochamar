@@ -113,15 +113,9 @@
                          :placeholder="p.service.dinner">
                 </td>
               </tr>
-              <tr>
-                <td v-if="company" colspan="2">TOTAL</td>
-                <td v-if="company">{{ finalyPrice[0] }}</td>
-                <td v-if="company">{{ finalyPrice[1] }}</td>
-                <td v-if="company">{{ finalyPrice[2] }}</td>
-                <td v-if="company">{{ finalyPrice[3] }}</td>
-                <td v-if="company">{{ finalyPrice[4] }}</td>
-                <td v-if="company">{{ finalyPrice[5] }}</td>
-                <td v-if="company">{{ finalyPrice[6] }}</td>
+              <tr v-if="company" >
+                <td  colspan="2">TOTAL</td>
+                <td v-for="(p, index) in proyectionTable" :key="index">{{ finalyPrice[index] }}</td>
               </tr>
             </tbody>
           </table>
@@ -188,11 +182,12 @@ export default {
     finalyPrice() {
       var prices = []
       var dayPrice = 0
-      this.proyectionTable.forEach((dailyService) => {
-        dayPrice =  (dailyService.service.breakfast * this.prices.prices[0]) +
-                    (dailyService.service.lunch * this.prices.prices[1]) +
-                    (dailyService.service.dinner * this.prices.prices[2]) +
-                    (dailyService.service.accommodation * this.prices.prices[3])
+      if(this.company) this.proyectionTable.forEach((dailyService) => {
+        dayPrice =  (dailyService.service.breakfast ? dailyService.service.breakfast * this.prices.prices[0] : '0') +
+                    (dailyService.service.lunch ? dailyService.service.lunch * this.prices.prices[1] : '0') +
+                    (dailyService.service.dinner ? dailyService.service.dinner * this.prices.prices[2] : '0') +
+                    (dailyService.service.accommodation ? dailyService.service.accommodation * this.prices.prices[3] : '0')
+        if(dayPrice == '0000') dayPrice = 0
         prices.push(dayPrice)
       })
       return prices
@@ -203,7 +198,8 @@ export default {
     proyectionTable() {
       var proyectionTable = []
       var daysLodging = []
-      for (var i = 0; i < 7; i++) daysLodging.push({
+      var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days')
+      for (var i = 0; i <= numberDays; i++) daysLodging.push({
         date: moment(this.rangeDate.start).add(i, 'day').format('YYYY-MM-DD'),
         service: [],
         id: null
@@ -245,8 +241,8 @@ export default {
     rangeDateTable() {
       var dates = []
       var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days')
-      if(numberDays >= 7) numberDays = 7
-      for (var i = 0; i < numberDays; i++) dates.push({
+      // if(numberDays >= 7) numberDays = 7
+      for (var i = 0; i <= numberDays; i++) dates.push({
         numberDay: moment(this.rangeDate.start).add(i, 'day').format('DD MMM'),
         nameDay: moment(this.rangeDate.start).add(i, 'day').format('ddd')
       })
@@ -355,7 +351,7 @@ export default {
       if(payload) {
         this.setRangeDate({
           start: moment(payload.start),
-          end: moment(payload.end).add(7, 'day'),
+          end: moment(payload.end),
         })
       }
     },
@@ -399,6 +395,7 @@ export default {
 td, th {
   padding: 2px !important;
   color: #1c1e21;
+  min-width: 60px;
 }
 .vis-labelset .vis-label .vis-inner {
   max-width: 30px;
