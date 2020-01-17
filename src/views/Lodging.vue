@@ -5,7 +5,7 @@
     <template v-else >
       <b-row class="mx-1">
         <div>
-          <label class="text-white">Selecione empresa</label>
+          <label class="text-white">Selecione entidad</label>
           <b-form-select v-model="selectCompany"
                        @change="setCompany"
                        :options="companies"
@@ -169,6 +169,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      updatingService: 'Lodging/updatingService',
       mirrorLodging: 'Lodging/mirrorLodging',
       lodgingSelect: 'Lodging/lodgingSelect',
       loading: 'Lodging/loading',

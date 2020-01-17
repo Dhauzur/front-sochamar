@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="shadoNavBar">
-      <b-navbar toggleable="sm" type="light" variant="light">
+      <b-navbar toggleable="sm" >
         <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
         <b-navbar-brand>Sochamar</b-navbar-brand>
         <b-collapse id="nav-text-collapse" is-nav >
@@ -42,6 +42,8 @@
   // background-image: linear-gradient(50deg, #502d55, #502d55, #8e4b71, #e7c8b7);
   // background-image: linear-gradient(50deg, #7b77c1, #908ac7d9, #dcccf173, #f5e9f38a);
   background-image: linear-gradient(50deg, #6266e2d4, #8b8ac7d9, #e5dce673, #e9ecf58a);
+  // background-image: linear-gradient(50deg, #8EC5FC, #9FACE6);
+  // background-image: linear-gradient(50deg, #6ed8cc#0f5076, );
   height: 100vh;
   a {
     text-decoration: none;
@@ -64,5 +66,6 @@
 
 .shadoNavBar {
   box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  background-color: white !important;
 }
 </style>

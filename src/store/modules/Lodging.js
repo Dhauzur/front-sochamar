@@ -4,6 +4,7 @@ import moment from 'moment'
 import { DataSet }  from 'vue2vis';
 
 const state = {
+  updatingService: null,
   mirrorLodging: null,
   lodgingSelect: null,
   loading: false,
@@ -19,6 +20,7 @@ const state = {
 }
 
 const getters = {
+  updatingService: state => state.updatingService,
   mirrorLodging: state => state.mirrorLodging,
   lodgingSelect: state => state.lodgingSelect,
   loading: state => state.loading,
@@ -108,6 +110,9 @@ const actions = {
 }
 
 const mutations = {
+  setUpdatingService(state, value) {
+    state.updatingService = value
+  },
   addLodging(state, value) {
     if(!state.lodgings.get(value.id)) state.lodgings.add(value)
   },
@@ -202,7 +207,7 @@ const mutations = {
     state.editMode = value
     if(!value) state.lodgingSelect = null
   },
-  createFirstLodging(state, value) {
+  createLodging(state, value) {
     state.editMode = false
     state.lodgings.add({
       group: 1,
@@ -232,25 +237,32 @@ const mutations = {
     state.companies = companies
   },
   updateService(state, value) {
-    var tempLodging = state.lodgings
-    state.lodgings = new DataSet([])
-    if(value) tempLodging.forEach((l, index) => {
-      if(value.id.split(',')[0] == l.id) {
+    state.updatingService = null
+    var idValue = value.id.split(',')[0]
+    var dateValue = value.id.split(',')[1]
+    var newService = []
+    if(value) state.lodgings.forEach((l, index) => {
+      if(idValue == l.id) {
         var numberDays = moment(l.end).diff(moment(l.start).format('YYYY-MM-DD'), 'days')
-        for (var i = 0; i < numberDays; i++) {
-          console.log(moment(l.start).add(i, 'day').format('YYYY-MM-DD') , value.id.split(',')[1]);
-          if(moment(l.start).add(i, 'day').format('YYYY-MM-DD') == value.id.split(',')[1]) {
+        for (var i = 0; i <= numberDays; i++) {
+          // console.log(moment(l.start).add(i, 'day').format('YYYY-MM-DD') , value.id.split(',')[1]);
+          if(moment(l.start).add(i, 'day').format('YYYY-MM-DD') == dateValue) {
             var service = JSON.parse(l.service[0])
             if(value.name == 'dinner') service[i][2] = parseInt(value.value)
             if(value.name == 'lunch') service[i][1] = parseInt(value.value)
             if(value.name == 'accommodation') service[i][3] = parseInt(value.value)
             if(value.name == 'breakfast') service[i][0] = parseInt(value.value)
-            l.service[0] = JSON.stringify(service)
+            // l.service[0] = JSON.stringify(service)
+            newService.push(JSON.stringify(service))
+            // state.updatingService = { date: dateValue, service}
+            state.editMode = false
+            state.lodgings.update({ id: l.id, service: newService })
+            state.editMode = true
+
           }
         }
       }
     })
-    state.lodgings = tempLodging
   },
   setRooms(state, value) {
     if(value) value.forEach((v) => {
