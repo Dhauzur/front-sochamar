@@ -4,7 +4,8 @@ import moments from 'moment'
 
 const state = {
   activity: null,
-  activities: []
+  activities: [],
+  filterWord: ''
 }
 
 const getters = {
@@ -66,6 +67,9 @@ const actions = {
 const mutations = {
   setActivities(state, value) {
     state.activities = value
+  },
+  filterWorkplace(state, value) {
+    state.filterWord = value
   }
 }
 

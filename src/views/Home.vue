@@ -2,20 +2,23 @@
   <b-container id="nav">
     <b-row class="justify-content-center overflow-auto" style="max-height: 500px; overflow-y: auto;">
       <b-col >
-        <h4 v-if="activities == 0">No existen trabajos</h4>
-        <table v-else class="table  table-hover" >
+        <h5>Filtrar lugar de trabajos</h5>
+        <input  type="text" name="filterWorkplace" v-model="filterWord" @keyup="filterWorkplace">
+        <h4 v-if="activitiesFilter == 0">No existen trabajos</h4>
+        <table v-else class="table  table-hover mt-2" >
           <thead >
             <tr>
               <th>Fecha</th>
               <th>Lugar trabajado</th>
-              <th>¿Qué se hizo?</th>
               <th>Numero de camas</th>
+              <th>¿Qué se hizo?</th>
             </tr>
           </thead>
-          <tbody v-for="(act, index) in activities" :key="index">
+          <tbody v-for="(act, index) in activitiesFilter" :key="index">
             <tr :class="{ 'bgRepeat': act.repeat, 'endWeek': endWeek(act, index)  }">
               <td style="min-width: 90px;">{{ act.date }}</td>
               <td style="min-width: 120px;"><span v-if="act.repeat">Rep: </span>{{ act.workPlace }}</td>
+              <td>{{ act.ncamas }}</td>
               <td>
                 <div class="listActivities" v-for="(acti, index) in act.whatWasDone" :key="index">
                   <ul v-for="(a, index) in acti.split(',')" :key="index">
@@ -28,7 +31,6 @@
                   </ul>
                 </div>
               </td>
-              <td>{{ act.ncamas }}</td>
             </tr>
             <tr v-if="act.result" :class="{   }">
               <td colspan="2">CANTIDAD DE CAMAS: {{ act.numbersOfBeds }}</td>
@@ -49,20 +51,35 @@
 
 <script>
 // @ is an alias to /src
-import { mapGetters } from "vuex"
+import { mapGetters, mapMutations } from "vuex"
 
 export default {
+  data() {
+    return {
+      filterWord: ''
+    }
+  },
   mounted() {
     this.$store.dispatch("Maintenance/fetchActivities")
   },
-  computed: mapGetters({
-    activities: "Maintenance/activities",
-  }),
+  computed: {
+    ...mapGetters({
+      activities: "Maintenance/activities",
+      filterWord: "Maintenance/filterWord"
+    }),
+    activitiesFilter() {
+      if(this.filterWord) return this.activities.filter((act) => act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()))
+      else return this.activities
+    }
+  },
   methods: {
     endWeek(act, index) {
       if(index >= 1) return act.date != this.activities[index-1].date ? true : false
       else return false
-    }
+    },
+    ...mapMutations({
+      filterWorkplace: 'Maintenance/filterWorkplace',
+    }),
   }
 }
 </script>
