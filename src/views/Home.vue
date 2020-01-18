@@ -65,7 +65,6 @@ export default {
   computed: {
     ...mapGetters({
       activities: "Maintenance/activities",
-      filterWord: "Maintenance/filterWord"
     }),
     activitiesFilter() {
       if(this.filterWord) return this.activities.filter((act) => act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()))

@@ -83,7 +83,7 @@ const actions = {
   async createLodging({ commit, dispatch }) {
     commit('setLoading', true)
     commit('setModeEdit', false)
-    Axios.delete(api + "/lodging/delete/all")
+    Axios.delete(api + "/lodging/delete/" + state.company)
     .then(response => {
       state.lodgings.forEach((l) => {
         Axios.post(api + "/lodging/create", {
@@ -255,6 +255,7 @@ const mutations = {
             // l.service[0] = JSON.stringify(service)
             newService.push(JSON.stringify(service))
             // state.updatingService = { date: dateValue, service}
+            console.log("ol?");
             state.editMode = false
             state.lodgings.update({ id: l.id, service: newService })
             state.editMode = true

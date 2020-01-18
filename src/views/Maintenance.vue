@@ -98,6 +98,7 @@ export default {
         'Habitación 5',
         'Habitación 6',
         'Habitación 7',
+        'Habitación 8',
         'Living',
         'Comedor',
         'Patio trasero',
