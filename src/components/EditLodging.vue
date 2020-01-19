@@ -5,7 +5,7 @@
         Edición de "{{ lodgingSelect.content }}"
       </h4>
       <b-row>
-        <b-col md="4">
+        <b-col md="4" lg="6">
           <b-form-group
             id="input-group-1"
             label="Fecha inicio"
@@ -21,7 +21,7 @@
             required/>
           </b-form-group>
         </b-col>
-        <b-col md="4">
+        <b-col md="4" lg="6">
           <b-form-group
             id="input-group-1"
             label="Fecha fin"
@@ -39,7 +39,7 @@
         </b-col>
       </b-row>
       <b-row >
-        <b-col md="4">
+        <b-col md="4" lg="12">
           <b-form-group
             id="input-group-1"
             label="Espacio de trabajo:"
@@ -56,14 +56,18 @@
         </b-col>
       </b-row>
       <b-row >
-        <b-col >
-          <button  type="button" class="float-left btn btn-primary btn-md mt-2 col-xs-12" @click="addOneService(serviceSelected)">
+        <b-col lg="4" xl="12">
+          <button  type="button" class=" btn btn-primary btn-md mt-2 btn-block" @click="addOneService(serviceSelected)">
             Agregar un pasajero todos los dias a {{ serviceSelected }}
           </button>
-          <button   type="button" class="float-left btn btn-primary btn-md mt-2 ml-md-2 col-xs-12" @click="subOneService(serviceSelected)">
+        </b-col>
+        <b-col lg="4" xl="12">
+          <button   type="button" class=" btn btn-primary btn-md mt-2 btn-block" @click="subOneService(serviceSelected)">
             Disminuir un pasajero todos los dias a {{ serviceSelected }}
           </button>
-          <button   type="button" class="float-left btn btn-danger btn-md mt-2 ml-md-2 col-xs-12 d-block" @click="deleteLodging()">
+        </b-col>
+        <b-col lg="4" xl="12">
+          <button   type="button" class="btn btn-danger btn-md mt-2  btn-block" @click="deleteLodging()">
             Eliminar
           </button>
         </b-col>

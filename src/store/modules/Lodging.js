@@ -4,6 +4,7 @@ import moment from 'moment'
 import { DataSet }  from 'vue2vis';
 
 const state = {
+  errorMessage: '',
   updatingService: null,
   mirrorLodging: null,
   lodgingSelect: null,
@@ -20,6 +21,7 @@ const state = {
 }
 
 const getters = {
+  errorMessage: state => state.errorMessage,
   updatingService: state => state.updatingService,
   mirrorLodging: state => state.mirrorLodging,
   lodgingSelect: state => state.lodgingSelect,
@@ -45,7 +47,7 @@ const actions = {
     })
     .catch(error => {
       commit('setCompanies', null)
-      console.log(error)
+      commit('setErrorMessage', "Fetch company " + error)
     })
   },
 
@@ -61,7 +63,7 @@ const actions = {
     })
     .catch(error => {
       commit('setRooms', null)
-      console.log(error)
+      commit('setErrorMessage', "Fetch rooms " + error)
     })
   },
 
@@ -76,16 +78,18 @@ const actions = {
     })
     .catch(error => {
       commit('setLodgings', null)
-      console.log(error)
+      commit('setErrorMessage', "Fetch lodgings " + error)
     })
   },
 
   async createLodging({ commit, dispatch }) {
     commit('setLoading', true)
     commit('setModeEdit', false)
-    Axios.delete(api + "/lodging/delete/" + state.company)
-    .then(response => {
-      state.lodgings.forEach((l) => {
+    var mirrorLodging =  JSON.parse(state.mirrorLodging)
+    state.lodgings.forEach((l, index) => {
+      if(mirrorLodging[index] != l)
+      Axios.delete(api + "/lodging/delete/" + l.id)
+      .then(response => {
         Axios.post(api + "/lodging/create", {
           id: l.id,
           group: l.group,
@@ -98,18 +102,21 @@ const actions = {
           dispatch('fetchLodgings');
         })
         .catch(error => {
-          console.log(error)
+          commit('setErrorMessage', "Create lodging " + error)
         })
       })
+      .catch(error => {
+        commit('setErrorMessage', "Delete lodging " + error)
+      })
       commit('setLoading', false)
-    })
-    .catch(error => {
-      console.log(error)
     })
   }
 }
 
 const mutations = {
+  setErrorMessage(state, value) {
+    state.errorMessage = value
+  },
   setUpdatingService(state, value) {
     state.updatingService = value
   },
@@ -207,7 +214,7 @@ const mutations = {
     state.editMode = value
     if(!value) state.lodgingSelect = null
   },
-  createLodging(state, value) {
+  createOneLodging(state, value) {
     state.editMode = false
     state.lodgings.add({
       group: 1,
