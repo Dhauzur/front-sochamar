@@ -101,7 +101,7 @@ const actions = {
       console.log(l,mirrorLodging._data);
       //Si es diferente o si no existe
       if(mirrorLodging._data[id] != l || !mirrorLodging[id]) {
-        Axios.post(api + "/lodgings", {
+        Axios.post(api + "/lodging", {
           id: l.id,
           group: l.group,
           start: l.start,
