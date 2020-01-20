@@ -2,7 +2,7 @@
   <b-container id="nav">
     <b-row class="justify-content-center overflow-auto" style="max-height: 500px; overflow-y: auto;">
       <b-col >
-        <h5>Filtrar lugar de trabajos</h5>
+        <h5>Filtrar lugar de trabajos {{ totalFilter }}</h5>
         <input  type="text" name="filterWorkplace" v-model="filterWord" @keyup="filterWorkplace">
         <h4 v-if="activitiesFilter == 0">No existen trabajos</h4>
         <table v-else class="table  table-hover mt-2" >
@@ -56,7 +56,7 @@ import { mapGetters, mapMutations } from "vuex"
 export default {
   data() {
     return {
-      filterWord: ''
+      filterWord: '',
     }
   },
   mounted() {
@@ -66,10 +66,18 @@ export default {
     ...mapGetters({
       activities: "Maintenance/activities",
     }),
+    totalFilter() {
+      var totalFilter = 0
+      this.activitiesFilter.forEach((actFilter) => {
+        totalFilter = totalFilter + actFilter.ncamas
+      })
+      if(this.filterWord) return totalFilter
+      else return ''
+    },
     activitiesFilter() {
       if(this.filterWord) return this.activities.filter((act) =>
-        act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()) ||
-        act.date.toLowerCase().includes(this.filterWord.toLowerCase()))
+          act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()) ||
+          act.date.toLowerCase().includes(this.filterWord.toLowerCase()))
       else return this.activities
     }
   },
