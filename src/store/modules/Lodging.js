@@ -37,7 +37,7 @@ const getters = {
 const actions = {
   async deleteLodging({ commit, dispatch }, value) {
     commit('setLoading', 'Eliminando hospedaje...')
-    return Axios.delete(api + "/lodging/delete/company" + value.id)
+    return Axios.delete(api + "/lodging/delete/company/" + value.id)
     .then(response => {
       commit('setLoading', '')
       commit('setDeletLodging', value)
