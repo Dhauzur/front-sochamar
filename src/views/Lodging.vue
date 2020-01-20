@@ -4,7 +4,7 @@
       <ErrorMessage :msj="errorMessage"/>
     </b-col>
     <b-col >
-    <Loading v-if="loading" />
+    <Loading v-if="loading" :msj="'Cargando hospedajes...'"/>
     <template v-else >
       <b-row  class="mx-1">
         <b-col md="6" lg="5" xl="3">
@@ -36,7 +36,7 @@
             </b-col>
             <b-col class="mb-2">
               <b-dropdown id="dropdown-1" text="Acciones"   class="col-12">
-                <b-dropdown-item @click="createOneLodging()">Agregar hospedaje</b-dropdown-item>
+                <b-dropdown-item @click="createOneLodging()" v-if="company">Agregar hospedaje</b-dropdown-item>
                 <b-dropdown-item @click="$router.push({ name: 'grupos' })">Gestionar grupos</b-dropdown-item>
                 <b-dropdown-item @click="$router.push({ name: 'entidades' })">Gestionar entidades</b-dropdown-item>
               </b-dropdown>
