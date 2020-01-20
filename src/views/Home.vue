@@ -1,8 +1,11 @@
 <template>
   <b-container id="nav">
     <b-row class="justify-content-center overflow-auto" style="max-height: 500px; overflow-y: auto;">
-      <b-col >
-        <h5>Filtrar lugar de trabajos</h5>
+      <b-col v-if="loading">
+        <Loading  :msj="loading"/>
+      </b-col>
+      <b-col v-else>
+        <h5>Filtrar lugar de trabajos {{ totalFilter }}</h5>
         <input  type="text" name="filterWorkplace" v-model="filterWord" @keyup="filterWorkplace">
         <h4 v-if="activitiesFilter == 0">No existen trabajos</h4>
         <table v-else class="table  table-hover mt-2" >
@@ -17,7 +20,7 @@
           <tbody v-for="(act, index) in activitiesFilter" :key="index">
             <tr :class="{ 'bgRepeat': act.repeat, 'endWeek': endWeek(act, index)  }">
               <td style="min-width: 90px;">{{ act.date }}</td>
-              <td style="min-width: 120px;"><span v-if="act.repeat">Rep: </span>{{ act.workPlace }}</td>
+              <td style="min-width: 120px;">{{ act.workPlace }}</td>
               <td>{{ act.ncamas }}</td>
               <td>
                 <div class="listActivities" v-for="(acti, index) in act.whatWasDone" :key="index">
@@ -52,11 +55,15 @@
 <script>
 // @ is an alias to /src
 import { mapGetters, mapMutations } from "vuex"
+import Loading from '@/components/Loading'
 
 export default {
+  components: {
+    Loading,
+  },
   data() {
     return {
-      filterWord: ''
+      filterWord: '',
     }
   },
   mounted() {
@@ -65,9 +72,18 @@ export default {
   computed: {
     ...mapGetters({
       activities: "Maintenance/activities",
+      loading: "Maintenance/loading",
     }),
+    totalFilter() {
+      var totalFilter = 0
+      if(this.activitiesFilter && this.filterWord) {
+        this.activitiesFilter.forEach((actFilter) => totalFilter = totalFilter + actFilter.ncamas)
+        return totalFilter
+      }
+      else return ''
+    },
     activitiesFilter() {
-      if(this.filterWord) return this.activities.filter((act) => act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()))
+      if(this.filterWord) return this.activities.filter((act) => (act.date.toLowerCase() + ' ' + act.workPlace.toLowerCase()).includes(this.filterWord.toLowerCase()))
       else return this.activities
     }
   },

@@ -4,6 +4,7 @@ import moment from 'moment'
 import { DataSet }  from 'vue2vis';
 
 const state = {
+  errorMessage: '',
   updatingService: null,
   mirrorLodging: null,
   lodgingSelect: null,
@@ -20,6 +21,7 @@ const state = {
 }
 
 const getters = {
+  errorMessage: state => state.errorMessage,
   updatingService: state => state.updatingService,
   mirrorLodging: state => state.mirrorLodging,
   lodgingSelect: state => state.lodgingSelect,
@@ -33,60 +35,73 @@ const getters = {
 }
 
 const actions = {
+  async deleteLodging({ commit, dispatch }, value) {
+    commit('setLoading', 'Eliminando hospedaje...')
+    return Axios.delete(api + "/lodging/delete/company" + value.id)
+    .then(response => {
+      commit('setLoading', '')
+      commit('setDeletLodging', value)
+    })
+    .catch(error => {
+      commit('setErrorMessage', "Delete lodging " + error)
+    })
+  },
   async fetchCompany({ commit, dispatch }, value) {
     commit('setModeEdit', false)
     commit('setCompanies', null)
-    commit('setLoading', true)
+    commit('setLoading', 'Cargando entidades...')
     return Axios.get(api + "/company")
     .then(response => {
-      commit('setLoading', false)
+      commit('setLoading', '')
       commit('setCompanies', response.data.company)
       dispatch('fetchRooms');
     })
     .catch(error => {
       commit('setCompanies', null)
-      console.log(error)
+      commit('setErrorMessage', "Fetch company " + error)
     })
   },
 
   async fetchRooms({ commit, dispatch }, value) {
-    commit('setLoading', true)
+    commit('setLoading', 'Cargando grupos...')
     commit('setModeEdit', false)
     commit('setRooms', null)
     return Axios.get(api + "/rooms")
     .then(response => {
-      commit('setLoading', false)
+      commit('setLoading', '')
       commit('setRooms', response.data.rooms)
       dispatch('fetchLodgings');
     })
     .catch(error => {
       commit('setRooms', null)
-      console.log(error)
+      commit('setErrorMessage', "Fetch rooms " + error)
     })
   },
 
   async fetchLodgings({ commit }, value) {
-    commit('setLoading', true)
+    commit('setLoading', 'Cargando hospedajes...')
     commit('setModeEdit', false)
     commit('setLodgings', null)
     return Axios.get(api + "/lodgings")
     .then(response => {
-      commit('setLoading', false)
+      commit('setLoading', '')
       commit('setLodgings', response.data.lodgings)
     })
     .catch(error => {
       commit('setLodgings', null)
-      console.log(error)
+      commit('setErrorMessage', "Fetch lodgings " + error)
     })
   },
 
-  async createLodging({ commit, dispatch }) {
-    commit('setLoading', true)
+  async saveLodgings({ commit, dispatch }) {
     commit('setModeEdit', false)
-    Axios.delete(api + "/lodging/delete/" + state.company)
-    .then(response => {
-      state.lodgings.forEach((l) => {
-        Axios.post(api + "/lodging/create", {
+    commit('setLoading', 'Creando hospedajes...')
+    var mirrorLodging =  JSON.parse(state.mirrorLodging)
+    state.lodgings.forEach((l, id) => {
+      console.log(l,mirrorLodging._data);
+      //Si es diferente o si no existe
+      if(mirrorLodging._data[id] != l || !mirrorLodging[id]) {
+        Axios.post(api + "/lodging", {
           id: l.id,
           group: l.group,
           start: l.start,
@@ -94,22 +109,18 @@ const actions = {
           service: l.service[0],
           company: state.company
         })
-        .then(response => {
-          dispatch('fetchLodgings');
-        })
-        .catch(error => {
-          console.log(error)
-        })
-      })
-      commit('setLoading', false)
+        .then(response => state.mirrorLodging =  JSON.stringify(state.lodgings))
+        .catch(error => commit('setErrorMessage', "Create lodging " + error))
+      }
     })
-    .catch(error => {
-      console.log(error)
-    })
+    commit('setLoading', '')
   }
 }
 
 const mutations = {
+  setErrorMessage(state, value) {
+    state.errorMessage = value
+  },
   setUpdatingService(state, value) {
     state.updatingService = value
   },
@@ -119,13 +130,14 @@ const mutations = {
   setMirrorLodging(state, value) {
     state.mirrorLodging = value
   },
-  deleteLodging(state, value) {
+  setDeletLodging(state, value) {
     var tempLodgings = state.lodgings
     state.editMode = false
     state.lodgingSelect = null
     state.lodgings = new DataSet([])
     tempLodgings.remove(value.id)
     state.lodgings = tempLodgings
+    state.mirrorLodging =  JSON.stringify(state.lodgings)
   },
   dateChange(state, value) {
     var tempLodging = state.lodgingSelect
@@ -207,7 +219,7 @@ const mutations = {
     state.editMode = value
     if(!value) state.lodgingSelect = null
   },
-  createLodging(state, value) {
+  createOneLodging(state, value) {
     state.editMode = false
     state.lodgings.add({
       group: 1,
@@ -287,6 +299,7 @@ const mutations = {
       // tempLodging.on('*', function (event, properties, senderId) {
       //   if(event == 'remove') tempLodging.remove(properties.items);                                 // triggers an 'remove' event
       // });
+      console.log(value);
       value.forEach((v) => {
         if(state.company) {
           if(state.company == v.company) tempLodging.add({

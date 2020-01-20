@@ -3,12 +3,14 @@ import Axios from 'axios';
 import moments from 'moment'
 
 const state = {
+  loading: false,
   activity: null,
   activities: [],
   filterWord: ''
 }
 
 const getters = {
+  loading: state => state.loading,
   activity: state => state.activity,
   activities: state => {
     const dates = new Set();
@@ -20,7 +22,11 @@ const getters = {
         beds.add(act.workPlace + ' ' + moments(act.date).format("YYYY-MM-DD"))
         act.repeat = false
       }
-      else act.repeat = true
+      else {
+        act.repeat = true
+        act.workPlace = 'Rep: ' + act.workPlace
+      }
+
     })
     dates.forEach((date) => {
       var numberTotal = 0
@@ -50,8 +56,10 @@ const getters = {
 const actions = {
   async fetchActivities ({ commit }) {
     try {
+      commit('setLoading', 'Cargando actividades...')
       return Axios.get(api + "/activities")
           .then(response => {
+            commit('setLoading', '')
             commit('setActivities', response.data);
             return true
           })
@@ -65,6 +73,9 @@ const actions = {
 }
 
 const mutations = {
+  setLoading(state, value) {
+    state.loading = value
+  },
   setActivities(state, value) {
     state.activities = value
   },

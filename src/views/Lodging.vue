@@ -1,142 +1,155 @@
 <template>
-  <b-row id="nav" class="justify-content-center">
+  <b-row id="nav" >
+    <b-col v-if="errorMessage" cols="12" class="mb-2">
+      <ErrorMessage :msj="errorMessage"/>
+    </b-col>
     <b-col >
-    <Loading v-if="loading" />
-    <template v-else >
-      <b-row class="mx-1">
-        <div>
-          <label class="text-white">Selecione entidad</label>
-          <b-form-select v-model="selectCompany"
-                       @change="setCompany"
-                       :options="companies"
-                       size="sm"
-                       class="col-5 m-3"/>
-          <b-button v-if="lodgings.length == 0 && company"
-                  @click="createLodging()"
-                  size="sm"
-                  variant="primary" >
-                  Crear hospedaje
-          </b-button>
-        </div>
-        <div>
-          <b-dropdown class="m-3"  variant="primary" id="dropdown-1" text="Acciones" size="sm">
-            <b-dropdown-item @click="createLodging()">Agregar hospedaje</b-dropdown-item>
-            <b-dropdown-item @click="$router.push({ name: 'grupos' })">Gestionar grupos</b-dropdown-item>
-            <b-dropdown-item @click="$router.push({ name: 'entidades' })">Gestionar entidades</b-dropdown-item>
-          </b-dropdown>
-        </div>
-      </b-row>
-      <b-row>
-        <b-col>
-        <timeline class="p-2"
-          v-if="rooms.length > 0 && lodgings.length > 0"
-          @rangechanged="rangechanged"
-          @click="enableEdit"
-          :items="lodgings"
-          :events="['rangechanged', 'click']"
-          :groups="rooms"
-          :options="options"/>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col class="px-4 overflow-auto">
-          <table class="table table-bordered ">
-            <thead>
-              <tr>
-                <td>Actividad</td>
-                <td v-if="company">Precios</td>
-                <td v-for="(d, index) in rangeDateTable" :key="index">
-                  {{ d.numberDay }}
-                  <br>
-                  {{ d.nameDay }}
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>ALOJAMIENTO</td>
-                <td v-if="company">{{ prices.prices[3] }}</td>
-                <td v-for="(p, index) in proyectionTable" :key="index">
-                  <span v-if="!editMode">{{ p.service.accommodation }}</span>
-                  <input v-if="editMode && p.service.accommodation !== null"
-                         type="number"
-                         class="inputService"
-                         name="accommodation"
-                         :id="p.id + ',' + p.date"
-                         @change="detectInputChange"
-                         v-model="p.service.accommodation"
-                         :placeholder="p.service.accommodation">
-                </td>
-              </tr>
-              <tr>
-                <td>DESAYUNO</td>
-                <td v-if="company">{{ prices.prices[0] }}</td>
-                <td v-for="(p, index) in proyectionTable" :key="index">
-                  <span v-if="!editMode">{{ p.service.breakfast }}</span>
-                  <input v-if="editMode && p.service.breakfast !== null"
-                         type="number"
-                         class="inputService"
-                         name="breakfast"
-                         :id="p.id + ',' + p.date"
-                         @change="detectInputChange"
-                         v-model="p.service.breakfast"
-                         :placeholder="p.service.breakfast">
-                </td>
-              </tr>
-              <tr>
-                <td>ALMUERZO</td>
-                <td v-if="company">{{ prices.prices[1] }}</td>
-                <td v-for="(p, index) in proyectionTable" :key="index">
-                  <span v-if="!editMode">{{ p.service.lunch }}</span>
-                  <input v-if="editMode && p.service.lunch !== null"
-                         type="number"
-                         class="inputService"
-                         name="lunch"
-                         :id="p.id + ',' + p.date"
-                         @change="detectInputChange"
-                         v-model="p.service.lunch"
-                         :placeholder="p.service.lunch">
-                </td>
-              </tr>
-              <tr>
-                <td>CENA</td>
-                <td v-if="company">{{ prices.prices[2] }}</td>
-                <td v-for="(p, index) in proyectionTable" :key="index">
-                  <span v-if="!editMode">{{ p.service.dinner }}</span>
-                  <input v-if="editMode && p.service.dinner !== null"
-                         type="number"
-                         class="inputService"
-                         name="dinner"
-                         :id="p.id + ',' + p.date"
-                         @change="detectInputChange"
-                         v-model="p.service.dinner"
-                         :placeholder="p.service.dinner">
-                </td>
-              </tr>
-              <tr v-if="company" >
-                <td  colspan="2">TOTAL</td>
-                <td v-for="(p, index) in proyectionTable" :key="index">{{ finalyPrice[index] }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </b-col>
-      </b-row>
+      <Loading v-if="loading" :msj="loading"/>
+      <template v-else >
+        <b-row  class="mx-1">
+          <b-col md="6" lg="5" xl="3">
+            <b-row>
+              <b-col cols="12" class="mb-2">
+                <label>Selecione entidad</label>
+              </b-col>
+              <b-col cols="12" class="mb-2">
+                <b-form-select v-model="selectCompany"
+                             @change="setCompany"
+                             :options="companies"
+                             class="col-sm-6 col-md-12 "
+                             />
+              </b-col>
+              <b-col cols="12" class="mb-2" v-if="lodgings.length == 0 && company">
+                <b-button
+                        @click="createOneLodging()"
+                        class="col-12"
+                        variant="primary">
+                        Crear hospedaje
+                </b-button>
+              </b-col>
+              <b-col cols="12"  class="mb-2" v-if="getMirrorLodging || editMode">
+                <button type="button"
+                      class="btn btn-primary btn-block"
+                      @click="saveLodging()">
+                  Guardar
+                </button>
+              </b-col>
+              <b-col cols="12"   class="mb-2">
+                <b-dropdown id="dropdown-1" text="Acciones"   class="col-12">
+                  <b-dropdown-item @click="createOneLodging()" v-if="company">Agregar hospedaje</b-dropdown-item>
+                  <b-dropdown-item @click="$router.push({ name: 'grupos' })">Gestionar grupos</b-dropdown-item>
+                  <b-dropdown-item @click="$router.push({ name: 'entidades' })">Gestionar entidades</b-dropdown-item>
+                </b-dropdown>
+              </b-col>
 
-      <b-row>
-        <b-col class=" px-4">
-          <button v-if="getMirrorLodging || editMode"  type="button" class="btn btn-primary mt-2 ml-2" @click="saveLodging()">
-            Guardar
-          </button>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col class=" px-4">
-          <EditLodging v-if="lodgingSelect"/>
-        </b-col>
-      </b-row>
-    </template>
-
-  </b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col cols="12" xl="8">
+            <b-row>
+              <b-col cols="12">
+              <timeline class="p-2 col-12"
+                v-if="rooms.length > 0 && lodgings.length > 0"
+                @rangechanged="rangechanged"
+                @click="enableEdit"
+                :items="lodgings"
+                :events="['rangechanged', 'click']"
+                :groups="rooms"
+                :options="options"/>
+              </b-col>
+              <b-col cols="12" class="px-4 overflow-auto">
+                <table class="table table-bordered ">
+                  <thead>
+                    <tr>
+                      <td>Actividad</td>
+                      <td v-if="company">Precios</td>
+                      <td v-for="(d, index) in rangeDateTable" :key="index">
+                        {{ d.numberDay }}
+                        <br>
+                        {{ d.nameDay }}
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>ALOJAMIENTO</td>
+                      <td v-if="company">{{ prices.prices[3] }}</td>
+                      <td v-for="(p, index) in proyectionTable" :key="index">
+                        <span v-if="!editMode">{{ p.service.accommodation }}</span>
+                        <input v-if="editMode && p.service.accommodation !== null"
+                               type="number"
+                               class="inputService"
+                               name="accommodation"
+                               :id="p.id + ',' + p.date"
+                               @change="detectInputChange"
+                               v-model="p.service.accommodation"
+                               :placeholder="p.service.accommodation">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>DESAYUNO</td>
+                      <td v-if="company">{{ prices.prices[0] }}</td>
+                      <td v-for="(p, index) in proyectionTable" :key="index">
+                        <span v-if="!editMode">{{ p.service.breakfast }}</span>
+                        <input v-if="editMode && p.service.breakfast !== null"
+                               type="number"
+                               class="inputService"
+                               name="breakfast"
+                               :id="p.id + ',' + p.date"
+                               @change="detectInputChange"
+                               v-model="p.service.breakfast"
+                               :placeholder="p.service.breakfast">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>ALMUERZO</td>
+                      <td v-if="company">{{ prices.prices[1] }}</td>
+                      <td v-for="(p, index) in proyectionTable" :key="index">
+                        <span v-if="!editMode">{{ p.service.lunch }}</span>
+                        <input v-if="editMode && p.service.lunch !== null"
+                               type="number"
+                               class="inputService"
+                               name="lunch"
+                               :id="p.id + ',' + p.date"
+                               @change="detectInputChange"
+                               v-model="p.service.lunch"
+                               :placeholder="p.service.lunch">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>CENA</td>
+                      <td v-if="company">{{ prices.prices[2] }}</td>
+                      <td v-for="(p, index) in proyectionTable" :key="index">
+                        <span v-if="!editMode">{{ p.service.dinner }}</span>
+                        <input v-if="editMode && p.service.dinner !== null"
+                               type="number"
+                               class="inputService"
+                               name="dinner"
+                               :id="p.id + ',' + p.date"
+                               @change="detectInputChange"
+                               v-model="p.service.dinner"
+                               :placeholder="p.service.dinner">
+                      </td>
+                    </tr>
+                    <tr v-if="company" >
+                      <td  colspan="2">TOTAL</td>
+                      <td v-for="(p, index) in proyectionTable" :key="index">{{ finalyPrice[index] }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="12" xl="4">
+            <EditLodging v-if="lodgingSelect"/>
+          </b-col>
+        </b-row>
+        <b-row>
+        </b-row>
+      </template>
+      {{ mirrorLodging }}
+    </b-col>
   </b-row>
 </template>
 
@@ -146,12 +159,14 @@ import moment from "moment"
 import { mapGetters, mapMutations } from 'vuex';
 import Loading from '@/components/Loading'
 import EditLodging from '@/components/EditLodging'
+import ErrorMessage from '@/components/ErrorMessage'
 
 export default {
   components: {
     Timeline,
     Loading,
-    EditLodging
+    EditLodging,
+    ErrorMessage
   },
   created() {
     this.$store.dispatch("Lodging/fetchCompany")
@@ -163,6 +178,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      errorMessage: 'Lodging/errorMessage',
       updatingService: 'Lodging/updatingService',
       mirrorLodging: 'Lodging/mirrorLodging',
       lodgingSelect: 'Lodging/lodgingSelect',
@@ -183,10 +199,10 @@ export default {
       var prices = []
       var dayPrice = 0
       if(this.company) this.proyectionTable.forEach((dailyService) => {
-        dayPrice =  (dailyService.service.breakfast ? dailyService.service.breakfast * this.prices.prices[0] : '0') +
-                    (dailyService.service.lunch ? dailyService.service.lunch * this.prices.prices[1] : '0') +
-                    (dailyService.service.dinner ? dailyService.service.dinner * this.prices.prices[2] : '0') +
-                    (dailyService.service.accommodation ? dailyService.service.accommodation * this.prices.prices[3] : '0')
+        dayPrice =  (dailyService.service.breakfast ? dailyService.service.breakfast * this.prices.prices[0] : 0) +
+                    (dailyService.service.lunch ? dailyService.service.lunch * this.prices.prices[1] : 0) +
+                    (dailyService.service.dinner ? dailyService.service.dinner * this.prices.prices[2] : 0) +
+                    (dailyService.service.accommodation ? dailyService.service.accommodation * this.prices.prices[3] : 0)
         if(dayPrice == '0000') dayPrice = 0
         prices.push(dayPrice)
       })
@@ -281,7 +297,7 @@ export default {
         onRemove: (item, callback) => {
           if(this.lodgings.length > 1 && this.company) {
             this.setModeEdit(false)
-            this.$store.commit("Lodging/deleteLodging", item)
+            this.$store.dispatch("Lodging/deleteLodging", item)
             callback(item)
           }
         },
@@ -299,7 +315,7 @@ export default {
             }).toLowerCase()
             item.id = timestamp
             this.$store.commit("Lodging/addLodging", item)
-            callback(item); // send back adjusted new item
+            if(!this.lodgings.get(item.id)) callback(item);
           }
         },
         onMove: (item, callback) => {
@@ -331,7 +347,7 @@ export default {
     setCompany(payload) {
       this.setCompanyLodging(payload)
       this.setModeEdit(false)
-      this.$store.dispatch("Lodging/fetchCompany")
+      this.$store.dispatch("Lodging/fetchLodgings")
     },
     detectInputChange(payload) {
       if(payload.target.value == '' || payload.target.value == 0) payload.target.value = 0
@@ -345,7 +361,7 @@ export default {
       else this.setModeEdit(false)
     },
     saveLodging() {
-      if(this.company) this.$store.dispatch("Lodging/createLodging")
+      if(this.company) this.$store.dispatch("Lodging/saveLodgings")
     },
     rangechanged(payload) {
       if(payload) {
@@ -356,12 +372,13 @@ export default {
       }
     },
     ...mapMutations({
+      createOneLodging: 'Lodging/createOneLodging',
       addLodging: 'Lodging/addLodging',
       setLodgingSelect: 'Lodging/setLodgingSelect',
       setRangeDate: 'Lodging/setRangeDate',
       updateService: 'Lodging/updateService',
       setCompanyLodging: 'Lodging/setCompanyLodging',
-      createLodging: 'Lodging/createLodging',
+      saveLodgings: 'Lodging/saveLodgings',
       setModeEdit: 'Lodging/setModeEdit'
     }),
   }
