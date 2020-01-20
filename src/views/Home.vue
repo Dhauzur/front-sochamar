@@ -20,7 +20,7 @@
           <tbody v-for="(act, index) in activitiesFilter" :key="index">
             <tr :class="{ 'bgRepeat': act.repeat, 'endWeek': endWeek(act, index)  }">
               <td style="min-width: 90px;">{{ act.date }}</td>
-              <td style="min-width: 120px;"><span v-if="act.repeat">Rep: </span>{{ act.workPlace }}</td>
+              <td style="min-width: 120px;">{{ act.workPlace }}</td>
               <td>{{ act.ncamas }}</td>
               <td>
                 <div class="listActivities" v-for="(acti, index) in act.whatWasDone" :key="index">
@@ -78,14 +78,12 @@ export default {
       var totalFilter = 0
       if(this.activitiesFilter && this.filterWord) {
         this.activitiesFilter.forEach((actFilter) => totalFilter = totalFilter + actFilter.ncamas)
-        return totalFilter 
+        return totalFilter
       }
       else return ''
     },
     activitiesFilter() {
-      if(this.filterWord) return this.activities.filter((act) =>
-          act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()) ||
-          act.date.toLowerCase().includes(this.filterWord.toLowerCase()))
+      if(this.filterWord) return this.activities.filter((act) => (act.date.toLowerCase() + ' ' + act.workPlace.toLowerCase()).includes(this.filterWord.toLowerCase()))
       else return this.activities
     }
   },

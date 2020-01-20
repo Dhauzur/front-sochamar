@@ -22,7 +22,11 @@ const getters = {
         beds.add(act.workPlace + ' ' + moments(act.date).format("YYYY-MM-DD"))
         act.repeat = false
       }
-      else act.repeat = true
+      else {
+        act.repeat = true
+        act.workPlace = 'Rep: ' + act.workPlace
+      }
+
     })
     dates.forEach((date) => {
       var numberTotal = 0
