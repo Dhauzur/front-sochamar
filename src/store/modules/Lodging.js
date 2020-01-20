@@ -86,6 +86,7 @@ const actions = {
     commit('setLoading', true)
     commit('setModeEdit', false)
     var mirrorLodging =  JSON.parse(state.mirrorLodging)
+    console.log("Mirror", mirrorLodging);
     state.lodgings.forEach((l, index) => {
       if(mirrorLodging[index] != l && mirrorLodging[index])
       Axios.delete(api + "/lodging/delete/" + l.id)
@@ -98,34 +99,21 @@ const actions = {
           service: l.service[0],
           company: state.company
         })
-        .then(response => {
-          dispatch('fetchLodgings');
-        })
-        .catch(error => {
-          commit('setErrorMessage', "Create lodging " + error)
-        })
+        .catch(error => commit('setErrorMessage', "Create lodging " + error))
       })
-      .catch(error => {
-        commit('setErrorMessage', "Delete lodging " + error)
+      .catch(error => commit('setErrorMessage', "Delete lodging " + error))
+      else Axios.post(api + "/lodging/create", {
+        id: l.id,
+        group: l.group,
+        start: l.start,
+        end: l.end,
+        service: l.service[0],
+        company: state.company
       })
-      else
-        Axios.post(api + "/lodging/create", {
-          id: l.id,
-          group: l.group,
-          start: l.start,
-          end: l.end,
-          service: l.service[0],
-          company: state.company
-        })
-        .then(response => {
-          dispatch('fetchLodgings');
-        })
-        .catch(error => {
-          commit('setErrorMessage', "Create lodging " + error)
-        })
-
-      commit('setLoading', false)
+      .catch(error => commit('setErrorMessage', "Create lodging " + error))
     })
+    dispatch('fetchLodgings');
+    commit('setLoading', false)
   }
 }
 
