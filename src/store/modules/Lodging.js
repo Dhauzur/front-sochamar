@@ -35,13 +35,24 @@ const getters = {
 }
 
 const actions = {
+  async deleteLodging({ commit, dispatch }, value) {
+    commit('setLoading', 'Eliminando hospedaje...')
+    return Axios.delete(api + "/lodging/delete/company" + value.id)
+    .then(response => {
+      commit('setLoading', '')
+      commit('setDeletLodging', value)
+    })
+    .catch(error => {
+      commit('setErrorMessage', "Delete lodging " + error)
+    })
+  },
   async fetchCompany({ commit, dispatch }, value) {
     commit('setModeEdit', false)
     commit('setCompanies', null)
-    commit('setLoading', true)
+    commit('setLoading', 'Cargando entidades...')
     return Axios.get(api + "/company")
     .then(response => {
-      commit('setLoading', false)
+      commit('setLoading', '')
       commit('setCompanies', response.data.company)
       dispatch('fetchRooms');
     })
@@ -52,12 +63,12 @@ const actions = {
   },
 
   async fetchRooms({ commit, dispatch }, value) {
-    commit('setLoading', true)
+    commit('setLoading', 'Cargando grupos...')
     commit('setModeEdit', false)
     commit('setRooms', null)
     return Axios.get(api + "/rooms")
     .then(response => {
-      commit('setLoading', false)
+      commit('setLoading', '')
       commit('setRooms', response.data.rooms)
       dispatch('fetchLodgings');
     })
@@ -68,12 +79,12 @@ const actions = {
   },
 
   async fetchLodgings({ commit }, value) {
-    commit('setLoading', true)
+    commit('setLoading', 'Cargando hospedajes...')
     commit('setModeEdit', false)
     commit('setLodgings', null)
     return Axios.get(api + "/lodgings")
     .then(response => {
-      commit('setLoading', false)
+      commit('setLoading', '')
       commit('setLodgings', response.data.lodgings)
     })
     .catch(error => {
@@ -82,16 +93,15 @@ const actions = {
     })
   },
 
-  async createLodging({ commit, dispatch }) {
-    commit('setLoading', true)
+  async saveLodgings({ commit, dispatch }) {
     commit('setModeEdit', false)
+    commit('setLoading', 'Creando hospedajes...')
     var mirrorLodging =  JSON.parse(state.mirrorLodging)
-    console.log("Mirror", mirrorLodging);
-    state.lodgings.forEach((l, index) => {
-      if(mirrorLodging[index] != l && mirrorLodging[index])
-      Axios.delete(api + "/lodging/delete/" + l.id)
-      .then(response => {
-        Axios.post(api + "/lodging/create", {
+    state.lodgings.forEach((l, id) => {
+      console.log(l,mirrorLodging._data);
+      //Si es diferente o si no existe
+      if(mirrorLodging._data[id] != l || !mirrorLodging[id]) {
+        Axios.post(api + "/lodgings", {
           id: l.id,
           group: l.group,
           start: l.start,
@@ -99,21 +109,11 @@ const actions = {
           service: l.service[0],
           company: state.company
         })
+        .then(response => state.mirrorLodging =  JSON.stringify(state.lodgings))
         .catch(error => commit('setErrorMessage', "Create lodging " + error))
-      })
-      .catch(error => commit('setErrorMessage', "Delete lodging " + error))
-      else Axios.post(api + "/lodging/create", {
-        id: l.id,
-        group: l.group,
-        start: l.start,
-        end: l.end,
-        service: l.service[0],
-        company: state.company
-      })
-      .catch(error => commit('setErrorMessage', "Create lodging " + error))
+      }
     })
-    dispatch('fetchLodgings');
-    commit('setLoading', false)
+    commit('setLoading', '')
   }
 }
 
@@ -130,13 +130,14 @@ const mutations = {
   setMirrorLodging(state, value) {
     state.mirrorLodging = value
   },
-  deleteLodging(state, value) {
+  setDeletLodging(state, value) {
     var tempLodgings = state.lodgings
     state.editMode = false
     state.lodgingSelect = null
     state.lodgings = new DataSet([])
     tempLodgings.remove(value.id)
     state.lodgings = tempLodgings
+    state.mirrorLodging =  JSON.stringify(state.lodgings)
   },
   dateChange(state, value) {
     var tempLodging = state.lodgingSelect
@@ -298,6 +299,7 @@ const mutations = {
       // tempLodging.on('*', function (event, properties, senderId) {
       //   if(event == 'remove') tempLodging.remove(properties.items);                                 // triggers an 'remove' event
       // });
+      console.log(value);
       value.forEach((v) => {
         if(state.company) {
           if(state.company == v.company) tempLodging.add({

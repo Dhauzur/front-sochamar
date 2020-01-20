@@ -68,4 +68,25 @@
   box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
   background-color: white !important;
 }
+
+/* width */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #8c878745;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #8c8787;
+
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #231704d9;
+}
 </style>

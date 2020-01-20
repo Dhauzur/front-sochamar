@@ -21,7 +21,7 @@
     props: ['msj'],
     data() {
       return {
-        dismissSecs: 10,
+        dismissSecs: 25,
         dismissCountDown: 0,
         showDismissibleAlert: false
       }

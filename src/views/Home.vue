@@ -67,7 +67,9 @@ export default {
       activities: "Maintenance/activities",
     }),
     activitiesFilter() {
-      if(this.filterWord) return this.activities.filter((act) => act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()))
+      if(this.filterWord) return this.activities.filter((act) =>
+        act.workPlace.toLowerCase().includes(this.filterWord.toLowerCase()) ||
+        act.date.toLowerCase().includes(this.filterWord.toLowerCase()))
       else return this.activities
     }
   },
