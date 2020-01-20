@@ -1,7 +1,10 @@
 <template>
   <b-container id="nav">
     <b-row class="justify-content-center overflow-auto" style="max-height: 500px; overflow-y: auto;">
-      <b-col >
+      <b-col v-if="loading">
+        <Loading  :msj="loading"/>
+      </b-col>
+      <b-col v-else>
         <h5>Filtrar lugar de trabajos {{ totalFilter }}</h5>
         <input  type="text" name="filterWorkplace" v-model="filterWord" @keyup="filterWorkplace">
         <h4 v-if="activitiesFilter == 0">No existen trabajos</h4>
@@ -52,8 +55,12 @@
 <script>
 // @ is an alias to /src
 import { mapGetters, mapMutations } from "vuex"
+import Loading from '@/components/Loading'
 
 export default {
+  components: {
+    Loading,
+  },
   data() {
     return {
       filterWord: '',
@@ -65,13 +72,14 @@ export default {
   computed: {
     ...mapGetters({
       activities: "Maintenance/activities",
+      loading: "Maintenance/loading",
     }),
     totalFilter() {
       var totalFilter = 0
-      this.activitiesFilter.forEach((actFilter) => {
-        totalFilter = totalFilter + actFilter.ncamas
-      })
-      if(this.filterWord) return totalFilter
+      if(this.activitiesFilter && this.filterWord) {
+        this.activitiesFilter.forEach((actFilter) => totalFilter = totalFilter + actFilter.ncamas)
+        return totalFilter 
+      }
       else return ''
     },
     activitiesFilter() {
