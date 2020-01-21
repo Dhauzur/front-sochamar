@@ -89,4 +89,9 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #231704d9;
 }
+
+.background-module {
+  background-color: #c4c1dc61;
+  border-radius: 20px;
+}
 </style>

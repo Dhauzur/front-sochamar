@@ -3,13 +3,13 @@
     <b-col v-if="errorMessage" cols="12" class="mb-2">
       <ErrorMessage :msj="errorMessage"/>
     </b-col>
-    <b-col >
+    <b-col class="background-module">
       <Loading v-if="loading" :msj="loading"/>
       <template v-else >
         <b-row  class="mx-1">
           <b-col md="6" lg="5" xl="3">
             <b-row>
-              <b-col cols="12" class="mb-2">
+              <b-col cols="12" class="my-2">
                 <label>Selecione entidad</label>
               </b-col>
               <b-col cols="12" class="mb-2">
@@ -148,7 +148,6 @@
         <b-row>
         </b-row>
       </template>
-      {{ mirrorLodging }}
     </b-col>
   </b-row>
 </template>
@@ -268,7 +267,6 @@ export default {
   },
   data() {
     return {
-      JSONlodging: null,
       selectCompany: null,
       options: {
         stack: true,
