@@ -57,8 +57,25 @@
             {{ companySelected }}
           </b-col>
         </b-row>
-        <b-row class="mx-1">
-          dfdf
+        <b-row class="mx-1" >
+          <b-col lg="8">
+            Nombre
+            <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+            <br>
+            <h4>Precios</h4>
+            <b-row>
+              <b-col>
+                <b-form-input class="col-6" v-model="text" placeholder="Enter your name"></b-form-input>
+                <b-form-input class="col-6" v-model="text" placeholder="Enter your name"></b-form-input>
+                <b-form-input class="col-6" v-model="text" placeholder="Enter your name"></b-form-input>
+                <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col lg="4">
+            RUT
+            <b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+          </b-col>
         </b-row>
       </b-col >
     </b-row >
