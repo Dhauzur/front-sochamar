@@ -16,6 +16,11 @@
                 Enviar trabajo
               </router-link>
             </b-nav-text>
+            <b-nav-text class="mr-3" >
+              <router-link to="/informe">
+                Enviar informe
+              </router-link>
+            </b-nav-text>
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
@@ -93,5 +98,6 @@
 .background-module {
   background-color: #c4c1dc61;
   border-radius: 20px;
+  padding-top: 20px;
 }
 </style>
