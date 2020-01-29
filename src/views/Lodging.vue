@@ -224,12 +224,23 @@ export default {
         var index = 0
         if(!this.editMode) daysLodging.forEach((day) => {
           if(moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) && moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))) {
-            var service = JSON.parse(l.service[0])
-            day.service = {
-              breakfast: day.service.breakfast ? service[index][0] + day.service.breakfast : service[index][0],
-              lunch: day.service.lunch ? service[index][1] + day.service.lunch : service[index][1] ,
-              dinner: day.service.dinner ? service[index][2] + day.service.dinner : service[index][2] ,
-              accommodation: day.service.accommodation ? service[index][3] + day.service.accommodation : service[index][3]
+            if(this.companies.find(c => c.value == l.company).text == 'Turismo') {
+              var numberPassangerMax = this.rooms.get(l.group).numberPassangerMax
+              day.service = {
+                breakfast: day.service.breakfast ? numberPassangerMax + day.service.breakfast : numberPassangerMax,
+                lunch: day.service.lunch ? numberPassangerMax + day.service.lunch : numberPassangerMax ,
+                dinner: day.service.dinner ? numberPassangerMax + day.service.dinner : numberPassangerMax ,
+                accommodation: day.service.accommodation ? numberPassangerMax + day.service.accommodation : numberPassangerMax
+              }
+            }
+            else {
+              var service = JSON.parse(l.service[0])
+              day.service = {
+                breakfast: day.service.breakfast ? service[index][0] + day.service.breakfast : service[index][0],
+                lunch: day.service.lunch ? service[index][1] + day.service.lunch : service[index][1] ,
+                dinner: day.service.dinner ? service[index][2] + day.service.dinner : service[index][2] ,
+                accommodation: day.service.accommodation ? service[index][3] + day.service.accommodation : service[index][3]
+              }
             }
             index++
           }
@@ -306,7 +317,8 @@ export default {
             item.start = moment(item.start).hours(16)
             item.end = moment(item.start).hours(12).add(1, 'day')
             item.content = item.group + 'Hab.'
-            item.service = ["[[1,1,1,1],[1,1,1,1]]"]
+            if(!this.companies.find(c => c.value == this.company).text == 'Turismo') item.service = ["[[1,1,1,1],[1,1,1,1]]"]
+            else item.service = ["[[0,0,0,0],[0,0,0,0]]"]
             var timestamp = (new Date().getTime()).toString(16);
             timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {
                 return (Math.random() * 16 | 0).toString(16);
@@ -334,7 +346,7 @@ export default {
           item.end = moment(item.end).hours(12)
           this.setModeEdit(true)
           if(this.company) {
-            this.$store.commit("Lodging/updateService", item)
+            this.updateService(item)
             callback(item);
           }
         },

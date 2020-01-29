@@ -221,11 +221,21 @@ const mutations = {
   },
   createOneLodging(state, value) {
     state.editMode = false
-    state.lodgings.add({
+    var company = state.companies.find(c => c.value == state.company)
+    if(company.text == 'Turismo')
+      state.lodgings.add({
+        group: 1,
+        start: moment().hours(16),
+        end: moment().hours(13).add(1, 'day'),
+        content: company.text,
+        service: ["[[0,0,0,0],[0,0,0,0]]"],
+        company: state.company
+      })
+    else state.lodgings.add({
       group: 1,
       start: moment().hours(16),
       end: moment().hours(13).add(1, 'day'),
-      content: 1 + ' Hab',
+      content: company.text,
       service: ["[[1,1,1,1],[1,1,1,1]]"],
       company: state.company
     })
@@ -301,13 +311,14 @@ const mutations = {
       // });
       console.log(value);
       value.forEach((v) => {
+        var company = state.companies.find(c => c.value == v.company)
         if(state.company) {
           if(state.company == v.company) tempLodging.add({
             id: v.id,
             group: v.group,
             start: moment(v.start).hours(16),
             end: moment(v.end).hours(13),
-            content: v.group + ' Hab',
+            content: company.text,
             service: v.service,
             company: v.company
           })
@@ -317,7 +328,7 @@ const mutations = {
           group: v.group,
           start: moment(v.start).hours(16),
           end: moment(v.end).hours(13),
-          content: v.group + ' Hab',
+          content: company.text,
           service: v.service,
           company: v.company
         })
