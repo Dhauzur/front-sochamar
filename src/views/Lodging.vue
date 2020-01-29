@@ -224,7 +224,7 @@ export default {
         var index = 0
         if(!this.editMode) daysLodging.forEach((day) => {
           if(moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) && moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))) {
-            if(this.companies.find(c => c.value == l.company).text == 'Turismo') {
+            if(!this.company && this.companies.find(c => c.value == l.company).text == 'Turismo') {
               var numberPassangerMax = this.rooms.get(l.group).numberPassangerMax
               day.service = {
                 breakfast: day.service.breakfast ? numberPassangerMax + day.service.breakfast : numberPassangerMax,
