@@ -316,8 +316,9 @@ export default {
             item.group = item.group
             item.start = moment(item.start).hours(16)
             item.end = moment(item.start).hours(12).add(1, 'day')
-            item.content = item.group + 'Hab.'
-            if(!this.companies.find(c => c.value == this.company).text == 'Turismo') item.service = ["[[1,1,1,1],[1,1,1,1]]"]
+            var company = this.companies.find(c => c.value == this.company).text
+            item.content = company
+            if(company != 'Turismo') item.service = ["[[1,1,1,1],[1,1,1,1]]"]
             else item.service = ["[[0,0,0,0],[0,0,0,0]]"]
             var timestamp = (new Date().getTime()).toString(16);
             timestamp + 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, function() {

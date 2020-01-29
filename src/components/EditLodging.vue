@@ -67,7 +67,7 @@
           </button>
         </b-col>
         <b-col lg="4" xl="12">
-          <button   type="button" class="btn btn-danger btn-md mt-2  btn-block" @click="deleteLodging()">
+          <button   type="button" class="btn btn-danger btn-md mt-2  btn-block" @click="deleteLodging(lodgingSelect)">
             Eliminar
           </button>
         </b-col>
@@ -78,7 +78,7 @@
 
 <script>
 import moment from "moment"
-import { mapMutations, mapGetters } from 'vuex';
+import { mapMutations, mapGetters, mapActions } from 'vuex';
 
 export default {
   data() {
@@ -108,11 +108,13 @@ export default {
     saveLodging() {
       this.$store.dispatch("Lodging/createLodging")
     },
+    ...mapActions({
+      deleteLodging: 'Lodging/deleteLodging'
+    }),
     ...mapMutations({
       addOneService: 'Lodging/addOneService',
       subOneService: 'Lodging/subOneService',
       dateChange: 'Lodging/dateChange',
-      deleteLodging: 'Lodging/deleteLodging'
     }),
   }
 }
