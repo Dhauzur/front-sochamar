@@ -1,12 +1,9 @@
 <template lang="html">
-  <h1>dsfsd</h1>
-
+	<h1>dsfsd</h1>
 </template>
 
 <script>
-export default {
-}
+export default {};
 </script>
 
-<style lang="css" scoped>
-</style>
+<style lang="css" scoped></style>
