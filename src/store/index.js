@@ -7,9 +7,9 @@ import Entity from './modules/Entity';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: {
-    Lodging,
-    Maintenance,
-    Entity
-  },
+	modules: {
+		Lodging,
+		Maintenance,
+		Entity,
+	},
 });
