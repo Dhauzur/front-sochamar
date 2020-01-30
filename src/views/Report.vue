@@ -66,7 +66,9 @@ export default {
       members: [
         { text: 'Selecione su nombre', value: '', disabled: true},
         'Jesus',
-        'Javier'],
+        'Javier'
+        'Mauro',
+        'Otro'],
       show: true,
       reports: []
     }
