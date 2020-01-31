@@ -1,9 +1,25 @@
 <template lang="html">
-	<h1>login template works</h1>
+	<b-button @click="login(loginData)">Probemos el login con credenciales ya definidas</b-button>
 </template>
 
 <script>
-export default {};
+import { mapActions } from 'vuex';
+
+export default {
+	data() {
+		return {
+			loginData: {
+				email: 'prueba@prueba.cl',
+				password: 'asd',
+			},
+		};
+	},
+	methods: {
+		...mapActions({
+			login: 'Auth/login',
+		}),
+	},
+};
 </script>
 
 <style lang="css" scoped></style>

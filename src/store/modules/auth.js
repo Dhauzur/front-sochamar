@@ -3,15 +3,31 @@ import Axios from 'axios';
 
 const state = {
 	errorMessage: '',
+	isLogged: !!localStorage.getItem('token' + ''),
 };
 
 const getters = {
 	errorMessage: state => state.errorMessage,
 };
 
-const actions = {};
+const actions = {
+	async login({ commit }, loginData) {
+		try {
+			const response = await Axios.post(api + '/auth/login', loginData);
+			commit('setToken', response.data);
+		} catch (e) {
+			console.log(
+				'va fallar si el login es incorrecto, entonces levantamos una notificacion aca'
+			);
+		}
+	},
+};
 
-const mutations = {};
+const mutations = {
+	setToken(state, token) {
+		localStorage.setItem('token', token);
+	},
+};
 
 export default {
 	namespaced: true,
