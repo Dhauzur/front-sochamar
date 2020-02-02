@@ -1,8 +1,5 @@
 <template>
 	<b-row id="nav">
-		<b-col v-if="errorMessage" cols="12" class="mb-2">
-			<ErrorMessage />
-		</b-col>
 		<b-col class="background-module">
 			<Loading v-if="loading" :msj="loading" />
 			<template v-else>
@@ -192,14 +189,12 @@ import moment from 'moment';
 import { mapGetters, mapMutations } from 'vuex';
 import Loading from '@/components/Loading';
 import EditLodging from '@/components/EditLodging';
-import ErrorMessage from '@/components/ErrorMessage';
 
 export default {
 	components: {
 		Timeline,
 		Loading,
 		EditLodging,
-		ErrorMessage,
 	},
 	data() {
 		return {
@@ -290,7 +285,7 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			errorMessage: 'Lodging/errorMessage',
+			message: 'Lodging/message',
 			updatingService: 'Lodging/updatingService',
 			mirrorLodging: 'Lodging/mirrorLodging',
 			lodgingSelect: 'Lodging/lodgingSelect',
@@ -441,6 +436,13 @@ export default {
 						.format('ddd'),
 				});
 			return dates;
+		},
+	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
 		},
 	},
 	created() {

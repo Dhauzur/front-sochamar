@@ -19,3 +19,4 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Agregado mensajes que restringen la usabilidad del timeline, si no se ha selecionado una entidad previamente
 * Restricción si se indica un numero mayor de servicios a usar en una hospedaje de lo que permite una habitación
 * Corregido error que habilita la ediccion si el usuario hace doble click en un hospedaje y habilita el modo de edicion
+* Reemplazado componente BoostrapVue de alert, que recibia un msj y dejaba 20 segundos en pantalla. Ahora se utiliza un toasted con un watch
