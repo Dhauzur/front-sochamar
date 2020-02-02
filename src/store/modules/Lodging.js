@@ -295,22 +295,22 @@ const mutations = {
 						'days'
 					);
 					for (var i = 0; i <= numberDays; i++) {
-						// console.log(moment(l.start).add(i, 'day').format('YYYY-MM-DD') , value.id.split(',')[1]);
 						if (
 							moment(l.start)
 								.add(i, 'day')
 								.format('YYYY-MM-DD') == dateValue
 						) {
+							var numberPassangerMax = state.rooms.get(l.group).numberPassangerMax;
+							if (value.value > numberPassangerMax || value.value < 0) {
+								value.value = numberPassangerMax;
+							}
 							var service = JSON.parse(l.service[0]);
 							if (value.name == 'dinner') service[i][2] = parseInt(value.value);
 							if (value.name == 'lunch') service[i][1] = parseInt(value.value);
 							if (value.name == 'accommodation')
 								service[i][3] = parseInt(value.value);
 							if (value.name == 'breakfast') service[i][0] = parseInt(value.value);
-							// l.service[0] = JSON.stringify(service)
 							newService.push(JSON.stringify(service));
-							// state.updatingService = { date: dateValue, service}
-							console.log('ol?');
 							state.editMode = false;
 							state.lodgings.update({ id: l.id, service: newService });
 							state.editMode = true;
