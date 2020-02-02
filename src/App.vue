@@ -7,6 +7,9 @@
 				<b-collapse id="nav-text-collapse" is-nav>
 					<b-navbar-nav>
 						<b-nav-text class="mr-3">
+							<router-link to="/hospedaje">
+								Hospedajes
+							</router-link>
 							<router-link to="/">
 								Ver registros de trabajo
 							</router-link>

@@ -300,10 +300,6 @@ const mutations = {
 								.add(i, 'day')
 								.format('YYYY-MM-DD') == dateValue
 						) {
-							var numberPassangerMax = state.rooms.get(l.group).numberPassangerMax;
-							if (value.value > numberPassangerMax || value.value < 0) {
-								value.value = numberPassangerMax;
-							}
 							var service = JSON.parse(l.service[0]);
 							if (value.name == 'dinner') service[i][2] = parseInt(value.value);
 							if (value.name == 'lunch') service[i][1] = parseInt(value.value);

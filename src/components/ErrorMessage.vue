@@ -6,7 +6,7 @@
 		@dismissed="dismissCountDown = 0"
 		@dismiss-count-down="countDownChanged"
 	>
-		<p>{{ msj }}</p>
+		<p>{{ errorMessage }}</p>
 		<b-progress
 			variant="warning"
 			:max="dismissSecs"
@@ -17,14 +17,20 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
-	props: { msj: { type: String } },
 	data() {
 		return {
-			dismissSecs: 25,
+			dismissSecs: 20,
 			dismissCountDown: 0,
 			showDismissibleAlert: false,
 		};
+	},
+	computed: {
+		...mapGetters({
+			errorMessage: 'Lodging/errorMessage',
+		}),
 	},
 	mounted() {
 		this.dismissCountDown = this.dismissSecs;
