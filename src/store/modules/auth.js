@@ -26,6 +26,11 @@ const actions = {
 const mutations = {
 	setToken(state, token) {
 		localStorage.setItem('token', token);
+		Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+	},
+	logout() {
+		/*AQUI TIENE QUE IR LA REQUEST A AUTH/LOGOUT*/
+		localStorage.removeItem('token');
 	},
 };
 
