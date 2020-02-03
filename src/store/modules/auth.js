@@ -2,36 +2,45 @@ import { api } from '@/config/index.js';
 import Axios from 'axios';
 
 const state = {
-	errorMessage: '',
-	isLogged: !!localStorage.getItem('token' + ''),
+	message: '',
+	isLogged: false,
+	user: {},
 };
 
 const getters = {
-	errorMessage: state => state.errorMessage,
+	message: state => state.message,
+	isLogged: state => state.isLogged,
+	user: state => state.user,
 };
 
 const actions = {
 	async login({ commit }, loginData) {
 		try {
 			const response = await Axios.post(api + '/auth/login', loginData);
-			commit('setToken', response.data);
+			/*AÑADIR TOAST DESPUES DE QUE SE APRUEBE EL PR*/
+			const { token, user } = response.data;
+			commit('setUser', user);
+			commit('setToken', token);
+			commit('setIsLogged', true);
 		} catch (e) {
-			console.log(
-				'va fallar si el login es incorrecto, entonces levantamos una notificacion aca'
-			);
+			/*AÑADIR TOAST DESPUES DE QUE SE APRUEBE EL PR*/
+			console.log('error de axios: ' + e);
 		}
 	},
 };
 
 const mutations = {
-	setToken(state, token) {
+	setToken: (state, token) => {
 		localStorage.setItem('token', token);
 		Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 	},
-	logout() {
+	logout: state => {
 		/*AQUI TIENE QUE IR LA REQUEST A AUTH/LOGOUT*/
 		localStorage.removeItem('token');
+		state.isLogged = false;
 	},
+	setUser: (state, user) => (state.user = user),
+	setIsLogged: (state, change) => (state.isLogged = change),
 };
 
 export default {
