@@ -1,7 +1,7 @@
 <template lang="html">
-	<b-container class="bg-danger">
-		<b-row>
-			<b-col md="9" class="bg-info">
+	<b-container>
+		<b-row class="justify-content-center">
+			<b-col md="5">
 				<b-card>
 					<b-card-title>Ingresa!!</b-card-title>
 					<b-card-body>
@@ -39,7 +39,10 @@
 						</b-form>
 					</b-card-body>
 					<b-card-footer>
-						<p>¿No tienes una cuenta? <a href="#">Registrate</a></p>
+						<p>
+							¿No tienes una cuenta?
+							<router-link to="/register">Registrate!</router-link>
+						</p>
 						<a href="#">¿Olvidaste tu contraseña?</a>
 					</b-card-footer>
 				</b-card>
@@ -68,4 +71,11 @@ export default {
 };
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.test {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+</style>

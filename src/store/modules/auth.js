@@ -37,6 +37,7 @@ const mutations = {
 	logout: state => {
 		/*AQUI TIENE QUE IR LA REQUEST A AUTH/LOGOUT*/
 		localStorage.removeItem('token');
+		delete Axios.defaults.headers.common['Authorization'];
 		state.isLogged = false;
 	},
 	setUser: (state, user) => (state.user = user),
