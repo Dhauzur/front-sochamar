@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import Maintenance from './modules/Maintenance';
 import Lodging from './modules/Lodging';
 import Entity from './modules/Entity';
+import Passengers from './modules/Passengers';
 
 Vue.use(Vuex);
 
@@ -11,5 +12,6 @@ export default new Vuex.Store({
 		Lodging,
 		Maintenance,
 		Entity,
+		Passengers,
 	},
 });
