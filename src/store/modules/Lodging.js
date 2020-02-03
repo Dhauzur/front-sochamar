@@ -4,7 +4,7 @@ import moment from 'moment';
 import { DataSet } from 'vue2vis';
 
 const state = {
-	errorMessage: '',
+	message: '',
 	updatingService: null,
 	mirrorLodging: null,
 	lodgingSelect: null,
@@ -21,7 +21,7 @@ const state = {
 };
 
 const getters = {
-	errorMessage: state => state.errorMessage,
+	message: state => state.message,
 	updatingService: state => state.updatingService,
 	mirrorLodging: state => state.mirrorLodging,
 	lodgingSelect: state => state.lodgingSelect,
@@ -35,50 +35,73 @@ const getters = {
 };
 
 const actions = {
+	//Elimina un unico hospedaje
 	async deleteLodging({ commit }, value) {
 		commit('setLoading', 'Eliminando hospedaje...');
-		console.log(value);
 		return Axios.delete(api + '/lodging/delete/company/' + value.id)
 			.then(() => {
 				commit('setLoading', '');
 				commit('setDeletLodging', value);
+				commit('setMessage', {
+					type: 'default',
+					text: 'Hospedaje eliminado ',
+				});
 			})
 			.catch(error => {
-				commit('setErrorMessage', 'Delete lodging ' + error);
+				commit('setMessage', {
+					type: 'error',
+					text: 'Delete lodging ' + error,
+				});
 			});
 	},
+	//Obtiene todos las compañias
 	async fetchCompany({ commit, dispatch }) {
 		commit('setModeEdit', false);
 		commit('setCompanies', null);
-		commit('setLoading', 'Cargando entidades...');
+		commit('setLoading', 'Cargando compañias...');
 		return Axios.get(api + '/company')
 			.then(response => {
 				commit('setLoading', '');
 				commit('setCompanies', response.data.company);
+				commit('setMessage', {
+					type: 'success',
+					text: 'Compañias cargadas',
+				});
 				dispatch('fetchRooms');
 			})
 			.catch(error => {
 				commit('setCompanies', null);
-				commit('setErrorMessage', 'Fetch company ' + error);
+				commit('setMessage', {
+					type: 'error',
+					text: 'Fetch company ' + error,
+				});
 			});
 	},
-
+	//Obtiene todas las habitaciones
 	async fetchRooms({ commit, dispatch }) {
-		commit('setLoading', 'Cargando grupos...');
+		commit('setLoading', 'Cargando habitaciones...');
 		commit('setModeEdit', false);
 		commit('setRooms', null);
 		return Axios.get(api + '/rooms')
 			.then(response => {
 				commit('setLoading', '');
 				commit('setRooms', response.data.rooms);
+				commit('setMessage', {
+					type: 'success',
+					text: 'Habitaciones obtenidas ',
+				});
 				dispatch('fetchLodgings');
 			})
 			.catch(error => {
 				commit('setRooms', null);
-				commit('setErrorMessage', 'Fetch rooms ' + error);
+				commit('setMessage', {
+					type: 'error',
+					text: 'Fetch rooms ' + error,
+				});
 			});
 	},
 
+	//Obtiene los hospedajes
 	async fetchLodgings({ commit }) {
 		commit('setLoading', 'Cargando hospedajes...');
 		commit('setModeEdit', false);
@@ -87,19 +110,27 @@ const actions = {
 			.then(response => {
 				commit('setLoading', '');
 				commit('setLodgings', response.data.lodgings);
+				commit('setMessage', {
+					type: 'success',
+					text: 'Hospedajes obtenidos ',
+				});
 			})
 			.catch(error => {
 				commit('setLodgings', null);
-				commit('setErrorMessage', 'Fetch lodgings ' + error);
+				commit('setMessage', {
+					type: 'error',
+					text: 'Fetch lodgings ' + error,
+				});
 			});
 	},
 
+	//Guarda un hospedaje que no este almacenado o que es diferente
+	//A lo que existe en la base de datos.
 	async saveLodgings({ commit }) {
 		commit('setModeEdit', false);
 		commit('setLoading', 'Creando hospedajes...');
-		var mirrorLodging = JSON.parse(state.mirrorLodging);
+		let mirrorLodging = JSON.parse(state.mirrorLodging);
 		state.lodgings.forEach((l, id) => {
-			console.log(l, mirrorLodging._data);
 			//Si es diferente o si no existe
 			if (mirrorLodging._data[id] != l || !mirrorLodging[id]) {
 				Axios.post(api + '/lodging', {
@@ -111,7 +142,12 @@ const actions = {
 					company: state.company,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
-					.catch(error => commit('setErrorMessage', 'Create lodging ' + error));
+					.catch(error => {
+						commit('setMessage', {
+							type: 'error',
+							text: 'Create lodging ' + error,
+						});
+					});
 			}
 		});
 		commit('setLoading', '');
@@ -119,8 +155,8 @@ const actions = {
 };
 
 const mutations = {
-	setErrorMessage(state, value) {
-		state.errorMessage = value;
+	setMessage(state, value) {
+		state.message = value;
 	},
 	setUpdatingService(state, value) {
 		state.updatingService = value;
@@ -131,8 +167,9 @@ const mutations = {
 	setMirrorLodging(state, value) {
 		state.mirrorLodging = value;
 	},
+	//Elimina de dataset del front, un hospedaje
 	setDeletLodging(state, value) {
-		var tempLodgings = state.lodgings;
+		let tempLodgings = state.lodgings;
 		state.editMode = false;
 		state.lodgingSelect = null;
 		state.lodgings = new DataSet([]);
@@ -141,28 +178,28 @@ const mutations = {
 		state.mirrorLodging = JSON.stringify(state.lodgings);
 	},
 	dateChange(state, value) {
-		var tempLodging = state.lodgingSelect;
-		var tempLodgings = state.lodgings;
+		let tempLodging = state.lodgingSelect;
+		let tempLodgings = state.lodgings;
 		state.lodgings = new DataSet([]);
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
 			start: moment(value.dateStart).hours(16),
 			end: moment(value.dateEnd).hours(12),
 		});
-		var service = [];
-		var numberDays = moment(value.dateEnd).diff(
+		let service = [];
+		let numberDays = moment(value.dateEnd).diff(
 			moment(value.dateStart).format('YYYY-MM-DD'),
 			'days'
 		);
-		var oldService = JSON.parse(state.lodgingSelect.service[0]);
-		for (var i = 0; i <= numberDays; i++)
+		let oldService = JSON.parse(state.lodgingSelect.service[0]);
+		for (let i = 0; i <= numberDays; i++)
 			service.push([
 				oldService[i] ? oldService[i][0] : 1,
 				oldService[i] ? oldService[i][1] : 1,
 				oldService[i] ? oldService[i][2] : 1,
 				oldService[i] ? oldService[i][3] : 1,
 			]);
-		var itemService = [];
+		let itemService = [];
 		itemService.push(JSON.stringify(service));
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
@@ -175,15 +212,15 @@ const mutations = {
 		state.lodgings = tempLodgings;
 	},
 	subOneService(state, serviceSelected) {
-		var tempLodging = state.lodgingSelect;
+		let tempLodging = state.lodgingSelect;
 		state.lodgingSelect = null;
-		var service = JSON.parse(tempLodging.service[0]);
-		var numberDays = moment(tempLodging.end).diff(
+		let service = JSON.parse(tempLodging.service[0]);
+		let numberDays = moment(tempLodging.end).diff(
 			moment(tempLodging.start).format('YYYY-MM-DD'),
 			'days'
 		);
-		for (var i = 0; i <= numberDays; i++) {
-			for (var u = 0; u <= 3; u++) {
+		for (let i = 0; i <= numberDays; i++) {
+			for (let u = 0; u <= 3; u++) {
 				if (service[i][u] == null) service[i][u] = 0;
 			}
 			if (serviceSelected == 'desayuno' || serviceSelected == 'todos los servicios')
@@ -194,7 +231,7 @@ const mutations = {
 				service[i][2] = service[i][2] - 1;
 			if (serviceSelected == 'alojamiento' || serviceSelected == 'todos los servicios')
 				service[i][3] = service[i][3] - 1;
-			for (var k = 0; k <= 3; k++) {
+			for (let k = 0; k <= 3; k++) {
 				if (service[i][k] < 0) service[i][k] = 0;
 			}
 		}
@@ -202,15 +239,15 @@ const mutations = {
 		state.lodgingSelect = tempLodging;
 	},
 	addOneService(state, serviceSelected) {
-		var tempLodging = state.lodgingSelect;
+		let tempLodging = state.lodgingSelect;
 		state.lodgingSelect = null;
-		var service = JSON.parse(tempLodging.service[0]);
-		var numberDays = moment(tempLodging.end).diff(
+		let service = JSON.parse(tempLodging.service[0]);
+		let numberDays = moment(tempLodging.end).diff(
 			moment(tempLodging.start).format('YYYY-MM-DD'),
 			'days'
 		);
-		for (var i = 0; i <= numberDays; i++) {
-			for (var u = 0; u <= 3; u++) {
+		for (let i = 0; i <= numberDays; i++) {
+			for (let u = 0; u <= 3; u++) {
 				if (service[i][u] == null) service[i][u] = 0;
 				if (service[i][u] >= 20) service[i][u] = 0;
 			}
@@ -227,8 +264,7 @@ const mutations = {
 		state.lodgingSelect = tempLodging;
 	},
 	setLodgingSelect(state, value) {
-		var lodSel = state.lodgings.get(value);
-		lodSel ? (state.lodgingSelect = lodSel) : console.log('No se enceuntra lod');
+		if (state.lodgings.get(value)) state.lodgingSelect = state.lodgings.get(value);
 	},
 	setLoading(state, value) {
 		state.loading = value;
@@ -239,7 +275,7 @@ const mutations = {
 	},
 	createOneLodging(state) {
 		state.editMode = false;
-		var company = state.companies.find(c => c.value == state.company);
+		let company = state.companies.find(c => c.value == state.company);
 		if (company.text == 'Turismo')
 			state.lodgings.add({
 				group: 1,
@@ -267,7 +303,7 @@ const mutations = {
 		state.company = value;
 	},
 	setCompanies(state, value) {
-		var companies = [];
+		let companies = [];
 		companies.push({
 			value: null,
 			text: 'Todas las empresas',
@@ -284,33 +320,29 @@ const mutations = {
 	},
 	updateService(state, value) {
 		state.updatingService = null;
-		var idValue = value.id.split(',')[0];
-		var dateValue = value.id.split(',')[1];
-		var newService = [];
+		let idValue = value.id.split(',')[0];
+		let dateValue = value.id.split(',')[1];
+		let newService = [];
 		if (value)
 			state.lodgings.forEach(l => {
 				if (idValue == l.id) {
-					var numberDays = moment(l.end).diff(
+					let numberDays = moment(l.end).diff(
 						moment(l.start).format('YYYY-MM-DD'),
 						'days'
 					);
-					for (var i = 0; i <= numberDays; i++) {
-						// console.log(moment(l.start).add(i, 'day').format('YYYY-MM-DD') , value.id.split(',')[1]);
+					for (let i = 0; i <= numberDays; i++) {
 						if (
 							moment(l.start)
 								.add(i, 'day')
 								.format('YYYY-MM-DD') == dateValue
 						) {
-							var service = JSON.parse(l.service[0]);
+							let service = JSON.parse(l.service[0]);
 							if (value.name == 'dinner') service[i][2] = parseInt(value.value);
 							if (value.name == 'lunch') service[i][1] = parseInt(value.value);
 							if (value.name == 'accommodation')
 								service[i][3] = parseInt(value.value);
 							if (value.name == 'breakfast') service[i][0] = parseInt(value.value);
-							// l.service[0] = JSON.stringify(service)
 							newService.push(JSON.stringify(service));
-							// state.updatingService = { date: dateValue, service}
-							console.log('ol?');
 							state.editMode = false;
 							state.lodgings.update({ id: l.id, service: newService });
 							state.editMode = true;
@@ -334,17 +366,13 @@ const mutations = {
 		state.rangeDate = value;
 	},
 	setLodgings(state, value) {
-		var tempLodging = state.lodgings;
+		let tempLodging = state.lodgings;
 		state.editMode = false;
 		state.lodgings = new DataSet([]);
 		if (value) {
 			tempLodging = new DataSet([]);
-			// tempLodging.on('*', function (event, properties, senderId) {
-			//   if(event == 'remove') tempLodging.remove(properties.items);                                 // triggers an 'remove' event
-			// });
-			console.log(value);
 			value.forEach(v => {
-				var company = state.companies.find(c => c.value == v.company);
+				let company = state.companies.find(c => c.value == v.company);
 				if (state.company) {
 					if (state.company == v.company)
 						tempLodging.add({
