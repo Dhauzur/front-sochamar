@@ -264,9 +264,6 @@ export default {
 	created() {
 		this.getAllPassengers();
 	},
-	mounted() {
-		console.log(this.$v);
-	},
 	validations: {
 		passenger: {
 			firstName: {
@@ -299,7 +296,6 @@ export default {
 	},
 	methods: {
 		async submitForm() {
-			console.log(this.$v);
 			// validations
 			this.$v.$touch();
 			if (this.$v.$invalid) {
