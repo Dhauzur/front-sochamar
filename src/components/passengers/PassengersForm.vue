@@ -113,6 +113,7 @@
 			<b-row>
 				<b-col v-if="editMode" cols="12" class="mt-2">
 					<b-badge pill variant="secondary">{{ passenger.passenger }}</b-badge>
+					<small v-if="!passenger.passenger" class="text-secondary">Sin avatar</small>
 				</b-col>
 				<b-col cols="12" :class="!editMode ? 'mt-4' : 'mt-2'">
 					<b-form-file
@@ -131,7 +132,10 @@
 						:key="index"
 						pill
 						variant="secondary"
-						>{{ item }}</b-badge
+						>{{ item.name || item }}</b-badge
+					>
+					<small v-if="!passenger.documents.length > 0" class="text-secondary"
+						>Sin documentos</small
 					>
 				</b-col>
 				<b-col cols="12" :class="!editMode ? 'mt-4' : 'mt-2'"
