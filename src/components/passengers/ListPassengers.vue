@@ -1,17 +1,19 @@
 <template>
 	<div class="list">
 		<b-list-group v-for="(item, index) in passengers" :key="index">
-			<b-list-group-item @click="() => selectedPassenger(item)"
-				>{{ item.firstName }} {{ item.lastName }}</b-list-group-item
-			>
-			<span class="text-danger" @click="deleteOne(item._id)">X</span>
+			<b-list-group-item @click="() => selectedPassenger(item)">
+				<b-row>
+					<b-col cols="10" class="text-left"
+						>{{ item.firstName }} {{ item.lastName }}</b-col
+					>
+					<b-col cols="2" class="text-danger" @click="deleteOne(item._id)">X</b-col>
+				</b-row>
+			</b-list-group-item>
 		</b-list-group>
 	</div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
 export default {
 	props: {
 		selectedPassenger: {
@@ -22,9 +24,10 @@ export default {
 			type: Function,
 			required: false,
 		},
-	},
-	computed: {
-		...mapGetters({ passengers: 'Passengers/passengers' }),
+		passengers: {
+			type: Array,
+			required: false,
+		},
 	},
 };
 </script>

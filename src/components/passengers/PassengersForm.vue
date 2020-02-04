@@ -145,13 +145,14 @@
 					></b-form-file>
 				</b-col>
 			</b-row>
-			<b-dropdown-divider />
+			<b-dropdown-divider v-if="passengersList.length > 0" />
 			<!-- list passenger -->
 			<b-row>
-				<b-col class="mt-4">
+				<b-col v-if="passengersList.length > 0" class="mt-4">
 					<ListPassengers
 						:selected-passenger="selectedPassenger"
 						:delete-one="deleteOnePassenger"
+						:passengers="passengersList"
 					/>
 				</b-col>
 			</b-row>
@@ -180,7 +181,7 @@
 import { validationMixin } from 'vuelidate';
 import { required, minLength, between } from 'vuelidate/lib/validators';
 import ListPassengers from './ListPassengers';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
 	components: { ListPassengers },
@@ -207,6 +208,9 @@ export default {
 				function: '',
 			},
 		};
+	},
+	computed: {
+		...mapGetters({ passengersList: 'Passengers/passengers' }),
 	},
 	created() {
 		this.getAllPassengers();
@@ -247,7 +251,7 @@ export default {
 		},
 	},
 	methods: {
-		submitForm() {
+		async submitForm() {
 			// validations
 			this.formTouched = !this.$v.passenger.$anyDirty;
 			this.errors = this.$v.passenger.$anyError;
@@ -269,7 +273,7 @@ export default {
 			// put passenger or cretae a new passenger
 			if (this.editMode) {
 				if (this.errors === false && this.formTouched === false) {
-					this.editPassenger({
+					await this.editPassenger({
 						payload: this.form,
 						id: this.passenger._id,
 					});
@@ -279,7 +283,7 @@ export default {
 			} else {
 				if (this.errors === false && this.formTouched === false) {
 					// Save the passenger
-					this.savePassenger(this.form);
+					await this.savePassenger(this.form);
 					// update list passenger
 					this.getAllPassengers();
 				}

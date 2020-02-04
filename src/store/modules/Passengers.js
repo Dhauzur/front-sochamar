@@ -15,6 +15,7 @@ const actions = {
 	async fetchAllPassengers({ commit }) {
 		try {
 			const response = await Axios.get(api + '/passengers');
+			console.log(response.data);
 			commit('setPassengers', response.data.passengers);
 		} catch (error) {
 			commit('setPassengers', null);
