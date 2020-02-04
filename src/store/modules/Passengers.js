@@ -15,7 +15,6 @@ const actions = {
 	async fetchAllPassengers({ commit }) {
 		try {
 			const response = await Axios.get(api + '/passengers');
-			console.log(response.data);
 			commit('setPassengers', response.data.passengers);
 		} catch (error) {
 			commit('setPassengers', null);
@@ -50,6 +49,7 @@ const actions = {
 		try {
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.delete(`${api}/passengers/${id}`, config);
+			this.action.fetchAllPassengers();
 		} catch (error) {
 			commit('setErrorMessage', 'delete passengers ' + error);
 		}

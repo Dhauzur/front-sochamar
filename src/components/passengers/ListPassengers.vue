@@ -4,7 +4,9 @@
 			<b-list-group-item @click="() => selectedPassenger(item)">
 				<b-row>
 					<b-col cols="10" class="text-left"
-						>{{ item.firstName }} {{ item.lastName }}</b-col
+						>{{ item.firstName }} {{ item.lastName }} - {{ item.appointment }}/{{
+							item.function
+						}}</b-col
 					>
 					<b-col cols="2" class="text-danger" @click="deleteOne(item._id)">X</b-col>
 				</b-row>
@@ -20,12 +22,16 @@ export default {
 			type: Function,
 			required: false,
 		},
-		deleteOne: {
+		getAllPassengers: {
 			type: Function,
 			required: false,
 		},
 		passengers: {
 			type: Array,
+			required: false,
+		},
+		deleteOne: {
+			type: Function,
 			required: false,
 		},
 	},

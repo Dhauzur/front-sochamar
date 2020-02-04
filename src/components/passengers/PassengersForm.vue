@@ -15,11 +15,14 @@
 						</b-col>
 						<b-col cols="12" class="text-right"
 							><b-input id="firstName" v-model.trim="$v.passenger.firstName.$model" />
-							<small v-if="errors" class="text-danger">
-								<span v-if="!$v.passenger.firstName.minLength"
-									>Minimo 4 caracteres</span
-								>
-							</small>
+							<div v-if="$v.passenger.firstName.$dirty">
+								<small v-if="!$v.passenger.firstName.required" class="text-danger">
+									Campo requerido
+								</small>
+								<small v-if="!$v.passenger.firstName.minLength" class="text-danger">
+									Minimo 3 Caracteres
+								</small>
+							</div>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -34,11 +37,14 @@
 								id="lastName"
 								v-model.trim="$v.passenger.lastName.$model"
 							></b-input>
-							<small v-if="errors" class="text-danger">
-								<span v-if="!$v.passenger.lastName.minLength"
-									>Minimo 4 caracteres</span
-								>
-							</small>
+							<div v-if="$v.passenger.lastName.$dirty">
+								<small v-if="!$v.passenger.lastName.required" class="text-danger">
+									Campo requerido
+								</small>
+								<small v-if="!$v.passenger.lastName.minLength" class="text-danger">
+									Minimo 3 Caracteres
+								</small>
+							</div>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -50,9 +56,21 @@
 						<b-col cols="12" class="text-left text-secondary"
 							><label for="age" class="mb-0 mt-2">Edad</label>
 						</b-col>
-						<b-col cols="12"
-							><b-input id="age" v-model="passenger.age" type="number"></b-input
-						></b-col>
+						<b-col cols="12" class="text-right"
+							><b-input
+								id="age"
+								v-model="$v.passenger.age.$model"
+								type="number"
+							></b-input>
+							<div v-if="$v.passenger.age.$dirty">
+								<small v-if="!$v.passenger.age.required" class="text-danger">
+									Campo requerido
+								</small>
+								<small v-if="!$v.passenger.age.between" class="text-danger">
+									Escriba una edad correcta
+								</small>
+							</div></b-col
+						>
 					</b-row>
 				</b-col>
 				<!-- state -->
@@ -64,9 +82,14 @@
 						<b-col cols="12">
 							<b-form-select
 								id="state"
-								v-model="passenger.state"
+								v-model="$v.passenger.state.$model"
 								:options="['soltero', 'casado']"
 							></b-form-select>
+							<div v-if="$v.passenger.state.$dirty" class="text-right">
+								<small v-if="!$v.passenger.state.required" class="text-danger">
+									Campo requerido
+								</small>
+							</div>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -79,15 +102,21 @@
 							><label for="birthdate" class="mb-0 mt-2">Fecha nacimiento</label>
 						</b-col>
 						<b-col cols="12">
-							<b-form-group id="birthdate" label-for="input-1">
+							<b-form-group id="birthdate" label-for="input-1" class="pb-0 mb-0">
 								<b-form-input
 									id="input-1"
-									v-model="passenger.birthdate"
+									v-model="$v.passenger.birthdate.$model"
 									type="date"
-									class="col-xs-2"
-								/> </b-form-group
-						></b-col> </b-row
-				></b-col>
+								/>
+							</b-form-group>
+							<div v-if="$v.passenger.birthdate.$dirty" class="text-right">
+								<small v-if="!$v.passenger.birthdate.required" class="text-danger">
+									Campo requerido
+								</small>
+							</div></b-col
+						>
+					</b-row></b-col
+				>
 				<!-- appointment -->
 				<b-col cols="6"
 					><b-row
@@ -96,9 +125,25 @@
 						><b-col cols="12"
 							><b-input
 								id="appointment"
-								v-model="passenger.appointment"
-							></b-input> </b-col></b-row
-				></b-col>
+								v-model="$v.passenger.appointment.$model"
+							></b-input>
+							<div v-if="$v.passenger.appointment.$dirty" class="text-right">
+								<small
+									v-if="!$v.passenger.appointment.required"
+									class="text-danger"
+								>
+									Campo requerido
+								</small>
+								<small
+									v-if="!$v.passenger.appointment.minLength"
+									class="text-danger"
+								>
+									Minimo 4 Caracteres
+								</small>
+							</div>
+						</b-col></b-row
+					></b-col
+				>
 			</b-row>
 			<!-- function -->
 			<b-row>
@@ -106,7 +151,15 @@
 					><label for="function" class="mb-0 mt-2">Función</label>
 				</b-col>
 				<b-col cols="6"
-					><b-input id="function" v-model="passenger.function"></b-input>
+					><b-input id="function" v-model="$v.passenger.function.$model"></b-input>
+					<div v-if="$v.passenger.function.$dirty" class="text-right">
+						<small v-if="!$v.passenger.function.required" class="text-danger">
+							Campo requerido
+						</small>
+						<small v-if="!$v.passenger.function.minLength" class="text-danger">
+							Minimo 4 Caracteres
+						</small>
+					</div>
 				</b-col>
 			</b-row>
 			<!-- avatar -->
@@ -119,7 +172,7 @@
 					<b-form-file
 						accept="image/jpeg, image/png, image/gif, image/jpg"
 						:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
-						drop-placeholder="Arrastra imagen aqui..."
+						drop-placeholder="Arrastrar aqui..."
 						@change="e => (passenger.passenger = e.target.files[0])"
 					></b-form-file>
 				</b-col>
@@ -134,17 +187,14 @@
 						variant="secondary"
 						>{{ item.name || item }}</b-badge
 					>
-					<small v-if="!passenger.documents.length > 0" class="text-secondary"
-						>Sin documentos</small
-					>
 				</b-col>
 				<b-col cols="12" :class="!editMode ? 'mt-4' : 'mt-2'"
 					><b-form-file
 						multiple
 						:placeholder="
-							editMode ? 'Cambiar documentos' : 'Agrega un Documento maximo 5'
+							editMode ? 'Cambiar documentos' : 'Agrega un Documento, maximo 5'
 						"
-						drop-placeholder="Arrastra documento aqui..."
+						drop-placeholder="Arrastrar aqui..."
 						@change="setDocuments"
 					></b-form-file>
 				</b-col>
@@ -155,25 +205,20 @@
 				<b-col v-if="passengersList.length > 0" class="mt-4">
 					<ListPassengers
 						:selected-passenger="selectedPassenger"
-						:delete-one="deleteOnePassenger"
+						:delete-one="deleteOne"
 						:passengers="passengersList"
+						:get-all-passengers="getAllPassengers"
 					/>
 				</b-col>
 			</b-row>
 			<!-- submit -->
 			<b-row>
 				<b-col class="mt-4">
-					<b-button block class="btn btn-info d-block" @click.prevent="submitForm"
+					<b-button block class="btn btn-primary d-block" @click.prevent="submitForm"
 						>Guardar</b-button
 					>
-					<small
-						v-if="formTouched && uiState === 'submit clicked'"
-						class="mt-2 d-block text-danger"
-					>
-						Debe llenar el formulario
-					</small>
-					<small v-else-if="uiState === 'form submitted'" class="text-success">
-						submit
+					<small v-if="errors" class="mt-2 d-block text-danger">
+						Debe llenar el formulario correctamente
 					</small>
 				</b-col>
 			</b-row>
@@ -219,73 +264,69 @@ export default {
 	created() {
 		this.getAllPassengers();
 	},
+	mounted() {
+		console.log(this.$v);
+	},
 	validations: {
 		passenger: {
 			firstName: {
 				required,
-				minLength: minLength(4),
-			},
-			passenger: {
-				required,
-				minLength: minLength(4),
+				minLength: minLength(3),
 			},
 			lastName: {
 				required,
-				minLength: minLength(4),
+				minLength: minLength(3),
 			},
 			state: {
 				required,
-				minLength: minLength(4),
 			},
 			age: {
 				required,
-				minLength: minLength(4),
+				between: between(1, 130),
 			},
 			birthdate: {
 				required,
-				minLength: minLength(4),
 			},
 			appointment: {
 				required,
 				minLength: minLength(4),
 			},
 			function: {
-				between: between(0, 120),
+				required,
+				minLength: minLength(4),
 			},
 		},
 	},
 	methods: {
 		async submitForm() {
+			console.log(this.$v);
 			// validations
-			this.formTouched = !this.$v.passenger.$anyDirty;
-			this.errors = this.$v.passenger.$anyError;
-			this.uiState = 'submit clicked';
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				this.errors = true;
+			} else {
+				// set data for send
+				for (let index = 0; index < this.passenger.documents.length; index++) {
+					this.form.append('documents', this.passenger.documents[index]);
+				}
+				this.form.append('passenger', this.passenger.passenger);
+				this.form.set('firstName', this.passenger.firstName.toLowerCase());
+				this.form.set('lastName', this.passenger.lastName.toLowerCase());
+				this.form.set('age', this.passenger.age.toString());
+				this.form.set('birthdate', this.passenger.birthdate.toLowerCase());
+				this.form.set('appointment', this.passenger.appointment.toLowerCase());
+				this.form.set('function', this.passenger.function.toLowerCase());
+				this.form.set('state', this.passenger.state.toLowerCase());
 
-			// set data for send
-			for (let index = 0; index < this.passenger.documents.length; index++) {
-				this.form.append('documents', this.passenger.documents[index]);
-			}
-			this.form.append('passenger', this.passenger.passenger);
-			this.form.set('firstName', this.passenger.firstName.toLowerCase());
-			this.form.set('lastName', this.passenger.lastName.toLowerCase());
-			this.form.set('age', this.passenger.age.toString());
-			this.form.set('birthdate', this.passenger.birthdate.toLowerCase());
-			this.form.set('appointment', this.passenger.appointment.toLowerCase());
-			this.form.set('function', this.passenger.function.toLowerCase());
-			this.form.set('state', this.passenger.state.toLowerCase());
-
-			// put passenger or cretae a new passenger
-			if (this.editMode) {
-				if (this.errors === false && this.formTouched === false) {
+				// put passenger or cretae a new passenger
+				if (this.editMode) {
 					await this.editPassenger({
 						payload: this.form,
 						id: this.passenger._id,
 					});
 					// update list passenger
 					this.getAllPassengers();
-				}
-			} else {
-				if (this.errors === false && this.formTouched === false) {
+				} else {
 					// Save the passenger
 					await this.savePassenger(this.form);
 					// update list passenger
@@ -321,6 +362,9 @@ export default {
 				function: '',
 			};
 			this.editMode = false;
+		},
+		deleteOne(id) {
+			this.deleteOnePassenger(id).then(() => this.getAllPassengers());
 		},
 		...mapActions({
 			getAllPassengers: 'Passengers/fetchAllPassengers',
