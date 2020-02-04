@@ -220,6 +220,9 @@
 					<small v-if="errors" class="mt-2 d-block text-danger">
 						Debe llenar el formulario correctamente
 					</small>
+					<small v-if="success.length > 0" class="mt-2 d-block text-success">
+						{{ success }}
+					</small>
 				</b-col>
 			</b-row>
 		</b-form>
@@ -244,6 +247,7 @@ export default {
 			uiState: 'submit not clicked',
 			errors: false,
 			empty: true,
+			success: '',
 			passenger: {
 				_id: null,
 				passenger: null,
@@ -320,11 +324,15 @@ export default {
 						payload: this.form,
 						id: this.passenger._id,
 					});
+					this.success = 'Pasagero editado cone exito';
+					this.clearSuccess();
 					// update list passenger
 					this.getAllPassengers();
 				} else {
 					// Save the passenger
 					await this.savePassenger(this.form);
+					this.success = 'Pasagero Agregado cone exito';
+					this.clearSuccess();
 					// update list passenger
 					this.getAllPassengers();
 				}
@@ -358,6 +366,11 @@ export default {
 				function: '',
 			};
 			this.editMode = false;
+		},
+		clearSuccess() {
+			setTimeout(() => {
+				this.success = '';
+			}, 2000);
 		},
 		deleteOne(id) {
 			this.deleteOnePassenger(id).then(() => this.getAllPassengers());
