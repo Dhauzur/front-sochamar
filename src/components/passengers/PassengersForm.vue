@@ -2,35 +2,40 @@
 	<div>
 		<b-form>
 			<b-row>
-				<!-- firstname -->
+				<b-col v-if="editMode" cols="12" class="text-right"
+					><Button class="btn btn-secondary btn-sm" @click="clearInputs"
+						>Nuevo</Button
+					></b-col
+				>
+				<!-- firstName -->
 				<b-col cols="6">
 					<b-row>
 						<b-col cols="12" class="text-left text-secondary"
-							><label for="firstname" class="mb-0 mt-2">Nombre</label>
+							><label for="firstName" class="mb-0 mt-2">Nombre</label>
 						</b-col>
 						<b-col cols="12" class="text-right"
-							><b-input id="firstname" v-model.trim="$v.passenger.firstname.$model" />
+							><b-input id="firstName" v-model.trim="$v.passenger.firstName.$model" />
 							<small v-if="errors" class="text-danger">
-								<span v-if="!$v.passenger.firstname.minLength"
+								<span v-if="!$v.passenger.firstName.minLength"
 									>Minimo 4 caracteres</span
 								>
 							</small>
 						</b-col>
 					</b-row>
 				</b-col>
-				<!-- lastname -->
+				<!-- lastName -->
 				<b-col cols="6">
 					<b-row>
 						<b-col cols="12" class="text-left text-secondary"
-							><label for="lastname" class="mb-0 mt-2">Apellido</label>
+							><label for="lastName" class="mb-0 mt-2">Apellido</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
 							<b-input
-								id="lastname"
-								v-model.trim="$v.passenger.lastname.$model"
+								id="lastName"
+								v-model.trim="$v.passenger.lastName.$model"
 							></b-input>
 							<small v-if="errors" class="text-danger">
-								<span v-if="!$v.passenger.lastname.minLength"
+								<span v-if="!$v.passenger.lastName.minLength"
 									>Minimo 4 caracteres</span
 								>
 							</small>
@@ -46,7 +51,7 @@
 							><label for="age" class="mb-0 mt-2">Edad</label>
 						</b-col>
 						<b-col cols="12"
-							><b-input id="age" v-model="passenger.age"></b-input
+							><b-input id="age" v-model="passenger.age" type="number"></b-input
 						></b-col>
 					</b-row>
 				</b-col>
@@ -60,7 +65,7 @@
 							<b-form-select
 								id="state"
 								v-model="passenger.state"
-								:options="['Soltero', 'Casado']"
+								:options="['soltero', 'casado']"
 							></b-form-select>
 						</b-col>
 					</b-row>
@@ -80,7 +85,6 @@
 									v-model="passenger.birthdate"
 									type="date"
 									class="col-xs-2"
-									style="text-align: center; text-align-last:center;"
 								/> </b-form-group
 						></b-col> </b-row
 				></b-col>
@@ -96,27 +100,47 @@
 							></b-input> </b-col></b-row
 				></b-col>
 			</b-row>
+			<!-- function -->
 			<b-row>
 				<b-col cols="12" class="text-left text-secondary"
 					><label for="function" class="mb-0 mt-2">Función</label>
 				</b-col>
-				<b-col cols="6"><b-input id="function" v-model="passenger.func"></b-input> </b-col>
+				<b-col cols="6"
+					><b-input id="function" v-model="passenger.function"></b-input>
+				</b-col>
 			</b-row>
+			<!-- avatar -->
 			<b-row>
-				<b-col cols="12" class="mt-4">
+				<b-col v-if="editMode" cols="12" class="mt-2">
+					<b-badge pill variant="secondary">{{ passenger.passenger }}</b-badge>
+				</b-col>
+				<b-col cols="12" :class="!editMode ? 'mt-4' : 'mt-2'">
 					<b-form-file
-						placeholder="Agrega una imagen"
-						drop-placeholder="Drop file here..."
+						accept="image/jpeg, image/png, image/gif, image/jpg"
+						:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
+						drop-placeholder="Arrastra imagen aqui..."
 						@change="e => (passenger.passenger = e.target.files[0])"
 					></b-form-file>
 				</b-col>
 			</b-row>
+			<!-- documents -->
 			<b-row>
-				<b-col cols="12" class="mt-4 mb-2"
+				<b-col v-if="editMode" cols="12" class="mt-2">
+					<b-badge
+						v-for="(item, index) in passenger.documents"
+						:key="index"
+						pill
+						variant="secondary"
+						>{{ item }}</b-badge
+					>
+				</b-col>
+				<b-col cols="12" :class="!editMode ? 'mt-4' : 'mt-2'"
 					><b-form-file
 						multiple
-						placeholder="Agrega Documentos max 5"
-						drop-placeholder="Drop file here..."
+						:placeholder="
+							editMode ? 'Cambiar documentos' : 'Agrega un Documento maximo 5'
+						"
+						drop-placeholder="Arrastra documento aqui..."
 						@change="setDocuments"
 					></b-form-file>
 				</b-col>
@@ -125,13 +149,16 @@
 			<!-- list passenger -->
 			<b-row>
 				<b-col class="mt-4">
-					<ListPassengers />
+					<ListPassengers
+						:selected-passenger="selectedPassenger"
+						:delete-one="deleteOnePassenger"
+					/>
 				</b-col>
 			</b-row>
 			<!-- submit -->
 			<b-row>
 				<b-col class="mt-4">
-					<b-button block class="btn btn-secondary d-block" @click.prevent="submitForm"
+					<b-button block class="btn btn-info d-block" @click.prevent="submitForm"
 						>Guardar</b-button
 					>
 					<small
@@ -161,21 +188,23 @@ export default {
 	data() {
 		return {
 			form: new FormData(),
+			editMode: false,
 			selected: {},
 			formTouched: false,
 			uiState: 'submit not clicked',
 			errors: false,
 			empty: true,
 			passenger: {
+				_id: null,
 				passenger: null,
 				documents: [],
-				firstname: '',
-				lastname: '',
+				firstName: '',
+				lastName: '',
 				state: '',
 				age: '',
 				birthdate: '',
 				appointment: '',
-				func: '',
+				function: '',
 			},
 		};
 	},
@@ -184,7 +213,7 @@ export default {
 	},
 	validations: {
 		passenger: {
-			firstname: {
+			firstName: {
 				required,
 				minLength: minLength(4),
 			},
@@ -192,7 +221,7 @@ export default {
 				required,
 				minLength: minLength(4),
 			},
-			lastname: {
+			lastName: {
 				required,
 				minLength: minLength(4),
 			},
@@ -212,37 +241,52 @@ export default {
 				required,
 				minLength: minLength(4),
 			},
-			func: {
+			function: {
 				between: between(0, 120),
 			},
 		},
 	},
 	methods: {
 		submitForm() {
-			for (let index = 0; index < this.passenger.documents.length; index++) {
-				this.form.append('documents', this.passenger.documents[index]);
-			}
+			// validations
 			this.formTouched = !this.$v.passenger.$anyDirty;
 			this.errors = this.$v.passenger.$anyError;
 			this.uiState = 'submit clicked';
-			if (this.errors === false && this.formTouched === false) {
-				//this is where you send the responses
-				this.uiState = 'form submitted';
 
-				this.form.set('firstName', this.passenger.firstname);
-				this.form.set('lastName', this.passenger.lastname);
-				this.form.set('age', this.passenger.age);
-				this.form.set('birthdate', this.passenger.birthdate);
-				this.form.set('appointment', this.passenger.appointment);
-				this.form.set('function', this.passenger.func);
-				this.form.set('state', this.passenger.state);
-				this.form.append('passenger', this.passenger.passenger);
-				console.log(this.passenger);
+			// set data for send
+			for (let index = 0; index < this.passenger.documents.length; index++) {
+				this.form.append('documents', this.passenger.documents[index]);
+			}
+			this.form.append('passenger', this.passenger.passenger);
+			this.form.set('firstName', this.passenger.firstName.toLowerCase());
+			this.form.set('lastName', this.passenger.lastName.toLowerCase());
+			this.form.set('age', this.passenger.age.toString());
+			this.form.set('birthdate', this.passenger.birthdate.toLowerCase());
+			this.form.set('appointment', this.passenger.appointment.toLowerCase());
+			this.form.set('function', this.passenger.function.toLowerCase());
+			this.form.set('state', this.passenger.state.toLowerCase());
 
-				this.savePassenger(this.form);
+			// put passenger or cretae a new passenger
+			if (this.editMode) {
+				if (this.errors === false && this.formTouched === false) {
+					this.editPassenger({
+						payload: this.form,
+						id: this.passenger._id,
+					});
+					// update list passenger
+					this.getAllPassengers();
+				}
+			} else {
+				if (this.errors === false && this.formTouched === false) {
+					// Save the passenger
+					this.savePassenger(this.form);
+					// update list passenger
+					this.getAllPassengers();
+				}
 			}
 		},
 		setDocuments(e) {
+			this.passenger.documents = [];
 			let files = e.target.files;
 			if (!files.length) {
 				return false;
@@ -251,10 +295,30 @@ export default {
 				this.passenger.documents.push(files[index]);
 			}
 		},
-		selectedPassenger() {},
+		selectedPassenger(passenger) {
+			this.editMode = true;
+			this.passenger = passenger;
+		},
+		clearInputs() {
+			this.passenger = {
+				_id: null,
+				passenger: null,
+				documents: [],
+				firstName: '',
+				lastName: '',
+				state: '',
+				age: '',
+				birthdate: '',
+				appointment: '',
+				function: '',
+			};
+			this.editMode = false;
+		},
 		...mapActions({
 			getAllPassengers: 'Passengers/fetchAllPassengers',
 			savePassenger: 'Passengers/savePassenger',
+			editPassenger: 'Passengers/editPassenger',
+			deleteOnePassenger: 'Passengers/deleteOnePassenger',
 		}),
 	},
 };

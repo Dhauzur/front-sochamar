@@ -23,11 +23,34 @@ const actions = {
 	},
 	async savePassenger({ commit }, payload) {
 		try {
-			// const config = { headers: { 'Content-Type': 'undefined' } };
-			const config = { headers: { 'Content-Type': 'undefined' } };
+			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.post(`${api}/passengers/create`, payload, config);
 		} catch (error) {
 			commit('setErrorMessage', 'save passengers ' + error);
+		}
+	},
+	async editPassenger({ commit }, { payload, id }) {
+		try {
+			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+			await Axios.put(`${api}/passengers/${id}`, payload, config);
+		} catch (error) {
+			commit('setErrorMessage', 'save passengers ' + error);
+		}
+	},
+	async deleteAllPassengers({ commit }) {
+		try {
+			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+			await Axios.delete(`${api}/passengers/delete/all`, config);
+		} catch (error) {
+			commit('setErrorMessage', 'delete passengers ' + error);
+		}
+	},
+	async deleteOnePassenger({ commit }, id) {
+		try {
+			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+			await Axios.delete(`${api}/passengers/${id}`, config);
+		} catch (error) {
+			commit('setErrorMessage', 'delete passengers ' + error);
 		}
 	},
 };
