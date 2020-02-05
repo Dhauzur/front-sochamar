@@ -7,7 +7,7 @@
 					<b-col md="6" lg="5" xl="3">
 						<b-row>
 							<b-col cols="12" class="my-2">
-								<label>Selecione entidad</label>
+								<label>Selecione compañia</label>
 							</b-col>
 							<b-col cols="12" class="mb-2">
 								<b-form-select
@@ -43,8 +43,8 @@
 									<b-dropdown-item @click="$router.push({ name: 'grupos' })"
 										>Gestionar grupos</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'entidades' })"
-										>Gestionar entidades</b-dropdown-item
+									<b-dropdown-item @click="$router.push({ name: 'compañias' })"
+										>Gestionar compañias</b-dropdown-item
 									>
 								</b-dropdown>
 							</b-col>

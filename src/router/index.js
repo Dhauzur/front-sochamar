@@ -4,7 +4,7 @@ import Home from '../views/Home.vue';
 import Maintenance from '../views/Maintenance.vue';
 import Lodging from '../views/Lodging.vue';
 import Group from '../views/Group.vue';
-import Entity from '../views/Entity.vue';
+import Company from '../views/Company.vue';
 import Report from '../views/Report.vue';
 
 Vue.use(VueRouter);
@@ -31,9 +31,9 @@ const routes = [
 		component: Group,
 	},
 	{
-		path: '/entidades',
-		name: 'entidades',
-		component: Entity,
+		path: '/compañias',
+		name: 'compañias',
+		component: Company,
 	},
 	{
 		path: '/informe',
