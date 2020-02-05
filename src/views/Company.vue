@@ -2,26 +2,39 @@
 	<b-container>
 		<b-row id="nav" class="justify-content-center">
 			<b-col md="8" lg="6" class="background-module pb-3 px-4">
-				<h3 class="mt-4">Gestión de compañias</h3>
+				<h3 class="mt-4">Gestión de compañías</h3>
 				<b-row class="mb-3">
-					<div>
-						<b-dropdown
-							id="dropdown-1"
-							class="m-3"
-							variant="primary"
-							text="Acciones"
+					<b-col cols="5">
+						<div>
+							<b-dropdown
+								id="dropdown-1"
+								variant="primary"
+								block
+								text="Acciones"
+								size="sm"
+							>
+								<b-dropdown-item @click="$router.push({ name: 'grupos' })"
+									>Gestionar grupos</b-dropdown-item
+								>
+								<b-dropdown-item @click="$router.push({ name: 'hospedaje' })"
+									>Hospedajes</b-dropdown-item
+								>
+							</b-dropdown>
+						</div>
+					</b-col>
+					<b-col cols="7">
+						<b-form-input
+							v-model="filterCompanyWord"
 							size="sm"
-						>
-							<b-dropdown-item @click="$router.push({ name: 'grupos' })"
-								>Gestionar grupos</b-dropdown-item
-							>
-							<b-dropdown-item @click="$router.push({ name: 'hospedaje' })"
-								>Hospedajes</b-dropdown-item
-							>
-						</b-dropdown>
-					</div>
+							placeholder="Filtrar compañia"
+							@keyup="filterCompany(filterCompanyWord)"
+						></b-form-input>
+					</b-col>
 				</b-row>
-				<b-row style="max-height: 100px; overflow-y: auto;" class="mr-2 mb-3">
+				<b-row
+					style="max-height: 100px; overflow-y: auto;"
+					class="background-into-module mr-2 mb-3"
+				>
 					<b-col>
 						<table class="table table-bordered table-hover">
 							<thead>
@@ -79,11 +92,17 @@
 				<b-row class="mb-3">
 					<b-col>
 						Nombre
-						<b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+						<b-form-input
+							v-model="form.name"
+							placeholder="Ej: Minera los pelambres"
+						></b-form-input>
 					</b-col>
 					<b-col lg="4">
 						RUT
-						<b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+						<b-form-input
+							v-model="form.rut"
+							placeholder="Ej: 11.111.111-3"
+						></b-form-input>
 					</b-col>
 				</b-row>
 				<b-row class="mb-3">
@@ -94,15 +113,27 @@
 				<b-row class="mb-3">
 					<b-col>
 						Desayuno
-						<b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+						<b-form-input
+							v-model="form.prices[0]"
+							placeholder="Ej: 4000"
+						></b-form-input>
 						Almuerzo
-						<b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+						<b-form-input
+							v-model="form.prices[1]"
+							placeholder="Ej: 8000"
+						></b-form-input>
 					</b-col>
 					<b-col>
 						Cena
-						<b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+						<b-form-input
+							v-model="form.prices[2]"
+							placeholder="Ej: 6000"
+						></b-form-input>
 						Alojamiento
-						<b-form-input v-model="text" placeholder="Enter your name"></b-form-input>
+						<b-form-input
+							v-model="form.prices[3]"
+							placeholder="Ej: 25000"
+						></b-form-input>
 					</b-col>
 				</b-row>
 			</b-col>
@@ -111,9 +142,19 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
+	data() {
+		return {
+			form: {
+				name: '',
+				rut: '',
+				prices: [null, null, null, null],
+			},
+			filterCompanyWord: '',
+		};
+	},
 	computed: {
 		...mapGetters({
 			companies: 'Company/companies',
@@ -121,11 +162,15 @@ export default {
 		}),
 	},
 	mounted() {
-		this.$store.dispatch('Company/fetchCompany');
+		this.fetchCompany();
 	},
 	methods: {
+		...mapActions({
+			fetchCompany: 'Company/fetchCompany',
+		}),
 		...mapMutations({
 			selectCompany: 'Company/selectCompany',
+			filterCompany: 'Company/filterCompany',
 		}),
 	},
 };

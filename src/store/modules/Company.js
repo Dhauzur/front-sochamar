@@ -4,11 +4,20 @@ import Axios from 'axios';
 const state = {
 	companySelected: null,
 	companies: [],
+	filterCompanyWord: '',
 };
 
 const getters = {
 	companySelected: state => state.companySelected,
-	companies: state => state.companies,
+	companies: state => {
+		if (state.filterCompanyWord)
+			return state.companies.filter(
+				c =>
+					c.name.includes(state.filterCompanyWord) ||
+					c.rut.includes(state.filterCompanyWord)
+			);
+		else return state.companies;
+	},
 };
 
 const actions = {
@@ -26,6 +35,9 @@ const actions = {
 };
 
 const mutations = {
+	filterCompany(state, value) {
+		state.filterCompanyWord = value;
+	},
 	selectCompany(state, value) {
 		state.companySelected = state.companies.find(c => c.id == value);
 	},

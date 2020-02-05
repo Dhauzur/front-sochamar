@@ -94,6 +94,10 @@
 	background: #231704d9;
 }
 
+.background-into-module {
+	box-shadow: inset 0px -15px 20px -25px rgba(0, 0, 0, 0.75);
+}
+
 .background-module {
 	background-color: #c4c1dc61;
 	border-radius: 20px;
