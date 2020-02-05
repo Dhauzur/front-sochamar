@@ -324,14 +324,14 @@ export default {
 						payload: this.form,
 						id: this.passenger._id,
 					});
-					this.success = 'Pasagero editado cone exito';
+					this.success = 'Pasagero editado con exito';
 					this.clearSuccess();
 					// update list passenger
 					this.getAllPassengers();
 				} else {
 					// Save the passenger
 					await this.savePassenger(this.form);
-					this.success = 'Pasagero Agregado cone exito';
+					this.success = 'Pasagero Agregado con exito';
 					this.clearSuccess();
 					// update list passenger
 					this.getAllPassengers();

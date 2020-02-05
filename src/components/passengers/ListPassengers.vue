@@ -1,7 +1,7 @@
 <template>
 	<div class="list">
 		<b-list-group v-for="(item, index) in passengers" :key="index">
-			<b-list-group-item @click="() => selectedPassenger(item)">
+			<b-list-group-item @click="selectedPassenger(item)">
 				<b-row>
 					<b-col cols="10" class="text-left"
 						>{{ item.firstName }} {{ item.lastName }} - {{ item.appointment }}/{{
