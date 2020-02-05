@@ -14,7 +14,7 @@
 							>
 								<b-form-input
 									id="email-input"
-									v-model="loginData.email"
+									v-model.trim="loginData.email"
 									type="email"
 									required
 									placeholder="Ingresa el correo"

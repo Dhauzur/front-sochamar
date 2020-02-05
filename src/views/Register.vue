@@ -10,7 +10,7 @@
 							<b-form-group id="input-group-1" label="Nombre:" label-for="name-input">
 								<b-form-input
 									id="name-input"
-									v-model="formData.name"
+									v-model.trim="formData.name"
 									required
 									placeholder="Ingresa tu nombre"
 								></b-form-input>
@@ -23,7 +23,7 @@
 							>
 								<b-form-input
 									id="email-input"
-									v-model="formData.email"
+									v-model.trim="formData.email"
 									type="email"
 									required
 									placeholder="Ingresa el correo"
@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
 	data() {
 		return {
@@ -65,9 +67,9 @@ export default {
 		};
 	},
 	methods: {
-		register(test) {
-			console.log(test);
-		},
+		...mapActions({
+			register: 'Auth/register',
+		}),
 	},
 };
 </script>

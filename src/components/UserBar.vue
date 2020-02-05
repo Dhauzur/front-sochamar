@@ -1,7 +1,7 @@
 <template lang="html">
 	<div v-if="isLogged">
 		<b-row>
-			<h2 class="" v-text="user.name"></h2>
+			<h4 v-text="user.name"></h4>
 			<b-col>
 				<b-dropdown variant="link" no-caret>
 					<template v-slot:button-content>

@@ -22,9 +22,20 @@ const actions = {
 			commit('setUser', user);
 			commit('setToken', token);
 			commit('setIsLogged', true);
+			this.$toasted.show('Ingreso exitoso, ya puedes usar la app :)');
 		} catch (e) {
 			/*AÑADIR TOAST DESPUES DE QUE SE APRUEBE EL PR*/
+			this.$toasted.show('Usuario o contraseñas Incorrectos');
 			console.log('error de axios: ' + e);
+		}
+	},
+	async register({ commit }, registerData) {
+		console.log(commit);
+		console.log(registerData);
+		try {
+			await Axios.post(api + '/auth/register', registerData);
+		} catch (e) {
+			console.log(e);
 		}
 	},
 };
