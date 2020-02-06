@@ -19,8 +19,8 @@
 		</b-row>
 	</div>
 	<div v-else>
-		Hola Invitado, <router-link to="/register">Registrate!</router-link> o
-		<router-link to="/login">Ingresa!</router-link>
+		Hola Invitado, <router-link to="/register">registrate</router-link> o
+		<router-link to="/login">ingresa</router-link>
 	</div>
 </template>
 
