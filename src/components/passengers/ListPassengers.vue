@@ -15,7 +15,9 @@
 							</b-link>
 						</div>
 						<div class="d-inline-block ml-1">
-							{{ item.firstName }} {{ item.lastName }} - {{ item.appointment }}
+							{{ item.firstName }} {{ item.lastName }} - {{ item.appointment }}/{{
+								item.function
+							}}
 						</div></b-col
 					>
 					<b-col cols="2" class="text-danger pointer" @click="deleteOne(item._id)"

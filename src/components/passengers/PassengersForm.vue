@@ -16,6 +16,7 @@
 					</label>
 					<b-form-file
 						id="upload"
+						ref="avatar"
 						class="d-none"
 						accept="image/jpeg, image/png, image/gif, image/jpg"
 						:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
@@ -84,7 +85,7 @@
 						<b-col cols="12" class="text-right">
 							<b-input
 								id="age"
-								v-model="$v.passenger.age.$model"
+								v-model.number="$v.passenger.age.$model"
 								type="number"
 							></b-input>
 							<div v-if="$v.passenger.age.$dirty">
@@ -390,11 +391,13 @@ export default {
 		},
 		selectedPassenger(passenger) {
 			this.$refs['document'].reset();
+			this.$refs['avatar'].reset();
 			this.editMode = true;
 			this.passenger = passenger;
 		},
 		clearInputs() {
 			this.$refs['document'].reset();
+			this.$refs['avatar'].reset();
 			this.passenger = {
 				_id: null,
 				passenger: null,
