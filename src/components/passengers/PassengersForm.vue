@@ -210,6 +210,7 @@
 				</b-col>
 				<b-col cols="12" class="mt-2">
 					<b-form-file
+						ref="document"
 						multiple
 						:file-name-formatter="formatNames"
 						:placeholder="
@@ -388,10 +389,12 @@ export default {
 			}
 		},
 		selectedPassenger(passenger) {
+			this.$refs['document'].reset();
 			this.editMode = true;
 			this.passenger = passenger;
 		},
 		clearInputs() {
+			this.$refs['document'].reset();
 			this.passenger = {
 				_id: null,
 				passenger: null,
