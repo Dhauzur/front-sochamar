@@ -1,20 +1,45 @@
 <template>
-	<div>
+	<div class="position-relative">
 		<b-form>
 			<b-row>
-				<b-col v-if="editMode" cols="12" class="text-right"
-					><Button class="btn btn-secondary btn-sm" @click="clearInputs"
-						>Nuevo</Button
-					></b-col
-				>
+				<!-- avatar -->
+				<b-col cols="12">
+					<label for="upload">
+						<b-img
+							class="pointer"
+							for
+							v-bind="mainProps"
+							rounded="circle"
+							alt="avatar"
+							:src="srcImageAvatar"
+						></b-img>
+					</label>
+					<b-form-file
+						id="upload"
+						class="d-none"
+						accept="image/jpeg, image/png, image/gif, image/jpg"
+						:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
+						drop-placeholder="Arrastrar aqui..."
+						@change="e => (passenger.passenger = e.target.files[0])"
+					></b-form-file>
+				</b-col>
+				<b-col cols="12">
+					<label for="upload" class="pointer">{{
+						typeof passenger.passenger === 'string' ? 'Cambiar avatar' : 'Subir avatar'
+					}}</label>
+				</b-col>
+				<!-- button for change view to new passenger -->
+				<div v-if="editMode" class="text-right position-absolute" style="top: 0; right: 0;">
+					<Button class="btn btn-secondary btn-sm" @click="clearInputs">Nuevo </Button>
+				</div>
 				<!-- firstName -->
 				<b-col cols="6">
 					<b-row>
 						<b-col cols="12" class="text-left text-secondary"
 							><label for="firstName" class="mb-0 mt-2">Nombre</label>
 						</b-col>
-						<b-col cols="12" class="text-right"
-							><b-input id="firstName" v-model.trim="$v.passenger.firstName.$model" />
+						<b-col cols="12" class="text-right">
+							<b-input id="firstName" v-model.trim="$v.passenger.firstName.$model" />
 							<div v-if="$v.passenger.firstName.$dirty">
 								<small v-if="!$v.passenger.firstName.required" class="text-danger">
 									Campo requerido
@@ -56,8 +81,8 @@
 						<b-col cols="12" class="text-left text-secondary"
 							><label for="age" class="mb-0 mt-2">Edad</label>
 						</b-col>
-						<b-col cols="12" class="text-right"
-							><b-input
+						<b-col cols="12" class="text-right">
+							<b-input
 								id="age"
 								v-model="$v.passenger.age.$model"
 								type="number"
@@ -69,8 +94,8 @@
 								<small v-if="!$v.passenger.age.between" class="text-danger">
 									Escriba una edad correcta
 								</small>
-							</div></b-col
-						>
+							</div>
+						</b-col>
 					</b-row>
 				</b-col>
 				<!-- state -->
@@ -96,9 +121,9 @@
 			</b-row>
 			<b-row>
 				<!-- birthdate -->
-				<b-col cols="6"
-					><b-row
-						><b-col cols="12" class="text-left text-secondary"
+				<b-col cols="6">
+					<b-row>
+						<b-col cols="12" class="text-left text-secondary"
 							><label for="birthdate" class="mb-0 mt-2">Fecha nacimiento</label>
 						</b-col>
 						<b-col cols="12">
@@ -113,17 +138,18 @@
 								<small v-if="!$v.passenger.birthdate.required" class="text-danger">
 									Campo requerido
 								</small>
-							</div></b-col
-						>
-					</b-row></b-col
-				>
+							</div>
+						</b-col>
+					</b-row>
+				</b-col>
 				<!-- appointment -->
-				<b-col cols="6"
-					><b-row
-						><b-col cols="12" class="text-left text-secondary"
-							><label for="appointment" class="mb-0 mt-2">Cargo</label> </b-col
-						><b-col cols="12"
-							><b-input
+				<b-col cols="6">
+					<b-row>
+						<b-col cols="12" class="text-left text-secondary"
+							><label for="appointment" class="mb-0 mt-2">Cargo</label></b-col
+						>
+						<b-col cols="12">
+							<b-input
 								id="appointment"
 								v-model="$v.passenger.appointment.$model"
 							></b-input>
@@ -141,17 +167,17 @@
 									Minimo 4 Caracteres
 								</small>
 							</div>
-						</b-col></b-row
-					></b-col
-				>
+						</b-col>
+					</b-row>
+				</b-col>
 			</b-row>
 			<!-- function -->
 			<b-row>
 				<b-col cols="12" class="text-left text-secondary"
 					><label for="function" class="mb-0 mt-2">Función</label>
 				</b-col>
-				<b-col cols="6"
-					><b-input id="function" v-model="$v.passenger.function.$model"></b-input>
+				<b-col cols="6">
+					<b-input id="function" v-model="$v.passenger.function.$model"></b-input>
 					<div v-if="$v.passenger.function.$dirty" class="text-right">
 						<small v-if="!$v.passenger.function.required" class="text-danger">
 							Campo requerido
@@ -162,37 +188,34 @@
 					</div>
 				</b-col>
 			</b-row>
-			<!-- avatar -->
-			<b-row>
-				<b-col v-if="editMode" cols="12" class="mt-2">
-					<b-badge pill variant="secondary">{{ passenger.passenger }}</b-badge>
-					<small v-if="!passenger.passenger" class="text-secondary">Sin avatar</small>
-				</b-col>
-				<b-col cols="12" :class="!editMode ? 'mt-4' : 'mt-2'">
-					<b-form-file
-						accept="image/jpeg, image/png, image/gif, image/jpg"
-						:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
-						drop-placeholder="Arrastrar aqui..."
-						@change="e => (passenger.passenger = e.target.files[0])"
-					></b-form-file>
-				</b-col>
-			</b-row>
 			<!-- documents -->
 			<b-row>
-				<b-col v-if="editMode" cols="12" class="mt-2">
-					<b-badge
-						v-for="(item, index) in passenger.documents"
-						:key="index"
-						pill
-						variant="secondary"
-						>{{ item.name || item }}</b-badge
+				<b-col cols="12" class="mt-2">
+					<small
+						v-if="!passenger.documents && !passenger.documents[0] && editMode"
+						class="text-secondary"
+						>Sin Documentos</small
 					>
+					<div v-if="editMode && typeof passenger.documents[0] === 'string'">
+						<b-badge
+							v-for="(item, index) in passenger.documents"
+							:key="index"
+							pill
+							variant="secondary"
+							:href="`${api}${item}`"
+							target="_blank"
+							>Documento {{ index + 1 }}
+						</b-badge>
+					</div>
 				</b-col>
-				<b-col cols="12" :class="!editMode ? 'mt-4' : 'mt-2'"
-					><b-form-file
+				<b-col cols="12" class="mt-2">
+					<b-form-file
 						multiple
+						:file-name-formatter="formatNames"
 						:placeholder="
-							editMode ? 'Cambiar documentos' : 'Agrega un Documento, maximo 5'
+							editMode
+								? 'Cambiar todos los documentos'
+								: 'Agrega un Documento, maximo 5'
 						"
 						drop-placeholder="Arrastrar aqui..."
 						@change="setDocuments"
@@ -204,6 +227,7 @@
 			<b-row>
 				<b-col v-if="passengersList.length > 0" class="mt-4">
 					<ListPassengers
+						:api="api"
 						:selected-passenger="selectedPassenger"
 						:delete-one="deleteOne"
 						:passengers="passengersList"
@@ -215,13 +239,10 @@
 			<b-row>
 				<b-col class="mt-4">
 					<b-button block class="btn btn-primary d-block" @click.prevent="submitForm"
-						>Guardar</b-button
-					>
+						>Guardar
+					</b-button>
 					<small v-if="errors" class="mt-2 d-block text-danger">
 						Debe llenar el formulario correctamente
-					</small>
-					<small v-if="success.length > 0" class="mt-2 d-block text-success">
-						{{ success }}
 					</small>
 				</b-col>
 			</b-row>
@@ -233,13 +254,17 @@
 import { validationMixin } from 'vuelidate';
 import { required, minLength, between } from 'vuelidate/lib/validators';
 import ListPassengers from './ListPassengers';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
+import { api_absolute } from '@/config/index.js';
+import avatarDefault from '@/assets/user-icon.png';
 
 export default {
 	components: { ListPassengers },
 	mixins: [validationMixin],
 	data() {
 		return {
+			api: api_absolute,
+			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 			form: new FormData(),
 			editMode: false,
 			selected: {},
@@ -263,7 +288,19 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters({ passengersList: 'Passengers/passengers' }),
+		srcImageAvatar() {
+			if (typeof this.passenger.passenger === 'string') {
+				return `${this.api}${this.passenger.passenger}`;
+			} else if (this.passenger.passenger) {
+				return URL.createObjectURL(this.passenger.passenger);
+			} else {
+				return avatarDefault;
+			}
+		},
+		...mapGetters({
+			passengersList: 'Passengers/passengers',
+			errorMessage: 'Passengers/errorMessage',
+		}),
 	},
 	created() {
 		this.getAllPassengers();
@@ -324,17 +361,19 @@ export default {
 						payload: this.form,
 						id: this.passenger._id,
 					});
-					this.success = 'Pasagero editado con exito';
-					this.clearSuccess();
+					// show success message success or error
+					this.showMessageToasted('Pasagero editado con exito');
 					// update list passenger
 					this.getAllPassengers();
 				} else {
 					// Save the passenger
 					await this.savePassenger(this.form);
-					this.success = 'Pasagero Agregado con exito';
-					this.clearSuccess();
+					// show success message or error
+					this.showMessageToasted('Pasagero guardado con exito');
 					// update list passenger
 					this.getAllPassengers();
+					// clear inputs
+					this.clearInputs();
 				}
 			}
 		},
@@ -366,14 +405,28 @@ export default {
 				function: '',
 			};
 			this.editMode = false;
-		},
-		clearSuccess() {
-			setTimeout(() => {
-				this.success = '';
-			}, 2000);
+			this.$v.$reset();
 		},
 		deleteOne(id) {
 			this.deleteOnePassenger(id).then(() => this.getAllPassengers());
+			this.showMessageToasted('Eliminado exitosamente');
+		},
+		showMessageToasted(msg) {
+			if (this.errorMessage !== '') {
+				this.$toasted.show(this.errorMessage, { type: 'error' });
+				this.setErrorMessage('');
+			} else {
+				this.$toasted.show(msg, {
+					type: 'success',
+				});
+			}
+		},
+		formatNames(files) {
+			if (files.length === 1) {
+				return files[0].name;
+			} else {
+				return `${files.length} files selected`;
+			}
 		},
 		...mapActions({
 			getAllPassengers: 'Passengers/fetchAllPassengers',
@@ -381,6 +434,13 @@ export default {
 			editPassenger: 'Passengers/editPassenger',
 			deleteOnePassenger: 'Passengers/deleteOnePassenger',
 		}),
+		...mapMutations({ setErrorMessage: 'Passengers/setErrorMessage' }),
 	},
 };
 </script>
+
+<style scoped>
+.pointer {
+	cursor: pointer;
+}
+</style>
