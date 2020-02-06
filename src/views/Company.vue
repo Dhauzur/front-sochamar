@@ -2,26 +2,8 @@
 	<b-container>
 		<b-row id="nav" class="justify-content-center">
 			<b-col md="8" lg="6" class="background-module pb-3 px-4">
-				<h3 class="mt-4">Gestión de compañías</h3>
+				<h3 class="my-4">Gestión de compañías</h3>
 				<b-row class="mb-3">
-					<b-col cols="5">
-						<div>
-							<b-dropdown
-								id="dropdown-1"
-								variant="primary"
-								block
-								text="Acciones"
-								size="sm"
-							>
-								<b-dropdown-item @click="$router.push({ name: 'grupos' })"
-									>Gestionar grupos</b-dropdown-item
-								>
-								<b-dropdown-item @click="$router.push({ name: 'hospedaje' })"
-									>Hospedajes</b-dropdown-item
-								>
-							</b-dropdown>
-						</div>
-					</b-col>
 					<b-col cols="7">
 						<b-form-input
 							v-model="filterCompanyWord"
@@ -110,16 +92,18 @@
 						<h5>Precios</h5>
 					</b-col>
 				</b-row>
-				<b-row class="mb-3">
+				<b-row class="mb-5">
 					<b-col>
 						Desayuno
 						<b-form-input
 							v-model="form.prices[0]"
+							type="number"
 							placeholder="Ej: 4000"
 						></b-form-input>
 						Almuerzo
 						<b-form-input
 							v-model="form.prices[1]"
+							type="number"
 							placeholder="Ej: 8000"
 						></b-form-input>
 					</b-col>
@@ -127,13 +111,27 @@
 						Cena
 						<b-form-input
 							v-model="form.prices[2]"
+							type="number"
 							placeholder="Ej: 6000"
 						></b-form-input>
 						Alojamiento
 						<b-form-input
 							v-model="form.prices[3]"
+							type="number"
 							placeholder="Ej: 25000"
 						></b-form-input>
+					</b-col>
+				</b-row>
+				<b-row class="mb-3">
+					<b-col>
+						<b-button
+							block
+							variant="primary"
+							class="col-12"
+							@click="createCompany(form)"
+						>
+							Crear
+						</b-button>
 					</b-col>
 				</b-row>
 			</b-col>
@@ -167,6 +165,7 @@ export default {
 	methods: {
 		...mapActions({
 			fetchCompany: 'Company/fetchCompany',
+			createCompany: 'Company/createCompany',
 		}),
 		...mapMutations({
 			selectCompany: 'Company/selectCompany',

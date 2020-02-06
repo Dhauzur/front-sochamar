@@ -21,6 +21,17 @@ const getters = {
 };
 
 const actions = {
+	async createCompany(company) {
+		try {
+			console.log(company);
+			const response = await Axios.post(api + '/company/create', company);
+			console.log(response);
+			// const { token, user } = response.data;
+			console.log('res');
+		} catch (e) {
+			console.log('error de axios: ' + e);
+		}
+	},
 	async fetchCompany({ commit }) {
 		commit('setCompanies', null);
 		return Axios.get(api + '/company')
