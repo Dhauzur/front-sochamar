@@ -3,7 +3,7 @@
 		<b-row class="justify-content-center">
 			<b-col md="5">
 				<b-card>
-					<b-card-title>Ingresa!!</b-card-title>
+					<b-card-title>Ingreso</b-card-title>
 					<b-card-body>
 						<b-form @submit.prevent="login(loginData)">
 							<!--EMAIL-->
@@ -28,20 +28,20 @@
 							>
 								<b-form-input
 									id="email-input"
-									v-model="loginData.password"
+									v-model.trim="loginData.password"
 									type="password"
 									required
 									placeholder="Ingresa la contraseña"
 								></b-form-input>
 							</b-form-group>
 							<!--SUBMIT-->
-							<b-button type="submit" variant="primary"> Ingresa!</b-button>
+							<b-button type="submit" variant="primary"> Ingresar</b-button>
 						</b-form>
 					</b-card-body>
 					<b-card-footer>
 						<p>
 							¿No tienes una cuenta?
-							<router-link to="/register">Registrate!</router-link>
+							<router-link to="/register">registrate</router-link>
 						</p>
 						<a href="#">¿Olvidaste tu contraseña?</a>
 					</b-card-footer>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
 	data() {
@@ -62,6 +62,18 @@ export default {
 				password: '',
 			},
 		};
+	},
+	computed: {
+		...mapGetters({
+			message: 'Auth/message',
+		}),
+	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
 	},
 	methods: {
 		...mapActions({

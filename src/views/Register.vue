@@ -3,7 +3,7 @@
 		<b-row class="justify-content-center">
 			<b-col md="5">
 				<b-card>
-					<b-card-title>Registrate!!</b-card-title>
+					<b-card-title>Registro</b-card-title>
 					<b-card-body>
 						<b-form @submit.prevent="register(formData)">
 							<!--Name-->
@@ -44,7 +44,7 @@
 								></b-form-input>
 							</b-form-group>
 							<!--SUBMIT-->
-							<b-button type="submit" variant="primary"> Registrate!</b-button>
+							<b-button type="submit" variant="primary"> Registrar</b-button>
 						</b-form>
 					</b-card-body>
 				</b-card>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
 	data() {
@@ -65,6 +65,18 @@ export default {
 				password: '',
 			},
 		};
+	},
+	computed: {
+		...mapGetters({
+			message: 'Auth/message',
+		}),
+	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
 	},
 	methods: {
 		...mapActions({

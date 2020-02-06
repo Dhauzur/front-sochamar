@@ -3,7 +3,7 @@ import Axios from 'axios';
 import router from '@/router/index.js';
 
 const state = {
-	message: '',
+	message: {},
 	isLogged: false,
 	user: {},
 };
@@ -23,10 +23,13 @@ const actions = {
 			commit('setUser', user);
 			commit('setToken', token);
 			commit('setIsLogged', true);
-			commit('setMessage', 'Ingreso exitoso, ya puedes usar la app :)');
 			router.push('/');
 		} catch (e) {
-			commit('setMessage', 'Usuario o contraseña incorrectos');
+			const message = {
+				type: 'error',
+				text: 'Usuario o contraseña incorrectos',
+			};
+			commit('setMessage', message);
 		}
 	},
 	async register({ commit }, registerData) {
@@ -34,7 +37,8 @@ const actions = {
 			await Axios.post(api + '/auth/register', registerData);
 			router.push('/login');
 		} catch (e) {
-			commit('setMessage', 'El correo ya existe');
+			const message = { type: 'error', text: 'El correo ya existe' };
+			commit('setMessage', message);
 		}
 	},
 };
