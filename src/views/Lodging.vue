@@ -1,26 +1,28 @@
 <template>
 	<b-row id="nav">
-		<b-col v-if="errorMessage" cols="12" class="mb-2">
-			<ErrorMessage :msj="errorMessage" />
-		</b-col>
 		<b-col class="background-module">
 			<Loading v-if="loading" :msj="loading" />
 			<template v-else>
-				<b-row class="mx-1">
-					<b-col md="6" lg="5" xl="3">
+				<b-row>
+					<b-col sm="12" md="5" class="my-2">
+						<label>Selecione entidad</label>
+					</b-col>
+					<b-col cols="12" class="mb-2">
 						<b-row>
-							<b-col cols="12" class="my-2">
-								<label>Selecione entidad</label>
-							</b-col>
-							<b-col cols="12" class="mb-2">
-								<b-form-select
+							<b-col cols="9" sm="10" md="3"
+								><b-form-select
 									v-model="selectCompany"
 									:options="companies"
-									class="col-sm-6 col-md-12 "
 									@change="setCompany"
-								/>
+							/></b-col>
+							<b-col cols="3" sm="2" md="1" class="pl-0">
+								<PassengersDialog />
 							</b-col>
-							<b-col v-if="lodgings.length == 0 && company" class="mb-2" cols="12">
+						</b-row>
+					</b-col>
+					<b-col v-if="lodgings.length == 0 && company" cols="12" co class="mb-2">
+						<b-row>
+							<b-col cols="12" md="3">
 								<b-button
 									variant="primary"
 									class="col-12"
@@ -29,17 +31,25 @@
 									Crear hospedaje
 								</b-button>
 							</b-col>
-							<b-col v-if="getMirrorLodging || editMode" cols="12" class="mb-2">
-								<button
-									type="button"
-									class="btn btn-primary btn-block"
-									@click="saveLodging()"
+						</b-row>
+					</b-col>
+					<b-col v-if="getMirrorLodging || editMode" cols="12" md="3" class="mb-2">
+						<button
+							type="button"
+							class="btn btn-primary btn-block"
+							@click="saveLodging()"
+						>
+							Guardar
+						</button>
+					</b-col>
+					<b-col sm="12" class="mb-2">
+						<b-row>
+							<b-col sm="12" md="3">
+								<b-dropdown
+									id="dropdown-1"
+									text="Acciones"
+									class="Block Level w-100"
 								>
-									Guardar
-								</button>
-							</b-col>
-							<b-col cols="12" class="mb-2">
-								<b-dropdown id="dropdown-1" text="Acciones" class="col-12">
 									<b-dropdown-item v-if="company" @click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
@@ -188,18 +198,18 @@
 
 <script>
 import { Timeline } from 'vue2vis';
+import PassengersDialog from '../components/passengers/PassengersDialog';
 import moment from 'moment';
 import { mapGetters, mapMutations } from 'vuex';
 import Loading from '@/components/Loading';
 import EditLodging from '@/components/EditLodging';
-import ErrorMessage from '@/components/ErrorMessage';
 
 export default {
 	components: {
 		Timeline,
 		Loading,
 		EditLodging,
-		ErrorMessage,
+		PassengersDialog,
 	},
 	data() {
 		return {
@@ -217,22 +227,23 @@ export default {
 					repeat: 'daily',
 				},
 				onUpdate: (item, callback) => {
-					this.setModeEdit(true);
 					if (this.company) {
+						this.setModeEdit(true);
 						callback(item);
 						this.$store.commit('Lodging/updateService', item);
-					}
+					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
 					if (this.company) callback(item);
+					else this.$toasted.show('Selecione una entidad primero');
 				},
 				onRemove: (item, callback) => {
 					if (this.lodgings.length > 1 && this.company) {
 						this.setModeEdit(false);
 						this.$store.dispatch('Lodging/deleteLodging', item);
 						callback(item);
-					}
+					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onAdd: (item, callback) => {
 					if (this.company) {
@@ -257,39 +268,39 @@ export default {
 						item.id = timestamp;
 						this.$store.commit('Lodging/addLodging', item);
 						if (!this.lodgings.get(item.id)) callback(item);
-					}
+					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMove: (item, callback) => {
-					var service = [];
-					var numberDays = moment(item.end).diff(
-						moment(item.start).format('YYYY-MM-DD'),
-						'days'
-					);
-					var oldService = JSON.parse(item.service[0]);
-					for (var i = 0; i <= numberDays; i++)
-						service.push([
-							oldService[i] ? oldService[i][0] : 1,
-							oldService[i] ? oldService[i][1] : 1,
-							oldService[i] ? oldService[i][2] : 1,
-							oldService[i] ? oldService[i][3] : 1,
-						]);
-					var itemService = [];
-					itemService.push(JSON.stringify(service));
-					item.service = itemService;
-					item.start = moment(item.start).hours(16);
-					item.end = moment(item.end).hours(12);
-					this.setModeEdit(true);
 					if (this.company) {
+						var service = [];
+						var numberDays = moment(item.end).diff(
+							moment(item.start).format('YYYY-MM-DD'),
+							'days'
+						);
+						var oldService = JSON.parse(item.service[0]);
+						for (var i = 0; i <= numberDays; i++)
+							service.push([
+								oldService[i] ? oldService[i][0] : 1,
+								oldService[i] ? oldService[i][1] : 1,
+								oldService[i] ? oldService[i][2] : 1,
+								oldService[i] ? oldService[i][3] : 1,
+							]);
+						var itemService = [];
+						itemService.push(JSON.stringify(service));
+						item.service = itemService;
+						item.start = moment(item.start).hours(16);
+						item.end = moment(item.end).hours(12);
+						this.setModeEdit(true);
 						this.updateService(item);
 						callback(item);
-					}
+					} else this.$toasted.show('Selecione una entidad primero');
 				},
 			},
 		};
 	},
 	computed: {
 		...mapGetters({
-			errorMessage: 'Lodging/errorMessage',
+			message: 'Lodging/message',
 			updatingService: 'Lodging/updatingService',
 			mirrorLodging: 'Lodging/mirrorLodging',
 			lodgingSelect: 'Lodging/lodgingSelect',
@@ -442,6 +453,13 @@ export default {
 			return dates;
 		},
 	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
+	},
 	created() {
 		this.$store.dispatch('Lodging/fetchCompany');
 		this.setRangeDate({
@@ -457,11 +475,18 @@ export default {
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
+			var numberPassangerMax = this.rooms.get(this.lodgingSelect.group).numberPassangerMax;
+			if (payload.target.value > numberPassangerMax) {
+				this.$toasted.show('Cantidad máxima de la habitación excedida');
+				payload.target.value = numberPassangerMax;
+			}
+			if (payload.target.value < 0) payload.target.value = numberPassangerMax;
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
 			if (this.company && payload.item) {
 				this.setLodgingSelect(payload.item);
+				console.log('???');
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
 		},

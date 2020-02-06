@@ -61,9 +61,6 @@
 				</table>
 			</b-col>
 		</b-row>
-		<router-link to="/hospedaje">
-			Hospedaje Sochamar
-		</router-link>
 	</b-container>
 </template>
 
