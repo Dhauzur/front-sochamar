@@ -58,8 +58,8 @@ export default {
 	data() {
 		return {
 			loginData: {
-				email: 'prueba@prueba.cl',
-				password: 'asd',
+				email: '',
+				password: '',
 			},
 		};
 	},
