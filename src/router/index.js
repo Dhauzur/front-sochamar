@@ -6,6 +6,8 @@ import Lodging from '../views/Lodging.vue';
 import Group from '../views/Group.vue';
 import Entity from '../views/Entity.vue';
 import Report from '../views/Report.vue';
+import Login from '../views/Login';
+import Register from '../views/Register';
 
 Vue.use(VueRouter);
 
@@ -39,6 +41,16 @@ const routes = [
 		path: '/informe',
 		name: 'informe',
 		component: Report,
+	},
+	{
+		path: '/login',
+		name: 'login',
+		component: Login,
+	},
+	{
+		path: '/register',
+		name: 'register',
+		component: Register,
 	},
 ];
 
