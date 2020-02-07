@@ -5,12 +5,12 @@
 				<b-row>
 					<b-col cols="10" class="text-left">
 						<div v-if="item.passenger" class="d-inline-block">
-							<b-link :href="`${api}${item.passenger}`" target="_blank">
+							<b-link :href="`${api}/${item.passenger}`" target="_blank">
 								<b-img
 									v-bind="mainProps"
 									rounded="circle"
 									alt="Circle image"
-									:src="`${api}${item.passenger}`"
+									:src="`${api}/${item.passenger}`"
 								></b-img>
 							</b-link>
 						</div>

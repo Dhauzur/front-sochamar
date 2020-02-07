@@ -203,7 +203,7 @@
 							:key="index"
 							pill
 							variant="secondary"
-							:href="`${api}${item}`"
+							:href="`${api}/${item}`"
 							target="_blank"
 							>Documento {{ index + 1 }}
 						</b-badge>
@@ -292,7 +292,7 @@ export default {
 	computed: {
 		srcImageAvatar() {
 			if (typeof this.passenger.passenger === 'string') {
-				return `${this.api}${this.passenger.passenger}`;
+				return `${this.api}/${this.passenger.passenger}`;
 			} else if (this.passenger.passenger) {
 				return URL.createObjectURL(this.passenger.passenger);
 			} else {
