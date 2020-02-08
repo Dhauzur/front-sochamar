@@ -21,13 +21,14 @@ const getters = {
 };
 
 const actions = {
-	async createCompany({ commit }, company) {
+	async createCompany({ commit, dispatch }, company) {
 		try {
 			await Axios.post(api + '/company/create', company);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Empresa creada ',
 			});
+			dispatch('fetchCompany');
 		} catch (e) {
 			console.log('error de axios: ' + e);
 		}

@@ -25,8 +25,8 @@
 							</router-link>
 						</b-nav-text>
 					</b-navbar-nav>
+					<UserBar />
 				</b-collapse>
-				<UserBar></UserBar>
 			</b-navbar>
 		</div>
 		<router-view />
