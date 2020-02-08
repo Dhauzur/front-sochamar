@@ -3,21 +3,26 @@
 		<b-col class="background-module">
 			<Loading v-if="loading" :msj="loading" />
 			<template v-else>
-				<b-row class="mx-1">
-					<b-col md="6" lg="5" xl="3">
+				<b-row>
+					<b-col sm="12" md="5" class="my-2">
+						<label>Selecione entidad</label>
+					</b-col>
+					<b-col cols="12" class="mb-2">
 						<b-row>
-							<b-col cols="12" class="my-2">
-								<label>Selecione compañia</label>
-							</b-col>
-							<b-col cols="12" class="mb-2">
-								<b-form-select
+							<b-col cols="9" sm="10" md="3"
+								><b-form-select
 									v-model="selectCompany"
 									:options="companies"
-									class="col-sm-6 col-md-12 "
 									@change="setCompany"
-								/>
+							/></b-col>
+							<b-col cols="3" sm="2" md="1" class="pl-0">
+								<PassengersDialog />
 							</b-col>
-							<b-col v-if="lodgings.length == 0 && company" class="mb-2" cols="12">
+						</b-row>
+					</b-col>
+					<b-col v-if="lodgings.length == 0 && company" cols="12" co class="mb-2">
+						<b-row>
+							<b-col cols="12" md="3">
 								<b-button
 									variant="primary"
 									class="col-12"
@@ -26,17 +31,25 @@
 									Crear hospedaje
 								</b-button>
 							</b-col>
-							<b-col v-if="getMirrorLodging || editMode" cols="12" class="mb-2">
-								<button
-									type="button"
-									class="btn btn-primary btn-block"
-									@click="saveLodging()"
+						</b-row>
+					</b-col>
+					<b-col v-if="getMirrorLodging || editMode" cols="12" md="3" class="mb-2">
+						<button
+							type="button"
+							class="btn btn-primary btn-block"
+							@click="saveLodging()"
+						>
+							Guardar
+						</button>
+					</b-col>
+					<b-col sm="12" class="mb-2">
+						<b-row>
+							<b-col sm="12" md="3">
+								<b-dropdown
+									id="dropdown-1"
+									text="Acciones"
+									class="Block Level w-100"
 								>
-									Guardar
-								</button>
-							</b-col>
-							<b-col cols="12" class="mb-2">
-								<b-dropdown id="dropdown-1" text="Acciones" class="col-12">
 									<b-dropdown-item v-if="company" @click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
@@ -185,6 +198,7 @@
 
 <script>
 import { Timeline } from 'vue2vis';
+import PassengersDialog from '../components/passengers/PassengersDialog';
 import moment from 'moment';
 import { mapGetters, mapMutations } from 'vuex';
 import Loading from '@/components/Loading';
@@ -195,6 +209,7 @@ export default {
 		Timeline,
 		Loading,
 		EditLodging,
+		PassengersDialog,
 	},
 	data() {
 		return {

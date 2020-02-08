@@ -21,6 +21,17 @@ const getters = {
 };
 
 const actions = {
+	async createCompany({ commit }, company) {
+		try {
+			await Axios.post(api + '/company/create', company);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Empresa creada ',
+			});
+		} catch (e) {
+			console.log('error de axios: ' + e);
+		}
+	},
 	async fetchCompany({ commit }) {
 		commit('setCompanies', null);
 		return Axios.get(api + '/company')
@@ -35,6 +46,9 @@ const actions = {
 };
 
 const mutations = {
+	setMessage(state, value) {
+		state.message = value;
+	},
 	filterCompany(state, value) {
 		state.filterCompanyWord = value;
 	},

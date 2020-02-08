@@ -26,11 +26,19 @@
 						</b-nav-text>
 					</b-navbar-nav>
 				</b-collapse>
+				<UserBar></UserBar>
 			</b-navbar>
 		</div>
 		<router-view />
 	</div>
 </template>
+
+<script>
+import UserBar from './components/UserBar';
+export default {
+	components: { UserBar },
+};
+</script>
 
 <style lang="css">
 @import '../node_modules/vue2vis/dist/vue2vis.css';

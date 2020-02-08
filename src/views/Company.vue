@@ -159,7 +159,15 @@ export default {
 		...mapGetters({
 			companies: 'Company/companies',
 			companySelected: 'Company/companySelected',
+			message: 'Company/message',
 		}),
+	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
 	},
 	mounted() {
 		this.fetchCompany();
