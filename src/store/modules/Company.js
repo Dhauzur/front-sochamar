@@ -1,13 +1,16 @@
 import { api } from '@/config/index.js';
 import Axios from 'axios';
+import router from '@/router/index.js';
 
 const state = {
+	message: '',
 	companySelected: null,
 	companies: [],
 	filterCompanyWord: '',
 };
 
 const getters = {
+	message: state => state.message,
 	companySelected: state => state.companySelected,
 	companies: state => {
 		if (state.filterCompanyWord)
@@ -30,18 +33,30 @@ const actions = {
 			});
 			dispatch('fetchCompany');
 		} catch (e) {
-			console.log('error de axios: ' + e);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al crear compañia',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	async fetchCompany({ commit }) {
 		commit('setCompanies', null);
 		return Axios.get(api + '/company')
 			.then(response => {
-				console.log(response.data.company);
+				commit('setMessage', {
+					type: 'success',
+					text: 'Compañias descargadas',
+				});
 				commit('setCompanies', response.data.company);
 			})
-			.catch(() => {
+			.catch(e => {
 				commit('setCompanies', null);
+				commit('setMessage', {
+					type: 'error',
+					text: 'Error al descargar compañias',
+				});
+				if (e.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
 };

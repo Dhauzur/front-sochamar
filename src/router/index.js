@@ -3,7 +3,7 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Maintenance from '../views/Maintenance.vue';
 import Lodging from '../views/Lodging.vue';
-import Group from '../views/Group.vue';
+import Room from '../views/Room.vue';
 import Company from '../views/Company.vue';
 import Report from '../views/Report.vue';
 import Login from '../views/Login';
@@ -28,9 +28,9 @@ const routes = [
 		component: Lodging,
 	},
 	{
-		path: '/grupos',
-		name: 'grupos',
-		component: Group,
+		path: '/habitaciones',
+		name: 'habitaciones',
+		component: Room,
 	},
 	{
 		path: '/compañias',

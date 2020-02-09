@@ -5,7 +5,7 @@
 			<template v-else>
 				<b-row>
 					<b-col sm="12" md="5" class="my-2">
-						<label>Selecione entidad</label>
+						<label>Selecione compañia</label>
 					</b-col>
 					<b-col cols="12" class="mb-2">
 						<b-row>
@@ -53,8 +53,8 @@
 									<b-dropdown-item v-if="company" @click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'grupos' })"
-										>Gestionar grupos</b-dropdown-item
+									<b-dropdown-item @click="$router.push({ name: 'habitaciones' })"
+										>Gestionar habitaciones</b-dropdown-item
 									>
 									<b-dropdown-item @click="$router.push({ name: 'compañias' })"
 										>Gestionar compañias</b-dropdown-item
@@ -486,7 +486,6 @@ export default {
 		enableEdit(payload) {
 			if (this.company && payload.item) {
 				this.setLodgingSelect(payload.item);
-				console.log('???');
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
 		},
@@ -544,11 +543,5 @@ th {
 	padding: 2px !important;
 	color: #1c1e21;
 	min-width: 60px;
-}
-.vis-labelset .vis-label .vis-inner {
-	max-width: 30px;
-}
-.vis.timeline .labelset .inner {
-	width: 30px;
 }
 </style>

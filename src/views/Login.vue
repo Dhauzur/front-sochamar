@@ -21,7 +21,7 @@
 					<!--PASSWORD-->
 					<b-form-group id="input-group-2" label="Contraseña:" label-for="password-input">
 						<b-form-input
-							id="email-input"
+							id="password-input"
 							v-model.trim="loginData.password"
 							type="password"
 							required
@@ -29,7 +29,7 @@
 						></b-form-input>
 					</b-form-group>
 					<!--SUBMIT-->
-					<b-button type="submit" variant="primary"> Ingresar</b-button>
+					<b-button class="mt-2" type="submit" variant="primary"> Ingresar</b-button>
 				</b-form>
 				<p>
 					¿No tienes una cuenta?
@@ -55,20 +55,36 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			message: 'Auth/message',
+			messageAuth: 'Auth/message',
+			messageRoom: 'Room/message',
+			messageCompany: 'Company/message',
 		}),
 	},
 	watch: {
-		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
+		messageAuth(newVal) {
+			this.toastedMessage(newVal);
 		},
+		messageRoom(newVal) {
+			this.toastedMessage(newVal);
+		},
+		messageCompany(newVal) {
+			this.toastedMessage(newVal);
+		},
+	},
+	mounted() {
+		this.toastedMessage(this.messageAuth);
+		this.toastedMessage(this.messageRoom);
+		this.toastedMessage(this.messageCompany);
 	},
 	methods: {
 		...mapActions({
 			login: 'Auth/login',
 		}),
+		toastedMessage(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
 	},
 };
 </script>
