@@ -23,6 +23,7 @@
 								<tr>
 									<th>Nombre habitación</th>
 									<th>Cantidad máxima de pasajeros</th>
+									<th>Eliminar</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -33,6 +34,11 @@
 								>
 									<td>{{ c.name }}</td>
 									<td>{{ c.numberPassangerMax }}</td>
+									<td class="p-2">
+										<b-button variant="danger">
+											X
+										</b-button>
+									</td>
 								</tr>
 							</tbody>
 						</table>

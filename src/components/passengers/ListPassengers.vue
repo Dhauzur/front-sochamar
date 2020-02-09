@@ -18,11 +18,11 @@
 							{{ item.firstName }} {{ item.lastName }} - {{ item.appointment }}/{{
 								item.function
 							}}
-						</div></b-col
-					>
-					<b-col cols="2" class="text-danger pointer" @click="deleteOne(item._id)"
-						>X</b-col
-					>
+						</div>
+					</b-col>
+					<b-col cols="2" class="text-danger pointer" @click="deleteOne(item._id)">
+						X
+					</b-col>
 				</b-row>
 			</b-list-group-item>
 		</b-list-group>

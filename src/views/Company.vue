@@ -24,6 +24,7 @@
 									<th>Nombre</th>
 									<th>RUT / ID</th>
 									<th>Precios</th>
+									<th>Eliminar</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -59,6 +60,11 @@
 												</tr>
 											</tbody>
 										</table>
+									</td>
+									<td class="p-2">
+										<b-button variant="danger">
+											X
+										</b-button>
 									</td>
 								</tr>
 							</tbody>
