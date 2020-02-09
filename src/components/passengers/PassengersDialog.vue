@@ -19,4 +19,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.modal-content {
+	max-height: 90vh;
+	overflow-y: auto;
+}
+</style>

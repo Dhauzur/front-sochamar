@@ -1,9 +1,23 @@
 <template>
 	<div class="position-relative">
 		<b-form>
+			<!-- list passenger -->
+			<b-row>
+				<b-col v-if="passengersList.length > 0" class="mt-4">
+					<h5>Listado de pasajeros</h5>
+					<ListPassengers
+						:api="api"
+						:selected-passenger="selectedPassenger"
+						:delete-one="deleteOne"
+						:passengers="passengersList"
+						:get-all-passengers="getAllPassengers"
+					/>
+				</b-col>
+			</b-row>
 			<b-row>
 				<!-- avatar -->
-				<b-col cols="12">
+				<b-col class="mt-3">
+					<h5>Crear nuevo pasajero</h5>
 					<label for="upload">
 						<b-img
 							class="pointer"
@@ -224,20 +238,6 @@
 					></b-form-file>
 				</b-col>
 			</b-row>
-			<b-dropdown-divider v-if="passengersList.length > 0" />
-			<!-- list passenger -->
-			<b-row>
-				<b-col v-if="passengersList.length > 0" class="mt-4">
-					<ListPassengers
-						:api="api"
-						:selected-passenger="selectedPassenger"
-						:delete-one="deleteOne"
-						:passengers="passengersList"
-						:get-all-passengers="getAllPassengers"
-					/>
-				</b-col>
-			</b-row>
-			<!-- submit -->
 			<b-row>
 				<b-col class="mt-4">
 					<b-button block class="btn btn-primary d-block" @click.prevent="submitForm"
@@ -248,6 +248,7 @@
 					</small>
 				</b-col>
 			</b-row>
+			<b-dropdown-divider v-if="passengersList.length > 0" />
 		</b-form>
 	</div>
 </template>

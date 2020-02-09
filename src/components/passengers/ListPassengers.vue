@@ -20,8 +20,10 @@
 							}}
 						</div>
 					</b-col>
-					<b-col cols="2" class="text-danger pointer" @click="deleteOne(item._id)">
-						X
+					<b-col cols="2">
+						<b-button variant="danger" @click="deleteOne(item._id)">
+							X
+						</b-button>
 					</b-col>
 				</b-row>
 			</b-list-group-item>
