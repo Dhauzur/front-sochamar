@@ -47,6 +47,19 @@ const actions = {
 			commit('setMessage', message);
 		}
 	},
+	async updatePassword({ commit }, recoverData) {
+		try {
+			const { password, token } = recoverData;
+			Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+			await Axios.put(api + '/auth/user/password', { password });
+			const message = { type: 'success', text: 'Contraseña cambiada con exito' };
+			commit('setMessage', message);
+			Axios.defaults.headers.common['Authorization'] = '';
+		} catch (e) {
+			const message = { type: 'error', text: 'Expiro el tiempo para cambiar la contraseña' };
+			commit('setMessage', message);
+		}
+	},
 };
 
 const mutations = {

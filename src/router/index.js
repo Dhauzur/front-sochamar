@@ -8,6 +8,7 @@ import Entity from '../views/Entity.vue';
 import Report from '../views/Report.vue';
 import Login from '../views/Login';
 import Register from '../views/Register';
+import PasswordReset from '../views/PasswordReset';
 
 Vue.use(VueRouter);
 
@@ -51,6 +52,11 @@ const routes = [
 		path: '/register',
 		name: 'register',
 		component: Register,
+	},
+	{
+		path: '/passwordReset',
+		name: 'passwordReset',
+		component: PasswordReset,
 	},
 ];
 
