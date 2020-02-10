@@ -4,11 +4,13 @@ import Axios from 'axios';
 const state = {
 	errorMessage: '',
 	passengers: [],
+	search: [],
 };
 
 const getters = {
 	errorMessage: state => state.errorMessage,
 	passengers: state => state.passengers,
+	passengersResultSearch: state => state.search,
 };
 
 const actions = {
@@ -18,6 +20,16 @@ const actions = {
 			commit('setPassengers', response.data.passengers);
 		} catch (error) {
 			commit('setPassengers', null);
+			commit('setErrorMessage', error.message);
+		}
+	},
+	async searchPassengers({ commit }, searchString) {
+		try {
+			const config = { headers: { 'Content-Type': 'application/json' } };
+			const response = await Axios.post(api + '/passengers/search', { searchString }, config);
+			commit('setSearchPassengers', response.data.result);
+		} catch (error) {
+			commit('setSearchPassengers', null);
 			commit('setErrorMessage', error.message);
 		}
 	},
@@ -59,6 +71,9 @@ const actions = {
 const mutations = {
 	setPassengers(state, value) {
 		state.passengers = value;
+	},
+	setSearchPassengers(state, value) {
+		state.search = value;
 	},
 	setErrorMessage(state, value) {
 		state.errorMessage = value;

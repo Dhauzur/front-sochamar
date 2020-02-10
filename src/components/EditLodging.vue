@@ -61,6 +61,14 @@
 			</b-row>
 			<b-row>
 				<b-col lg="4" xl="12">
+					<autocomplete
+						:is-async="true"
+						:items="passengerFormatted"
+						placeholder="Agregar un pasajero"
+						@input="startSearch"
+					/>
+				</b-col>
+				<b-col lg="4" xl="12">
 					<button
 						type="button"
 						class=" btn btn-primary btn-md mt-2 btn-block"
@@ -94,11 +102,16 @@
 
 <script>
 import moment from 'moment';
+import Autocomplete from '@/components/ui/Autocomplete';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 
 export default {
+	components: {
+		Autocomplete,
+	},
 	data() {
 		return {
+			isLoadingPassenger: false,
 			dateStart: null,
 			dateEnd: null,
 			services: [
@@ -112,20 +125,27 @@ export default {
 		};
 	},
 	computed: {
+		passengerFormatted() {
+			return this.passengersResultSearch.map(item => `${item.firstName} ${item.lastName}`);
+		},
 		...mapGetters({
 			lodgingSelect: 'Lodging/lodgingSelect',
+			passengersResultSearch: 'Passengers/passengersResultSearch',
 		}),
 	},
 	mounted() {
 		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
-
 	methods: {
+		startSearch(search) {
+			this.searchPassengers(search);
+		},
 		saveLodging() {
 			this.$store.dispatch('Lodging/createLodging');
 		},
 		...mapActions({
+			searchPassengers: 'Passengers/searchPassengers',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
 		...mapMutations({
