@@ -4,13 +4,15 @@ import router from '@/router/index.js';
 
 const state = {
 	message: {},
-	isLogged: false,
+	token: localStorage.getItem('token') || '',
 	user: {},
 };
 
 const getters = {
 	message: state => state.message,
-	isLogged: state => state.isLogged,
+	isLogged: state => {
+		return state.token ? true : false;
+	},
 	user: state => state.user,
 };
 
@@ -51,11 +53,12 @@ const mutations = {
 	setToken: (state, token) => {
 		localStorage.setItem('token', token);
 		Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+		state.token = token;
 	},
 	logout: state => {
 		localStorage.removeItem('token');
 		delete Axios.defaults.headers.common['Authorization'];
-		state.isLogged = false;
+		state.token = '';
 		router.push('/login');
 	},
 	setUser: (state, user) => (state.user = user),

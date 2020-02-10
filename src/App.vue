@@ -35,8 +35,23 @@
 
 <script>
 import UserBar from './components/UserBar';
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
 	components: { UserBar },
+	computed: {
+		...mapGetters({
+			isLogged: 'Auth/isLogged',
+		}),
+	},
+	created() {
+		if (this.isLogged) {
+			this.setToken(localStorage.getItem('token'));
+		}
+	},
+	methods: {
+		...mapMutations({ setToken: 'Auth/setToken' }),
+	},
 };
 </script>
 
