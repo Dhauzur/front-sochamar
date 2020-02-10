@@ -23,16 +23,6 @@ const actions = {
 			commit('setErrorMessage', error.message);
 		}
 	},
-	async searchPassengers({ commit }, searchString) {
-		try {
-			const config = { headers: { 'Content-Type': 'application/json' } };
-			const response = await Axios.post(api + '/passengers/search', { searchString }, config);
-			commit('setSearchPassengers', response.data.result);
-		} catch (error) {
-			commit('setSearchPassengers', null);
-			commit('setErrorMessage', error.message);
-		}
-	},
 	async savePassenger({ commit }, payload) {
 		try {
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };

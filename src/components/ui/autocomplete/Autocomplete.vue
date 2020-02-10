@@ -19,20 +19,16 @@
 				:key="i"
 				class="autocomplete-result"
 				:class="{ 'is-active': i === arrowCounter }"
-				@click="setResult(result)"
+				@click="setSelected(result)"
+				@keydown.enter="onEnter"
 			>
-				{{ result }}
+				{{ result.search }}
 			</li>
 		</ul>
-		<b-badge v-for="(item, i) in selected" :key="i" pill variant="secondary" target="_blank"
-			>{{ item }}
-		</b-badge>
 	</div>
 </template>
 
 <script>
-import functionHelper from '../../plugins/FunctionHelper';
-
 export default {
 	name: 'Autocomplete',
 	props: {
@@ -41,75 +37,40 @@ export default {
 			required: false,
 			default: () => [],
 		},
-		isAsync: {
-			type: Boolean,
-			required: false,
-			default: false,
-		},
 		placeholder: {
 			type: String,
 			required: false,
 			default: 'Search',
 		},
+		selected: {
+			type: Function,
+			required: false,
+		},
 	},
 	data() {
 		return {
+			id: null,
 			debouncedSearch: null,
 			isLoading: false,
 			search: '',
 			results: [],
-			selected: [],
 			isOpen: false,
 			arrowCounter: -1,
 		};
 	},
-	watch: {
-		// Once the items content changes, it means the parent component
-		// provided the needed data
-		items(value) {
-			// we want to make sure we only do this when it's an async request
-			if (this.isAsync) {
-				this.results = value;
-				this.isOpen = true;
-				this.isLoading = false;
-			}
-		},
-	},
 	methods: {
 		onChange() {
-			// Let's warn the parent that a change was made
-			if (this.isAsync) {
-				// we want to make sure we only do this when it's an async request
-				// emit event to parent component to start serach in the api
-				// apply debounce to funtcion
-				if (!this.debouncedSearch) {
-					this.debouncedSearch = functionHelper.debounce(
-						() => this.$emit('input', this.search),
-						400
-					);
-				}
-				this.debouncedSearch();
-			} else {
-				this.$emit('input', this.search);
-			}
-
-			// Is the data given by an outside ajax request?
-			if (this.isAsync) {
-				this.isLoading = true;
-			} else {
-				// Data is sync, we can search our flat array
-				this.filterResults();
-				this.isOpen = true;
-			}
+			this.isOpen = true;
+			this.filterResult();
 		},
-		filterResults() {
+		filterResult() {
 			this.results = this.items.filter(
-				item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+				item => item.search.toLowerCase().indexOf(this.search.toLowerCase()) > -1
 			);
 		},
-		setResult(result) {
-			this.search = result;
-			this.selected.push(this.search);
+		setSelected(selected) {
+			this.selected(selected);
+			this.search = '';
 			this.isOpen = false;
 		},
 		onArrowDown() {
@@ -123,8 +84,8 @@ export default {
 			}
 		},
 		onEnter() {
+			// this.selected(this.results[this.arrowCounter]);
 			this.search = this.results[this.arrowCounter];
-			this.selected.push(this.search);
 			this.isOpen = false;
 			this.arrowCounter = -1;
 		},
@@ -157,7 +118,7 @@ export default {
 
 .autocomplete-result.is-active,
 .autocomplete-result:hover {
-	background-color: #4aae9b;
-	color: white;
+	background-color: #8b8ac7d9;
+	color: #ffffff;
 }
 </style>

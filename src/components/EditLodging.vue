@@ -62,11 +62,24 @@
 			<b-row>
 				<b-col lg="4" xl="12">
 					<autocomplete
-						:is-async="true"
 						:items="passengerFormatted"
+						:selected="addPassengerToLodging"
 						placeholder="Agregar un pasajero"
-						@input="startSearch"
 					/>
+				</b-col>
+				<b-col lg="4" xl="12">
+					<b-badge
+						v-for="(item, i) in passengerSelected"
+						:key="i"
+						pill
+						variant="primary"
+						target="_blank"
+						class="ml-1 mr-1"
+						>{{ item.search }}
+						<span class="text-danger ml-1 pointer" @click="removePassenger(item)"
+							>X</span
+						>
+					</b-badge>
 				</b-col>
 				<b-col lg="4" xl="12">
 					<button
@@ -102,7 +115,7 @@
 
 <script>
 import moment from 'moment';
-import Autocomplete from '@/components/ui/Autocomplete';
+import Autocomplete from '@/components/ui/autocomplete/Autocomplete';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -111,6 +124,8 @@ export default {
 	},
 	data() {
 		return {
+			results: [],
+			passengerSelected: [],
 			isLoadingPassenger: false,
 			dateStart: null,
 			dateEnd: null,
@@ -126,26 +141,34 @@ export default {
 	},
 	computed: {
 		passengerFormatted() {
-			return this.passengersResultSearch.map(item => `${item.firstName} ${item.lastName}`);
+			return this.passengers.map(item => ({
+				search: item.firstName + ' ' + item.lastName,
+				id: item._id,
+			}));
 		},
 		...mapGetters({
 			lodgingSelect: 'Lodging/lodgingSelect',
-			passengersResultSearch: 'Passengers/passengersResultSearch',
+			passengers: 'Passengers/passengers',
 		}),
 	},
 	mounted() {
+		this.fetchAllPassengers();
 		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
 	methods: {
-		startSearch(search) {
-			this.searchPassengers(search);
+		removePassenger(item) {
+			const index = this.passengerSelected.indexOf(item);
+			this.passengerSelected.splice(index, 1);
 		},
 		saveLodging() {
 			this.$store.dispatch('Lodging/createLodging');
 		},
+		addPassengerToLodging(selected) {
+			this.passengerSelected.push(selected);
+		},
 		...mapActions({
-			searchPassengers: 'Passengers/searchPassengers',
+			fetchAllPassengers: 'Passengers/fetchAllPassengers',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
 		...mapMutations({
@@ -161,5 +184,8 @@ export default {
 .borderEdit {
 	border: 1px solid #dee2e6;
 	padding: 15px;
+}
+.pointer {
+	cursor: pointer;
 }
 </style>
