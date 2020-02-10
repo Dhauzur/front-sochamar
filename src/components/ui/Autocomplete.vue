@@ -10,8 +10,8 @@
 			@keydown.enter="onEnter"
 		/>
 		<ul v-show="isOpen" class="autocomplete-results">
-			<li v-if="isLoading" class="loading">
-				Loading results...
+			<li v-if="isLoading">
+				<b-spinner variant="secondary" label="Loading..." class="mt-2 mb-2"></b-spinner>
 			</li>
 			<li
 				v-for="(result, i) in results"
@@ -143,7 +143,6 @@ export default {
 	background-color: #ffffff;
 	padding: 0;
 	margin: 0;
-	border: 1px solid #eeeeee;
 	max-height: 120px;
 	overflow: auto;
 	width: 100%;
