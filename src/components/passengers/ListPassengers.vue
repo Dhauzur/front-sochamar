@@ -69,12 +69,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 .list {
 	max-height: 150px;
 	overflow-y: scroll;
-}
-.pointer {
-	cursor: pointer;
 }
 </style>
