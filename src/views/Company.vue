@@ -14,7 +14,7 @@
 					</b-col>
 				</b-row>
 				<b-row
-					style="max-height: 100px; overflow-y: auto;"
+					style="max-height: 150px; overflow-y: auto;"
 					class="background-into-module mr-2 mb-3"
 				>
 					<b-col>
@@ -62,7 +62,7 @@
 										</table>
 									</td>
 									<td class="p-2">
-										<b-button variant="danger">
+										<b-button variant="danger" @click="deleteCompany(c.id)">
 											X
 										</b-button>
 									</td>
@@ -180,6 +180,7 @@ export default {
 		...mapActions({
 			fetchCompany: 'Company/fetchCompany',
 			createCompany: 'Company/createCompany',
+			deleteCompany: 'Company/deleteCompany',
 		}),
 		...mapMutations({
 			selectCompany: 'Company/selectCompany',

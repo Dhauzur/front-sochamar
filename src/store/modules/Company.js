@@ -24,9 +24,31 @@ const getters = {
 };
 
 const actions = {
+	async deleteCompany({ commit, dispatch }, id) {
+		try {
+			await Axios.delete(api + '/company/one/' + id).then(response => {
+				commit('setMessage', {
+					type: 'success',
+					text: 'Compañia ' + response.data.delete + ' eliminada ',
+				});
+				if (response.data.lodgins)
+					commit('setMessage', {
+						type: 'info',
+						text: response.data.lodgins + ' hospedajes asociados eliminados ',
+					});
+			});
+			dispatch('fetchCompany');
+		} catch (e) {
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al eliminar compañia',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
 	async createCompany({ commit, dispatch }, company) {
 		try {
-			await Axios.post(api + '/company/create', company);
+			await Axios.post(api + '/company', company);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Empresa creada ',

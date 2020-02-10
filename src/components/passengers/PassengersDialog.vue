@@ -1,6 +1,8 @@
 <template>
 	<div>
-		<b-button id="show-btn" @click="$bvModal.show('passengers-modal')">Pasajeros</b-button>
+		<b-button id="show-btn" block @click="$bvModal.show('passengers-modal')"
+			>Pasajeros</b-button
+		>
 		<b-tooltip target="show-btn" placement="bottom">Gestión de pasajeros</b-tooltip>
 		<b-modal id="passengers-modal" hide-footer>
 			<template v-slot:modal-title>Pasajeros</template>

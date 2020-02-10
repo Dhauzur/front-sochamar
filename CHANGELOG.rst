@@ -21,6 +21,7 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Agregado CRUD de pasajeros, con sus documentos y avatar
 * Corregido errores de CSS en navbar para el usuario logeado
 * Mejorado CSS de card a estilo ya usado por la App
+* Agregada eliminacion en cascada para rooms y companies sobre los lodgings. Toasted informa de lodgings afectados
 
 `0.0.0`_ (2020-02-01) (Mauro)
 -------------------------

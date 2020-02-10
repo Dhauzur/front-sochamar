@@ -22,9 +22,31 @@ const getters = {
 };
 
 const actions = {
+	async deleteRoom({ commit, dispatch }, id) {
+		try {
+			await Axios.delete(api + '/rooms/one/' + id).then(response => {
+				commit('setMessage', {
+					type: 'success',
+					text: 'Habitación ' + response.data.delete + ' eliminada ',
+				});
+				if (response.data.lodgins)
+					commit('setMessage', {
+						type: 'info',
+						text: response.data.lodgins + ' hospedajes asociados eliminados ',
+					});
+			});
+			dispatch('fetchRooms');
+		} catch (e) {
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al eliminar habitación',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
 	async createRoom({ commit, dispatch }, room) {
 		try {
-			await Axios.post(api + '/rooms/create', room);
+			await Axios.post(api + '/rooms', room);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Empresa creada ',
@@ -74,7 +96,7 @@ const mutations = {
 		if (value)
 			value.forEach(v => {
 				rooms.push({
-					id: v._id,
+					id: v.id,
 					name: v.name,
 					numberPassangerMax: v.numberPassangerMax,
 				});

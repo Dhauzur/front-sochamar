@@ -14,7 +14,7 @@
 					</b-col>
 				</b-row>
 				<b-row
-					style="max-height: 100px; overflow-y: auto;"
+					style="max-height: 150px; overflow-y: auto;"
 					class="background-into-module mr-2 mb-3"
 				>
 					<b-col>
@@ -22,20 +22,20 @@
 							<thead>
 								<tr>
 									<th>Nombre habitación</th>
-									<th>Cantidad máxima de pasajeros</th>
+									<th>Cantidad máx. de pasajeros</th>
 									<th>Eliminar</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr
-									v-for="(c, index) in rooms"
+									v-for="(r, index) in rooms"
 									:key="index"
-									@click="selectRoom(c.id)"
+									@click="selectRoom(r.id)"
 								>
-									<td>{{ c.name }}</td>
-									<td>{{ c.numberPassangerMax }}</td>
+									<td>{{ r.name }}</td>
+									<td>{{ r.numberPassangerMax }}</td>
 									<td class="p-2">
-										<b-button variant="danger">
+										<b-button variant="danger" @click="deleteRoom(r.id)">
 											X
 										</b-button>
 									</td>
@@ -109,6 +109,7 @@ export default {
 		...mapActions({
 			fetchRooms: 'Room/fetchRooms',
 			createRoom: 'Room/createRoom',
+			deleteRoom: 'Room/deleteRoom',
 		}),
 		...mapMutations({
 			selectRoom: 'Room/selectRoom',
