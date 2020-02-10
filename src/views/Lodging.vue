@@ -35,9 +35,10 @@
 					</b-col>
 					<b-col v-if="getMirrorLodging || editMode" cols="12" md="3" class="mb-2">
 						<button
+							v-if="company"
 							type="button"
 							class="btn btn-primary btn-block"
-							@click="saveLodging()"
+							@click="saveLodgings"
 						>
 							Guardar
 						</button>
@@ -299,19 +300,6 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters({
-			message: 'Lodging/message',
-			updatingService: 'Lodging/updatingService',
-			mirrorLodging: 'Lodging/mirrorLodging',
-			lodgingSelect: 'Lodging/lodgingSelect',
-			loading: 'Lodging/loading',
-			rooms: 'Lodging/rooms',
-			rangeDate: 'Lodging/rangeDate',
-			lodgings: 'Lodging/lodgings',
-			companies: 'Lodging/companies',
-			company: 'Lodging/company',
-			editMode: 'Lodging/editMode',
-		}),
 		getMirrorLodging() {
 			var hola = JSON.stringify(this.lodgings);
 			if (hola == this.mirrorLodging) return false;
@@ -452,6 +440,19 @@ export default {
 				});
 			return dates;
 		},
+		...mapGetters({
+			message: 'Lodging/message',
+			updatingService: 'Lodging/updatingService',
+			mirrorLodging: 'Lodging/mirrorLodging',
+			lodgingSelect: 'Lodging/lodgingSelect',
+			loading: 'Lodging/loading',
+			rooms: 'Lodging/rooms',
+			rangeDate: 'Lodging/rangeDate',
+			lodgings: 'Lodging/lodgings',
+			companies: 'Lodging/companies',
+			company: 'Lodging/company',
+			editMode: 'Lodging/editMode',
+		}),
 	},
 	watch: {
 		message(newVal) {
@@ -490,9 +491,6 @@ export default {
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
 		},
-		saveLodging() {
-			if (this.company) this.saveLodgings();
-		},
 		rangechanged(payload) {
 			if (payload) {
 				this.setRangeDate({
@@ -501,6 +499,12 @@ export default {
 				});
 			}
 		},
+		...mapActions({
+			saveLodgings: 'Lodging/saveLodgings',
+			fetchCompany: 'Lodging/fetchCompany',
+			fetchLodgings: 'Lodging/fetchLodgings',
+			deleteLodging: 'Lodging/deleteLodging',
+		}),
 		...mapMutations({
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
@@ -509,12 +513,6 @@ export default {
 			updateService: 'Lodging/updateService',
 			setCompanyLodging: 'Lodging/setCompanyLodging',
 			setModeEdit: 'Lodging/setModeEdit',
-		}),
-		...mapActions({
-			saveLodgings: 'Lodging/saveLodgings',
-			fetchCompany: 'Lodging/fetchCompany',
-			fetchLodgings: 'Lodging/fetchLodgings',
-			deleteLodging: 'Lodging/deleteLodging',
 		}),
 	},
 };
