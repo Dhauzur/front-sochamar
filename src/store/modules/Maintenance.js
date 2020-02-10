@@ -31,7 +31,6 @@ const getters = {
 			var numberTotal = 0;
 			var lastRow = null;
 			var payOK = false;
-			console.log(state.activities.activities);
 			state.activities.activities.forEach((act, index) => {
 				if (date == moments(moments(act.date).format('YYYY-MM-DD')).format('WW')) {
 					lastRow = index;

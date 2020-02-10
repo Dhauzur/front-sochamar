@@ -3,8 +3,8 @@ import VueRouter from 'vue-router';
 import Home from '../views/Home.vue';
 import Maintenance from '../views/Maintenance.vue';
 import Lodging from '../views/Lodging.vue';
-import Group from '../views/Group.vue';
-import Entity from '../views/Entity.vue';
+import Room from '../views/Room.vue';
+import Company from '../views/Company.vue';
 import Report from '../views/Report.vue';
 import Login from '../views/Login';
 import Register from '../views/Register';
@@ -14,6 +14,11 @@ Vue.use(VueRouter);
 const routes = [
 	{
 		path: '/',
+		name: 'hospedaje',
+		component: Lodging,
+	},
+	{
+		path: '/home',
 		name: 'home',
 		component: Home,
 	},
@@ -23,19 +28,14 @@ const routes = [
 		component: Maintenance,
 	},
 	{
-		path: '/hospedaje',
-		name: 'hospedaje',
-		component: Lodging,
+		path: '/habitaciones',
+		name: 'habitaciones',
+		component: Room,
 	},
 	{
-		path: '/grupos',
-		name: 'grupos',
-		component: Group,
-	},
-	{
-		path: '/entidades',
-		name: 'entidades',
-		component: Entity,
+		path: '/compañias',
+		name: 'compañias',
+		component: Company,
 	},
 	{
 		path: '/informe',
