@@ -13,6 +13,7 @@ const state = {
 	lodgings: new DataSet([]),
 	rooms: new DataSet([]),
 	companies: [],
+	lodgingPassengers: [],
 	company: null,
 	rangeDate: {
 		start: null,
@@ -140,6 +141,7 @@ const actions = {
 					end: l.end,
 					service: l.service[0],
 					company: state.company,
+					passengers: state.lodgingPassengers,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
 					.catch(error => {
@@ -157,6 +159,9 @@ const actions = {
 const mutations = {
 	setMessage(state, value) {
 		state.message = value;
+	},
+	setLodgingPassengers(state, value) {
+		state.lodgingPassengers = value;
 	},
 	setUpdatingService(state, value) {
 		state.updatingService = value;

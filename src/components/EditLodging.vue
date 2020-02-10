@@ -162,19 +162,22 @@ export default {
 			this.passengerSelected.splice(index, 1);
 		},
 		saveLodging() {
-			this.$store.dispatch('Lodging/createLodging');
+			this.saveLodgings();
 		},
 		addPassengerToLodging(selected) {
 			this.passengerSelected.push(selected);
+			this.setLodgingPassengers(this.passengerSelected.map(item => item.id));
 		},
 		...mapActions({
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
+			saveLodgings: 'Lodging/saveLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
 		...mapMutations({
 			addOneService: 'Lodging/addOneService',
 			subOneService: 'Lodging/subOneService',
 			dateChange: 'Lodging/dateChange',
+			setLodgingPassengers: 'Lodging/setLodgingPassengers',
 		}),
 	},
 };
