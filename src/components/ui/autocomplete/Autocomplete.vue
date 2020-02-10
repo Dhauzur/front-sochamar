@@ -10,12 +10,8 @@
 			@keydown.enter="onEnter"
 		/>
 		<ul v-show="isOpen" class="autocomplete-results">
-			<li v-if="isLoading">
-				<b-spinner variant="secondary" label="Loading..." class="mt-2 mb-2"></b-spinner>
-			</li>
 			<li
 				v-for="(result, i) in results"
-				v-else
 				:key="i"
 				class="autocomplete-result"
 				:class="{ 'is-active': i === arrowCounter }"
@@ -50,8 +46,6 @@ export default {
 	data() {
 		return {
 			id: null,
-			debouncedSearch: null,
-			isLoading: false,
 			search: '',
 			results: [],
 			isOpen: false,
