@@ -240,7 +240,11 @@
 			<!-- submit -->
 			<b-row>
 				<b-col class="mt-4">
-					<b-button block class="btn btn-primary d-block" @click.prevent="submitForm"
+					<b-button
+						:disabled="disabled"
+						block
+						class="btn btn-primary d-block"
+						@click.prevent="submitForm"
 						>Guardar
 					</b-button>
 					<small v-if="errors" class="mt-2 d-block text-danger">
@@ -268,6 +272,7 @@ export default {
 			api: api_absolute,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 			form: new FormData(),
+			disabled: false,
 			editMode: false,
 			selected: {},
 			formTouched: false,
@@ -344,6 +349,8 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
+				// disable button for request to api
+				this.disabled = true;
 				// set data for send
 				for (let index = 0; index < this.passenger.documents.length; index++) {
 					this.form.append('documents', this.passenger.documents[index]);
@@ -377,6 +384,8 @@ export default {
 					// clear inputs
 					this.clearInputs();
 				}
+				// disable button for request to api
+				this.disabled = false;
 			}
 		},
 		setDocuments(e) {
