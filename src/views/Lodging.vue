@@ -200,7 +200,7 @@
 import { Timeline } from 'vue2vis';
 import PassengersDialog from '../components/passengers/PassengersDialog';
 import moment from 'moment';
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Loading from '@/components/Loading';
 import EditLodging from '@/components/EditLodging';
 
@@ -230,7 +230,7 @@ export default {
 					if (this.company) {
 						this.setModeEdit(true);
 						callback(item);
-						this.$store.commit('Lodging/updateService', item);
+						this.updateService(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMoving: (item, callback) => {
@@ -241,7 +241,7 @@ export default {
 				onRemove: (item, callback) => {
 					if (this.lodgings.length > 1 && this.company) {
 						this.setModeEdit(false);
-						this.$store.dispatch('Lodging/deleteLodging', item);
+						this.deleteLodging(item);
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
@@ -266,7 +266,7 @@ export default {
 								})
 								.toLowerCase();
 						item.id = timestamp;
-						this.$store.commit('Lodging/addLodging', item);
+						this.addLodging(item);
 						if (!this.lodgings.get(item.id)) callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
@@ -461,7 +461,7 @@ export default {
 		},
 	},
 	created() {
-		this.$store.dispatch('Lodging/fetchCompany');
+		this.fetchCompany();
 		this.setRangeDate({
 			start: moment(),
 			end: moment().add(15, 'day'),
@@ -471,7 +471,7 @@ export default {
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
-			this.$store.dispatch('Lodging/fetchLodgings');
+			this.fetchLodgings();
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
@@ -491,7 +491,7 @@ export default {
 			} else this.setModeEdit(false);
 		},
 		saveLodging() {
-			if (this.company) this.$store.dispatch('Lodging/saveLodgings');
+			if (this.company) this.saveLodgings();
 		},
 		rangechanged(payload) {
 			if (payload) {
@@ -508,8 +508,13 @@ export default {
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
 			setCompanyLodging: 'Lodging/setCompanyLodging',
-			saveLodgings: 'Lodging/saveLodgings',
 			setModeEdit: 'Lodging/setModeEdit',
+		}),
+		...mapActions({
+			saveLodgings: 'Lodging/saveLodgings',
+			fetchCompany: 'Lodging/fetchCompany',
+			fetchLodgings: 'Lodging/fetchLodgings',
+			deleteLodging: 'Lodging/deleteLodging',
 		}),
 	},
 };
