@@ -27,7 +27,7 @@ const actions = {
 			commit('setUser', user);
 			commit('setToken', token);
 			commit('setIsLogged', true);
-			router.push('/');
+			router.push('/lodgings');
 		} catch (e) {
 			const message = {
 				type: 'error',
@@ -43,7 +43,7 @@ const actions = {
 			commit('setUser', user);
 			commit('setToken', token);
 			commit('setIsLogged', true);
-			router.push('/');
+			router.push('/lodgings');
 		} catch (e) {
 			const message = { type: 'error', text: 'El correo ya existe' };
 			commit('setMessage', message);

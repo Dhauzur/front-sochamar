@@ -2,6 +2,7 @@ import { api } from '@/config/index.js';
 import Axios from 'axios';
 import moment from 'moment';
 import { DataSet } from 'vue2vis';
+import router from '@/router/index.js';
 
 const state = {
 	message: '',
@@ -52,6 +53,7 @@ const actions = {
 					type: 'error',
 					text: 'Delete lodging ' + error,
 				});
+				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
 	//Obtiene todos las compañias
@@ -65,7 +67,7 @@ const actions = {
 				commit('setCompanies', response.data.company);
 				commit('setMessage', {
 					type: 'success',
-					text: 'Compañias cargadas',
+					text: 'Compañias descargadas',
 				});
 				dispatch('fetchRooms');
 			})
@@ -75,6 +77,7 @@ const actions = {
 					type: 'error',
 					text: 'Fetch company ' + error,
 				});
+				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
 	//Obtiene todas las habitaciones
@@ -88,7 +91,7 @@ const actions = {
 				commit('setRooms', response.data.rooms);
 				commit('setMessage', {
 					type: 'success',
-					text: 'Habitaciones obtenidas ',
+					text: 'Habitaciones descargadas ',
 				});
 				dispatch('fetchLodgings');
 			})
@@ -98,6 +101,7 @@ const actions = {
 					type: 'error',
 					text: 'Fetch rooms ' + error,
 				});
+				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
 
@@ -112,7 +116,7 @@ const actions = {
 				commit('setLodgings', response.data.lodgings);
 				commit('setMessage', {
 					type: 'success',
-					text: 'Hospedajes obtenidos ',
+					text: 'Hospedajes descargadas ',
 				});
 			})
 			.catch(error => {
@@ -121,6 +125,7 @@ const actions = {
 					type: 'error',
 					text: 'Fetch lodgings ' + error,
 				});
+				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
 
@@ -147,6 +152,8 @@ const actions = {
 							type: 'error',
 							text: 'Create lodging ' + error,
 						});
+						if (error.message == 'Request failed with status code 401')
+							router.push('/login');
 					});
 			}
 		});
@@ -278,7 +285,7 @@ const mutations = {
 		let company = state.companies.find(c => c.value == state.company);
 		if (company.text == 'Turismo')
 			state.lodgings.add({
-				group: 1,
+				group: state.rooms.getIds()[0],
 				start: moment().hours(16),
 				end: moment()
 					.hours(13)
@@ -289,7 +296,7 @@ const mutations = {
 			});
 		else
 			state.lodgings.add({
-				group: 1,
+				group: state.rooms.getIds()[0],
 				start: moment().hours(16),
 				end: moment()
 					.hours(13)
@@ -355,8 +362,8 @@ const mutations = {
 		if (value)
 			value.forEach(v => {
 				state.rooms.add({
-					id: v.id,
-					content: v.id,
+					id: v._id,
+					content: v.name,
 					numberPassangerMax: v.numberPassangerMax,
 				});
 			});

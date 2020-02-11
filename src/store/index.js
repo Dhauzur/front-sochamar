@@ -2,7 +2,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import Maintenance from './modules/Maintenance';
 import Lodging from './modules/Lodging';
-import Entity from './modules/Entity';
+import Company from './modules/Company';
+import Room from './modules/Room';
 import User from './modules/user';
 import Auth from './modules/auth';
 import Passengers from './modules/Passengers';
@@ -13,9 +14,10 @@ export default new Vuex.Store({
 	modules: {
 		Lodging,
 		Maintenance,
-		Entity,
+		Company,
 		User,
 		Auth,
 		Passengers,
+		Room,
 	},
 });

@@ -1,27 +1,29 @@
 <template lang="html">
-	<div v-if="isLogged">
-		<b-row>
-			<h4 v-text="user.name"></h4>
-			<b-col>
-				<b-dropdown variant="link" no-caret>
-					<template v-slot:button-content>
-						<b-img
-							rounded="circle"
-							alt="Circle image"
-							width="50"
-							src="https://picsum.photos/125/125/?image=58"
-						></b-img>
-					</template>
-					<b-dropdown-item href="#">Perfil</b-dropdown-item>
-					<b-dropdown-item href="#" @click="logout">Salir</b-dropdown-item>
-				</b-dropdown>
-			</b-col>
-		</b-row>
-	</div>
-	<div v-else>
-		Hola Invitado, <router-link to="/register">registrate</router-link> o
-		<router-link to="/login">ingresa</router-link>
-	</div>
+	<b-navbar-nav v-if="isLogged" class="ml-auto">
+		<b-nav-text class="mr-sm-3 pt-4" right>
+			{{ user.name }}
+		</b-nav-text>
+		<b-nav-item-dropdown text="Lang" no-caret right>
+			<template v-slot:button-content>
+				<b-img
+					rounded="circle"
+					alt="Circle image"
+					width="50"
+					src="https://picsum.photos/125/125/?image=58"
+				></b-img>
+			</template>
+			<b-dropdown-item href="#">Perfil</b-dropdown-item>
+			<b-dropdown-item href="#" @click="logout">Salir</b-dropdown-item>
+		</b-nav-item-dropdown>
+	</b-navbar-nav>
+	<b-navbar-nav v-else class="ml-auto">
+		<b-nav-text class="mr-3" right @click="$router.push('register')">
+			<a>Registrarte</a>
+		</b-nav-text>
+		<b-nav-text class="mr-3 " right @click="$router.push('login')">
+			<a>Ingresa</a>
+		</b-nav-text>
+	</b-navbar-nav>
 </template>
 
 <script>

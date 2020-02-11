@@ -7,26 +7,26 @@
 				<b-collapse id="nav-text-collapse" is-nav>
 					<b-navbar-nav>
 						<b-nav-text class="mr-3">
-							<router-link to="/hospedaje">
+							<router-link to="/lodgings">
 								Hospedajes
 							</router-link>
-							<router-link to="/">
+							<!-- <router-link to="/home">
 								Ver registros de trabajo
-							</router-link>
+							</router-link> -->
 						</b-nav-text>
-						<b-nav-text class="mr-3">
+						<!-- <b-nav-text class="mr-3">
 							<router-link to="/mantenimiento">
 								Enviar trabajo
 							</router-link>
-						</b-nav-text>
+						</b-nav-text> -->
 						<b-nav-text class="mr-3">
-							<router-link to="/informe">
+							<router-link to="/reports">
 								Enviar informe
 							</router-link>
 						</b-nav-text>
 					</b-navbar-nav>
+					<UserBar />
 				</b-collapse>
-				<UserBar></UserBar>
 			</b-navbar>
 		</div>
 		<router-view />
@@ -104,22 +104,26 @@ export default {
 
 /* Track */
 ::-webkit-scrollbar-track {
-	background: #8c878745;
+	background: transparent;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-	background: #8c8787;
+	background: transparent;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: #231704d9;
+	background: transparent;
+}
+.background-into-module {
+	box-shadow: inset 0px -15px 20px -25px rgba(0, 0, 0, 0.75);
 }
 
 .background-module {
 	background-color: #c4c1dc61;
 	border-radius: 20px;
-	padding-top: 20px;
+	max-height: 80vh !important;
+	overflow-y: auto;
 }
 </style>
