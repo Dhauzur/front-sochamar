@@ -155,7 +155,7 @@
 <script>
 import moment from 'moment';
 import Autocomplete from '@/components/ui/autocomplete/Autocomplete';
-import LodgingsDate from '@/components/LodgingsDate';
+import LodgingsDate from '@/components/lodgings/LodgingsDate';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -269,8 +269,18 @@ export default {
 		 * show popover for set date
 		 */
 		addPassengerToLodging(selected) {
-			this.showPopover = true;
-			this.passengerSelected.push(selected);
+			// return a boolean, true if the passenger is duplicated
+			const verifyPassengerNoduplicate = this.passengerSelected.some(
+				item => selected.search === item.search
+			);
+			if (verifyPassengerNoduplicate) {
+				this.$toasted.show(`${selected.search} ya ha sido seleccionado`, {
+					type: 'error',
+				});
+			} else {
+				this.showPopover = true;
+				this.passengerSelected.push(selected);
+			}
 		},
 		...mapActions({
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',

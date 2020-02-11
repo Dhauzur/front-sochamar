@@ -199,7 +199,7 @@ import PassengersDialog from '../components/passengers/PassengersDialog';
 import moment from 'moment';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Loading from '@/components/Loading';
-import EditLodging from '@/components/EditLodging';
+import EditLodging from '@/components/lodgings/EditLodging';
 
 export default {
 	components: {
@@ -458,7 +458,7 @@ export default {
 	},
 	created() {
 		this.selectCompany = this.company;
-		this.$store.dispatch('Lodging/fetchCompany');
+		this.fetchCompany();
 		this.setRangeDate({
 			start: moment(),
 			end: moment().add(15, 'day'),
