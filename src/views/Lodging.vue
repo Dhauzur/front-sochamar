@@ -465,6 +465,50 @@ export default {
 		});
 	},
 	methods: {
+		verifyOverlay(value) {
+			let verificate = null;
+			this.lodgings.forEach(lod => {
+				if (lod.group == value.group) {
+					//Verifica que el nuevo alojamiento, este: o completamente
+					//antes de otro alojamiento, o verifica que este completamente despues
+					if (
+						(moment(value.dateStart).isBefore(moment(lod.start)) &&
+							moment(value.dateEnd).isBefore(moment(lod.start))) ||
+						(moment(value.dateStart).isAfter(moment(lod.end)) &&
+							moment(value.dateEnd).isAfter(moment(lod.end)))
+					)
+						verificate = 'OK';
+					//verifica que la fecha de inicio esta antes de otro ALOJAMIENTO
+					//pero que la fecha final, este despues de la fecha de inicio de otro alojamiento
+					else if (
+						moment(value.dateStart).isBefore(moment(lod.start)) &&
+						moment(value.dateEnd).isAfter(moment(lod.start))
+					)
+						verificate = {
+							erro: 'Fin de nuevo, esta despues de lod inicio',
+							dateStart: value.dateStart,
+							dateEnd: moment(lod.start)
+								.subtract(1, 'day')
+								.hours(16),
+						};
+					//verifica que la fecha de fin este dsp de otro ALOJAMIENTO
+					//pero que la fecha inicio, este antes de la fecha de fin de otro alojamiento
+					else if (
+						moment(value.dateStart).isBefore(moment(lod.end)) &&
+						moment(value.dateEnd).isAfter(moment(lod.end))
+					)
+						verificate = {
+							erro: 'Inicio de nuevo, esta antes de lod fin',
+							dateStart: value.dateStart,
+							dateEnd: moment(lod.end)
+								.add(1, 'day')
+								.hours(12),
+						};
+					else verificate = false;
+				} else verificate = 'OK';
+			});
+			return verificate;
+		},
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
