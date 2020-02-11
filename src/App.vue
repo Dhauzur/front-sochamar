@@ -7,20 +7,20 @@
 				<b-collapse id="nav-text-collapse" is-nav>
 					<b-navbar-nav>
 						<b-nav-text class="mr-3">
-							<router-link to="/">
+							<router-link to="/lodgings">
 								Hospedajes
 							</router-link>
-							<router-link to="/home">
+							<!-- <router-link to="/home">
 								Ver registros de trabajo
-							</router-link>
+							</router-link> -->
 						</b-nav-text>
-						<b-nav-text class="mr-3">
+						<!-- <b-nav-text class="mr-3">
 							<router-link to="/mantenimiento">
 								Enviar trabajo
 							</router-link>
-						</b-nav-text>
+						</b-nav-text> -->
 						<b-nav-text class="mr-3">
-							<router-link to="/informe">
+							<router-link to="/reports">
 								Enviar informe
 							</router-link>
 						</b-nav-text>
@@ -35,8 +35,23 @@
 
 <script>
 import UserBar from './components/UserBar';
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
 	components: { UserBar },
+	computed: {
+		...mapGetters({
+			isLogged: 'Auth/isLogged',
+		}),
+	},
+	created() {
+		if (this.isLogged) {
+			this.setToken(localStorage.getItem('token'));
+		}
+	},
+	methods: {
+		...mapMutations({ setToken: 'Auth/setToken' }),
+	},
 };
 </script>
 

@@ -42,7 +42,6 @@
 								</tr>
 							</tbody>
 						</table>
-						{{ roomSelected }}
 					</b-col>
 				</b-row>
 				<b-row class="mb-3">

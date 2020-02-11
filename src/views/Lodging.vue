@@ -16,9 +16,9 @@
 							</b-col>
 						</b-row>
 						<b-row>
-							<b-col v-if="lodgings.length == 0 && company" co class="mb-2">
+							<b-col v-if="lodgings.length == 0 && company" class="mb-2">
 								<b-row>
-									<b-col cols="12" md="3">
+									<b-col>
 										<b-button
 											variant="primary"
 											class="col-12"
@@ -47,10 +47,10 @@
 									<b-dropdown-item v-if="company" @click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'habitaciones' })"
+									<b-dropdown-item @click="$router.push({ name: 'rooms' })"
 										>Gestionar habitaciones</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'compañias' })"
+									<b-dropdown-item @click="$router.push({ name: 'companies' })"
 										>Gestionar compañias</b-dropdown-item
 									>
 								</b-dropdown>

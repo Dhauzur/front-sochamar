@@ -13,8 +13,8 @@ Vue.use(VueRouter);
 
 const routes = [
 	{
-		path: '/',
-		name: 'hospedaje',
+		path: '/lodgings',
+		name: 'lodgings',
 		component: Lodging,
 	},
 	{
@@ -28,18 +28,18 @@ const routes = [
 		component: Maintenance,
 	},
 	{
-		path: '/habitaciones',
-		name: 'habitaciones',
+		path: '/rooms',
+		name: 'rooms',
 		component: Room,
 	},
 	{
-		path: '/compañias',
-		name: 'compañias',
+		path: '/companies',
+		name: 'companies',
 		component: Company,
 	},
 	{
-		path: '/informe',
-		name: 'informe',
+		path: '/reports',
+		name: 'reports',
 		component: Report,
 	},
 	{
