@@ -4,62 +4,59 @@
 			<Loading v-if="loading" :msj="loading" />
 			<template v-else>
 				<b-row>
-					<b-col sm="12" md="5" class="my-2">
-						<label>Selecione entidad</label>
-					</b-col>
-					<b-col cols="12" class="mb-2">
+					<b-col md="6" lg="3">
 						<b-row>
-							<b-col cols="9" sm="10" md="3"
-								><b-form-select
+							<b-col class="my-2">
+								<label>Selecione compañia</label>
+								<b-form-select
 									v-model="selectCompany"
 									:options="companies"
 									@change="setCompany"
-							/></b-col>
-							<b-col cols="3" sm="2" md="1" class="pl-0">
-								<PassengersDialog />
+								/>
 							</b-col>
 						</b-row>
-					</b-col>
-					<b-col v-if="lodgings.length == 0 && company" cols="12" co class="mb-2">
 						<b-row>
-							<b-col cols="12" md="3">
-								<b-button
-									variant="primary"
-									class="col-12"
-									@click="createOneLodging()"
-								>
-									Crear hospedaje
-								</b-button>
+							<b-col v-if="lodgings.length == 0 && company" class="mb-2">
+								<b-row>
+									<b-col>
+										<b-button
+											variant="primary"
+											class="col-12"
+											@click="createOneLodging()"
+										>
+											Crear hospedaje
+										</b-button>
+									</b-col>
+								</b-row>
 							</b-col>
 						</b-row>
-					</b-col>
-					<b-col v-if="getMirrorLodging || editMode" cols="12" md="3" class="mb-2">
-						<button
-							type="button"
-							class="btn btn-primary btn-block"
-							@click="saveLodging()"
-						>
-							Guardar
-						</button>
-					</b-col>
-					<b-col sm="12" class="mb-2">
 						<b-row>
-							<b-col sm="12" md="3">
-								<b-dropdown
-									id="dropdown-1"
-									text="Acciones"
-									class="Block Level w-100"
+							<b-col v-if="getMirrorLodging || editMode" class="mb-2">
+								<button
+									type="button"
+									class="btn btn-primary btn-block"
+									@click="saveLodging()"
 								>
+									Guardar
+								</button>
+							</b-col>
+						</b-row>
+						<b-row>
+							<b-col md="6" lg="6" class="mb-2">
+								<b-dropdown id="dropdown-1" text="Acciones" block>
 									<b-dropdown-item v-if="company" @click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'grupos' })"
-										>Gestionar grupos</b-dropdown-item
+									<b-dropdown-item @click="$router.push({ name: 'rooms' })"
+										>Gestionar habitaciones</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'entidades' })"
-										>Gestionar entidades</b-dropdown-item
+									<b-dropdown-item @click="$router.push({ name: 'companies' })"
+										>Gestionar compañias</b-dropdown-item
 									>
 								</b-dropdown>
+							</b-col>
+							<b-col md="4" lg="6">
+								<PassengersDialog />
 							</b-col>
 						</b-row>
 					</b-col>
@@ -79,12 +76,12 @@
 									@rangechanged="rangechanged"
 								/>
 							</b-col>
-							<b-col cols="12" class="px-4 overflow-auto">
+							<b-col v-if="prices && company" cols="12" class="px-4 overflow-auto">
 								<table class="table table-bordered ">
 									<thead>
 										<tr>
 											<td>Actividad</td>
-											<td v-if="company">Precios</td>
+											<td>Precios</td>
 											<td v-for="(d, index) in rangeDateTable" :key="index">
 												{{ d.numberDay }}
 												<br />
@@ -248,8 +245,6 @@ export default {
 				onAdd: (item, callback) => {
 					if (this.company) {
 						this.setModeEdit(false);
-						// eslint-disable-next-line no-self-assign
-						item.group = item.group;
 						item.start = moment(item.start).hours(16);
 						item.end = moment(item.start)
 							.hours(12)
@@ -341,7 +336,8 @@ export default {
 			return prices;
 		},
 		prices() {
-			return this.companies.find(c => c.value == this.company);
+			if (this.company) return this.companies.find(c => c.value == this.company);
+			else return [];
 		},
 		proyectionTable() {
 			// eslint-disable-next-line no-unused-vars
@@ -461,6 +457,7 @@ export default {
 		},
 	},
 	created() {
+		this.selectCompany = this.company;
 		this.$store.dispatch('Lodging/fetchCompany');
 		this.setRangeDate({
 			start: moment(),
@@ -486,7 +483,6 @@ export default {
 		enableEdit(payload) {
 			if (this.company && payload.item) {
 				this.setLodgingSelect(payload.item);
-				console.log('???');
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
 		},
@@ -544,11 +540,5 @@ th {
 	padding: 2px !important;
 	color: #1c1e21;
 	min-width: 60px;
-}
-.vis-labelset .vis-label .vis-inner {
-	max-width: 30px;
-}
-.vis.timeline .labelset .inner {
-	width: 30px;
 }
 </style>

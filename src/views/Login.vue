@@ -1,51 +1,41 @@
 <template lang="html">
 	<b-container>
-		<b-row class="justify-content-center">
-			<b-col md="5">
-				<b-card>
-					<b-card-title>Ingreso</b-card-title>
-					<b-card-body>
-						<b-form @submit.prevent="login(loginData)">
-							<!--EMAIL-->
-							<b-form-group
-								id="input-group-1"
-								label="Correo electronico:"
-								label-for="email-input"
-							>
-								<b-form-input
-									id="email-input"
-									v-model.trim="loginData.email"
-									type="email"
-									required
-									placeholder="Ingresa el correo"
-								></b-form-input>
-							</b-form-group>
-							<!--PASSWORD-->
-							<b-form-group
-								id="input-group-2"
-								label="Contraseña:"
-								label-for="password-input"
-							>
-								<b-form-input
-									id="email-input"
-									v-model.trim="loginData.password"
-									type="password"
-									required
-									placeholder="Ingresa la contraseña"
-								></b-form-input>
-							</b-form-group>
-							<!--SUBMIT-->
-							<b-button type="submit" variant="primary"> Ingresar</b-button>
-						</b-form>
-					</b-card-body>
-					<b-card-footer>
-						<p>
-							¿No tienes una cuenta?
-							<router-link to="/register">registrate</router-link>
-						</p>
-						<a href="#">¿Olvidaste tu contraseña?</a>
-					</b-card-footer>
-				</b-card>
+		<b-row id="nav" class="justify-content-center">
+			<b-col md="8" lg="6" class="background-module pb-3 px-4">
+				<h3 class="my-4">Ingresa a Sochamar</h3>
+				<b-form @submit.prevent="login(loginData)">
+					<!--EMAIL-->
+					<b-form-group
+						id="input-group-1"
+						label="Correo electronico:"
+						label-for="email-input"
+					>
+						<b-form-input
+							id="email-input"
+							v-model.trim="loginData.email"
+							type="email"
+							required
+							placeholder="Ingresa el correo"
+						></b-form-input>
+					</b-form-group>
+					<!--PASSWORD-->
+					<b-form-group id="input-group-2" label="Contraseña:" label-for="password-input">
+						<b-form-input
+							id="password-input"
+							v-model.trim="loginData.password"
+							type="password"
+							required
+							placeholder="Ingresa la contraseña"
+						></b-form-input>
+					</b-form-group>
+					<!--SUBMIT-->
+					<b-button class="mt-2" type="submit" variant="primary"> Ingresar</b-button>
+				</b-form>
+				<p>
+					¿No tienes una cuenta?
+					<router-link to="/register">registrate</router-link>
+				</p>
+				<a href="#">¿Olvidaste tu contraseña?</a>
 			</b-col>
 		</b-row>
 	</b-container>
@@ -65,20 +55,36 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			message: 'Auth/message',
+			messageAuth: 'Auth/message',
+			messageRoom: 'Room/message',
+			messageCompany: 'Company/message',
 		}),
 	},
 	watch: {
-		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
+		messageAuth(newVal) {
+			this.toastedMessage(newVal);
 		},
+		messageRoom(newVal) {
+			this.toastedMessage(newVal);
+		},
+		messageCompany(newVal) {
+			this.toastedMessage(newVal);
+		},
+	},
+	mounted() {
+		this.toastedMessage(this.messageAuth);
+		this.toastedMessage(this.messageRoom);
+		this.toastedMessage(this.messageCompany);
 	},
 	methods: {
 		...mapActions({
 			login: 'Auth/login',
 		}),
+		toastedMessage(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
 	},
 };
 </script>
