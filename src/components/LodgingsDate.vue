@@ -8,15 +8,13 @@
 	>
 		<b-form-input
 			id="input-1"
-			v-model="date"
 			type="date"
 			class="col-xs-2 "
 			style="text-align: center; text-align-last:center;"
 			required
-			@input="setDate(date)"
-			@change="dateChange({ dateStart, dateEnd })"
+			:value="date"
+			@change="onchange"
 		/>
-		{{ dateStart }} {{ dateEnd }}
 	</b-form-group>
 </template>
 
@@ -26,6 +24,10 @@ import { mapMutations } from 'vuex';
 export default {
 	name: 'LodgingsDate',
 	props: {
+		isPassengerDate: {
+			type: Boolean,
+			required: false,
+		},
 		dateStart: {
 			type: String,
 			default: null,
@@ -51,17 +53,23 @@ export default {
 			default: '',
 		},
 	},
-	data() {
-		return {
-			inputDate: null,
-		};
-	},
 	computed: {
 		date() {
 			return this.start ? this.dateStart : this.dateEnd;
 		},
 	},
 	methods: {
+		onchange(e) {
+			if (!this.isPassengerDate) {
+				if (this.start) {
+					this.setDate(e);
+					this.dateChange({ dateStart: e, dateEnd: this.dateEnd });
+				} else {
+					this.setDate(e);
+					this.dateChange({ dateStart: this.dateStart, dateEnd: e });
+				}
+			}
+		},
 		...mapMutations({
 			dateChange: 'Lodging/dateChange',
 		}),

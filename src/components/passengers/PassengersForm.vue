@@ -1,23 +1,26 @@
 <template>
 	<div class="position-relative">
+		<!-- list passenger -->
+		<b-row>
+			<b-col v-if="passengersList.length > 0">
+				<h5 class="text-secondary">Listado de pasajeros</h5>
+				<ListPassengers
+					:api="api"
+					:selected-passenger="selectedPassenger"
+					:delete-one="deleteOne"
+					:passengers="passengersList"
+					:get-all-passengers="getAllPassengers"
+				/>
+			</b-col>
+		</b-row>
+		<b-dropdown-divider v-if="passengersList.length > 0" />
 		<b-form>
-			<!-- list passenger -->
-			<b-row>
-				<b-col v-if="passengersList.length > 0" class="mt-4">
-					<h5>Listado de pasajeros</h5>
-					<ListPassengers
-						:api="api"
-						:selected-passenger="selectedPassenger"
-						:delete-one="deleteOne"
-						:passengers="passengersList"
-						:get-all-passengers="getAllPassengers"
-					/>
-				</b-col>
-			</b-row>
 			<b-row>
 				<!-- avatar -->
 				<b-col class="mt-3">
-					<h5>Crear nuevo pasajero</h5>
+					<h5 class="text-secondary">
+						{{ editMode ? 'Editar pasajero' : 'Crear nuevo pasajero' }}
+					</h5>
 					<label for="upload">
 						<b-img
 							class="pointer"
@@ -39,7 +42,7 @@
 					></b-form-file>
 				</b-col>
 				<b-col cols="12">
-					<label for="upload" class="pointer">{{
+					<label for="upload" class="pointer text-secondary">{{
 						typeof passenger.passenger === 'string' ? 'Cambiar avatar' : 'Subir avatar'
 					}}</label>
 				</b-col>
@@ -252,7 +255,6 @@
 					</small>
 				</b-col>
 			</b-row>
-			<b-dropdown-divider v-if="passengersList.length > 0" />
 		</b-form>
 	</div>
 </template>

@@ -46,14 +46,14 @@
 			</b-row>
 			<b-row>
 				<!-- aucomplete passengers -->
-				<b-col lg="4" xl="12">
+				<b-col lg="4" xl="12" class="position-relative">
 					<autocomplete
 						:items="passengerFormatted"
 						:selected="addPassengerToLodging"
 						placeholder="Agregar un pasajero"
 					/>
 				</b-col>
-				<b-col lg="4" xl="12">
+				<b-col v-if="!showPopover" lg="4" xl="12">
 					<b-badge
 						v-for="(item, i) in passengerSelected"
 						:key="i"
@@ -67,6 +67,48 @@
 						>
 					</b-badge>
 				</b-col>
+				<!-- popover date passengers -->
+				<b-card
+					v-show="showPopover"
+					class="shadow bg-white rounded my-3 ml-3 position-absolute"
+					style="z-index: 2050; top: 150px"
+				>
+					<template v-slot:header>
+						<div class="d-flex">
+							<span class="mb-0 flex-grow-1"
+								>Indique la fecha que se hospedara el pasajero</span
+							>
+							<b-button variant="danger" class="btn-sm" @click="cancelAddPassenger">
+								X
+							</b-button>
+						</div>
+					</template>
+					<b-row>
+						<b-col>
+							<LodgingsDate
+								label="Fecha inicio"
+								:start="true"
+								:set-date="date => (dateStartPassengers = date)"
+								:date-start="dateStart"
+								:date-end="dateEnd"
+								:is-passenger-date="true"
+							/>
+						</b-col>
+						<b-col>
+							<LodgingsDate
+								label="Fecha fin"
+								:start="false"
+								:set-date="date => (dateEnd = date)"
+								:date-start="dateEndPassengers"
+								:date-end="dateEnd"
+								:is-passenger-date="true"
+							/>
+						</b-col>
+					</b-row>
+					<button type="button" class="btn btn-secondary btn-md mt-2 btn-block">
+						Ok
+					</button>
+				</b-card>
 				<!-- increment passengers  -->
 				<b-col lg="4" xl="12">
 					<button
@@ -99,7 +141,6 @@
 				</b-col>
 			</b-row>
 		</b-col>
-		{{ validDateForPassengers() }}
 	</b-row>
 </template>
 
@@ -121,6 +162,7 @@ export default {
 			passengerSelected: [],
 			isLoadingPassenger: false,
 			dateStart: null,
+			showPopover: false,
 			dateStartPassengers: null,
 			dateEnd: null,
 			dateEndPassengers: null,
@@ -146,21 +188,28 @@ export default {
 			passengers: 'Passengers/passengers',
 		}),
 	},
+	watch: {
+		lodgingSelect() {
+			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
+			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
+		},
+	},
 	mounted() {
 		this.fetchAllPassengers();
 		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
 	methods: {
-		validDateForPassengers() {
-			this.dateStartPassengers;
-			return null;
+		cancelAddPassenger() {
+			this.showPopover = false;
+			this.passengerSelected.splice(-1, 1);
 		},
 		removePassenger(item) {
 			const index = this.passengerSelected.indexOf(item);
 			this.passengerSelected.splice(index, 1);
 		},
 		addPassengerToLodging(selected) {
+			this.showPopover = true;
 			this.passengerSelected.push(selected);
 			this.setLodgingPassengers(this.passengerSelected.map(item => item.id));
 		},
