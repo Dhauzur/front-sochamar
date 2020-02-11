@@ -22,6 +22,7 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Corregido errores de CSS en navbar para el usuario logeado
 * Mejorado CSS de card a estilo ya usado por la App
 * Agregada eliminacion en cascada para rooms y companies sobre los lodgings. Toasted informa de lodgings afectados
+* Se cambian nombres de rutas, y /home principal
 
 `0.0.0`_ (2020-02-01) (Mauro)
 -------------------------
