@@ -481,11 +481,8 @@ export default {
 					//verifica que la fecha de inicio esta antes de otro ALOJAMIENTO
 					//pero que la fecha final, este despues de la fecha de inicio de otro alojamiento
 					else if (
-
 						moment(value.dateStart).isBefore(moment(lod.start)) &&
-						moment(value.dateEnd).isAfter(
-							moment(lod.start))
-						)
+						moment(value.dateEnd).isAfter(moment(lod.start))
 					)
 						verificate = {
 							erro: 'Fin de nuevo, esta despues de lod inicio',
@@ -494,14 +491,11 @@ export default {
 								.subtract(1, 'day')
 								.hours(16),
 						};
-
-						//verifica que la fecha de fin este dsp de otro ALOJAMIENTO
-						//pero que la fecha inicio, este antes de la fecha de fin de otro alojamiento
+					//verifica que la fecha de fin este dsp de otro ALOJAMIENTO
+					//pero que la fecha inicio, este antes de la fecha de fin de otro alojamiento
 					else if (
 						moment(value.dateStart).isBefore(moment(lod.end)) &&
-						moment(value.dateEnd).isAfter(
-							moment(lod.end))
-						)
+						moment(value.dateEnd).isAfter(moment(lod.end))
 					)
 						verificate = {
 							erro: 'Inicio de nuevo, esta antes de lod fin',
