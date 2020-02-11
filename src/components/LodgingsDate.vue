@@ -68,6 +68,8 @@ export default {
 					this.setDate(e);
 					this.dateChange({ dateStart: this.dateStart, dateEnd: e });
 				}
+			} else {
+				this.setDate(this.date);
 			}
 		},
 		...mapMutations({

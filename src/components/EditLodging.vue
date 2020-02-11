@@ -84,7 +84,7 @@
 						</div>
 					</template>
 					<b-row>
-						<b-col>
+						<b-col cols="6">
 							<LodgingsDate
 								label="Fecha inicio"
 								:start="true"
@@ -94,18 +94,22 @@
 								:is-passenger-date="true"
 							/>
 						</b-col>
-						<b-col>
+						<b-col cols="6">
 							<LodgingsDate
 								label="Fecha fin"
 								:start="false"
-								:set-date="date => (dateEnd = date)"
-								:date-start="dateEndPassengers"
+								:set-date="date => (dateEndPassengers = date)"
+								:date-start="dateStart"
 								:date-end="dateEnd"
 								:is-passenger-date="true"
 							/>
 						</b-col>
 					</b-row>
-					<button type="button" class="btn btn-secondary btn-md mt-2 btn-block">
+					<button
+						type="button"
+						class="btn btn-secondary btn-md mt-2 btn-block"
+						@click="setDatePassenger"
+					>
 						Ok
 					</button>
 				</b-card>
@@ -179,7 +183,7 @@ export default {
 	computed: {
 		passengerFormatted() {
 			return this.passengers.map(item => ({
-				search: item.firstName + ' ' + item.lastName,
+				search: `${item.firstName} ${item.lastName}`,
 				id: item._id,
 			}));
 		},
@@ -200,6 +204,16 @@ export default {
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
 	methods: {
+		setDatePassenger() {
+			this.setLodgingPassengers(
+				this.passengerSelected.map(item => ({
+					id: item.id,
+					dateStart: this.dateStartPassengers ? this.dateStartPassengers : this.dateStart,
+					dateEnd: this.dateEndPassengers ? this.dateEndPassengers : this.dateEnd,
+				}))
+			);
+			this.showPopover = false;
+		},
 		cancelAddPassenger() {
 			this.showPopover = false;
 			this.passengerSelected.splice(-1, 1);
@@ -211,7 +225,6 @@ export default {
 		addPassengerToLodging(selected) {
 			this.showPopover = true;
 			this.passengerSelected.push(selected);
-			this.setLodgingPassengers(this.passengerSelected.map(item => item.id));
 		},
 		...mapActions({
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
