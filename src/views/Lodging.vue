@@ -35,7 +35,7 @@
 								<button
 									type="button"
 									class="btn btn-primary btn-block"
-									@click="saveLodging()"
+									@click="saveLodgings()"
 								>
 									Guardar
 								</button>

@@ -161,16 +161,12 @@ export default {
 			const index = this.passengerSelected.indexOf(item);
 			this.passengerSelected.splice(index, 1);
 		},
-		saveLodging() {
-			this.saveLodgings();
-		},
 		addPassengerToLodging(selected) {
 			this.passengerSelected.push(selected);
 			this.setLodgingPassengers(this.passengerSelected.map(item => item.id));
 		},
 		...mapActions({
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
-			saveLodgings: 'Lodging/saveLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
 		...mapMutations({
