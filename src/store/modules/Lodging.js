@@ -362,7 +362,7 @@ const mutations = {
 		if (value)
 			value.forEach(v => {
 				state.rooms.add({
-					id: v.id,
+					id: v._id,
 					content: v.name,
 					numberPassangerMax: v.numberPassangerMax,
 				});
