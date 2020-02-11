@@ -16,7 +16,7 @@
 							</b-col>
 						</b-row>
 						<b-row>
-							<b-col v-if="lodgings.length == 0 && company" co class="mb-2">
+							<b-col v-if="lodgings.length == 0 && company" class="mb-2">
 								<b-row>
 									<b-col cols="12" md="3">
 										<b-button
