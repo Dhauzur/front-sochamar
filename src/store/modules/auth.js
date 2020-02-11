@@ -66,10 +66,14 @@ const actions = {
 			commit('setLoading', false);
 		}
 	},
-	async requestPasswordRecoveryEmail({ commit }, email) {
+	async requestPasswordRecoverEmail({ commit }, email) {
+		console.log('me repito');
 		commit('setLoading', true);
 		try {
 			await Axios.post(api + '/auth/send/passwordRecover', { email });
+			const message = { type: 'success', text: 'Correo de recuperación enviado con exito' };
+			commit('setMessage', message);
+			commit('setLoading', false);
 		} catch (e) {
 			const message = { type: 'error', text: 'Expiro el tiempo para cambiar la contraseña' };
 			commit('setMessage', message);

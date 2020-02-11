@@ -2,7 +2,7 @@
 	<b-container>
 		<b-row class="justify-content-center">
 			<b-col md="5">
-				<b-card>
+				<b-card v-if="!passwordRecover">
 					<b-card-title>Ingreso</b-card-title>
 					<b-card-body>
 						<b-form @submit.prevent="login(loginData)">
@@ -43,9 +43,15 @@
 							¿No tienes una cuenta?
 							<router-link to="/register">registrate</router-link>
 						</p>
-						<a href="#">¿Olvidaste tu contraseña?</a>
+						<a href="#" @click="controlPasswordRecover(true)"
+							>¿Olvidaste tu contraseña?</a
+						>
 					</b-card-footer>
 				</b-card>
+				<PasswordRecover
+					v-else
+					:disable-password-recover="controlPasswordRecover"
+				></PasswordRecover>
 			</b-col>
 		</b-row>
 	</b-container>
@@ -53,14 +59,18 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-
+import PasswordRecover from '../components/PasswordRecover';
 export default {
+	components: {
+		PasswordRecover,
+	},
 	data() {
 		return {
 			loginData: {
 				email: '',
 				password: '',
 			},
+			passwordRecover: false,
 		};
 	},
 	computed: {
@@ -79,6 +89,9 @@ export default {
 		...mapActions({
 			login: 'Auth/login',
 		}),
+		controlPasswordRecover(change) {
+			this.passwordRecover = change;
+		},
 	},
 };
 </script>
