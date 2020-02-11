@@ -35,7 +35,7 @@
 								></b-form-input>
 							</b-form-group>
 							<!--SUBMIT-->
-							<b-button v-if="showSubmitButton" type="submit" variant="primary"
+							<b-button v-if="!loading" type="submit" variant="primary"
 								>Actualizar</b-button
 							>
 						</b-form>
@@ -56,13 +56,13 @@ export default {
 				newPassword: '',
 				repeatedPassword: '',
 			},
-			showSubmitButton: true,
 			temporalJwt: '',
 		};
 	},
 	computed: {
 		...mapGetters({
 			message: 'Auth/message',
+			loading: 'Auth/loading',
 		}),
 	},
 	watch: {
@@ -81,7 +81,6 @@ export default {
 			updatePassword: 'Auth/updatePassword',
 		}),
 		sendNewPassword() {
-			this.showSubmitButton = false;
 			if (this.formData.repeatedPassword === this.formData.newPassword) {
 				const recoverData = {
 					token: this.temporalJwt,
@@ -92,7 +91,6 @@ export default {
 				this.$toasted.show('No coinciden las contraseñas', {
 					type: 'error',
 				});
-				this.showSubmitButton = true;
 			}
 		},
 		deleteQueryFromRoute() {
