@@ -21,7 +21,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="css">
 .modal-content {
 	max-height: 90vh;
 	overflow-y: auto;
