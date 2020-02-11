@@ -62,9 +62,7 @@
 						target="_blank"
 						class="ml-1 mr-1"
 						>{{ item.search }}
-						<span class="text-danger ml-1 pointer" @click="removePassenger(item)"
-							>X</span
-						>
+						<span class="text-danger ml-1 pointer" @click="removePassenger(i)">X</span>
 					</b-badge>
 				</b-col>
 				<!-- popover date passengers -->
@@ -184,7 +182,7 @@ export default {
 		passengerFormatted() {
 			return this.passengers.map(item => ({
 				search: `${item.firstName} ${item.lastName}`,
-				id: item._id,
+				data: item,
 			}));
 		},
 		...mapGetters({
@@ -197,8 +195,21 @@ export default {
 			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 		},
+		passengerSelected() {
+			this.setLodgingPassengers(
+				this.passengerSelected.map(item => ({
+					id: item.id,
+					search: item.search,
+					dateStart: this.dateStartPassengers ? this.dateStartPassengers : this.dateStart,
+					dateEnd: this.dateEndPassengers ? this.dateEndPassengers : this.dateEnd,
+				}))
+			);
+		},
 	},
 	mounted() {
+		if (this.lodgingSelect.passengers) {
+			this.passengerSelected = this.lodgingSelect.passengers;
+		}
 		this.fetchAllPassengers();
 		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
@@ -208,6 +219,7 @@ export default {
 			this.setLodgingPassengers(
 				this.passengerSelected.map(item => ({
 					id: item.id,
+					search: item.search,
 					dateStart: this.dateStartPassengers ? this.dateStartPassengers : this.dateStart,
 					dateEnd: this.dateEndPassengers ? this.dateEndPassengers : this.dateEnd,
 				}))
@@ -218,8 +230,7 @@ export default {
 			this.showPopover = false;
 			this.passengerSelected.splice(-1, 1);
 		},
-		removePassenger(item) {
-			const index = this.passengerSelected.indexOf(item);
+		removePassenger(index) {
 			this.passengerSelected.splice(index, 1);
 		},
 		addPassengerToLodging(selected) {
