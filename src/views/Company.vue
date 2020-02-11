@@ -69,7 +69,6 @@
 								</tr>
 							</tbody>
 						</table>
-						{{ companySelected }}
 					</b-col>
 				</b-row>
 				<b-row class="mb-3">
@@ -82,6 +81,7 @@
 						Nombre
 						<b-form-input
 							v-model="form.name"
+							required
 							placeholder="Ej: Minera los pelambres"
 						></b-form-input>
 					</b-col>

@@ -285,7 +285,7 @@ const mutations = {
 		let company = state.companies.find(c => c.value == state.company);
 		if (company.text == 'Turismo')
 			state.lodgings.add({
-				group: 1,
+				group: state.rooms.getIds()[0],
 				start: moment().hours(16),
 				end: moment()
 					.hours(13)
@@ -296,7 +296,7 @@ const mutations = {
 			});
 		else
 			state.lodgings.add({
-				group: 1,
+				group: state.rooms.getIds()[0],
 				start: moment().hours(16),
 				end: moment()
 					.hours(13)
