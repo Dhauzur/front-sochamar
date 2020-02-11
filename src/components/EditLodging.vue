@@ -3,44 +3,29 @@
 		<b-col class="borderEdit m-3">
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
 			<b-row>
+				<!-- date start lodging -->
 				<b-col md="4" lg="6">
-					<b-form-group
-						id="input-group-1"
+					<LodgingsDate
 						label="Fecha inicio"
-						label-for="input-1"
-						description="Selecione la fecha que desea cambiar."
-					>
-						<b-form-input
-							id="input-1"
-							v-model="dateStart"
-							type="date"
-							class="col-xs-2 "
-							style="text-align: center; text-align-last:center;"
-							required
-							@change="dateChange({ dateStart, dateEnd })"
-						/>
-					</b-form-group>
+						:start="true"
+						:set-date="date => (dateStart = date)"
+						:date-start="dateStart"
+						:date-end="dateEnd"
+					/>
 				</b-col>
+				<!-- date end lodging -->
 				<b-col md="4" lg="6">
-					<b-form-group
-						id="input-group-1"
+					<LodgingsDate
 						label="Fecha fin"
-						label-for="input-1"
-						description="Selecione la fecha que desea cambiar."
-					>
-						<b-form-input
-							id="input-1"
-							v-model="dateEnd"
-							type="date"
-							class="col-xs-2 "
-							style="text-align: center; text-align-last:center;"
-							required
-							@change="dateChange({ dateStart, dateEnd })"
-						/>
-					</b-form-group>
+						:start="false"
+						:set-date="date => (dateEnd = date)"
+						:date-start="dateStart"
+						:date-end="dateEnd"
+					/>
 				</b-col>
 			</b-row>
 			<b-row>
+				<!--  services -->
 				<b-col md="4" lg="12">
 					<b-form-group
 						id="input-group-1"
@@ -60,6 +45,7 @@
 				</b-col>
 			</b-row>
 			<b-row>
+				<!-- aucomplete passengers -->
 				<b-col lg="4" xl="12">
 					<autocomplete
 						:items="passengerFormatted"
@@ -81,6 +67,7 @@
 						>
 					</b-badge>
 				</b-col>
+				<!-- increment passengers  -->
 				<b-col lg="4" xl="12">
 					<button
 						type="button"
@@ -90,6 +77,7 @@
 						Agregar un pasajero todos los dias a {{ serviceSelected }}
 					</button>
 				</b-col>
+				<!-- decrement passengers -->
 				<b-col lg="4" xl="12">
 					<button
 						type="button"
@@ -99,6 +87,7 @@
 						Disminuir un pasajero todos los dias a {{ serviceSelected }}
 					</button>
 				</b-col>
+				<!-- delete lodging -->
 				<b-col lg="4" xl="12">
 					<button
 						type="button"
@@ -110,17 +99,21 @@
 				</b-col>
 			</b-row>
 		</b-col>
+		{{ validDateForPassengers() }}
 	</b-row>
 </template>
 
 <script>
 import moment from 'moment';
 import Autocomplete from '@/components/ui/autocomplete/Autocomplete';
+import LodgingsDate from '@/components/LodgingsDate';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 
 export default {
+	name: 'EditLodgings',
 	components: {
 		Autocomplete,
+		LodgingsDate,
 	},
 	data() {
 		return {
@@ -128,7 +121,9 @@ export default {
 			passengerSelected: [],
 			isLoadingPassenger: false,
 			dateStart: null,
+			dateStartPassengers: null,
 			dateEnd: null,
+			dateEndPassengers: null,
 			services: [
 				{ text: 'Todos los servicios', value: 'todos los servicios' },
 				{ text: 'Desayuno', value: 'desayuno' },
@@ -157,6 +152,10 @@ export default {
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
 	methods: {
+		validDateForPassengers() {
+			this.dateStartPassengers;
+			return null;
+		},
 		removePassenger(item) {
 			const index = this.passengerSelected.indexOf(item);
 			this.passengerSelected.splice(index, 1);
@@ -172,7 +171,6 @@ export default {
 		...mapMutations({
 			addOneService: 'Lodging/addOneService',
 			subOneService: 'Lodging/subOneService',
-			dateChange: 'Lodging/dateChange',
 			setLodgingPassengers: 'Lodging/setLodgingPassengers',
 		}),
 	},
