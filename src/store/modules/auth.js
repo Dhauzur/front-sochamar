@@ -25,7 +25,11 @@ const actions = {
 			commit('setUser', user);
 			commit('setToken', token);
 			commit('setIsLogged', true);
+<<<<<<< HEAD
 			router.push('/lodgings');
+=======
+			router.push('/hospedaje');
+>>>>>>> f63b6cdaae937e991fa2b929de176f75d13725be
 		} catch (e) {
 			const message = {
 				type: 'error',
@@ -41,7 +45,11 @@ const actions = {
 			commit('setUser', user);
 			commit('setToken', token);
 			commit('setIsLogged', true);
+<<<<<<< HEAD
 			router.push('/lodgings');
+=======
+			router.push('/hospedaje');
+>>>>>>> f63b6cdaae937e991fa2b929de176f75d13725be
 		} catch (e) {
 			const message = { type: 'error', text: 'El correo ya existe' };
 			commit('setMessage', message);
