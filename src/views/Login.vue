@@ -64,26 +64,13 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			messageAuth: 'Auth/message',
-			messageRoom: 'Room/message',
-			messageCompany: 'Company/message',
+			message: 'Auth/message',
 		}),
 	},
 	watch: {
-		messageAuth(newVal) {
+		message(newVal) {
 			this.toastedMessage(newVal);
 		},
-		messageRoom(newVal) {
-			this.toastedMessage(newVal);
-		},
-		messageCompany(newVal) {
-			this.toastedMessage(newVal);
-		},
-	},
-	mounted() {
-		this.toastedMessage(this.messageAuth);
-		this.toastedMessage(this.messageRoom);
-		this.toastedMessage(this.messageCompany);
 	},
 	methods: {
 		...mapActions({
