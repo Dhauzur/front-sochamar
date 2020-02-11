@@ -137,7 +137,6 @@ const actions = {
 		commit('setLoading', 'Creando hospedajes...');
 		let mirrorLodging = JSON.parse(state.mirrorLodging);
 		state.lodgings.forEach((l, id) => {
-			console.log('state', state.lodgingPassengers);
 			//Si es diferente o si no existe
 			if (mirrorLodging._data[id] != l || !mirrorLodging[id]) {
 				Axios.post(api + '/lodging', {

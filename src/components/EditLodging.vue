@@ -53,6 +53,7 @@
 						placeholder="Agregar un pasajero"
 					/>
 				</b-col>
+				<!-- badge passenger -->
 				<b-col v-if="!showPopover" lg="4" xl="12">
 					<b-badge
 						v-for="(item, i) in passengerSelected"
@@ -82,6 +83,7 @@
 						</div>
 					</template>
 					<b-row>
+						<!-- start date passenger -->
 						<b-col cols="6">
 							<LodgingsDate
 								label="Fecha inicio"
@@ -93,6 +95,7 @@
 								:error-date="errorDate"
 							/>
 						</b-col>
+						<!-- end date passenger -->
 						<b-col cols="6">
 							<LodgingsDate
 								label="Fecha fin"
@@ -106,7 +109,7 @@
 						</b-col>
 					</b-row>
 					<button
-						:disabled="dateEndPassengersInvalid"
+						:disabled="datePassengersInvalid"
 						type="button"
 						class="btn btn-secondary btn-md mt-2 btn-block"
 						@click="setDatePassenger"
@@ -163,7 +166,7 @@ export default {
 	},
 	data() {
 		return {
-			dateEndPassengersInvalid: false,
+			datePassengersInvalid: false,
 			results: [],
 			passengerSelected: [],
 			isLoadingPassenger: false,
@@ -200,6 +203,9 @@ export default {
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 		},
 		passengerSelected() {
+			/**
+			 * set passenger when passengerSelected han been changed
+			 */
 			this.setLodgingPassengers(
 				this.passengerSelected.map(item => ({
 					id: item.id,
@@ -211,17 +217,29 @@ export default {
 		},
 	},
 	mounted() {
+		/**
+		 * fetch passengers
+		 */
+		this.fetchAllPassengers();
+		/**
+		 * set in the state the passenger lodging from api
+		 */
 		if (this.lodgingSelect.passengers) {
 			this.passengerSelected = this.lodgingSelect.passengers;
 		}
-		this.fetchAllPassengers();
 		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
 	methods: {
-		errorDate(bol) {
-			this.dateEndPassengersInvalid = bol;
+		/**
+		 * used for disabled button when passenger date is invalid
+		 */
+		errorDate(boolean) {
+			this.datePassengersInvalid = boolean;
 		},
+		/**
+		 * set date passenger in the store
+		 */
 		setDatePassenger() {
 			this.setLodgingPassengers(
 				this.passengerSelected.map(item => ({
@@ -233,13 +251,23 @@ export default {
 			);
 			this.showPopover = false;
 		},
+		/**
+		 * cancel the adiction passenger when close the popover
+		 */
 		cancelAddPassenger() {
 			this.showPopover = false;
 			this.passengerSelected.splice(-1, 1);
 		},
+		/**
+		 * remove a passenger
+		 */
 		removePassenger(index) {
 			this.passengerSelected.splice(index, 1);
 		},
+		/**
+		 * add a passenger to lodging from autocomplete
+		 * show popover for set date
+		 */
 		addPassengerToLodging(selected) {
 			this.showPopover = true;
 			this.passengerSelected.push(selected);

@@ -82,18 +82,15 @@ export default {
 			} else {
 				this.error = '';
 				this.errorDate(false);
-				let dateOne = new Date(e);
-				let dateTwo = new Date(this.dateStart);
-				let datethree = new Date(this.dateEnd);
 				if (this.start) {
-					if (dateOne.getTime() >= dateTwo.getTime()) {
+					if (new Date(e).getTime() >= new Date(this.dateStart).getTime()) {
 						this.setDate(this.date);
 					} else {
 						this.errorDate(true);
 						this.error = 'La fecha no puede ser menor al alojamiento';
 					}
 				} else {
-					if (dateOne.getTime() <= datethree.getTime()) {
+					if (new Date(e).getTime() <= new Date(this.dateEnd).getTime()) {
 						this.setDate(this.date);
 					} else {
 						this.errorDate(true);
