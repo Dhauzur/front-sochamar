@@ -90,6 +90,7 @@
 								:date-start="dateStart"
 								:date-end="dateEnd"
 								:is-passenger-date="true"
+								:error-date="errorDate"
 							/>
 						</b-col>
 						<b-col cols="6">
@@ -100,10 +101,12 @@
 								:date-start="dateStart"
 								:date-end="dateEnd"
 								:is-passenger-date="true"
+								:error-date="errorDate"
 							/>
 						</b-col>
 					</b-row>
 					<button
+						:disabled="dateEndPassengersInvalid"
 						type="button"
 						class="btn btn-secondary btn-md mt-2 btn-block"
 						@click="setDatePassenger"
@@ -160,6 +163,7 @@ export default {
 	},
 	data() {
 		return {
+			dateEndPassengersInvalid: false,
 			results: [],
 			passengerSelected: [],
 			isLoadingPassenger: false,
@@ -215,6 +219,9 @@ export default {
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
 	methods: {
+		errorDate(bol) {
+			this.dateEndPassengersInvalid = bol;
+		},
 		setDatePassenger() {
 			this.setLodgingPassengers(
 				this.passengerSelected.map(item => ({

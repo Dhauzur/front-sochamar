@@ -4,7 +4,7 @@
 		id="input-group-1"
 		:label="label"
 		label-for="input-1"
-		description="Selecione la fecha que desea cambiar."
+		:description="!error ? 'Selecione la fecha que desea cambiar' : ''"
 	>
 		<b-form-input
 			id="input-1"
@@ -15,6 +15,7 @@
 			:value="date"
 			@change="onchange"
 		/>
+		<small class="text-danger">{{ error }}</small>
 	</b-form-group>
 </template>
 
@@ -24,6 +25,11 @@ import { mapMutations } from 'vuex';
 export default {
 	name: 'LodgingsDate',
 	props: {
+		errorDate: {
+			type: Function,
+			required: false,
+			default: () => false,
+		},
 		isPassengerDate: {
 			type: Boolean,
 			required: false,
@@ -53,6 +59,11 @@ export default {
 			default: '',
 		},
 	},
+	data() {
+		return {
+			error: '',
+		};
+	},
 	computed: {
 		date() {
 			return this.start ? this.dateStart : this.dateEnd;
@@ -69,7 +80,26 @@ export default {
 					this.dateChange({ dateStart: this.dateStart, dateEnd: e });
 				}
 			} else {
-				this.setDate(this.date);
+				this.error = '';
+				this.errorDate(false);
+				let dateOne = new Date(e);
+				let dateTwo = new Date(this.dateStart);
+				let datethree = new Date(this.dateEnd);
+				if (this.start) {
+					if (dateOne.getTime() >= dateTwo.getTime()) {
+						this.setDate(this.date);
+					} else {
+						this.errorDate(true);
+						this.error = 'La fecha no puede ser menor al alojamiento';
+					}
+				} else {
+					if (dateOne.getTime() <= datethree.getTime()) {
+						this.setDate(this.date);
+					} else {
+						this.errorDate(true);
+						this.error = 'La fecha no puede ser mayor alojamiento';
+					}
+				}
 			}
 		},
 		...mapMutations({
