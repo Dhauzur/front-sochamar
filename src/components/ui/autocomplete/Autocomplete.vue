@@ -16,7 +16,6 @@
 				class="autocomplete-result"
 				:class="{ 'is-active': i === arrowCounter }"
 				@click="setSelected(result)"
-				@keydown.enter="onEnter"
 			>
 				{{ result.search }}
 			</li>
@@ -45,11 +44,18 @@ export default {
 	},
 	data() {
 		return {
+			itemselected: {},
 			search: '',
 			results: [],
 			isOpen: false,
 			arrowCounter: -1,
 		};
+	},
+	mounted() {
+		document.addEventListener('click', this.handleClickOutside);
+	},
+	destroyed() {
+		document.removeEventListener('click', this.handleClickOutside);
 	},
 	methods: {
 		onChange() {
@@ -77,10 +83,15 @@ export default {
 			}
 		},
 		onEnter() {
-			// this.selected(this.results[this.arrowCounter]);
-			this.search = this.results[this.arrowCounter];
+			this.setSelected(this.results[this.arrowCounter]);
 			this.isOpen = false;
 			this.arrowCounter = -1;
+		},
+		handleClickOutside(event) {
+			if (!this.$el.contains(event.target)) {
+				this.isOpen = false;
+				this.arrowCounter = -1;
+			}
 		},
 	},
 };
