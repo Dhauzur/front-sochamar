@@ -168,8 +168,8 @@ const mutations = {
 	setMessage(state, value) {
 		state.message = value;
 	},
-	setAllLodgingPassengers(state, value) {
-		state.lodgingPassengers = value;
+	setAllLodgingPassengers(state, values) {
+		state.lodgingPassengers = values;
 	},
 	updateLodgingPassengers(state, value) {
 		state.lodgingPassengers.push(value);
