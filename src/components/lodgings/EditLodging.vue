@@ -262,21 +262,12 @@ export default {
 		 * show popover for set date
 		 */
 		addPassengerToLodging(selected) {
-			// return a boolean, true if the passenger is duplicated
-			// const verifyPassengerNoduplicate = this.passengerSelected.some(
-			// 	item => selected.search === item.search
-			// );
-			// if (verifyPassengerNoduplicate) {
-			// 	this.$toasted.show(`${selected.search} ya ha sido seleccionado`, {
-			// 		type: 'error',
-			// 	});
-			// } else {
-			// 	this.showPopover = true;
-			// 	this.passengerSelected.push(selected);
-			// }
 			this.showPopover = true;
 			this.passengerSelected = selected;
 		},
+		/**
+		 * check if date of passenger ir already taken
+		 */
 		verifyOverlay() {
 			let verificate = null;
 			let temp = this.lodgingPassengers.filter(passenger => {
