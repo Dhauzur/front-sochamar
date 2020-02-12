@@ -83,9 +83,11 @@ export default {
 			}
 		},
 		onEnter() {
-			this.setSelected(this.results[this.arrowCounter]);
-			this.isOpen = false;
-			this.arrowCounter = -1;
+			if (this.results[this.arrowCounter]) {
+				this.setSelected(this.results[this.arrowCounter]);
+				this.isOpen = false;
+				this.arrowCounter = -1;
+			}
 		},
 		handleClickOutside(event) {
 			if (!this.$el.contains(event.target)) {
