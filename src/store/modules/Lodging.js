@@ -24,6 +24,7 @@ const state = {
 
 const getters = {
 	message: state => state.message,
+	lodgingPassengers: state => state.lodgingPassengers,
 	updatingService: state => state.updatingService,
 	mirrorLodging: state => state.mirrorLodging,
 	lodgingSelect: state => state.lodgingSelect,
@@ -167,8 +168,14 @@ const mutations = {
 	setMessage(state, value) {
 		state.message = value;
 	},
-	setLodgingPassengers(state, value) {
+	setAllLodgingPassengers(state, value) {
 		state.lodgingPassengers = value;
+	},
+	updateLodgingPassengers(state, value) {
+		state.lodgingPassengers.push(value);
+	},
+	removeLodgingPassengers(state, value) {
+		state.lodgingPassengers.splice(value, 1);
 	},
 	setUpdatingService(state, value) {
 		state.updatingService = value;

@@ -71,31 +71,31 @@ export default {
 	},
 	methods: {
 		onchange(e) {
-			if (!this.isPassengerDate) {
-				if (this.start) {
-					this.setDate(e);
-					this.dateChange({ dateStart: e, dateEnd: this.dateEnd });
-				} else {
-					this.setDate(e);
-					this.dateChange({ dateStart: this.dateStart, dateEnd: e });
-				}
-			} else {
+			if (this.isPassengerDate) {
 				this.error = '';
 				this.errorDate(false);
 				if (this.start) {
 					if (new Date(e).getTime() >= new Date(this.dateStart).getTime()) {
-						this.setDate(this.date);
+						this.setDate(e);
 					} else {
 						this.errorDate(true);
 						this.error = 'La fecha no puede ser menor al alojamiento';
 					}
 				} else {
 					if (new Date(e).getTime() <= new Date(this.dateEnd).getTime()) {
-						this.setDate(this.date);
+						this.setDate(e);
 					} else {
 						this.errorDate(true);
 						this.error = 'La fecha no puede ser mayor alojamiento';
 					}
+				}
+			} else {
+				if (this.start) {
+					this.setDate(e);
+					this.dateChange({ dateStart: e, dateEnd: this.dateEnd });
+				} else {
+					this.setDate(e);
+					this.dateChange({ dateStart: this.dateStart, dateEnd: e });
 				}
 			}
 		},

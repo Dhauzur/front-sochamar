@@ -455,6 +455,13 @@ export default {
 				type: newVal.type,
 			});
 		},
+		lodgingSelect() {
+			if (this.lodgingSelect) {
+				if (this.lodgingSelect.passengers && this.editMode) {
+					this.setAllLodgingPassengers(this.lodgingSelect.passengers);
+				}
+			}
+		},
 	},
 	created() {
 		this.selectCompany = this.company;
@@ -552,6 +559,7 @@ export default {
 			updateService: 'Lodging/updateService',
 			setCompanyLodging: 'Lodging/setCompanyLodging',
 			setModeEdit: 'Lodging/setModeEdit',
+			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
 		}),
 	},
 };

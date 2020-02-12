@@ -56,14 +56,20 @@
 				<!-- badge passenger -->
 				<b-col v-if="!showPopover" lg="4" xl="12">
 					<b-badge
-						v-for="(item, i) in passengerSelected"
+						v-for="(item, i) in lodgingPassengers"
+						:id="`show${i}`"
 						:key="i"
 						pill
 						variant="primary"
 						target="_blank"
 						class="ml-1 mr-1"
 						>{{ item.search }}
-						<span class="text-danger ml-1 pointer" @click="removePassenger(i)">X</span>
+						<span class="text-danger ml-1 pointer" @click="removeLodgingPassengers(i)"
+							>X</span
+						>
+						<b-tooltip :target="`show${i}`" placement="bottom"
+							>{{ item.dateStart }} - {{ item.dateEnd }}</b-tooltip
+						>
 					</b-badge>
 				</b-col>
 				<!-- popover date passengers -->
@@ -168,7 +174,7 @@ export default {
 		return {
 			datePassengersInvalid: false,
 			results: [],
-			passengerSelected: [],
+			passengerSelected: null,
 			isLoadingPassenger: false,
 			dateStart: null,
 			showPopover: false,
@@ -194,6 +200,7 @@ export default {
 		},
 		...mapGetters({
 			lodgingSelect: 'Lodging/lodgingSelect',
+			lodgingPassengers: 'Lodging/lodgingPassengers',
 			passengers: 'Passengers/passengers',
 		}),
 	},
@@ -202,31 +209,12 @@ export default {
 			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 		},
-		passengerSelected() {
-			/**
-			 * set passenger when passengerSelected han been changed
-			 */
-			this.setLodgingPassengers(
-				this.passengerSelected.map(item => ({
-					id: item.id,
-					search: item.search,
-					dateStart: this.dateStartPassengers ? this.dateStartPassengers : this.dateStart,
-					dateEnd: this.dateEndPassengers ? this.dateEndPassengers : this.dateEnd,
-				}))
-			);
-		},
 	},
 	mounted() {
 		/**
 		 * fetch passengers
 		 */
 		this.fetchAllPassengers();
-		/**
-		 * set in the state the passenger lodging from api
-		 */
-		if (this.lodgingSelect.passengers) {
-			this.passengerSelected = this.lodgingSelect.passengers;
-		}
 		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
@@ -241,14 +229,25 @@ export default {
 		 * set date passenger in the store
 		 */
 		setDatePassenger() {
-			this.setLodgingPassengers(
-				this.passengerSelected.map(item => ({
-					id: item.id,
-					search: item.search,
-					dateStart: this.dateStartPassengers ? this.dateStartPassengers : this.dateStart,
-					dateEnd: this.dateEndPassengers ? this.dateEndPassengers : this.dateEnd,
-				}))
-			);
+			if (this.dateStartPassengers === null) {
+				this.dateStartPassengers = this.dateStart;
+			}
+			if (this.dateEndPassengers === null) {
+				this.dateEndPassengers = this.dateEnd;
+			}
+
+			this.verifyOverlay() === 'OK'
+				? this.updateLodgingPassengers({
+						id: this.passengerSelected.data._id,
+						search: this.passengerSelected.search,
+						dateStart: this.dateStartPassengers,
+						dateEnd: this.dateEndPassengers,
+				  })
+				: this.$toasted.show(`ya ha sido seleccionado en esta fecha`, {
+						type: 'error',
+				  });
+
+			this.passengerSelected = null;
 			this.showPopover = false;
 		},
 		/**
@@ -256,13 +255,7 @@ export default {
 		 */
 		cancelAddPassenger() {
 			this.showPopover = false;
-			this.passengerSelected.splice(-1, 1);
-		},
-		/**
-		 * remove a passenger
-		 */
-		removePassenger(index) {
-			this.passengerSelected.splice(index, 1);
+			this.passengerSelected = '';
 		},
 		/**
 		 * add a passenger to lodging from autocomplete
@@ -270,17 +263,44 @@ export default {
 		 */
 		addPassengerToLodging(selected) {
 			// return a boolean, true if the passenger is duplicated
-			const verifyPassengerNoduplicate = this.passengerSelected.some(
-				item => selected.search === item.search
-			);
-			if (verifyPassengerNoduplicate) {
-				this.$toasted.show(`${selected.search} ya ha sido seleccionado`, {
-					type: 'error',
+			// const verifyPassengerNoduplicate = this.passengerSelected.some(
+			// 	item => selected.search === item.search
+			// );
+			// if (verifyPassengerNoduplicate) {
+			// 	this.$toasted.show(`${selected.search} ya ha sido seleccionado`, {
+			// 		type: 'error',
+			// 	});
+			// } else {
+			// 	this.showPopover = true;
+			// 	this.passengerSelected.push(selected);
+			// }
+			this.showPopover = true;
+			this.passengerSelected = selected;
+		},
+		verifyOverlay() {
+			let verificate = null;
+			let temp = this.lodgingPassengers.filter(passenger => {
+				return passenger.id === this.passengerSelected.data._id;
+			});
+
+			if (temp.length > 0) {
+				temp.map(item => {
+					if (
+						(moment(this.dateStartPassengers).isBefore(moment(item.dateStart)) &&
+							moment(this.dateEndPassengers).isBefore(moment(item.dateStart))) ||
+						(moment(this.dateStartPassengers).isAfter(moment(item.dateEnd)) &&
+							moment(this.dateEndPassengers).isAfter(moment(item.dateEnd)))
+					) {
+						verificate = 'OK';
+					} else {
+						verificate = 'No puede agregar en esa fecha';
+					}
 				});
 			} else {
-				this.showPopover = true;
-				this.passengerSelected.push(selected);
+				verificate = 'OK';
 			}
+
+			return verificate;
 		},
 		...mapActions({
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
@@ -289,7 +309,8 @@ export default {
 		...mapMutations({
 			addOneService: 'Lodging/addOneService',
 			subOneService: 'Lodging/subOneService',
-			setLodgingPassengers: 'Lodging/setLodgingPassengers',
+			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
+			removeLodgingPassengers: 'Lodging/removeLodgingPassengers',
 		}),
 	},
 };
