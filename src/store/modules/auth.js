@@ -55,11 +55,11 @@ const actions = {
 			const { password, token } = recoverData;
 			Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 			await Axios.put(api + '/auth/user/password', { password });
-
-			const message = { type: 'success', text: 'Contraseña cambiada con exito' };
-			commit('setMessage', message);
 			Axios.defaults.headers.common['Authorization'] = '';
 			commit('setLoading', false);
+			const message = { type: 'success', text: 'Contraseña cambiada con exito' };
+			commit('setMessage', message);
+			router.push('/login');
 		} catch (e) {
 			const message = { type: 'error', text: 'Expiro el tiempo para cambiar la contraseña' };
 			commit('setMessage', message);
@@ -67,7 +67,6 @@ const actions = {
 		}
 	},
 	async requestPasswordRecoverEmail({ commit }, email) {
-		console.log('me repito');
 		commit('setLoading', true);
 		try {
 			await Axios.post(api + '/auth/send/passwordRecover', { email });
@@ -75,7 +74,7 @@ const actions = {
 			commit('setMessage', message);
 			commit('setLoading', false);
 		} catch (e) {
-			const message = { type: 'error', text: 'Expiro el tiempo para cambiar la contraseña' };
+			const message = { type: 'error', text: 'Ese correo no existe en sistema' };
 			commit('setMessage', message);
 			commit('setLoading', false);
 		}
