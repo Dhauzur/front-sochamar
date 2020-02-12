@@ -4,7 +4,7 @@
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
 			<b-row>
 				<!-- date start lodging -->
-				<b-col md="4" lg="6">
+				<b-col sm="6">
 					<LodgingsDate
 						label="Fecha inicio"
 						:start="true"
@@ -14,7 +14,7 @@
 					/>
 				</b-col>
 				<!-- date end lodging -->
-				<b-col md="4" lg="6">
+				<b-col sm="6">
 					<LodgingsDate
 						label="Fecha fin"
 						:start="false"
@@ -26,7 +26,7 @@
 			</b-row>
 			<b-row>
 				<!--  services -->
-				<b-col md="4" lg="12">
+				<b-col sm="12">
 					<b-form-group
 						id="input-group-1"
 						label="Espacio de trabajo:"
@@ -46,7 +46,7 @@
 			</b-row>
 			<b-row>
 				<!-- aucomplete passengers -->
-				<b-col lg="4" xl="12" class="position-relative">
+				<b-col sm="12" class="position-relative">
 					<autocomplete
 						:items="passengerFormatted"
 						:selected="addPassengerToLodging"
@@ -54,7 +54,7 @@
 					/>
 				</b-col>
 				<!-- badge passenger -->
-				<b-col v-if="!showPopover" lg="4" xl="12">
+				<b-col v-if="!showPopover" sm="12" class="mt-2 mt-xl-1">
 					<b-badge
 						v-for="(item, i) in lodgingPassengers"
 						:id="`show${i}`"
@@ -124,7 +124,7 @@
 					</button>
 				</b-card>
 				<!-- increment passengers  -->
-				<b-col lg="4" xl="12">
+				<b-col sm="12">
 					<button
 						type="button"
 						class=" btn btn-primary btn-md mt-2 btn-block"
@@ -134,7 +134,7 @@
 					</button>
 				</b-col>
 				<!-- decrement passengers -->
-				<b-col lg="4" xl="12">
+				<b-col sm="12">
 					<button
 						type="button"
 						class=" btn btn-primary btn-md mt-2 btn-block"
@@ -144,7 +144,7 @@
 					</button>
 				</b-col>
 				<!-- delete lodging -->
-				<b-col lg="4" xl="12">
+				<b-col sm="12">
 					<button
 						type="button"
 						class="btn btn-danger btn-md mt-2  btn-block"
