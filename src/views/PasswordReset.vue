@@ -14,17 +14,16 @@
 							id="email-input"
 							v-model.trim="formData.newPassword"
 							type="password"
-							required
 							placeholder="Ingresa la contraseña"
 						></b-form-input>
 						<div v-if="$v.formData.newPassword.$dirty">
-							<small v-if="!$v.formData.password.required" class="text-danger">
+							<small v-if="!$v.formData.newPassword.required" class="text-danger">
 								Campo requerido
 							</small>
-							<small v-if="!$v.formData.password.minLength" class="text-danger">
+							<small v-if="!$v.formData.newPassword.minLength" class="text-danger">
 								Minimo 5 caracteres
 							</small>
-							<small v-if="!$v.formData.password.maxLength" class="text-danger">
+							<small v-if="!$v.formData.newPassword.maxLength" class="text-danger">
 								Minimo 100 caracteres
 							</small>
 						</div>
@@ -39,25 +38,39 @@
 							id="email-input"
 							v-model.trim="formData.repeatedPassword"
 							type="password"
-							required
 							placeholder="Ingresa la contraseña nuevamente"
 						></b-form-input>
 						<div v-if="$v.formData.repeatedPassword.$dirty">
-							<small v-if="!$v.formData.password.required" class="text-danger">
+							<small
+								v-if="!$v.formData.repeatedPassword.required"
+								class="text-danger"
+							>
 								Campo requerido
 							</small>
-							<small v-if="!$v.formData.password.minLength" class="text-danger">
+							<small
+								v-if="!$v.formData.repeatedPassword.minLength"
+								class="text-danger"
+							>
 								Minimo 5 caracteres
 							</small>
-							<small v-if="!$v.formData.password.maxLength" class="text-danger">
+							<small
+								v-if="!$v.formData.repeatedPassword.maxLength"
+								class="text-danger"
+							>
 								Minimo 100 caracteres
 							</small>
 						</div>
+						<small v-if="passwordMismatch" class="text-danger">
+							No coinciden las contraseñas
+						</small>
 					</b-form-group>
 					<!--SUBMIT-->
 					<b-button v-if="!loading" class="mt-2" type="submit" variant="primary"
 						>Actualizar</b-button
 					>
+					<small v-if="errors" class="mt-2 d-block text-danger">
+						Debe rellenar el formulario correctamente
+					</small>
 				</b-form>
 			</b-col>
 		</b-row>
@@ -78,6 +91,8 @@ export default {
 				repeatedPassword: '',
 			},
 			temporalJwt: '',
+			errors: false,
+			passwordMismatch: false,
 		};
 	},
 	computed: {
@@ -85,6 +100,12 @@ export default {
 			message: 'Auth/message',
 			loading: 'Auth/loading',
 		}),
+		repeatedPassword() {
+			return this.formData.repeatedPassword;
+		},
+		newPassword() {
+			return this.formData.newPassword;
+		},
 	},
 	validations: {
 		formData: {
@@ -106,6 +127,17 @@ export default {
 				type: newVal.type,
 			});
 		},
+		/*We need to disable password mismatch if these two properties are equal*/
+		repeatedPassword(newVal) {
+			if (newVal === this.formData.newPassword) {
+				this.passwordMismatch = false;
+			}
+		},
+		newPassword(newVal) {
+			if (newVal === this.formData.repeatedPassword) {
+				this.passwordMismatch = false;
+			}
+		},
 	},
 	created() {
 		this.temporalJwt = this.$route.query.token;
@@ -116,16 +148,20 @@ export default {
 			updatePassword: 'Auth/updatePassword',
 		}),
 		sendNewPassword() {
-			if (this.formData.repeatedPassword === this.formData.newPassword) {
-				const recoverData = {
-					token: this.temporalJwt,
-					password: this.formData.newPassword,
-				};
-				this.updatePassword(recoverData);
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				this.errors = true;
 			} else {
-				this.$toasted.show('No coinciden las contraseñas', {
-					type: 'error',
-				});
+				if (this.formData.repeatedPassword === this.formData.newPassword) {
+					const recoverData = {
+						token: this.temporalJwt,
+						password: this.formData.newPassword,
+					};
+					this.updatePassword(recoverData);
+					this.passwordMismatch = false;
+				} else {
+					this.passwordMismatch = true;
+				}
 			}
 		},
 		deleteQueryFromRoute() {
