@@ -4,7 +4,7 @@
 			<b-col md="8" lg="6" class="background-module pb-3 px-4">
 				<h3 class="my-4">Restaurar contraseña</h3>
 				<b-form @submit.prevent="sendNewPassword">
-					<!--CONTRASEÑA-->
+					<!--NUEVA CONTRASEÑA-->
 					<b-form-group
 						id="input-group-1"
 						label="Nueva Contraseña:"
@@ -17,8 +17,19 @@
 							required
 							placeholder="Ingresa la contraseña"
 						></b-form-input>
+						<div v-if="$v.formData.newPassword.$dirty">
+							<small v-if="!$v.formData.password.required" class="text-danger">
+								Campo requerido
+							</small>
+							<small v-if="!$v.formData.password.minLength" class="text-danger">
+								Minimo 5 caracteres
+							</small>
+							<small v-if="!$v.formData.password.maxLength" class="text-danger">
+								Minimo 100 caracteres
+							</small>
+						</div>
 					</b-form-group>
-					<!--NUEVA CONTRASEÑA-->
+					<!--REPETIR CONTRASEÑA-->
 					<b-form-group
 						id="input-group-2"
 						label="Ingresala nuevamente:"
@@ -31,6 +42,17 @@
 							required
 							placeholder="Ingresa la contraseña nuevamente"
 						></b-form-input>
+						<div v-if="$v.formData.repeatedPassword.$dirty">
+							<small v-if="!$v.formData.password.required" class="text-danger">
+								Campo requerido
+							</small>
+							<small v-if="!$v.formData.password.minLength" class="text-danger">
+								Minimo 5 caracteres
+							</small>
+							<small v-if="!$v.formData.password.maxLength" class="text-danger">
+								Minimo 100 caracteres
+							</small>
+						</div>
 					</b-form-group>
 					<!--SUBMIT-->
 					<b-button v-if="!loading" class="mt-2" type="submit" variant="primary"
@@ -44,8 +66,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { validationMixin } from 'vuelidate';
+import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 
 export default {
+	mixins: [validationMixin],
 	data() {
 		return {
 			formData: {
@@ -60,6 +85,20 @@ export default {
 			message: 'Auth/message',
 			loading: 'Auth/loading',
 		}),
+	},
+	validations: {
+		formData: {
+			newPassword: {
+				required,
+				minLength: minLength(5),
+				maxLength: maxLength(100),
+			},
+			repeatedPassword: {
+				required,
+				minLength: minLength(5),
+				maxLength: maxLength(100),
+			},
+		},
 	},
 	watch: {
 		message(newVal) {

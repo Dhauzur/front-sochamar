@@ -17,13 +17,19 @@
 				></b-form-input>
 			</b-form-group>
 			<!--SUBMIT-->
-
-			<b-button variant="secondary" @click="disablePasswordRecover(false)">
-				Cancelar</b-button
-			>
-			<b-button v-if="!loading" type="submit" variant="primary">
-				Enviar Recuperación</b-button
-			>
+			<!--Aca esta el problema de espaciado con los botones-->
+			<b-form-row>
+				<b-col md="2">
+					<b-button variant="secondary" @click="disablePasswordRecover(false)">
+						Cancelar</b-button
+					>
+				</b-col>
+				<b-col md="6">
+					<b-button v-if="!loading" type="submit" variant="primary">
+						Enviar Recuperación</b-button
+					>
+				</b-col>
+			</b-form-row>
 		</b-form>
 	</div>
 </template>
