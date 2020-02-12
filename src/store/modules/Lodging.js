@@ -162,6 +162,19 @@ const actions = {
 };
 
 const mutations = {
+	verifyOverlay(value) {
+		let verificate = true;
+		this.lodgings.forEach(lod => {
+			if (lod.group == value.group) {
+				if (
+					moment(value.start).isSameOrAfter(moment(lod.start)) &&
+					moment(value.end).isSameOrBefore(moment(lod.end))
+				)
+					verificate = false;
+			}
+		});
+		return verificate;
+	},
 	setMessage(state, value) {
 		state.message = value;
 	},

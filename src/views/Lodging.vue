@@ -244,24 +244,12 @@ export default {
 				},
 				onAdd: (item, callback) => {
 					if (this.company) {
-						let verifyDate = this.verifyOverlay({
-							group: item.group,
-							dateStart: moment(item.start),
-							dateEnd: moment(item.start)
-								.hours(12)
-								.add(1, 'day'),
-						});
-						if (verifyDate) {
-							if (verifyDate != 'OK') {
-								item.start = verifyDate.dateStart;
-								item.end = verifyDate.dateEnd;
-							}
+						item.start = moment(item.start).hours(16);
+						item.end = moment(item.start)
+							.hours(12)
+							.add(1, 'day');
+						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-
-							item.start = moment(item.start).hours(16);
-							item.end = moment(item.start)
-								.hours(12)
-								.add(1, 'day');
 							var company = this.companies.find(c => c.value == this.company).text;
 							item.content = company;
 							if (company != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
@@ -479,57 +467,6 @@ export default {
 		});
 	},
 	methods: {
-		verifyOverlay(value) {
-			let verificate = null;
-			this.lodgings.forEach(lod => {
-				if (lod.group == value.group) {
-					if (
-						(moment(value.dateStart).isBefore(moment(lod.start)) &&
-							moment(value.dateEnd).isBefore(moment(lod.start))) ||
-						(moment(value.dateStart).isAfter(moment(lod.end)) &&
-							moment(value.dateEnd).isAfter(moment(lod.end)))
-					)
-						verificate = 'OK';
-					else if (
-						moment(value.dateStart).isBefore(moment(lod.start)) &&
-						moment(value.dateEnd).isAfter(
-							moment(lod.start) &&
-								moment(value.dateEnd).isBefore(moment(lod.end)) &&
-								moment(value.dateStart).isBefore(moment(lod.start))
-						)
-					)
-						verificate = {
-							erro: 'Fin de nuevo, esta despues de lod inicio',
-							dateStart: value.dateStart,
-							dateEnd: moment(lod.start)
-								.subtract(1, 'day')
-								.hours(16),
-						};
-					else if (
-						moment(value.dateStart).isBefore(moment(lod.end)) &&
-						moment(value.dateEnd).isAfter(
-							moment(lod.end) &&
-								moment(value.dateEnd).isAfter(moment(lod.start)) &&
-								moment(value.dateStart).isAfter(moment(lod.start))
-						)
-					)
-						verificate = {
-							erro: 'Inicio de nuevo, esta antes de lod fin',
-							dateStart: value.dateStart,
-							dateEnd: moment(lod.end)
-								.add(1, 'day')
-								.hours(12),
-						};
-					// else if (
-					// 	moment(value.dateStart).isAfter(moment(lod.start)) &&
-					// 	moment(value.dateEnd).isBefore(moment(lod.end))
-					// )
-					// 	verificate = false;
-					else verificate = false;
-				} else verificate = 'OK';
-			});
-			return verificate;
-		},
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
@@ -563,6 +500,7 @@ export default {
 			}
 		},
 		...mapMutations({
+			verifyOverlay: 'Lodging/verifyOverlay',
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
 			setLodgingSelect: 'Lodging/setLodgingSelect',
