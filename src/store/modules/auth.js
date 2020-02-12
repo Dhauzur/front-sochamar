@@ -20,6 +20,7 @@ const actions = {
 	async login({ commit }, loginData) {
 		try {
 			const response = await Axios.post(api + '/auth/login', loginData);
+			console.log('probando limitacion de commits');
 			/*AÑADIR TOAST DESPUES DE QUE SE APRUEBE EL PR*/
 			const { token, user } = response.data;
 			commit('setUser', user);
