@@ -206,19 +206,17 @@ export default {
 	},
 	watch: {
 		lodgingSelect() {
-			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
-			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
+			this.setDateIntheState();
 		},
 	},
 	mounted() {
-		/**
-		 * fetch passengers
-		 */
-		this.fetchAllPassengers();
-		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
-		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
+		this.setDateIntheState();
 	},
 	methods: {
+		setDateIntheState() {
+			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
+			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
+		},
 		/**
 		 * used for disabled button when passenger date is invalid
 		 */
@@ -243,7 +241,7 @@ export default {
 						dateStart: this.dateStartPassengers,
 						dateEnd: this.dateEndPassengers,
 				  })
-				: this.$toasted.show(`ya ha sido seleccionado en esta fecha`, {
+				: this.$toasted.show(`Ya existe un pasajero para el rango de fecha selecionado`, {
 						type: 'error',
 				  });
 
@@ -294,7 +292,6 @@ export default {
 			return verificate;
 		},
 		...mapActions({
-			fetchAllPassengers: 'Passengers/fetchAllPassengers',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
 		...mapMutations({

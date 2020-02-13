@@ -312,9 +312,6 @@ export default {
 			errorMessage: 'Passengers/errorMessage',
 		}),
 	},
-	created() {
-		this.getAllPassengers();
-	},
 	validations: {
 		passenger: {
 			firstName: {

@@ -471,6 +471,9 @@ export default {
 			end: moment().add(15, 'day'),
 		});
 	},
+	mounted() {
+		this.fetchAllPassengers();
+	},
 	methods: {
 		verifyOverlay(value) {
 			let verificate = null;
@@ -548,6 +551,7 @@ export default {
 		...mapActions({
 			saveLodgings: 'Lodging/saveLodgings',
 			fetchCompany: 'Lodging/fetchCompany',
+			fetchAllPassengers: 'Passengers/fetchAllPassengers',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
