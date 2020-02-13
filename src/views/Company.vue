@@ -80,17 +80,30 @@
 					<b-col>
 						Nombre
 						<b-form-input
-							v-model="form.name"
+							v-model="$v.form.name.$model"
 							required
 							placeholder="Ej: Minera los pelambres"
 						></b-form-input>
+						<div v-if="$v.form.name.$dirty" class="text-right">
+							<small v-if="!$v.form.name.required" class="text-danger">
+								Campo requerido
+							</small>
+							<small v-if="!$v.form.name.minLength" class="text-danger">
+								Minimo 3 Caracteres
+							</small>
+						</div>
 					</b-col>
 					<b-col lg="4">
 						RUT
 						<b-form-input
-							v-model="form.rut"
+							v-model="$v.form.rut.$model"
 							placeholder="Ej: 11.111.111-3"
 						></b-form-input>
+						<div v-if="$v.form.rut.$dirty" class="text-right">
+							<small v-if="!$v.form.rut.required" class="text-danger">
+								Campo requerido
+							</small>
+						</div>
 					</b-col>
 				</b-row>
 				<b-row class="mb-3">
@@ -102,42 +115,60 @@
 					<b-col>
 						Desayuno
 						<b-form-input
-							v-model="form.prices[0]"
+							v-model="$v.form.breakfast.$model"
 							type="number"
 							placeholder="Ej: 4000"
 						></b-form-input>
+						<div v-if="$v.form.breakfast.$dirty" class="text-right">
+							<small v-if="!$v.form.breakfast.required" class="text-danger">
+								Campo requerido
+							</small>
+						</div>
 						Almuerzo
 						<b-form-input
-							v-model="form.prices[1]"
+							v-model="$v.form.lunch.$model"
 							type="number"
 							placeholder="Ej: 8000"
 						></b-form-input>
+						<div v-if="$v.form.lunch.$dirty" class="text-right">
+							<small v-if="!$v.form.lunch.required" class="text-danger">
+								Campo requerido
+							</small>
+						</div>
 					</b-col>
 					<b-col>
 						Cena
 						<b-form-input
-							v-model="form.prices[2]"
+							v-model="$v.form.dinner.$model"
 							type="number"
 							placeholder="Ej: 6000"
 						></b-form-input>
+						<div v-if="$v.form.dinner.$dirty" class="text-right">
+							<small v-if="!$v.form.dinner.required" class="text-danger">
+								Campo requerido
+							</small>
+						</div>
 						Alojamiento
 						<b-form-input
-							v-model="form.prices[3]"
+							v-model="$v.form.lodging.$model"
 							type="number"
 							placeholder="Ej: 25000"
 						></b-form-input>
+						<div v-if="$v.form.lodging.$dirty" class="text-right">
+							<small v-if="!$v.form.lodging.required" class="text-danger">
+								Campo requerido
+							</small>
+						</div>
 					</b-col>
 				</b-row>
 				<b-row class="mb-3">
 					<b-col>
-						<b-button
-							block
-							variant="primary"
-							class="col-12"
-							@click="createCompany(form)"
-						>
+						<b-button block variant="primary" class="col-12" @click="onsubmit()">
 							Crear
 						</b-button>
+						<small v-if="errors" class="mt-2 d-block text-danger">
+							Debe llenar el formulario correctamente
+						</small>
 					</b-col>
 				</b-row>
 			</b-col>
@@ -146,16 +177,24 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
+	name: 'Company',
+	mixins: [validationMixin],
 	data() {
 		return {
 			form: {
 				name: '',
 				rut: '',
-				prices: [null, null, null, null],
+				breakfast: '',
+				lunch: '',
+				dinner: '',
+				lodging: '',
 			},
+			errors: '',
 			filterCompanyWord: '',
 		};
 	},
@@ -176,7 +215,58 @@ export default {
 	mounted() {
 		this.fetchCompany();
 	},
+	validations: {
+		form: {
+			name: {
+				required,
+				minLength: minLength(3),
+			},
+			rut: {
+				required,
+			},
+			breakfast: {
+				required,
+			},
+			lunch: {
+				required,
+			},
+			dinner: {
+				required,
+			},
+			lodging: {
+				required,
+			},
+		},
+	},
 	methods: {
+		onsubmit() {
+			// validations
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				this.errors = true;
+			} else {
+				let tempArray = [];
+				tempArray.push(
+					this.form.breakfast,
+					this.form.lunch,
+					this.form.dinner,
+					this.form.lodging
+				);
+				this.createCompany({ name: this.form.name, rut: this.form.rut, prices: tempArray });
+				this.clearInputs();
+				this.$v.$reset();
+			}
+		},
+		clearInputs() {
+			this.form = {
+				name: '',
+				rut: '',
+				breakfast: '',
+				lunch: '',
+				dinner: '',
+				lodging: '',
+			};
+		},
 		...mapActions({
 			fetchCompany: 'Company/fetchCompany',
 			createCompany: 'Company/createCompany',

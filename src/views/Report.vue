@@ -81,10 +81,7 @@ export default {
 	methods: {
 		fetchReports() {
 			Axios.get(api + '/reports')
-				.then(response => {
-					console.log(response);
-					this.reports = response.data.reports;
-				})
+				.then(response => (this.reports = response.data.reports))
 				.catch(() => {
 					console.error('Error al descargar reportes');
 				});

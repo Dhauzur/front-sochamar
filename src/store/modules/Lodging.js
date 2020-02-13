@@ -14,6 +14,7 @@ const state = {
 	lodgings: new DataSet([]),
 	rooms: new DataSet([]),
 	companies: [],
+	lodgingPassengers: [],
 	company: null,
 	rangeDate: {
 		start: null,
@@ -23,6 +24,7 @@ const state = {
 
 const getters = {
 	message: state => state.message,
+	lodgingPassengers: state => state.lodgingPassengers,
 	updatingService: state => state.updatingService,
 	mirrorLodging: state => state.mirrorLodging,
 	lodgingSelect: state => state.lodgingSelect,
@@ -145,6 +147,7 @@ const actions = {
 					end: l.end,
 					service: l.service[0],
 					company: state.company,
+					passengers: state.lodgingPassengers,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
 					.catch(error => {
@@ -164,6 +167,15 @@ const actions = {
 const mutations = {
 	setMessage(state, value) {
 		state.message = value;
+	},
+	setAllLodgingPassengers(state, values) {
+		state.lodgingPassengers = values;
+	},
+	updateLodgingPassengers(state, value) {
+		state.lodgingPassengers.push(value);
+	},
+	removeLodgingPassengers(state, value) {
+		state.lodgingPassengers.splice(value, 1);
 	},
 	setUpdatingService(state, value) {
 		state.updatingService = value;
@@ -390,6 +402,7 @@ const mutations = {
 							content: company.text,
 							service: v.service,
 							company: v.company,
+							passengers: v.passengers,
 						});
 				} else
 					tempLodging.add({
@@ -400,6 +413,7 @@ const mutations = {
 						content: company.text,
 						service: v.service,
 						company: v.company,
+						passengers: v.passengers,
 					});
 			});
 			state.lodgings = tempLodging;
