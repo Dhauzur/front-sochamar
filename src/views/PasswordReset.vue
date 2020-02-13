@@ -42,27 +42,12 @@
 						></b-form-input>
 						<div v-if="$v.formData.repeatedPassword.$dirty">
 							<small
-								v-if="!$v.formData.repeatedPassword.required"
+								v-if="!$v.formData.repeatedPassword.sameAsPassword"
 								class="text-danger"
 							>
-								Campo requerido
-							</small>
-							<small
-								v-if="!$v.formData.repeatedPassword.minLength"
-								class="text-danger"
-							>
-								Minimo 5 caracteres
-							</small>
-							<small
-								v-if="!$v.formData.repeatedPassword.maxLength"
-								class="text-danger"
-							>
-								Minimo 100 caracteres
+								Las contraseñas no son iguales
 							</small>
 						</div>
-						<small v-if="passwordMismatch" class="text-danger">
-							No coinciden las contraseñas
-						</small>
 					</b-form-group>
 					<!--SUBMIT-->
 					<b-button v-if="!loading" class="mt-2" type="submit" variant="primary"
@@ -80,7 +65,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { validationMixin } from 'vuelidate';
-import { required, minLength, maxLength } from 'vuelidate/lib/validators';
+import { required, minLength, maxLength, sameAs } from 'vuelidate/lib/validators';
 
 export default {
 	mixins: [validationMixin],
@@ -92,7 +77,6 @@ export default {
 			},
 			temporalJwt: '',
 			errors: false,
-			passwordMismatch: false,
 		};
 	},
 	computed: {
@@ -100,12 +84,6 @@ export default {
 			message: 'Auth/message',
 			loading: 'Auth/loading',
 		}),
-		repeatedPassword() {
-			return this.formData.repeatedPassword;
-		},
-		newPassword() {
-			return this.formData.newPassword;
-		},
 	},
 	validations: {
 		formData: {
@@ -115,9 +93,7 @@ export default {
 				maxLength: maxLength(100),
 			},
 			repeatedPassword: {
-				required,
-				minLength: minLength(5),
-				maxLength: maxLength(100),
+				sameAsPassword: sameAs('newPassword'),
 			},
 		},
 	},
@@ -127,46 +103,30 @@ export default {
 				type: newVal.type,
 			});
 		},
-		/*We need to disable password mismatch if these two properties are equal*/
-		repeatedPassword(newVal) {
-			if (newVal === this.formData.newPassword) {
-				this.passwordMismatch = false;
-			}
-		},
-		newPassword(newVal) {
-			if (newVal === this.formData.repeatedPassword) {
-				this.passwordMismatch = false;
-			}
-		},
 	},
 	created() {
 		this.temporalJwt = this.$route.query.token;
 		this.deleteQueryFromRoute();
 	},
 	methods: {
-		...mapActions({
-			updatePassword: 'Auth/updatePassword',
-		}),
 		sendNewPassword() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				if (this.formData.repeatedPassword === this.formData.newPassword) {
-					const recoverData = {
-						token: this.temporalJwt,
-						password: this.formData.newPassword,
-					};
-					this.updatePassword(recoverData);
-					this.passwordMismatch = false;
-				} else {
-					this.passwordMismatch = true;
-				}
+				const recoverData = {
+					token: this.temporalJwt,
+					password: this.formData.newPassword,
+				};
+				this.updatePassword(recoverData);
 			}
 		},
 		deleteQueryFromRoute() {
 			this.$router.replace({ query: null });
 		},
+		...mapActions({
+			updatePassword: 'Auth/updatePassword',
+		}),
 	},
 };
 </script>

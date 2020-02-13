@@ -48,7 +48,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import PasswordRecover from '../components/PasswordRecover';
+import PasswordRecover from '../components/auth/PasswordRecover';
 export default {
 	components: {
 		PasswordRecover,
@@ -73,9 +73,6 @@ export default {
 		},
 	},
 	methods: {
-		...mapActions({
-			login: 'Auth/login',
-		}),
 		toastedMessage(newVal) {
 			this.$toasted.show(newVal.text, {
 				type: newVal.type,
@@ -84,6 +81,9 @@ export default {
 		controlPasswordRecover(value) {
 			this.passwordRecover = value;
 		},
+		...mapActions({
+			login: 'Auth/login',
+		}),
 	},
 };
 </script>
