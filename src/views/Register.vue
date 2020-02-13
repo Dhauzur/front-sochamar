@@ -118,9 +118,6 @@ export default {
 		},
 	},
 	methods: {
-		...mapActions({
-			register: 'Auth/register',
-		}),
 		submitForm() {
 			this.$v.$touch();
 			if (this.$v.$invalid) {
@@ -129,6 +126,9 @@ export default {
 				this.register(this.formData);
 			}
 		},
+		...mapActions({
+			register: 'Auth/register',
+		}),
 	},
 };
 </script>

@@ -6,6 +6,7 @@ const state = {
 	message: {},
 	token: localStorage.getItem('token') || '',
 	user: {},
+	loading: false,
 };
 
 const getters = {
@@ -14,6 +15,7 @@ const getters = {
 		return state.token ? true : false;
 	},
 	user: state => state.user,
+	loading: state => state.loading,
 };
 
 const actions = {
@@ -48,6 +50,36 @@ const actions = {
 			commit('setMessage', message);
 		}
 	},
+	async updatePassword({ commit }, recoverData) {
+		commit('setLoading', true);
+		try {
+			const { password, token } = recoverData;
+			Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+			await Axios.put(api + '/auth/user/password', { password });
+			Axios.defaults.headers.common['Authorization'] = '';
+			commit('setLoading', false);
+			const message = { type: 'success', text: 'Contraseña cambiada con exito' };
+			commit('setMessage', message);
+			router.push('/login');
+		} catch (e) {
+			const message = { type: 'error', text: 'Expiro el tiempo para cambiar la contraseña' };
+			commit('setMessage', message);
+			commit('setLoading', false);
+		}
+	},
+	async requestPasswordRecoverEmail({ commit }, email) {
+		commit('setLoading', true);
+		try {
+			await Axios.post(api + '/auth/send/passwordRecover', { email });
+			const message = { type: 'success', text: 'Correo de recuperación enviado con exito' };
+			commit('setMessage', message);
+			commit('setLoading', false);
+		} catch (e) {
+			const message = { type: 'error', text: 'Ese correo no existe en sistema' };
+			commit('setMessage', message);
+			commit('setLoading', false);
+		}
+	},
 };
 
 const mutations = {
@@ -65,6 +97,7 @@ const mutations = {
 	setUser: (state, user) => (state.user = user),
 	setIsLogged: (state, change) => (state.isLogged = change),
 	setMessage: (state, message) => (state.message = message),
+	setLoading: (state, change) => (state.loading = change),
 };
 
 export default {
