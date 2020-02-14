@@ -25,10 +25,13 @@ const actions = {
 		}
 	},
 	async updateProfile({ commit }, profileData) {
+		const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 		try {
-			const response = await Axios.put(api + 'user/profile', profileData);
+			const response = await Axios.put(api + '/user/profile', profileData, config);
 			const profile = response.data;
 			commit('setProfile', profile);
+			const message = { type: 'success', text: 'Perfil modificado con exito' };
+			commit('setMessage', message);
 		} catch (e) {
 			const message = { type: 'error', text: 'Parametros invalidos' };
 			commit('setMessage', message);

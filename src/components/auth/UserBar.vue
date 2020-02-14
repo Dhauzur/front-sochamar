@@ -1,8 +1,6 @@
 <template lang="html">
 	<b-navbar-nav v-if="isLogged" class="ml-auto">
-		<b-nav-text class="mr-sm-3 pt-4" right>
-			{{ profile.name }}
-		</b-nav-text>
+		<b-nav-text class="mr-sm-3 pt-4" right v-text="fullName"> </b-nav-text>
 		<b-nav-item-dropdown text="Lang" no-caret right>
 			<template v-slot:button-content>
 				<b-img alt="" width="70%" :src="profileAvatar"></b-img>
@@ -26,13 +24,16 @@
 import { mapGetters, mapMutations } from 'vuex';
 export default {
 	computed: {
+		fullName() {
+			return this.profile.name + ' ' + this.profile.lastName;
+		},
+		profileAvatar() {
+			return this.profile.img;
+		},
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
 			profile: 'User/profile',
 		}),
-		profileAvatar() {
-			return this.profile.img;
-		},
 	},
 	methods: {
 		...mapMutations({ logout: 'Auth/logout' }),
