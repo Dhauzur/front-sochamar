@@ -10,6 +10,9 @@
 							<router-link to="/lodgings">
 								Hospedajes
 							</router-link>
+							<router-link v-if="company" :to="`/payments/${company}`">
+								Pagos
+							</router-link>
 							<!-- <router-link to="/home">
 								Ver registros de trabajo
 							</router-link> -->
@@ -42,6 +45,7 @@ export default {
 	computed: {
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
+			company: 'Lodging/company',
 		}),
 	},
 	created() {

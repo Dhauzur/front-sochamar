@@ -1,14 +1,15 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
-import Maintenance from '../views/Maintenance.vue';
-import Lodging from '../views/Lodging.vue';
-import Room from '../views/Room.vue';
-import Company from '../views/Company.vue';
-import Report from '../views/Report.vue';
-import Login from '../views/Login';
-import Register from '../views/Register';
-import PasswordReset from '../views/PasswordReset';
+import Company from '@/views/Company.vue';
+import Home from '@/views/Home.vue';
+import Lodging from '@/views/Lodging.vue';
+import Login from '@/views/Login';
+import Maintenance from '@/views/Maintenance.vue';
+import PasswordReset from '@/views/PasswordReset';
+import Payments from '@/views/Payments';
+import Register from '@/views/Register';
+import Report from '@/views/Report.vue';
+import Room from '@/views/Room.vue';
 
 Vue.use(VueRouter);
 
@@ -57,6 +58,11 @@ const routes = [
 		path: '/passwordReset',
 		name: 'passwordReset',
 		component: PasswordReset,
+	},
+	{
+		path: '/payments/:company',
+		name: 'payments',
+		component: Payments,
 	},
 ];
 
