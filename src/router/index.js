@@ -9,6 +9,7 @@ import Report from '../views/Report.vue';
 import Login from '../views/Login';
 import Register from '../views/Register';
 import PasswordReset from '../views/PasswordReset';
+import Profile from '../views/Profile';
 
 Vue.use(VueRouter);
 
@@ -57,6 +58,11 @@ const routes = [
 		path: '/passwordReset',
 		name: 'passwordReset',
 		component: PasswordReset,
+	},
+	{
+		path: '/profile',
+		name: 'profile',
+		component: Profile,
 	},
 ];
 

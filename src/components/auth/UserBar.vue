@@ -7,7 +7,8 @@
 			<template v-slot:button-content>
 				<b-img alt="" width="70%" :src="profileAvatar"></b-img>
 			</template>
-			<b-dropdown-item href="#">Perfil</b-dropdown-item>
+
+			<b-dropdown-item to="/profile">Perfil </b-dropdown-item>
 			<b-dropdown-item href="#" @click="logout">Salir</b-dropdown-item>
 		</b-nav-item-dropdown>
 	</b-navbar-nav>

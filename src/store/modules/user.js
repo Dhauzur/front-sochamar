@@ -18,7 +18,6 @@ const actions = {
 		try {
 			const response = await Axios.get(api + '/user/profile');
 			const profile = response.data;
-			console.log(profile);
 			commit('setProfile', profile);
 		} catch (e) {
 			const message = { type: 'error', text: 'Error de servidor' };
@@ -39,6 +38,7 @@ const actions = {
 
 const mutations = {
 	setProfile: (state, profile) => (state.profile = profile),
+	setMessage: (state, message) => (state.message = message),
 };
 
 export default {
