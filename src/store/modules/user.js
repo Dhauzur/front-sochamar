@@ -16,8 +16,9 @@ const getters = {
 const actions = {
 	async fetchProfile({ commit }) {
 		try {
-			const response = await Axios.get(api + 'user/profile');
+			const response = await Axios.get(api + '/user/profile');
 			const profile = response.data;
+			console.log(profile);
 			commit('setProfile', profile);
 		} catch (e) {
 			const message = { type: 'error', text: 'Error de servidor' };

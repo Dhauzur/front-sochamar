@@ -5,7 +5,6 @@ import router from '@/router/index.js';
 const state = {
 	message: {},
 	token: localStorage.getItem('token') || '',
-	user: {},
 	loading: false,
 };
 
@@ -14,20 +13,17 @@ const getters = {
 	isLogged: state => {
 		return state.token ? true : false;
 	},
-	user: state => state.user,
 	loading: state => state.loading,
 };
 
 const actions = {
-	async login({ commit }, loginData) {
+	async login({ commit, dispatch }, loginData) {
 		try {
 			const response = await Axios.post(api + '/auth/login', loginData);
-			console.log('probando limitacion de commits');
-			/*AÑADIR TOAST DESPUES DE QUE SE APRUEBE EL PR*/
-			const { token, user } = response.data;
-			commit('setUser', user);
+			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
+			dispatch('User/fetchProfile', null, { root: true });
 			router.push('/lodgings');
 		} catch (e) {
 			const message = {

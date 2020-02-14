@@ -1,16 +1,11 @@
 <template lang="html">
 	<b-navbar-nav v-if="isLogged" class="ml-auto">
 		<b-nav-text class="mr-sm-3 pt-4" right>
-			{{ user.name }}
+			{{ profile.name }}
 		</b-nav-text>
 		<b-nav-item-dropdown text="Lang" no-caret right>
 			<template v-slot:button-content>
-				<b-img
-					rounded="circle"
-					alt="Circle image"
-					width="50"
-					src="https://picsum.photos/125/125/?image=58"
-				></b-img>
+				<b-img alt="" width="70%" :src="profileAvatar"></b-img>
 			</template>
 			<b-dropdown-item href="#">Perfil</b-dropdown-item>
 			<b-dropdown-item href="#" @click="logout">Salir</b-dropdown-item>
@@ -32,8 +27,11 @@ export default {
 	computed: {
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
-			user: 'Auth/user',
+			profile: 'User/profile',
 		}),
+		profileAvatar() {
+			return this.profile.img;
+		},
 	},
 	methods: {
 		...mapMutations({ logout: 'Auth/logout' }),
