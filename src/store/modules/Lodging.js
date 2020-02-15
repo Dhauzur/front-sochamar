@@ -162,19 +162,6 @@ const actions = {
 };
 
 const mutations = {
-	verifyOverlay(value) {
-		let verificate = true;
-		this.lodgings.forEach(lod => {
-			if (lod.group == value.group) {
-				if (
-					moment(value.start).isSameOrAfter(moment(lod.start)) &&
-					moment(value.end).isSameOrBefore(moment(lod.end))
-				)
-					verificate = false;
-			}
-		});
-		return verificate;
-	},
 	setMessage(state, value) {
 		state.message = value;
 	},
@@ -198,38 +185,62 @@ const mutations = {
 		state.mirrorLodging = JSON.stringify(state.lodgings);
 	},
 	dateChange(state, value) {
-		let tempLodging = state.lodgingSelect;
-		let tempLodgings = state.lodgings;
-		state.lodgings = new DataSet([]);
-		tempLodgings.update({
-			id: state.lodgingSelect.id,
-			start: moment(value.dateStart).hours(16),
-			end: moment(value.dateEnd).hours(12),
+		let verificate = true;
+		state.lodgings.forEach(lod => {
+			console.log('G');
+			console.log(lod, state.lodgingSelect.group);
+			console.log('L');
+			console.log(lod.end, lod.start);
+			console.log('v');
+			console.log(value.dateStart, value.dateEnd);
+
+			if (
+				lod.group == state.lodgingSelect.group &&
+				moment(value.dateStart).isSameOrBefore(moment(lod.end)) &&
+				moment(value.dateEnd).isSameOrAfter(moment(lod.start))
+			) {
+				verificate = false;
+			}
 		});
-		let service = [];
-		let numberDays = moment(value.dateEnd).diff(
-			moment(value.dateStart).format('YYYY-MM-DD'),
-			'days'
-		);
-		let oldService = JSON.parse(state.lodgingSelect.service[0]);
-		for (let i = 0; i <= numberDays; i++)
-			service.push([
-				oldService[i] ? oldService[i][0] : 1,
-				oldService[i] ? oldService[i][1] : 1,
-				oldService[i] ? oldService[i][2] : 1,
-				oldService[i] ? oldService[i][3] : 1,
-			]);
-		let itemService = [];
-		itemService.push(JSON.stringify(service));
-		tempLodgings.update({
-			id: state.lodgingSelect.id,
-			service: itemService,
-		});
-		tempLodging.start = moment(value.dateStart).hours(16);
-		tempLodging.end = moment(value.dateEnd).hours(12);
-		tempLodging.service = itemService;
-		state.lodgingSelect = tempLodging;
-		state.lodgings = tempLodgings;
+		if (verificate) {
+			let tempLodging = state.lodgingSelect;
+			let tempLodgings = state.lodgings;
+			state.lodgings = new DataSet([]);
+			tempLodgings.update({
+				id: state.lodgingSelect.id,
+				start: moment(value.dateStart).hours(16),
+				end: moment(value.dateEnd).hours(12),
+			});
+			let service = [];
+			let numberDays = moment(value.dateEnd).diff(
+				moment(value.dateStart).format('YYYY-MM-DD'),
+				'days'
+			);
+			let oldService = JSON.parse(state.lodgingSelect.service[0]);
+			for (let i = 0; i <= numberDays; i++)
+				service.push([
+					oldService[i] ? oldService[i][0] : 1,
+					oldService[i] ? oldService[i][1] : 1,
+					oldService[i] ? oldService[i][2] : 1,
+					oldService[i] ? oldService[i][3] : 1,
+				]);
+			let itemService = [];
+			itemService.push(JSON.stringify(service));
+			tempLodgings.update({
+				id: state.lodgingSelect.id,
+				service: itemService,
+			});
+			tempLodging.start = moment(value.dateStart).hours(16);
+			tempLodging.end = moment(value.dateEnd).hours(12);
+			tempLodging.service = itemService;
+			state.lodgingSelect = tempLodging;
+			state.lodgings = tempLodgings;
+		} else {
+			state.message = {
+				type: 'default',
+				text: 'Existe un alojamiento para esas fechas ',
+			};
+		}
 	},
 	subOneService(state, serviceSelected) {
 		let tempLodging = state.lodgingSelect;
@@ -296,28 +307,46 @@ const mutations = {
 	createOneLodging(state) {
 		state.editMode = false;
 		let company = state.companies.find(c => c.value == state.company);
-		if (company.text == 'Turismo')
-			state.lodgings.add({
-				group: state.rooms.getIds()[0],
-				start: moment().hours(16),
-				end: moment()
-					.hours(13)
-					.add(1, 'day'),
-				content: company.text,
-				service: ['[[0,0,0,0],[0,0,0,0]]'],
-				company: state.company,
-			});
-		else
-			state.lodgings.add({
-				group: state.rooms.getIds()[0],
-				start: moment().hours(16),
-				end: moment()
-					.hours(13)
-					.add(1, 'day'),
-				content: company.text,
-				service: ['[[1,1,1,1],[1,1,1,1]]'],
-				company: state.company,
-			});
+		let verificate = true;
+		state.lodgings.forEach(lod => {
+			if (
+				lod.group == state.rooms.getIds()[0] &&
+				moment().isSameOrAfter(moment(lod.start)) &&
+				moment()
+					.add(1, 'day')
+					.isSameOrBefore(moment(lod.end))
+			)
+				verificate = false;
+		});
+		if (verificate) {
+			if (company.text == 'Turismo')
+				state.lodgings.add({
+					group: state.rooms.getIds()[0],
+					start: moment().hours(16),
+					end: moment()
+						.hours(13)
+						.add(1, 'day'),
+					content: company.text,
+					service: ['[[0,0,0,0],[0,0,0,0]]'],
+					company: state.company,
+				});
+			else
+				state.lodgings.add({
+					group: state.rooms.getIds()[0],
+					start: moment().hours(16),
+					end: moment()
+						.hours(13)
+						.add(1, 'day'),
+					content: company.text,
+					service: ['[[1,1,1,1],[1,1,1,1]]'],
+					company: state.company,
+				});
+		} else {
+			state.message = {
+				type: 'default',
+				text: 'Existe un alojamiento para esas fechas ',
+			};
+		}
 	},
 	setCompanyLodging(state, value) {
 		state.company = value;

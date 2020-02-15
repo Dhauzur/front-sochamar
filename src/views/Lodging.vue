@@ -232,8 +232,10 @@ export default {
 				},
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
-					if (this.company) callback(item);
-					else this.$toasted.show('Selecione una entidad primero');
+					if (this.company) {
+						if (this.verifyOverlay(item)) callback(item);
+						else this.$toasted.show('Existe un alojamiento para esas fechas');
+					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onRemove: (item, callback) => {
 					if (this.lodgings.length > 1 && this.company) {
@@ -467,6 +469,19 @@ export default {
 		});
 	},
 	methods: {
+		verifyOverlay(value) {
+			let verificate = true;
+			this.lodgings.forEach(lod => {
+				if (lod.group == value.group) {
+					if (
+						moment(value.start).isSameOrAfter(moment(lod.start)) &&
+						moment(value.end).isSameOrBefore(moment(lod.end))
+					)
+						verificate = false;
+				}
+			});
+			return verificate;
+		},
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
@@ -500,7 +515,6 @@ export default {
 			}
 		},
 		...mapMutations({
-			verifyOverlay: 'Lodging/verifyOverlay',
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
 			setLodgingSelect: 'Lodging/setLodgingSelect',
@@ -515,33 +529,40 @@ export default {
 </script>
 
 <style lang="css">
+.vis-time-axis .vis-text,
+.vis-time-axis .vis-text.vis-saturday,
+.vis-time-axis .vis-text.vis-sunday {
+	color: #111213 !important;
+}
+
 .vis-foreground .vis-group {
 	border: 1px solid #ffffff7a;
 }
-.vis-time-axis .vis-grid.vis-odd {
+/* .vis-time-axis .vis-grid.vis-odd {
 	background: #ffffff7a;
-}
+} */
 .vis-time-axis .vis-grid.vis-saturday,
 .vis-time-axis .vis-grid.vis-sunday {
 	background: #ffffff7a;
 }
-.vis-time-axis .vis-text.vis-saturday,
-.vis-time-axis .vis-text.vis-sunday {
-	color: white;
+.vis-time-axis .vis-grid.vis-sunday {
+	border-right: 2px solid #2c6975;
 }
 .inputService {
 	max-width: 60px;
 }
 
 .vis-item {
-	border-color: #2e4052;
-	border-width: 2px;
+	border-color: #2c6975;
+	border-width: 1px;
+	border-radius: 25px !important;
 	background-color: #e6e9ec;
+	box-shadow: 0px 0px 15px -3px rgba(0, 0, 0, 0.75);
 }
 td,
 th {
 	padding: 2px !important;
-	color: #1c1e21;
+	color: #111213;
 	min-width: 60px;
 }
 </style>

@@ -64,12 +64,12 @@ export default {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
-	color: #2c3e50;
+	color: #111213;
 	overflow-x: hidden !important;
 	// background-image: linear-gradient(-125deg, #e8f0f9, #295173, #192835);
 	// background-image: linear-gradient(50deg, #502d55, #502d55, #8e4b71, #e7c8b7);
 	// background-image: linear-gradient(50deg, #7b77c1, #908ac7d9, #dcccf173, #f5e9f38a);
-	background-image: linear-gradient(50deg, #6266e2d4, #8b8ac7d9, #e5dce673, #e9ecf58a);
+	background-image: linear-gradient(50deg, #2c6975, #6bb2a0, #cde0c9, #cde0c9, #edecde);
 	// background-image: linear-gradient(50deg, #8EC5FC, #9FACE6);
 	// background-image: linear-gradient(50deg, #6ed8cc#0f5076, );
 	height: 100vh;
@@ -121,7 +121,7 @@ export default {
 }
 
 .background-module {
-	background-color: #c4c1dc61;
+	background-color: #d3e0da75;
 	border-radius: 20px;
 	max-height: 80vh !important;
 	overflow-y: auto;
