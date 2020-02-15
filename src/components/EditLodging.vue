@@ -139,13 +139,15 @@ export default {
 					if (
 						moment(newDate.dateStart).isBefore(moment(lod.end).format('YYYY-MM-DD')) &&
 						moment(newDate.dateEnd).isAfter(moment(lod.start).format('YYYY-MM-DD'))
-					) {
+					)
 						verificate = false;
-					}
 				}
 			});
 			if (verificate) this.sendDateChange(newDate);
-			else this.dateStart = this.oldDate;
+			else {
+				this.$toasted.show('Existe un alojamiento para esas fechas');
+				this.dateStart = this.oldDate;
+			}
 		},
 		saveLodging() {
 			this.$store.dispatch('Lodging/createLodging');
