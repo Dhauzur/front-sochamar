@@ -10,12 +10,14 @@
 							<router-link to="/lodgings">
 								Hospedajes
 							</router-link>
-							<router-link v-if="company" :to="`/payments/${company}`">
-								Pagos
-							</router-link>
 							<!-- <router-link to="/home">
 								Ver registros de trabajo
 							</router-link> -->
+						</b-nav-text>
+						<b-nav-text class="mr-3">
+							<router-link v-if="company" :to="`/payments/${company}`">
+								Pagos
+							</router-link>
 						</b-nav-text>
 						<!-- <b-nav-text class="mr-3">
 							<router-link to="/mantenimiento">

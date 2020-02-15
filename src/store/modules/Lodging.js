@@ -16,6 +16,8 @@ const state = {
 	companies: [],
 	lodgingPassengers: [],
 	company: null,
+	rangeDatePayments: {},
+	lodgingsCompany: [],
 	rangeDate: {
 		start: null,
 		end: null,
@@ -31,6 +33,8 @@ const getters = {
 	loading: state => state.loading,
 	editMode: state => state.editMode,
 	lodgings: state => state.lodgings,
+	rangeDatePayments: state => state.rangeDatePayments,
+	lodgingsCompany: state => state.lodgingsCompany,
 	rangeDate: state => state.rangeDate,
 	rooms: state => state.rooms,
 	companies: state => state.companies,
@@ -129,6 +133,22 @@ const actions = {
 				});
 				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
+	},
+
+	//fetch lodgings for company
+	async fetchLodgingsForCompany({ commit }, id) {
+		try {
+			const response = await Axios.get(`${api}/lodgings/company/${id}`);
+			commit('setLodgingsCompany', response.data.lodgings);
+			commit('setRangeDatePayments', response.data.lodgings);
+		} catch (error) {
+			commit('setLodgingsCompany', null);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Fetch lodgings ' + error,
+			});
+			if (error.message == 'Request failed with status code 401') router.push('/login');
+		}
 	},
 
 	//Guarda un hospedaje que no este almacenado o que es diferente
@@ -383,6 +403,20 @@ const mutations = {
 	},
 	setRangeDate(state, value) {
 		state.rangeDate = value;
+	},
+	setRangeDatePayments(state, value) {
+		let start = value.map(item => item.start);
+		let end = value.map(item => item.end);
+		var min = start.reduce(function(a, b) {
+			return a < b ? a : b;
+		});
+		var max = end.reduce(function(a, b) {
+			return a > b ? a : b;
+		});
+		state.rangeDatePayments = { startDate: min, endDate: max };
+	},
+	setLodgingsCompany(state, value) {
+		state.lodgingsCompany = value;
 	},
 	setLodgings(state, value) {
 		let tempLodging = state.lodgings;

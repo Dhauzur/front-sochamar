@@ -1,6 +1,13 @@
 <template>
 	<div>
-		<PaymentForm :company="company" />
+		<PaymentForm
+			:company="company"
+			:items="payments"
+			:save="savePayment"
+			:edit="editPayment"
+			:range="rangeDatePayments"
+			:update-payments="fetchPayments"
+		/>
 	</div>
 </template>
 
@@ -13,17 +20,37 @@ export default {
 	components: {
 		PaymentForm,
 	},
+	data() {
+		return {
+			idCompany: this.$route.params.company,
+		};
+	},
 	computed: {
 		...mapGetters({
 			company: 'Company/company',
+			payments: 'Payments/payments',
+			message: 'Payments/message',
+			rangeDatePayments: 'Lodging/rangeDatePayments',
 		}),
 	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
+	},
 	mounted() {
-		this.fetchOneCompany(this.$route.params.company);
+		this.fetchLodgingsForCompany(this.idCompany);
+		this.fetchPayments(this.idCompany);
 	},
 	methods: {
 		...mapActions({
+			fetchLodgingsForCompany: 'Lodging/fetchLodgingsForCompany',
 			fetchOneCompany: 'Company/fetchOneCompany',
+			fetchPayments: 'Payments/fetchPaymentsOfTheCompany',
+			savePayment: 'Payments/savePayment',
+			editPayment: 'Payments/editPayment',
 		}),
 	},
 };

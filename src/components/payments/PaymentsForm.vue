@@ -9,6 +9,7 @@
 							<label for="total" class="mb-0 mt-2">Total</label>
 							<b-form-input
 								id="total"
+								v-model="mount"
 								size="sm"
 								placeholder="Ej: 10000"
 							></b-form-input>
@@ -18,6 +19,7 @@
 							<b-form-group id="in" label-for="input-1" class="pb-0 mb-0">
 								<b-form-input
 									id="in"
+									v-model="startDate"
 									size="sm"
 									placeholder="Ej: 10000"
 									type="date"
@@ -29,6 +31,7 @@
 							<b-form-group id="out" label-for="input-1" class="pb-0 mb-0">
 								<b-form-input
 									id="out"
+									v-model="endDate"
 									size="sm"
 									placeholder="Ej: 10000"
 									type="date"
@@ -39,13 +42,27 @@
 							<label>
 								Voucher
 							</label>
-							<label for="voucher" class="btn btn-primary btn-sm">
+							<span
+								v-if="voucher"
+								class="btn btn-sm btn-danger"
+								@click="clearInputFile"
+								>Quitar</span
+							>
+							<label v-else for="voucher" class="btn btn-sm btn-primary">
 								Subir
 							</label>
-							<input id="voucher" type="file" class="d-none" />
+							<b-form-file
+								id="voucher"
+								ref="voucher"
+								type="file"
+								class="d-none"
+								@change="e => (voucher = e.target.files[0])"
+							/>
 						</b-col>
 						<b-col cols="1" class="mt-4">
-							<b-button variant="primary" class="btn-sm mt-2">Pagar</b-button>
+							<b-button variant="primary" class="btn-sm mt-2" @click="submit"
+								>Pagar</b-button
+							>
 						</b-col>
 					</b-row>
 					<b-row class="mb-3 mt-3">
@@ -72,7 +89,24 @@
 								@row-selected="onRowSelected"
 							>
 								<template v-slot:cell(voucher)="row">
-									<a :href="row.item.voucher">Ver</a>
+									<a
+										v-if="row.item.voucher"
+										:href="`${api}/${row.item.voucher}`"
+										target="_black"
+										>Ver</a
+									>
+									<div v-else>
+										<label for="voucherList"><a>Agregar</a></label>
+										<b-form-file
+											id="voucherList"
+											ref="voucherList"
+											type="file"
+											class="d-none"
+											@change="
+												e => (row = row.item.voucher = e.target.files[0])
+											"
+										/>
+									</div>
 								</template>
 								<template v-slot:cell(comments)="row">
 									<b-form-input
@@ -80,7 +114,7 @@
 										:value="row.value"
 										type="text"
 										size="sm"
-										class="mr-1"
+										class="mr-1 text-left"
 										@focus="editMode = !editMode"
 										@blur="item => update(item.target.value, row.item)"
 									/>
@@ -108,6 +142,8 @@
 </template>
 
 <script>
+import { api_absolute } from '@/config/index.js';
+
 export default {
 	props: {
 		company: {
@@ -115,62 +151,83 @@ export default {
 			required: true,
 			default: () => {},
 		},
+		save: {
+			type: Function,
+			required: true,
+		},
+		edit: {
+			type: Function,
+			required: true,
+		},
+		updatePayments: {
+			type: Function,
+			required: true,
+		},
+		items: {
+			type: Array,
+			required: false,
+			default: () => [],
+		},
+		range: {
+			type: Object,
+			required: false,
+			default: () => {},
+		},
 	},
 	data() {
 		return {
+			api: api_absolute,
+			idCompany: this.$route.params.company,
+			form: new FormData(),
 			editMode: false,
-			form: {
-				start: '',
-				end: '',
-				mount: '',
-				voucher: null,
-				comments: '',
-			},
+			startDate: this.range.startDate,
+			endDate: this.range.endDate,
+			mount: '',
+			voucher: null,
+			voucherList: null,
+			comments: '',
 			fields: [
-				{ key: 'start', label: 'Inicio' },
-				{ key: 'end', label: 'Fin' },
+				{ key: 'startDate', label: 'Inicio' },
+				{ key: 'endDate', label: 'Fin' },
 				{ key: 'mount', label: 'Monto' },
 				{ key: 'voucher', label: 'Voucher' },
 				{ key: 'comments', label: 'Comentarios' },
 			],
 			selected: [],
-			items: [
-				{
-					start: '10-10-2010',
-					end: '20-10-2010',
-					mount: '150000',
-					voucher: 'https://bootstrap-vue.js.org/docs/components/table/#tables',
-					comments: '',
-				},
-				{
-					start: '10-10-2010',
-					end: '20-10-2010',
-					mount: '150000',
-					voucher: 'https://bootstrap-vue.js.org/docs/components/table/#tables',
-					comments: 'Todo bien',
-				},
-				{
-					start: '10-10-2010',
-					end: '20-10-2010',
-					mount: '150000',
-					voucher: 'https://bootstrap-vue.js.org/docs/components/table/#tables',
-					comments: 'Todo Excelente',
-				},
-				{
-					start: '10-10-2010',
-					end: '20-10-2010',
-					mount: '150000',
-					voucher: 'https://bootstrap-vue.js.org/docs/components/table/#tables',
-					comments: 'Todo Excelente',
-				},
-			],
 		};
 	},
+	watch: {
+		range() {
+			this.startDate = this.range.startDate;
+			this.endDate = this.range.endDate;
+		},
+	},
 	methods: {
+		clearInputFile() {
+			this.$refs['voucher'].reset();
+			this.voucher = null;
+		},
 		update(event, row) {
-			row.comments = event;
 			this.$refs.selectableTable.clearSelected();
+			row.comments = event;
+			this.form.set('startDate', row.startDate);
+			this.form.set('endDate', row.endDate);
+			this.form.set('mount', row.mount);
+			this.form.set('comments', row.comments);
+			this.form.append('voucher', row.voucher);
 			this.editMode = !this.editMode;
+			this.edit({ payload: this.form, id: row._id });
+			this.updatePayments(this.idCompany);
+		},
+		submit() {
+			this.form.set('idCompany', this.idCompany);
+			this.form.set('startDate', this.startDate);
+			this.form.set('endDate', this.endDate);
+			this.form.set('mount', this.mount);
+			this.form.set('comments', this.comments);
+			this.form.append('voucher', this.voucher);
+			this.save(this.form);
+			this.updatePayments(this.idCompany);
 		},
 		onRowSelected(items) {
 			this.selected = items;

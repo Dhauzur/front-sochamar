@@ -28,7 +28,7 @@ const actions = {
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.post(`${api}/passengers/create`, payload, config);
 		} catch (error) {
-			commit('setErrorMessage', error.messager);
+			commit('setErrorMessage', error.message);
 		}
 	},
 	async editPassenger({ commit }, { payload, id }) {
@@ -41,16 +41,14 @@ const actions = {
 	},
 	async deleteAllPassengers({ commit }) {
 		try {
-			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.delete(`${api}/passengers/delete/all`, config);
+			await Axios.delete(`${api}/passengers/delete/all`);
 		} catch (error) {
 			commit('setErrorMessage', error.message);
 		}
 	},
 	async deleteOnePassenger({ commit }, id) {
 		try {
-			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.delete(`${api}/passengers/${id}`, config);
+			await Axios.delete(`${api}/passengers/${id}`);
 			this.action.fetchAllPassengers();
 		} catch (error) {
 			commit('setErrorMessage', error.message);
