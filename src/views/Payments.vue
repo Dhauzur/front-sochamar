@@ -7,6 +7,7 @@
 			:edit="editPayment"
 			:range="rangeDatePayments"
 			:update-payments="fetchPayments"
+			:count="countLodgings"
 		/>
 	</div>
 </template>
@@ -31,6 +32,7 @@ export default {
 			payments: 'Payments/payments',
 			message: 'Payments/message',
 			rangeDatePayments: 'Lodging/rangeDatePayments',
+			countLodgings: 'Lodging/countLogingsCompany',
 		}),
 	},
 	watch: {

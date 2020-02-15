@@ -9,34 +9,50 @@
 							<label for="total" class="mb-0 mt-2">Total</label>
 							<b-form-input
 								id="total"
-								v-model="mount"
+								v-model="$v.mount.$model"
 								size="sm"
+								type="number"
 								placeholder="Ej: 10000"
 							></b-form-input>
+							<div v-if="$v.mount.$dirty" class="text-right">
+								<small v-if="!$v.mount.required" class="text-danger">
+									Campo requerido
+								</small>
+							</div>
 						</b-col>
 						<b-col cols="3">
 							<label for="in" class="mb-0 mt-2">Ingreso</label>
 							<b-form-group id="in" label-for="input-1" class="pb-0 mb-0">
 								<b-form-input
 									id="in"
-									v-model="startDate"
+									v-model="$v.startDate.$model"
 									size="sm"
 									placeholder="Ej: 10000"
 									type="date"
 								/>
 							</b-form-group>
+							<div v-if="$v.startDate.$dirty" class="text-right">
+								<small v-if="!$v.startDate.required" class="text-danger">
+									Campo requerido
+								</small>
+							</div>
 						</b-col>
 						<b-col cols="3">
 							<label for="out" class="mb-0 mt-2">Salida</label>
 							<b-form-group id="out" label-for="input-1" class="pb-0 mb-0">
 								<b-form-input
 									id="out"
-									v-model="endDate"
+									v-model="$v.endDate.$model"
 									size="sm"
 									placeholder="Ej: 10000"
 									type="date"
 								/>
 							</b-form-group>
+							<div v-if="$v.endDate.$dirty" class="text-right">
+								<small v-if="!$v.endDate.required" class="text-danger">
+									Campo requerido
+								</small>
+							</div>
 						</b-col>
 						<b-col cols="1">
 							<label>
@@ -54,10 +70,16 @@
 							<b-form-file
 								id="voucher"
 								ref="voucher"
+								v-model="$v.voucher.$model"
 								type="file"
 								class="d-none"
 								@change="e => (voucher = e.target.files[0])"
 							/>
+							<div v-if="$v.voucher.$dirty" class="text-right">
+								<small v-if="!$v.voucher.required" class="text-danger">
+									requerido
+								</small>
+							</div>
 						</b-col>
 						<b-col cols="1" class="mt-4">
 							<b-button variant="primary" class="btn-sm mt-2" @click="submit"
@@ -89,24 +111,7 @@
 								@row-selected="onRowSelected"
 							>
 								<template v-slot:cell(voucher)="row">
-									<a
-										v-if="row.item.voucher"
-										:href="`${api}/${row.item.voucher}`"
-										target="_black"
-										>Ver</a
-									>
-									<div v-else>
-										<label for="voucherList"><a>Agregar</a></label>
-										<b-form-file
-											id="voucherList"
-											ref="voucherList"
-											type="file"
-											class="d-none"
-											@change="
-												e => (row = row.item.voucher = e.target.files[0])
-											"
-										/>
-									</div>
+									<a :href="`${api}/${row.item.voucher}`" target="_black">Ver</a>
 								</template>
 								<template v-slot:cell(comments)="row">
 									<b-form-input
@@ -130,10 +135,19 @@
 							No hay pagos registrados
 						</b-col></b-row
 					>
+					<b-row v-if="count === 0"
+						><b-col>
+							No hay Hospedajes
+						</b-col></b-row
+					>
+
 					<b-row v-if="editMode">
 						<b-col>
 							<b-button variant="primary" block>Guardar</b-button>
 						</b-col>
+						<small v-if="errors" class="mt-2 d-block text-danger">
+							Debe llenar el formulario correctamente
+						</small>
 					</b-row>
 				</b-col>
 			</b-row>
@@ -142,9 +156,12 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate';
+import { required } from 'vuelidate/lib/validators';
 import { api_absolute } from '@/config/index.js';
 
 export default {
+	mixins: [validationMixin],
 	props: {
 		company: {
 			type: Object,
@@ -173,6 +190,10 @@ export default {
 			required: false,
 			default: () => {},
 		},
+		count: {
+			type: Number,
+			default: 0,
+		},
 	},
 	data() {
 		return {
@@ -186,6 +207,7 @@ export default {
 			voucher: null,
 			voucherList: null,
 			comments: '',
+			errors: '',
 			fields: [
 				{ key: 'startDate', label: 'Inicio' },
 				{ key: 'endDate', label: 'Fin' },
@@ -195,6 +217,20 @@ export default {
 			],
 			selected: [],
 		};
+	},
+	validations: {
+		mount: {
+			required,
+		},
+		startDate: {
+			required,
+		},
+		endDate: {
+			required,
+		},
+		voucher: {
+			required,
+		},
 	},
 	watch: {
 		range() {
@@ -206,6 +242,9 @@ export default {
 		clearInputFile() {
 			this.$refs['voucher'].reset();
 			this.voucher = null;
+		},
+		addVoucher(event) {
+			this.voucher = event.target.files[0];
 		},
 		update(event, row) {
 			this.$refs.selectableTable.clearSelected();
@@ -220,14 +259,20 @@ export default {
 			this.updatePayments(this.idCompany);
 		},
 		submit() {
-			this.form.set('idCompany', this.idCompany);
-			this.form.set('startDate', this.startDate);
-			this.form.set('endDate', this.endDate);
-			this.form.set('mount', this.mount);
-			this.form.set('comments', this.comments);
-			this.form.append('voucher', this.voucher);
-			this.save(this.form);
-			this.updatePayments(this.idCompany);
+			// validations
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				this.errors = true;
+			} else {
+				this.form.set('idCompany', this.idCompany);
+				this.form.set('startDate', this.startDate);
+				this.form.set('endDate', this.endDate);
+				this.form.set('mount', this.mount);
+				this.form.set('comments', this.comments);
+				this.form.append('voucher', this.voucher);
+				this.save(this.form);
+				this.updatePayments(this.idCompany);
+			}
 		},
 		onRowSelected(items) {
 			this.selected = items;
