@@ -126,4 +126,8 @@ export default {
 	max-height: 80vh !important;
 	overflow-y: auto;
 }
+
+.btn {
+	border-radius: 20px !important;
+}
 </style>

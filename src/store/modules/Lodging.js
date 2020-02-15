@@ -185,62 +185,38 @@ const mutations = {
 		state.mirrorLodging = JSON.stringify(state.lodgings);
 	},
 	dateChange(state, value) {
-		let verificate = true;
-		state.lodgings.forEach(lod => {
-			console.log('G');
-			console.log(lod, state.lodgingSelect.group);
-			console.log('L');
-			console.log(lod.end, lod.start);
-			console.log('v');
-			console.log(value.dateStart, value.dateEnd);
-
-			if (
-				lod.group == state.lodgingSelect.group &&
-				moment(value.dateStart).isSameOrBefore(moment(lod.end)) &&
-				moment(value.dateEnd).isSameOrAfter(moment(lod.start))
-			) {
-				verificate = false;
-			}
+		let tempLodging = state.lodgingSelect;
+		let tempLodgings = state.lodgings;
+		state.lodgings = new DataSet([]);
+		tempLodgings.update({
+			id: state.lodgingSelect.id,
+			start: moment(value.dateStart).hours(16),
+			end: moment(value.dateEnd).hours(12),
 		});
-		if (verificate) {
-			let tempLodging = state.lodgingSelect;
-			let tempLodgings = state.lodgings;
-			state.lodgings = new DataSet([]);
-			tempLodgings.update({
-				id: state.lodgingSelect.id,
-				start: moment(value.dateStart).hours(16),
-				end: moment(value.dateEnd).hours(12),
-			});
-			let service = [];
-			let numberDays = moment(value.dateEnd).diff(
-				moment(value.dateStart).format('YYYY-MM-DD'),
-				'days'
-			);
-			let oldService = JSON.parse(state.lodgingSelect.service[0]);
-			for (let i = 0; i <= numberDays; i++)
-				service.push([
-					oldService[i] ? oldService[i][0] : 1,
-					oldService[i] ? oldService[i][1] : 1,
-					oldService[i] ? oldService[i][2] : 1,
-					oldService[i] ? oldService[i][3] : 1,
-				]);
-			let itemService = [];
-			itemService.push(JSON.stringify(service));
-			tempLodgings.update({
-				id: state.lodgingSelect.id,
-				service: itemService,
-			});
-			tempLodging.start = moment(value.dateStart).hours(16);
-			tempLodging.end = moment(value.dateEnd).hours(12);
-			tempLodging.service = itemService;
-			state.lodgingSelect = tempLodging;
-			state.lodgings = tempLodgings;
-		} else {
-			state.message = {
-				type: 'default',
-				text: 'Existe un alojamiento para esas fechas ',
-			};
-		}
+		let service = [];
+		let numberDays = moment(value.dateEnd).diff(
+			moment(value.dateStart).format('YYYY-MM-DD'),
+			'days'
+		);
+		let oldService = JSON.parse(state.lodgingSelect.service[0]);
+		for (let i = 0; i <= numberDays; i++)
+			service.push([
+				oldService[i] ? oldService[i][0] : 1,
+				oldService[i] ? oldService[i][1] : 1,
+				oldService[i] ? oldService[i][2] : 1,
+				oldService[i] ? oldService[i][3] : 1,
+			]);
+		let itemService = [];
+		itemService.push(JSON.stringify(service));
+		tempLodgings.update({
+			id: state.lodgingSelect.id,
+			service: itemService,
+		});
+		tempLodging.start = moment(value.dateStart).hours(16);
+		tempLodging.end = moment(value.dateEnd).hours(12);
+		tempLodging.service = itemService;
+		state.lodgingSelect = tempLodging;
+		state.lodgings = tempLodgings;
 	},
 	subOneService(state, serviceSelected) {
 		let tempLodging = state.lodgingSelect;

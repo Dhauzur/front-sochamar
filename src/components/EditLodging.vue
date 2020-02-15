@@ -99,6 +99,7 @@ import { mapMutations, mapGetters, mapActions } from 'vuex';
 export default {
 	data() {
 		return {
+			oldDate: null,
 			dateStart: null,
 			dateEnd: null,
 			services: [
@@ -113,15 +114,39 @@ export default {
 	},
 	computed: {
 		...mapGetters({
+			lodgings: 'Lodging/lodgings',
 			lodgingSelect: 'Lodging/lodgingSelect',
 		}),
+	},
+	watch: {
+		dateStart: function(newDate) {
+			//Si la modificacion al nuevo hpspedaje no es valida, el input date vuelve a su posicion
+			//Original
+			this.oldDate = newDate;
+		},
 	},
 	mounted() {
 		this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 		this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 	},
-
 	methods: {
+		dateChange(newDate) {
+			let verificate = true;
+			this.lodgings.forEach(lod => {
+				//Verifica que se este usando la misma habitacion, y que el hospedaje selecionado sea distinto
+				//al comparado. Y luego verifica que la fecha este fuera de algun otro hospedaje
+				if (lod.group == this.lodgingSelect.group && this.lodgingSelect.id != lod.id) {
+					if (
+						moment(newDate.dateStart).isBefore(moment(lod.end).format('YYYY-MM-DD')) &&
+						moment(newDate.dateEnd).isAfter(moment(lod.start).format('YYYY-MM-DD'))
+					) {
+						verificate = false;
+					}
+				}
+			});
+			if (verificate) this.sendDateChange(newDate);
+			else this.dateStart = this.oldDate;
+		},
 		saveLodging() {
 			this.$store.dispatch('Lodging/createLodging');
 		},
@@ -131,7 +156,7 @@ export default {
 		...mapMutations({
 			addOneService: 'Lodging/addOneService',
 			subOneService: 'Lodging/subOneService',
-			dateChange: 'Lodging/dateChange',
+			sendDateChange: 'Lodging/dateChange',
 		}),
 	},
 };
@@ -141,5 +166,7 @@ export default {
 .borderEdit {
 	border: 1px solid #dee2e6;
 	padding: 15px;
+	border-radius: 30px;
+	box-shadow: 0px 0px 20px -8px rgb(0, 0, 0);
 }
 </style>
