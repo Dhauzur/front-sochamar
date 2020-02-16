@@ -52,21 +52,37 @@
 				<b-row class="mb-3">
 					<b-col>
 						Nombre habitación
-						<b-form-input v-model="form.name" placeholder="Ej: N°1"></b-form-input>
+						<b-form-input
+							v-model="$v.form.name.$model"
+							placeholder="Ej: N°1"
+						></b-form-input>
+						<div v-if="$v.form.name.$dirty" class="text-right">
+							<small v-if="!$v.form.name.required" class="text-danger">
+								Campo requerido
+							</small>
+						</div>
 					</b-col>
 					<b-col lg="6">
 						Cantidad máxima de pasajeros
 						<b-form-input
-							v-model="form.numberPassangerMax"
+							v-model="$v.form.numberPassangerMax.$model"
 							placeholder="Ej: 5"
 						></b-form-input>
+						<div v-if="$v.form.numberPassangerMax.$dirty" class="text-right">
+							<small v-if="!$v.form.numberPassangerMax.required" class="text-danger">
+								Campo requerido
+							</small>
+						</div>
 					</b-col>
 				</b-row>
 				<b-row class="mb-3">
 					<b-col>
-						<b-button block variant="primary" class="col-12" @click="createRoom(form)">
+						<b-button block variant="primary" class="col-12" @click="onsubmit()">
 							Finalizar creación
 						</b-button>
+						<small v-if="errors" class="mt-2 d-block text-danger">
+							Debe llenar el formulario correctamente
+						</small>
 					</b-col>
 				</b-row>
 			</b-col>
@@ -75,11 +91,16 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate';
+import { required } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
+	name: 'Room',
+	mixins: [validationMixin],
 	data() {
 		return {
+			errors: '',
 			form: {
 				name: '',
 				numberPassangerMax: '',
@@ -104,7 +125,34 @@ export default {
 	mounted() {
 		this.fetchRooms();
 	},
+	validations: {
+		form: {
+			name: {
+				required,
+			},
+			numberPassangerMax: {
+				required,
+			},
+		},
+	},
 	methods: {
+		onsubmit() {
+			// validations
+			this.$v.$touch();
+			if (this.$v.$invalid) {
+				this.errors = true;
+			} else {
+				this.createRoom(this.form);
+				this.clearInputs();
+				this.$v.$reset();
+			}
+		},
+		clearInputs() {
+			this.form = {
+				name: '',
+				numberPassangerMax: '',
+			};
+		},
 		...mapActions({
 			fetchRooms: 'Room/fetchRooms',
 			createRoom: 'Room/createRoom',

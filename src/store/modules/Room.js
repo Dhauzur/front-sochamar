@@ -93,7 +93,6 @@ const mutations = {
 	},
 	setRooms(state, value) {
 		var rooms = [];
-		console.log(value);
 		if (value)
 			value.forEach(v => {
 				rooms.push({

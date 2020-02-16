@@ -146,7 +146,7 @@ export default {
 			if (verificate) this.sendDateChange(newDate);
 			else {
 				this.$toasted.show('Existe un alojamiento para esas fechas');
-				this.dateStart = this.oldDate;
+				this.dateStart = '2020-02-21';
 			}
 		},
 		saveLodging() {

@@ -1,7 +1,7 @@
 <template lang="html">
 	<b-container>
 		<b-row id="nav" class="justify-content-center">
-			<b-col md="8" lg="6" class="background-module pb-3 px-4">
+			<b-col v-if="!passwordRecover" md="8" lg="6" class="background-module pb-3 px-4">
 				<h3 class="my-4">Ingresa a Sochamar</h3>
 				<b-form @submit.prevent="login(loginData)">
 					<!--EMAIL-->
@@ -35,7 +35,12 @@
 					¿No tienes una cuenta?
 					<router-link to="/register">registrate</router-link>
 				</p>
-				<a href="#">¿Olvidaste tu contraseña?</a>
+				<a href="#" @click="controlPasswordRecover(true)">¿Olvidaste tu contraseña?</a>
+			</b-col>
+			<b-col v-else md="8" lg="6" class="background-module pb-3 px-4">
+				<PasswordRecover
+					:disable-password-recover="controlPasswordRecover"
+				></PasswordRecover>
 			</b-col>
 		</b-row>
 	</b-container>
@@ -43,48 +48,42 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-
+import PasswordRecover from '../components/auth/PasswordRecover';
 export default {
+	components: {
+		PasswordRecover,
+	},
 	data() {
 		return {
 			loginData: {
 				email: '',
 				password: '',
 			},
+			passwordRecover: false,
 		};
 	},
 	computed: {
 		...mapGetters({
-			messageAuth: 'Auth/message',
-			messageRoom: 'Room/message',
-			messageCompany: 'Company/message',
+			message: 'Auth/message',
 		}),
 	},
 	watch: {
-		messageAuth(newVal) {
+		message(newVal) {
 			this.toastedMessage(newVal);
 		},
-		messageRoom(newVal) {
-			this.toastedMessage(newVal);
-		},
-		messageCompany(newVal) {
-			this.toastedMessage(newVal);
-		},
-	},
-	mounted() {
-		this.toastedMessage(this.messageAuth);
-		this.toastedMessage(this.messageRoom);
-		this.toastedMessage(this.messageCompany);
 	},
 	methods: {
-		...mapActions({
-			login: 'Auth/login',
-		}),
 		toastedMessage(newVal) {
 			this.$toasted.show(newVal.text, {
 				type: newVal.type,
 			});
 		},
+		controlPasswordRecover(value) {
+			this.passwordRecover = value;
+		},
+		...mapActions({
+			login: 'Auth/login',
+		}),
 	},
 };
 </script>

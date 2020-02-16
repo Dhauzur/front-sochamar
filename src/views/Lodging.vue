@@ -35,7 +35,7 @@
 								<button
 									type="button"
 									class="btn btn-primary btn-block"
-									@click="saveLodging()"
+									@click="saveLodgings()"
 								>
 									Guardar
 								</button>
@@ -197,9 +197,9 @@
 import { Timeline } from 'vue2vis';
 import PassengersDialog from '../components/passengers/PassengersDialog';
 import moment from 'moment';
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Loading from '@/components/Loading';
-import EditLodging from '@/components/EditLodging';
+import EditLodging from '@/components/lodgings/EditLodging';
 
 export default {
 	components: {
@@ -227,7 +227,7 @@ export default {
 					if (this.company) {
 						this.setModeEdit(true);
 						callback(item);
-						this.$store.commit('Lodging/updateService', item);
+						this.updateService(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMoving: (item, callback) => {
@@ -240,7 +240,7 @@ export default {
 				onRemove: (item, callback) => {
 					if (this.lodgings.length > 1 && this.company) {
 						this.setModeEdit(false);
-						this.$store.dispatch('Lodging/deleteLodging', item);
+						this.deleteLodging(item);
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
@@ -264,7 +264,7 @@ export default {
 									})
 									.toLowerCase();
 							item.id = timestamp;
-							this.$store.commit('Lodging/addLodging', item);
+							this.addLodging(item);
 							if (!this.lodgings.get(item.id)) callback(item);
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
@@ -298,19 +298,6 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters({
-			message: 'Lodging/message',
-			updatingService: 'Lodging/updatingService',
-			mirrorLodging: 'Lodging/mirrorLodging',
-			lodgingSelect: 'Lodging/lodgingSelect',
-			loading: 'Lodging/loading',
-			rooms: 'Lodging/rooms',
-			rangeDate: 'Lodging/rangeDate',
-			lodgings: 'Lodging/lodgings',
-			companies: 'Lodging/companies',
-			company: 'Lodging/company',
-			editMode: 'Lodging/editMode',
-		}),
 		getMirrorLodging() {
 			var hola = JSON.stringify(this.lodgings);
 			if (hola == this.mirrorLodging) return false;
@@ -452,6 +439,19 @@ export default {
 				});
 			return dates;
 		},
+		...mapGetters({
+			message: 'Lodging/message',
+			updatingService: 'Lodging/updatingService',
+			mirrorLodging: 'Lodging/mirrorLodging',
+			lodgingSelect: 'Lodging/lodgingSelect',
+			loading: 'Lodging/loading',
+			rooms: 'Lodging/rooms',
+			rangeDate: 'Lodging/rangeDate',
+			lodgings: 'Lodging/lodgings',
+			companies: 'Lodging/companies',
+			company: 'Lodging/company',
+			editMode: 'Lodging/editMode',
+		}),
 	},
 	watch: {
 		message(newVal) {
@@ -459,14 +459,24 @@ export default {
 				type: newVal.type,
 			});
 		},
+		lodgingSelect() {
+			if (this.lodgingSelect) {
+				if (this.lodgingSelect.passengers && this.editMode) {
+					this.setAllLodgingPassengers(this.lodgingSelect.passengers);
+				}
+			}
+		},
 	},
 	created() {
 		this.selectCompany = this.company;
-		this.$store.dispatch('Lodging/fetchCompany');
+		this.fetchCompany();
 		this.setRangeDate({
 			start: moment(),
 			end: moment().add(15, 'day'),
 		});
+	},
+	mounted() {
+		this.fetchAllPassengers();
 	},
 	methods: {
 		verifyOverlay(value) {
@@ -485,7 +495,7 @@ export default {
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
-			this.$store.dispatch('Lodging/fetchLodgings');
+			this.fetchLodgings();
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
@@ -503,9 +513,6 @@ export default {
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
 		},
-		saveLodging() {
-			if (this.company) this.$store.dispatch('Lodging/saveLodgings');
-		},
 		rangechanged(payload) {
 			if (payload) {
 				this.setRangeDate({
@@ -514,6 +521,13 @@ export default {
 				});
 			}
 		},
+		...mapActions({
+			saveLodgings: 'Lodging/saveLodgings',
+			fetchCompany: 'Lodging/fetchCompany',
+			fetchAllPassengers: 'Passengers/fetchAllPassengers',
+			fetchLodgings: 'Lodging/fetchLodgings',
+			deleteLodging: 'Lodging/deleteLodging',
+		}),
 		...mapMutations({
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
@@ -521,8 +535,8 @@ export default {
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
 			setCompanyLodging: 'Lodging/setCompanyLodging',
-			saveLodgings: 'Lodging/saveLodgings',
 			setModeEdit: 'Lodging/setModeEdit',
+			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
 		}),
 	},
 };

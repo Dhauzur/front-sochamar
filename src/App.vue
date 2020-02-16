@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import UserBar from './components/UserBar';
+import UserBar from './components/auth/UserBar';
 import { mapGetters, mapMutations } from 'vuex';
 
 export default {
