@@ -24,6 +24,7 @@
 								accept="image/jpeg, image/png, image/gif, image/jpg"
 								:placeholder="'Agrega una imagen'"
 								drop-placeholder="Arrastrar aqui..."
+								@change="e => onFileUpload(e)"
 							></b-form-file>
 						</b-col>
 						<b-col cols="12">
@@ -84,7 +85,9 @@
 					</b-row>
 					<!--Submit-->
 					<b-col>
-						<b-button type="submit" variant="primary">Guardar </b-button>
+						<b-button :disabled="loading" type="submit" variant="primary"
+							>Guardar
+						</b-button>
 					</b-col>
 				</b-form>
 			</b-col>
@@ -107,6 +110,7 @@ export default {
 				lastName: '',
 				img: '',
 				observer: false,
+				file: null,
 			},
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 		};
@@ -150,15 +154,26 @@ export default {
 		fetchProfileForm() {
 			this.profileForm = Object.assign(this.profileForm, this.profile);
 		},
+		setFormObject() {
+			this.form.append('avatar', this.profileForm.file);
+			this.form.set('name', this.profileForm.name.toLowerCase());
+			this.form.set('lastName', this.profileForm.lastName.toLowerCase());
+		},
+		clearUpload() {
+			this.$refs['avatar'].reset();
+			this.form = new FormData();
+		},
 		submitForm() {
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				console.log('erroresss');
-			} else {
-				this.form.set('name', this.profileForm.name.toLowerCase());
-				this.form.set('lastName', this.profileForm.lastName.toLowerCase());
-				this.updateProfile(this.form).then(this.fetchProfileForm);
+			if (!this.$v.$invalid) {
+				this.setFormObject();
+				this.updateProfile(this.form)
+					.then(this.fetchProfileForm)
+					.then(this.clearUpload);
 			}
+		},
+		onFileUpload(e) {
+			this.profileForm.file = e.target.files[0];
 		},
 		...mapActions({
 			fetchProfile: 'User/fetchProfile',

@@ -25,6 +25,7 @@ const actions = {
 		}
 	},
 	async updateProfile({ commit }, profileData) {
+		commit('setLoading', true);
 		const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 		try {
 			const response = await Axios.put(api + '/user/profile', profileData, config);
@@ -32,9 +33,11 @@ const actions = {
 			commit('setProfile', profile);
 			const message = { type: 'success', text: 'Perfil modificado con exito' };
 			commit('setMessage', message);
+			commit('setLoading', false);
 		} catch (e) {
 			const message = { type: 'error', text: 'Parametros invalidos' };
 			commit('setMessage', message);
+			commit('setLoading', false);
 		}
 	},
 };
@@ -42,6 +45,7 @@ const actions = {
 const mutations = {
 	setProfile: (state, profile) => (state.profile = profile),
 	setMessage: (state, message) => (state.message = message),
+	setLoading: (state, loading) => (state.loading = loading),
 };
 
 export default {
