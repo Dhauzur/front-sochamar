@@ -295,28 +295,46 @@ const mutations = {
 	createOneLodging(state) {
 		state.editMode = false;
 		let company = state.companies.find(c => c.value == state.company);
-		if (company.text == 'Turismo')
-			state.lodgings.add({
-				group: state.rooms.getIds()[0],
-				start: moment().hours(16),
-				end: moment()
-					.hours(13)
-					.add(1, 'day'),
-				content: company.text,
-				service: ['[[0,0,0,0],[0,0,0,0]]'],
-				company: state.company,
-			});
-		else
-			state.lodgings.add({
-				group: state.rooms.getIds()[0],
-				start: moment().hours(16),
-				end: moment()
-					.hours(13)
-					.add(1, 'day'),
-				content: company.text,
-				service: ['[[1,1,1,1],[1,1,1,1]]'],
-				company: state.company,
-			});
+		let verificate = true;
+		state.lodgings.forEach(lod => {
+			if (
+				lod.group == state.rooms.getIds()[0] &&
+				moment().isSameOrAfter(moment(lod.start)) &&
+				moment()
+					.add(1, 'day')
+					.isSameOrBefore(moment(lod.end))
+			)
+				verificate = false;
+		});
+		if (verificate) {
+			if (company.text == 'Turismo')
+				state.lodgings.add({
+					group: state.rooms.getIds()[0],
+					start: moment().hours(16),
+					end: moment()
+						.hours(13)
+						.add(1, 'day'),
+					content: company.text,
+					service: ['[[0,0,0,0],[0,0,0,0]]'],
+					company: state.company,
+				});
+			else
+				state.lodgings.add({
+					group: state.rooms.getIds()[0],
+					start: moment().hours(16),
+					end: moment()
+						.hours(13)
+						.add(1, 'day'),
+					content: company.text,
+					service: ['[[1,1,1,1],[1,1,1,1]]'],
+					company: state.company,
+				});
+		} else {
+			state.message = {
+				type: 'default',
+				text: 'Existe un alojamiento para esas fechas ',
+			};
+		}
 	},
 	setCompanyLodging(state, value) {
 		state.company = value;

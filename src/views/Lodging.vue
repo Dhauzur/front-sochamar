@@ -232,8 +232,10 @@ export default {
 				},
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
-					if (this.company) callback(item);
-					else this.$toasted.show('Selecione una entidad primero');
+					if (this.company) {
+						if (this.verifyOverlay(item)) callback(item);
+						else this.$toasted.show('Existe un alojamiento para esas fechas');
+					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onRemove: (item, callback) => {
 					if (this.lodgings.length > 1 && this.company) {
@@ -244,25 +246,27 @@ export default {
 				},
 				onAdd: (item, callback) => {
 					if (this.company) {
-						this.setModeEdit(false);
 						item.start = moment(item.start).hours(16);
 						item.end = moment(item.start)
 							.hours(12)
 							.add(1, 'day');
-						var company = this.companies.find(c => c.value == this.company).text;
-						item.content = company;
-						if (company != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
-						else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
-						var timestamp = new Date().getTime().toString(16);
-						timestamp +
-							'xxxxxxxxxxxxxxxx'
-								.replace(/[x]/g, function() {
-									return ((Math.random() * 16) | 0).toString(16);
-								})
-								.toLowerCase();
-						item.id = timestamp;
-						this.addLodging(item);
-						if (!this.lodgings.get(item.id)) callback(item);
+						if (this.verifyOverlay(item)) {
+							this.setModeEdit(false);
+							var company = this.companies.find(c => c.value == this.company).text;
+							item.content = company;
+							if (company != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
+							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
+							var timestamp = new Date().getTime().toString(16);
+							timestamp +
+								'xxxxxxxxxxxxxxxx'
+									.replace(/[x]/g, function() {
+										return ((Math.random() * 16) | 0).toString(16);
+									})
+									.toLowerCase();
+							item.id = timestamp;
+							this.addLodging(item);
+							if (!this.lodgings.get(item.id)) callback(item);
+						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMove: (item, callback) => {
@@ -476,46 +480,15 @@ export default {
 	},
 	methods: {
 		verifyOverlay(value) {
-			let verificate = null;
+			let verificate = true;
 			this.lodgings.forEach(lod => {
 				if (lod.group == value.group) {
-					//Verifica que el nuevo alojamiento, este: o completamente
-					//antes de otro alojamiento, o verifica que este completamente despues
 					if (
-						(moment(value.dateStart).isBefore(moment(lod.start)) &&
-							moment(value.dateEnd).isBefore(moment(lod.start))) ||
-						(moment(value.dateStart).isAfter(moment(lod.end)) &&
-							moment(value.dateEnd).isAfter(moment(lod.end)))
+						moment(value.start).isSameOrAfter(moment(lod.start)) &&
+						moment(value.end).isSameOrBefore(moment(lod.end))
 					)
-						verificate = 'OK';
-					//verifica que la fecha de inicio esta antes de otro ALOJAMIENTO
-					//pero que la fecha final, este despues de la fecha de inicio de otro alojamiento
-					else if (
-						moment(value.dateStart).isBefore(moment(lod.start)) &&
-						moment(value.dateEnd).isAfter(moment(lod.start))
-					)
-						verificate = {
-							erro: 'Fin de nuevo, esta despues de lod inicio',
-							dateStart: value.dateStart,
-							dateEnd: moment(lod.start)
-								.subtract(1, 'day')
-								.hours(16),
-						};
-					//verifica que la fecha de fin este dsp de otro ALOJAMIENTO
-					//pero que la fecha inicio, este antes de la fecha de fin de otro alojamiento
-					else if (
-						moment(value.dateStart).isBefore(moment(lod.end)) &&
-						moment(value.dateEnd).isAfter(moment(lod.end))
-					)
-						verificate = {
-							erro: 'Inicio de nuevo, esta antes de lod fin',
-							dateStart: value.dateStart,
-							dateEnd: moment(lod.end)
-								.add(1, 'day')
-								.hours(12),
-						};
-					else verificate = false;
-				} else verificate = 'OK';
+						verificate = false;
+				}
 			});
 			return verificate;
 		},
@@ -570,33 +543,40 @@ export default {
 </script>
 
 <style lang="css">
+.vis-time-axis .vis-text,
+.vis-time-axis .vis-text.vis-saturday,
+.vis-time-axis .vis-text.vis-sunday {
+	color: #111213 !important;
+}
+
 .vis-foreground .vis-group {
 	border: 1px solid #ffffff7a;
 }
-.vis-time-axis .vis-grid.vis-odd {
+/* .vis-time-axis .vis-grid.vis-odd {
 	background: #ffffff7a;
-}
+} */
 .vis-time-axis .vis-grid.vis-saturday,
 .vis-time-axis .vis-grid.vis-sunday {
 	background: #ffffff7a;
 }
-.vis-time-axis .vis-text.vis-saturday,
-.vis-time-axis .vis-text.vis-sunday {
-	color: white;
+.vis-time-axis .vis-grid.vis-sunday {
+	border-right: 2px solid #2c6975;
 }
 .inputService {
 	max-width: 60px;
 }
 
 .vis-item {
-	border-color: #2e4052;
-	border-width: 2px;
+	border-color: #2c6975;
+	border-width: 1px;
+	border-radius: 25px !important;
 	background-color: #e6e9ec;
+	box-shadow: 0px 0px 15px -3px rgba(0, 0, 0, 0.75);
 }
 td,
 th {
 	padding: 2px !important;
-	color: #1c1e21;
+	color: #111213;
 	min-width: 60px;
 }
 </style>
