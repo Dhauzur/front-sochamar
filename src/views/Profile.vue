@@ -3,18 +3,20 @@
 		<b-row id="nav" class="justify-content-center">
 			<b-col md="8" lg="6" class="background-module pb-3 px-4">
 				<h3 class="my-4">Mi perfil</h3>
+				<!-- Observer -->
+				<h6 v-if="formData.observer">Observador</h6>
 				<b-form @submit.prevent="submitForm">
 					<b-row>
 						<!-- avatar -->
 						<b-col>
-							<label for="upload">
+							<label v-if="profile.img" for="upload">
 								<b-img
 									class="pointer"
 									for
 									v-bind="mainProps"
 									rounded="circle"
 									alt="avatar"
-									:src="profileForm.img"
+									:src="profile.img"
 								></b-img>
 							</label>
 							<b-form-file
@@ -24,6 +26,7 @@
 								accept="image/jpeg, image/png, image/gif, image/jpg"
 								:placeholder="'Agrega una imagen'"
 								drop-placeholder="Arrastrar aqui..."
+								:disabled="loading"
 								@change="e => onFileUpload(e)"
 							></b-form-file>
 						</b-col>
@@ -37,18 +40,12 @@
 						<!-- name -->
 						<b-col cols="6">
 							<b-form-group id="input-group-1" label="Nombre:" label-for="name-input">
-								<b-form-input id="firstName" v-model.trim="profileForm.name" />
-								<div v-if="$v.profileForm.name.$dirty">
-									<small
-										v-if="!$v.profileForm.name.minLength"
-										class="text-danger"
-									>
+								<b-form-input id="firstName" v-model.trim="formData.name" />
+								<div v-if="$v.formData.name.$dirty">
+									<small v-if="!$v.formData.name.minLength" class="text-danger">
 										Minimo 5 Caracteres
 									</small>
-									<small
-										v-if="!$v.profileForm.name.maxLength"
-										class="text-danger"
-									>
+									<small v-if="!$v.formData.name.maxLength" class="text-danger">
 										Maximo 100 Caracteres
 									</small>
 								</div>
@@ -61,16 +58,16 @@
 								label="Apellido:"
 								label-for="lastName-input"
 							>
-								<b-form-input id="lastName" v-model.trim="profileForm.lastName" />
-								<div v-if="$v.profileForm.lastName.$dirty">
+								<b-form-input id="lastName" v-model.trim="formData.lastName" />
+								<div v-if="$v.formData.lastName.$dirty">
 									<small
-										v-if="!$v.profileForm.lastName.minLength"
+										v-if="!$v.formData.lastName.minLength"
 										class="text-danger"
 									>
-										Minimo 5 Caracteres
+										Minimo 3 Caracteres
 									</small>
 									<small
-										v-if="!$v.profileForm.lastName.maxLength"
+										v-if="!$v.formData.lastName.maxLength"
 										class="text-danger"
 									>
 										Maximo 100 Caracteres
@@ -78,15 +75,11 @@
 								</div>
 							</b-form-group>
 						</b-col>
-						<!-- Observer -->
-						<b-col cols="4">
-							<h6>Observador: {{ isObserver }}</h6>
-						</b-col>
 					</b-row>
 					<!--Submit-->
 					<b-col>
 						<b-button :disabled="loading" type="submit" variant="primary"
-							>Guardar
+							>Actualizar
 						</b-button>
 					</b-col>
 				</b-form>
@@ -104,23 +97,18 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
-			form: new FormData(),
-			profileForm: {
+			formData: {
 				name: '',
 				lastName: '',
-				img: '',
 				observer: false,
-				file: null,
+				img: '',
 			},
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 		};
 	},
 	computed: {
-		isObserver() {
-			return this.profileForm.observer ? 'Si' : 'No';
-		},
 		avatarMessage() {
-			return this.profileForm.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
+			return this.formData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
 		},
 		...mapGetters({
 			profile: 'User/profile',
@@ -136,48 +124,48 @@ export default {
 		},
 	},
 	created() {
-		this.fetchProfile().then(this.fetchProfileForm);
+		this.fetchProfile().then(this.fetchformData);
 	},
 	validations: {
-		profileForm: {
+		formData: {
 			name: {
 				minLength: minLength(5),
 				maxLength: maxLength(100),
 			},
 			lastName: {
-				minLength: minLength(5),
+				minLength: minLength(3),
 				maxLength: maxLength(100),
 			},
 		},
 	},
 	methods: {
-		fetchProfileForm() {
-			this.profileForm = Object.assign(this.profileForm, this.profile);
+		fetchformData() {
+			this.formData = Object.assign(this.formData, this.profile);
 		},
-		setFormObject() {
-			this.form.append('avatar', this.profileForm.file);
-			this.form.set('name', this.profileForm.name.toLowerCase());
-			this.form.set('lastName', this.profileForm.lastName.toLowerCase());
+		setAvatarObject(file) {
+			const avatar = new FormData();
+			avatar.append('avatar', file);
+			return avatar;
 		},
 		clearUpload() {
 			this.$refs['avatar'].reset();
-			this.form = new FormData();
 		},
 		submitForm() {
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				this.setFormObject();
-				this.updateProfile(this.form)
-					.then(this.fetchProfileForm)
+				this.updateProfile(this.formData)
+					.then(this.fetchformData)
 					.then(this.clearUpload);
 			}
 		},
 		onFileUpload(e) {
-			this.profileForm.file = e.target.files[0];
+			const avatar = this.setAvatarObject(e.target.files[0]);
+			this.updateAvatar(avatar).then(this.clearUpload);
 		},
 		...mapActions({
 			fetchProfile: 'User/fetchProfile',
 			updateProfile: 'User/updateProfile',
+			updateAvatar: 'User/updateAvatar',
 		}),
 	},
 };

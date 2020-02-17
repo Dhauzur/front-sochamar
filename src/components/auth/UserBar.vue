@@ -3,7 +3,7 @@
 		<b-nav-text class="mr-sm-3 pt-4" right v-text="fullName"> </b-nav-text>
 		<b-nav-item-dropdown text="Lang" no-caret right>
 			<template v-slot:button-content>
-				<b-img alt="" width="70%" :src="profileAvatar"></b-img>
+				<b-img alt="" rounded="circle" v-bind="mainProps" :src="profileAvatar"></b-img>
 			</template>
 
 			<b-dropdown-item to="/profile">Perfil </b-dropdown-item>
@@ -23,6 +23,11 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 export default {
+	data() {
+		return {
+			mainProps: { blank: false, blankColor: '#777', width: 50, height: 50, class: 'm1' },
+		};
+	},
 	computed: {
 		fullName() {
 			return this.profile.name + ' ' + this.profile.lastName;

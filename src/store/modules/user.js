@@ -26,16 +26,32 @@ const actions = {
 	},
 	async updateProfile({ commit }, profileData) {
 		commit('setLoading', true);
-		const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 		try {
-			const response = await Axios.put(api + '/user/profile', profileData, config);
+			const response = await Axios.put(api + '/user/profile', profileData);
 			const profile = response.data;
 			commit('setProfile', profile);
 			const message = { type: 'success', text: 'Perfil modificado con exito' };
 			commit('setMessage', message);
 			commit('setLoading', false);
 		} catch (e) {
+			console.log(e);
 			const message = { type: 'error', text: 'Parametros invalidos' };
+			commit('setMessage', message);
+			commit('setLoading', false);
+		}
+	},
+	async updateAvatar({ commit }, profileData) {
+		commit('setLoading', true);
+		const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+		try {
+			const response = await Axios.patch(api + '/user/avatar', profileData, config);
+			const { img } = response.data;
+			commit('setAvatar', img);
+			const message = { type: 'success', text: 'Avatar actualizado con exito' };
+			commit('setMessage', message);
+			commit('setLoading', false);
+		} catch (e) {
+			const message = { type: 'error', text: 'Imagen invalida' };
 			commit('setMessage', message);
 			commit('setLoading', false);
 		}
@@ -46,6 +62,7 @@ const mutations = {
 	setProfile: (state, profile) => (state.profile = profile),
 	setMessage: (state, message) => (state.message = message),
 	setLoading: (state, loading) => (state.loading = loading),
+	setAvatar: (state, avatar) => (state.profile.img = avatar),
 };
 
 export default {
