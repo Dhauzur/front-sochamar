@@ -14,13 +14,14 @@ const getters = {
 const actions = {
 	async fetchPaymentsOfTheCompany({ commit }, id) {
 		try {
-			const response = await Axios.get(`${api}/payments/?id=${id}`);
+			const response = await Axios.get(`${api}/payments/${id}`);
 			commit('setPayments', response.data.payments);
-			if (response.data.payments.length > 0)
+			if (response.data.payments.length > 0) {
 				commit('setMessage', {
 					type: 'success',
 					text: 'Lista de Pagos ok',
 				});
+			}
 		} catch (error) {
 			commit('setPayments', null);
 			commit('setMessage', {
@@ -59,24 +60,9 @@ const actions = {
 			});
 		}
 	},
-	async deleteAllPayments({ commit }) {
-		try {
-			await Axios.delete(`${api}/payments/delete/all`);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Eliminada lista de pagos',
-			});
-		} catch (error) {
-			commit('setMessage', {
-				type: 'error',
-				text: error.message,
-			});
-		}
-	},
 	async deleteOnePayment({ commit }, id) {
 		try {
 			await Axios.delete(`${api}/payments/${id}`);
-			this.action.fetchAllPassengers();
 			commit('setMessage', {
 				type: 'success',
 				text: 'Eliminado datos de pago',

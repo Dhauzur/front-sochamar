@@ -49,7 +49,6 @@ const actions = {
 	async deleteOnePassenger({ commit }, id) {
 		try {
 			await Axios.delete(`${api}/passengers/${id}`);
-			this.action.fetchAllPassengers();
 		} catch (error) {
 			commit('setErrorMessage', error.message);
 		}

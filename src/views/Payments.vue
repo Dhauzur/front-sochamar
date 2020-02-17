@@ -1,25 +1,23 @@
 <template>
 	<div>
-		<PaymentForm
+		<payments-wrapper
 			:company="company"
 			:items="payments"
-			:save="savePayment"
-			:edit="editPayment"
-			:range="rangeDatePayments"
 			:update-payments="fetchPayments"
 			:count="countLodgings"
+			:delete="deleteOnePayment"
 		/>
 	</div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import PaymentForm from '@/components/payments/PaymentsForm';
+import PaymentsWrapper from '@/components/payments/PaymentsWrapper';
 
 export default {
 	name: 'Payments',
 	components: {
-		PaymentForm,
+		PaymentsWrapper,
 	},
 	data() {
 		return {
@@ -31,7 +29,6 @@ export default {
 			company: 'Company/company',
 			payments: 'Payments/payments',
 			message: 'Payments/message',
-			rangeDatePayments: 'Lodging/rangeDatePayments',
 			countLodgings: 'Lodging/countLogingsCompany',
 		}),
 	},
@@ -51,8 +48,7 @@ export default {
 			fetchLodgingsForCompany: 'Lodging/fetchLodgingsForCompany',
 			fetchOneCompany: 'Company/fetchOneCompany',
 			fetchPayments: 'Payments/fetchPaymentsOfTheCompany',
-			savePayment: 'Payments/savePayment',
-			editPayment: 'Payments/editPayment',
+			deleteOnePayment: 'Payments/deleteOnePayment',
 		}),
 	},
 };
