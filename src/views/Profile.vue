@@ -3,8 +3,8 @@
 		<b-row id="nav" class="justify-content-center">
 			<b-col md="8" lg="6" class="background-module pb-3 px-4">
 				<h3 class="my-4">Mi perfil</h3>
-				<!-- Observer -->
-				<h6 v-if="formData.observer">Observador</h6>
+				<!-- Analyst -->
+				<h6 v-if="profile.analyst">Analista</h6>
 				<b-form @submit.prevent="submitForm">
 					<b-row>
 						<!-- avatar -->
@@ -100,7 +100,7 @@ export default {
 			formData: {
 				name: '',
 				lastName: '',
-				observer: false,
+				analyst: false,
 				img: '',
 			},
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },

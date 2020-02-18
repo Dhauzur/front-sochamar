@@ -36,8 +36,7 @@ const actions = {
 	async register({ commit }, registerData) {
 		try {
 			const response = await Axios.post(api + '/auth/register', registerData);
-			const { user, token } = response.data;
-			commit('setUser', user);
+			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
 			router.push('/lodgings');
@@ -90,7 +89,6 @@ const mutations = {
 		state.token = '';
 		router.push('/login');
 	},
-	setUser: (state, user) => (state.user = user),
 	setIsLogged: (state, change) => (state.isLogged = change),
 	setMessage: (state, message) => (state.message = message),
 	setLoading: (state, change) => (state.loading = change),
