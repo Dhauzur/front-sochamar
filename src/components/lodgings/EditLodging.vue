@@ -3,25 +3,42 @@
 		<b-col class="borderEdit m-3">
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
 			<b-row>
-				<!-- date start lodging -->
-				<b-col sm="6">
-					<LodgingsDate
+				<b-col md="4" lg="6">
+					<b-form-group
+						id="input-group-1"
 						label="Fecha inicio"
-						:start="true"
-						:set-date="date => (dateStart = date)"
-						:date-start="dateStart"
-						:date-end="dateEnd"
-					/>
+						label-for="input-1"
+						description="Selecione la fecha que desea cambiar."
+					>
+						<b-form-input
+							id="input-1"
+							v-model="dateStartLodging"
+							type="date"
+							:value="dateStartLodging"
+							class="col-xs-2 "
+							style="text-align: center; text-align-last:center;"
+							required
+							@change="dateChange({ dateStartLodging, dateEndLodging, start: true })"
+						/>
+					</b-form-group>
 				</b-col>
-				<!-- date end lodging -->
-				<b-col sm="6">
-					<LodgingsDate
+				<b-col md="4" lg="6">
+					<b-form-group
+						id="input-group-1"
 						label="Fecha fin"
-						:start="false"
-						:set-date="date => (dateEnd = date)"
-						:date-start="dateStart"
-						:date-end="dateEnd"
-					/>
+						label-for="input-1"
+						description="Selecione la fecha que desea cambiar."
+					>
+						<b-form-input
+							id="input-1"
+							v-model="dateEndLodging"
+							type="date"
+							class="col-xs-2 "
+							style="text-align: center; text-align-last:center;"
+							required
+							@change="dateChange({ dateStartLodging, dateEndLodging, start: false })"
+						/>
+					</b-form-group>
 				</b-col>
 			</b-row>
 			<b-row>
@@ -90,7 +107,7 @@
 					</template>
 					<b-row>
 						<!-- start date passenger -->
-						<b-col cols="6">
+						<b-col sm="6">
 							<LodgingsDate
 								label="Fecha inicio"
 								:start="true"
@@ -102,7 +119,7 @@
 							/>
 						</b-col>
 						<!-- end date passenger -->
-						<b-col cols="6">
+						<b-col sm="6">
 							<LodgingsDate
 								label="Fecha fin"
 								:start="false"
@@ -172,14 +189,17 @@ export default {
 	},
 	data() {
 		return {
+			dateStartLodging: null,
+			dateEndLodging: null,
+			oldDateLodging: null,
+			dateStart: null,
+			dateEnd: null,
 			datePassengersInvalid: false,
 			results: [],
 			passengerSelected: null,
 			isLoadingPassenger: false,
-			dateStart: null,
 			showPopover: false,
 			dateStartPassengers: null,
-			dateEnd: null,
 			dateEndPassengers: null,
 			services: [
 				{ text: 'Todos los servicios', value: 'todos los servicios' },
@@ -199,6 +219,7 @@ export default {
 			}));
 		},
 		...mapGetters({
+			lodgings: 'Lodging/lodgings',
 			lodgingSelect: 'Lodging/lodgingSelect',
 			lodgingPassengers: 'Lodging/lodgingPassengers',
 			passengers: 'Passengers/passengers',
@@ -208,12 +229,50 @@ export default {
 		lodgingSelect() {
 			this.setDateIntheState();
 		},
+		//Si la modificacion al nuevo hpspedaje no es valida, el input date vuelve a su posicion original
+		dateStartLodging(newDate, oldDate) {
+			this.oldDateLodging = oldDate;
+		},
+		dateEndLodging(newDate, oldDate) {
+			this.oldDateLodging = oldDate;
+		},
 	},
 	mounted() {
 		this.setDateIntheState();
 	},
 	methods: {
+		dateChange(newDate) {
+			let verificate = true;
+			this.lodgings.forEach(lod => {
+				//Verifica que se este usando la misma habitacion, y que el hospedaje selecionado sea distinto
+				//al comparado. Y luego verifica que la fecha este fuera de algun otro hospedaje
+				if (lod.group == this.lodgingSelect.group && this.lodgingSelect.id != lod.id) {
+					if (
+						moment(newDate.dateStartLodging).isBefore(
+							moment(lod.end).format('YYYY-MM-DD')
+						) &&
+						moment(newDate.dateEndLodging).isAfter(
+							moment(lod.start).format('YYYY-MM-DD')
+						)
+					)
+						verificate = false;
+				}
+			});
+			if (verificate)
+				this.sendDateChange({
+					dateStart: newDate.dateStartLodging,
+					dateEnd: newDate.dateEndLodging,
+				});
+			else {
+				this.$toasted.show('Existe un alojamiento para esas fechas');
+				if (newDate.start)
+					setTimeout(() => (this.dateStartLodging = this.oldDateLodging), 1);
+				else setTimeout(() => (this.dateEndLodging = this.oldDateLodging), 1);
+			}
+		},
 		setDateIntheState() {
+			this.dateStartLodging = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
+			this.dateEndLodging = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 		},
@@ -295,6 +354,7 @@ export default {
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
 		...mapMutations({
+			sendDateChange: 'Lodging/dateChange',
 			addOneService: 'Lodging/addOneService',
 			subOneService: 'Lodging/subOneService',
 			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
@@ -308,6 +368,8 @@ export default {
 .borderEdit {
 	border: 1px solid #dee2e6;
 	padding: 15px;
+	border-radius: 30px;
+	box-shadow: 0px 0px 20px -8px rgb(0, 0, 0);
 }
 .pointer {
 	cursor: pointer;
