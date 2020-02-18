@@ -40,12 +40,18 @@
 						<!-- name -->
 						<b-col cols="6">
 							<b-form-group id="input-group-1" label="Nombre:" label-for="name-input">
-								<b-form-input id="firstName" v-model.trim="formData.name" />
-								<div v-if="$v.formData.name.$dirty">
-									<small v-if="!$v.formData.name.minLength" class="text-danger">
+								<b-form-input id="firstName" v-model.trim="profileData.name" />
+								<div v-if="$v.profileData.name.$dirty">
+									<small
+										v-if="!$v.profileData.name.minLength"
+										class="text-danger"
+									>
 										Minimo 5 Caracteres
 									</small>
-									<small v-if="!$v.formData.name.maxLength" class="text-danger">
+									<small
+										v-if="!$v.profileData.name.maxLength"
+										class="text-danger"
+									>
 										Maximo 100 Caracteres
 									</small>
 								</div>
@@ -58,16 +64,16 @@
 								label="Apellido:"
 								label-for="lastName-input"
 							>
-								<b-form-input id="lastName" v-model.trim="formData.lastName" />
-								<div v-if="$v.formData.lastName.$dirty">
+								<b-form-input id="lastName" v-model.trim="profileData.lastName" />
+								<div v-if="$v.profileData.lastName.$dirty">
 									<small
-										v-if="!$v.formData.lastName.minLength"
+										v-if="!$v.profileData.lastName.minLength"
 										class="text-danger"
 									>
 										Minimo 3 Caracteres
 									</small>
 									<small
-										v-if="!$v.formData.lastName.maxLength"
+										v-if="!$v.profileData.lastName.maxLength"
 										class="text-danger"
 									>
 										Maximo 100 Caracteres
@@ -81,6 +87,54 @@
 						<b-button :disabled="loading" type="submit" variant="primary"
 							>Actualizar
 						</b-button>
+						<small v-if="profileErrors" class="mt-2 d-block text-danger">
+							Debe rellenar el formulario correctamente
+						</small>
+					</b-col>
+				</b-form>
+			</b-col>
+		</b-row>
+		<b-row class="justify-content-center">
+			<b-col md="8" lg="6" class="background-module pb-3 px-4">
+				<h3 class="my-4">Seguridad</h3>
+				<b-form @submit.prevent="submitNewPassword">
+					<b-form-group
+						id="new-password-group"
+						label="Nueva contraseña:"
+						label-for="newPassword-input"
+					>
+						<b-form-input
+							id="new-password"
+							v-model.trim="securityData.newPassword"
+							type="password"
+						/>
+						<div v-if="$v.securityData.newPassword.$dirty">
+							<small v-if="!$v.securityData.newPassword.required" class="text-danger">
+								Campo Requerido
+							</small>
+							<small
+								v-if="!$v.securityData.newPassword.minLength"
+								class="text-danger"
+							>
+								Minimo 5 Caracteres
+							</small>
+							<small
+								v-if="!$v.securityData.newPassword.maxLength"
+								class="text-danger"
+							>
+								Maximo 100 Caracteres
+							</small>
+						</div>
+					</b-form-group>
+
+					<!--Submit-->
+					<b-col>
+						<b-button :disabled="loading" type="submit" variant="primary"
+							>Actualizar contraseña
+						</b-button>
+						<small v-if="securityErrors" class="mt-2 d-block text-danger">
+							Debe rellenar el formulario correctamente
+						</small>
 					</b-col>
 				</b-form>
 			</b-col>
@@ -91,24 +145,29 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { validationMixin } from 'vuelidate';
-import { minLength, maxLength } from 'vuelidate/lib/validators';
+import { minLength, maxLength, required } from 'vuelidate/lib/validators';
 
 export default {
 	mixins: [validationMixin],
 	data() {
 		return {
-			formData: {
+			profileData: {
 				name: '',
 				lastName: '',
 				analyst: false,
 				img: '',
 			},
+			securityData: {
+				newPassword: '',
+			},
+			profileErrors: false,
+			securityErrors: false,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 		};
 	},
 	computed: {
 		avatarMessage() {
-			return this.formData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
+			return this.profileData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
 		},
 		...mapGetters({
 			profile: 'User/profile',
@@ -124,10 +183,10 @@ export default {
 		},
 	},
 	created() {
-		this.fetchProfile().then(this.fetchformData);
+		this.fetchProfile().then(this.fetchprofileData);
 	},
 	validations: {
-		formData: {
+		profileData: {
 			name: {
 				minLength: minLength(5),
 				maxLength: maxLength(100),
@@ -137,10 +196,17 @@ export default {
 				maxLength: maxLength(100),
 			},
 		},
+		securityData: {
+			newPassword: {
+				minLength: minLength(5),
+				maxLength: maxLength(100),
+				required,
+			},
+		},
 	},
 	methods: {
-		fetchformData() {
-			this.formData = Object.assign(this.formData, this.profile);
+		fetchprofileData() {
+			this.profileData = Object.assign(this.profileData, this.profile);
 		},
 		setAvatarObject(file) {
 			const avatar = new FormData();
@@ -151,11 +217,21 @@ export default {
 			this.$refs['avatar'].reset();
 		},
 		submitForm() {
-			this.$v.$touch();
-			if (!this.$v.$invalid) {
-				this.updateProfile(this.formData)
-					.then(this.fetchformData)
-					.then(this.clearUpload);
+			this.$v.profileData.$touch();
+			if (this.$v.profileData.$invalid) {
+				this.profileErrors = true;
+			} else {
+				this.profileErrors = false;
+				this.updateProfile(this.profileData).then(this.clearUpload);
+			}
+		},
+		submitNewPassword() {
+			this.$v.securityData.$touch();
+			if (this.$v.securityData.$invalid) {
+				this.securityErrors = true;
+			} else {
+				this.securityErrors = false;
+				this.updatePassword(this.securityData.newPassword);
 			}
 		},
 		onFileUpload(e) {
@@ -166,6 +242,7 @@ export default {
 			fetchProfile: 'User/fetchProfile',
 			updateProfile: 'User/updateProfile',
 			updateAvatar: 'User/updateAvatar',
+			updatePassword: 'User/updatePassword',
 		}),
 	},
 };
