@@ -7,11 +7,13 @@ const state = {
 	companySelected: null,
 	companies: [],
 	filterCompanyWord: '',
+	company: {},
 };
 
 const getters = {
 	message: state => state.message,
 	companySelected: state => state.companySelected,
+	company: state => state.company,
 	companies: state => {
 		if (state.filterCompanyWord)
 			return state.companies.filter(
@@ -81,6 +83,19 @@ const actions = {
 				if (e.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
+	async fetchOneCompany({ commit }, id) {
+		try {
+			const response = await Axios.get(`${api}/company/params?id=${id}`);
+			commit('setCompany', response.data.company);
+		} catch (error) {
+			commit('setCompany', null);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al descargar company',
+			});
+			if (error.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
 };
 
 const mutations = {
@@ -92,6 +107,9 @@ const mutations = {
 	},
 	selectCompany(state, value) {
 		state.companySelected = state.companies.find(c => c.id == value);
+	},
+	setCompany(state, value) {
+		state.company = value;
 	},
 	setCompanies(state, value) {
 		var companies = [];

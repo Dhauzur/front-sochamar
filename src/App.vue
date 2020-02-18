@@ -14,6 +14,11 @@
 								Ver registros de trabajo
 							</router-link> -->
 						</b-nav-text>
+						<b-nav-text class="mr-3">
+							<router-link v-if="company" :to="`/payments/${company}`">
+								Pagos
+							</router-link>
+						</b-nav-text>
 						<!-- <b-nav-text class="mr-3">
 							<router-link to="/mantenimiento">
 								Enviar trabajo
@@ -42,6 +47,7 @@ export default {
 	computed: {
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
+			company: 'Lodging/company',
 		}),
 	},
 	created() {

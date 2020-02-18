@@ -1,23 +1,25 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Maintenance from './modules/Maintenance';
-import Lodging from './modules/Lodging';
+import Auth from './modules/auth';
 import Company from './modules/Company';
+import Lodging from './modules/Lodging';
+import Maintenance from './modules/Maintenance';
+import Passengers from './modules/Passengers';
+import Payments from './modules/Payments';
 import Room from './modules/Room';
 import User from './modules/user';
-import Auth from './modules/auth';
-import Passengers from './modules/Passengers';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
 	modules: {
+		Auth,
+		Company,
 		Lodging,
 		Maintenance,
-		Company,
-		User,
-		Auth,
 		Passengers,
+		Payments,
 		Room,
+		User,
 	},
 });
