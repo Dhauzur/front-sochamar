@@ -21,7 +21,7 @@
 								striped
 								hover
 								:fields="fields"
-								:items="items"
+								:items="itemFiltered"
 								selectable
 								class="table table-bordered table-hover"
 								select-mode="single"
@@ -85,6 +85,14 @@
 							No hay Hospedajes
 						</b-col></b-row
 					>
+					<b-col cols="6" offset="6">
+						<b-form-input
+							v-model="wordForFilter"
+							size="sm"
+							placeholder="Filtrar por monto o fecha"
+							@input="onChange"
+						></b-form-input>
+					</b-col>
 				</b-col>
 			</b-row>
 		</b-container>
@@ -144,6 +152,8 @@ export default {
 			],
 			selected: {},
 			index: '',
+			wordForFilter: '',
+			itemFiltered: [],
 		};
 	},
 	watch: {
@@ -152,6 +162,11 @@ export default {
 		 */
 		selected(value) {
 			if (value) this.$refs['edit-modal'].toggle('#toggle-btn');
+		},
+		items() {
+			if (this.wordForFilter === '') {
+				this.itemFiltered = this.items;
+			}
 		},
 	},
 	methods: {
@@ -165,6 +180,15 @@ export default {
 		onClose(close) {
 			close();
 			this.$refs.selectableTable.clearSelected();
+		},
+		onChange() {
+			this.itemFiltered = this.items.filter(item => {
+				return (
+					item.mount.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1 ||
+					item.startDate.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1 ||
+					item.endDate.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1
+				);
+			});
 		},
 	},
 };
