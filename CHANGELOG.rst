@@ -26,7 +26,7 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Se cambian nombres de rutas, y /home principal
 * Agregada nueva ruta "payments", donde se podra gestionar los pagos
 * Agregado autocomplete a lodginds, para agregar pasajeros
-* En pagospasajeros filtrados por atributos
+* En lista de pagos realizados se agrego filtro por monto o fecha
 * Seleccion de pago por fecha o por lodgind ya creado
 * Se elimanron restricciones para crear a pasageros
 * El total del pago se calculara automaticamente

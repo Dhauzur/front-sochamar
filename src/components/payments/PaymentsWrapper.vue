@@ -29,12 +29,14 @@
 								@row-selected="onRowSelected"
 							>
 								<template v-slot:cell(voucher)="row">
-									<a
+									<b-link
 										v-if="row.item.voucher"
+										class="linka"
 										:href="`${api}/${row.item.voucher}`"
 										target="_blank"
-										>Ver</a
+										>{{ cutText(row.item.voucher) }}</b-link
 									>
+
 									<h6 v-else>Vacio</h6>
 								</template>
 								<template v-slot:cell(comments)="row">
@@ -189,6 +191,13 @@ export default {
 					item.endDate.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1
 				);
 			});
+		},
+		cutText(text) {
+			const extencion = text.split('.').pop();
+			if (text.length > 10) {
+				return `${text.split('.')[0].substr(0, 10)}...${extencion}`;
+			}
+			return text;
 		},
 	},
 };

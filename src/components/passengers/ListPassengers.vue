@@ -16,9 +16,12 @@
 							</b-link>
 						</div>
 						<div class="d-inline-block ml-1">
-							{{ item.firstName }} {{ item.lastName }} - {{ item.appointment }}/{{
-								item.function
-							}}
+							<span>{{ item.firstName }} {{ item.lastName }}</span>
+							<span v-if="item.appointment || item.function">
+								- {{ item.appointment
+								}}<span v-if="item.appointment && item.function">/</span
+								>{{ item.function }}</span
+							>
 						</div>
 					</b-col>
 					<b-col cols="2">

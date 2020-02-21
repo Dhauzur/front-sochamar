@@ -2,13 +2,13 @@ import { api } from '@/config/index.js';
 import Axios from 'axios';
 
 const state = {
-	errorMessage: '',
+	message: '',
 	passengers: [],
 	search: [],
 };
 
 const getters = {
-	errorMessage: state => state.errorMessage,
+	message: state => state.message,
 	passengers: state => state.passengers,
 	passengersResultSearch: state => state.search,
 };
@@ -20,37 +20,68 @@ const actions = {
 			commit('setPassengers', response.data.passengers);
 		} catch (error) {
 			commit('setPassengers', null);
-			commit('setErrorMessage', error.message);
+			commit('setMessage', {
+				type: 'error',
+				text: error.message,
+			});
 		}
 	},
 	async savePassenger({ commit }, payload) {
 		try {
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.post(`${api}/passengers/create`, payload, config);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Guardado exitosamente',
+			});
 		} catch (error) {
-			commit('setErrorMessage', error.message);
+			commit('setMessage', {
+				type: 'error',
+				text: error.message,
+			});
 		}
 	},
 	async editPassenger({ commit }, { payload, id }) {
 		try {
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.put(`${api}/passengers/${id}`, payload, config);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Actualizado exitosamente',
+			});
 		} catch (error) {
-			commit('setErrorMessage', error.message);
+			commit('setMessage', {
+				type: 'error',
+				text: error.message,
+			});
 		}
 	},
 	async deleteAllPassengers({ commit }) {
 		try {
 			await Axios.delete(`${api}/passengers/delete/all`);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Eliminado todo los pagos',
+			});
 		} catch (error) {
-			commit('setErrorMessage', error.message);
+			commit('setMessage', {
+				type: 'error',
+				text: error.message,
+			});
 		}
 	},
 	async deleteOnePassenger({ commit }, id) {
 		try {
 			await Axios.delete(`${api}/passengers/${id}`);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Pasajero eliminado',
+			});
 		} catch (error) {
-			commit('setErrorMessage', error.message);
+			commit('setMessage', {
+				type: 'error',
+				text: error.message,
+			});
 		}
 	},
 };
@@ -62,8 +93,11 @@ const mutations = {
 	setSearchPassengers(state, value) {
 		state.search = value;
 	},
-	setErrorMessage(state, value) {
-		state.errorMessage = value;
+	setMessage(state, value) {
+		state.message = value;
+		setTimeout(() => {
+			state.message = '';
+		}, 300);
 	},
 };
 
