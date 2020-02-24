@@ -40,7 +40,7 @@
 
 <script>
 import UserBar from './components/auth/UserBar';
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
 	components: { UserBar },
@@ -53,10 +53,12 @@ export default {
 	created() {
 		if (this.isLogged) {
 			this.setToken(localStorage.getItem('token'));
+			this.fetchProfile();
 		}
 	},
 	methods: {
 		...mapMutations({ setToken: 'Auth/setToken' }),
+		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
 };
 </script>
