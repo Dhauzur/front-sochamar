@@ -22,9 +22,9 @@ const getters = {
 };
 
 const actions = {
-	async deleteRoom({ commit, dispatch }, id) {
+	async deleteRoom({ commit, dispatch }, { id, companyId }) {
 		try {
-			await Axios.delete(api + '/rooms/one/' + id).then(response => {
+			await Axios.delete(api + '/rooms/one/' + id, { data: { companyId } }).then(response => {
 				commit('setMessage', {
 					type: 'success',
 					text: 'Habitación ' + response.data.delete + ' eliminada ',
@@ -51,7 +51,7 @@ const actions = {
 				type: 'success',
 				text: 'Empresa creada ',
 			});
-			dispatch('fetchRooms');
+			dispatch('fetchRooms', room.companyId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -60,10 +60,10 @@ const actions = {
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
-	async fetchRooms({ commit }) {
+	async fetchRooms({ commit }, companyId) {
 		commit('setRooms', null);
 		try {
-			await Axios.get(api + '/rooms').then(response => {
+			await Axios.get(api + '/rooms/' + companyId).then(response => {
 				commit('setRooms', response.data.rooms);
 				commit('setMessage', {
 					type: 'success',

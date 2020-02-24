@@ -30,7 +30,7 @@ const routes = [
 		component: Maintenance,
 	},
 	{
-		path: '/rooms',
+		path: '/rooms/:company',
 		name: 'rooms',
 		component: Room,
 	},

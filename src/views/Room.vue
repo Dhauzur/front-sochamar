@@ -35,7 +35,12 @@
 									<td>{{ r.name }}</td>
 									<td>{{ r.numberPassangerMax }}</td>
 									<td class="p-2">
-										<b-button variant="danger" @click="deleteRoom(r.id)">
+										<b-button
+											variant="danger"
+											@click="
+												deleteRoom({ id: r.id, companyId: form.companyId })
+											"
+										>
 											X
 										</b-button>
 									</td>
@@ -104,6 +109,7 @@ export default {
 			form: {
 				name: '',
 				numberPassangerMax: '',
+				companyId: this.$route.params.company,
 			},
 			filterRoomWord: '',
 		};
@@ -123,7 +129,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.fetchRooms();
+		this.fetchRooms(this.form.companyId);
 	},
 	validations: {
 		form: {
