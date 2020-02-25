@@ -65,6 +65,7 @@ export default {
 @import '../node_modules/vue2vis/dist/vue2vis.css';
 </style>
 <style lang="scss">
+@import '../node_modules/placeholder-loading/src/scss/placeholder-loading';
 #app {
 	font-family: 'Avenir', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;

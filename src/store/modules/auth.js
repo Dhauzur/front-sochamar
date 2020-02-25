@@ -21,9 +21,8 @@ const getters = {
 const actions = {
 	async login({ commit }, loginData) {
 		try {
+			commit('setLoading', true);
 			const response = await Axios.post(api + '/auth/login', loginData);
-			console.log('probando limitacion de commits');
-			/*AÑADIR TOAST DESPUES DE QUE SE APRUEBE EL PR*/
 			const { token, user } = response.data;
 			commit('setUser', user);
 			commit('setToken', token);
@@ -36,9 +35,11 @@ const actions = {
 			};
 			commit('setMessage', message);
 		}
+		commit('setLoading', false);
 	},
 	async register({ commit }, registerData) {
 		try {
+			commit('setLoading', true);
 			const response = await Axios.post(api + '/auth/register', registerData);
 			const { user, token } = response.data;
 			commit('setUser', user);
@@ -49,6 +50,7 @@ const actions = {
 			const message = { type: 'error', text: 'El correo ya existe' };
 			commit('setMessage', message);
 		}
+		commit('setLoading', false);
 	},
 	async updatePassword({ commit }, recoverData) {
 		commit('setLoading', true);

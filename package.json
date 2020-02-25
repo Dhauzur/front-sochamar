@@ -15,6 +15,7 @@
     "core-js": "^3.3.2",
     "jdenticon": "^2.2.0",
     "moment": "^2.24.0",
+    "placeholder-loading": "^0.2.5",
     "pretty-checkbox-vue": "^1.1.9",
     "toastr": "^2.1.4",
     "vis-timeline": "^6.3.3",

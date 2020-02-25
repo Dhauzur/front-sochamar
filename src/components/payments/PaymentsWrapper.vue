@@ -1,21 +1,63 @@
 <template>
 	<div>
 		<b-container>
-			<b-row id="nav" class="justify-content-center">
-				<b-col md="10" lg="8" class="background-module pb-3 px-4">
+			<!-- skeleton loader -->
+			<b-row v-if="loading" class="justify-content-center pt-5">
+				<b-col>
+					<div class="ph-item background-module border-0 pb-3 px-4">
+						<div class="ph-col-12">
+							<div class="ph-row">
+								<div class="ph-col-4 empty big"></div>
+								<div class="ph-col-4 big rounded"></div>
+								<div class="ph-col-4 empty big"></div>
+								<div class="mt-5 ph-col-12 big rounded"></div>
+								<div class="ph-col-12 big rounded"></div>
+								<div class="ph-col-12 big rounded"></div>
+								<div class="ph-col-12 big rounded"></div>
+							</div>
+						</div>
+					</div>
+				</b-col>
+			</b-row>
+			<b-row v-else id="nav" class="justify-content-center">
+				<b-col md="12" lg="12" class="background-module pb-3 px-4">
 					<h3 class="my-4">Gestión de Pagos</h3>
-					<payments-form :count="count" />
+					<b-row>
+						<b-col cols="4">
+							<b-form-select
+								id="state"
+								v-model="inputSelectLodgingOrNew"
+								size="sm"
+								:options="[
+									{ value: null, text: 'Seleccione' },
+									{ value: 0, text: 'Agregar pago por alojamiento' },
+									{ value: 1, text: 'Agregar pago por fecha' },
+								]"
+								@change="areaExpanded"
+							></b-form-select>
+						</b-col>
+					</b-row>
+					<b-row>
+						<b-col>
+							<b-collapse id="collapse-1" v-model="visibleLodgingForm" class="mt-2">
+								<payments-form-lodging :payments="items" :lodgings="lodgings" />
+							</b-collapse>
+						</b-col>
+						<b-col cols="12"
+							><b-collapse id="collapse-4" v-model="visible" class="mt-2">
+								<payments-form :count="count" /> </b-collapse
+						></b-col>
+					</b-row>
 					<b-row class="mb-3 mt-3">
 						<b-col>
 							<h4>{{ company.name }}</h4>
 						</b-col>
 					</b-row>
 					<b-row
-						v-if="items.length > 0"
 						style="max-height: 150px; overflow-y: auto;"
 						class="background-into-module mr-2 mb-3"
 					>
-						<b-col>
+						<b-col v-if="itemFiltered.length > 0" cols="12">
 							<b-table
 								ref="selectableTable"
 								striped
@@ -54,15 +96,24 @@
 								</template>
 							</b-table>
 						</b-col>
+						<b-row v-else
+							><b-col>
+								No hay pagos registrados
+							</b-col></b-row
+						>
+						<b-row v-if="count === 0"
+							><b-col>
+								No hay Hospedajes
+							</b-col></b-row
+						>
 						<b-modal
 							ref="edit-modal"
-							size="lg"
+							size="xl"
 							centered
 							hide-footer
 							no-close-on-backdrop
 						>
 							<template v-slot:modal-header="{ close }">
-								<!-- Emulate built in modal header close button action -->
 								<h5>Editar Pago</h5>
 								<b-button
 									size="sm"
@@ -77,16 +128,6 @@
 							</template>
 						</b-modal>
 					</b-row>
-					<b-row v-else
-						><b-col>
-							No hay pagos registrados
-						</b-col></b-row
-					>
-					<b-row v-if="count === 0"
-						><b-col>
-							No hay Hospedajes
-						</b-col></b-row
-					>
 					<b-col cols="6" offset="6">
 						<b-form-input
 							v-model="wordForFilter"
@@ -104,14 +145,26 @@
 <script>
 import { api_absolute } from '@/config/index.js';
 import PaymentsForm from '@/components/payments/PaymentsForm';
+import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
+
 export default {
 	name: 'PaymentsWrapper',
-	components: { PaymentsForm },
+	components: { PaymentsForm, PaymentsFormLodging },
 	props: {
 		company: {
 			type: Object,
 			required: true,
 			default: () => {},
+		},
+		loading: {
+			type: Boolean,
+			required: false,
+			default: false,
+		},
+		lodgings: {
+			type: Array,
+			required: false,
+			default: () => [],
 		},
 		edit: {
 			type: Function,
@@ -156,6 +209,9 @@ export default {
 			index: '',
 			wordForFilter: '',
 			itemFiltered: [],
+			visible: false,
+			visibleLodgingForm: false,
+			inputSelectLodgingOrNew: null,
 		};
 	},
 	watch: {
@@ -198,6 +254,18 @@ export default {
 				return `${text.split('.')[0].substr(0, 10)}...${extencion}`;
 			}
 			return text;
+		},
+		areaExpanded() {
+			if (this.inputSelectLodgingOrNew === 1) {
+				this.visibleLodgingForm = false;
+				this.visible = true;
+			} else if (this.inputSelectLodgingOrNew === 0) {
+				this.visible = false;
+				this.visibleLodgingForm = true;
+			} else {
+				this.visible = false;
+				this.visibleLodgingForm = false;
+			}
 		},
 	},
 };

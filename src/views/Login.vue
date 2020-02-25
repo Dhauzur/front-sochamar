@@ -29,7 +29,10 @@
 						></b-form-input>
 					</b-form-group>
 					<!--SUBMIT-->
-					<b-button class="mt-2" type="submit" variant="primary"> Ingresar</b-button>
+					<b-button :disabled="loading" class="mt-2" type="submit" variant="primary">
+						Ingresar
+						<b-spinner v-if="loading" small type="grow"></b-spinner>
+					</b-button>
 				</b-form>
 				<p>
 					¿No tienes una cuenta?
@@ -65,6 +68,7 @@ export default {
 	computed: {
 		...mapGetters({
 			message: 'Auth/message',
+			loading: 'Auth/loading',
 		}),
 	},
 	watch: {

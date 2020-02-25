@@ -1,8 +1,10 @@
 <template>
 	<div>
 		<payments-wrapper
+			:lodgings="lodgingsCompany"
 			:company="company"
 			:items="payments"
+			:loading="loading"
 			:update-payments="fetchPayments"
 			:count="countLodgings"
 			:delete="deleteOnePayment"
@@ -29,7 +31,9 @@ export default {
 			company: 'Company/company',
 			payments: 'Payments/payments',
 			message: 'Payments/message',
+			loading: 'Payments/loading',
 			countLodgings: 'Lodging/countLogingsCompany',
+			lodgingsCompany: 'Lodging/lodgingsCompany',
 		}),
 	},
 	watch: {

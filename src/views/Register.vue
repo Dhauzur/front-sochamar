@@ -63,7 +63,9 @@
 						</div>
 					</b-form-group>
 					<!--SUBMIT-->
-					<b-button type="submit" variant="primary"> Finalizar registro</b-button>
+					<b-button :disabled="loading" type="submit" variant="primary"
+						>Finalizar registro <b-spinner v-if="loading" small type="grow"></b-spinner
+					></b-button>
 					<small v-if="errors" class="mt-2 d-block text-danger">
 						Debe rellenar el formulario correctamente
 					</small>
@@ -93,6 +95,7 @@ export default {
 	computed: {
 		...mapGetters({
 			message: 'Auth/message',
+			loading: 'Auth/loading',
 		}),
 	},
 	validations: {
