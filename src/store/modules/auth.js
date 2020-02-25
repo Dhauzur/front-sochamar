@@ -33,12 +33,13 @@ const actions = {
 			commit('setMessage', message);
 		}
 	},
-	async register({ commit }, registerData) {
+	async register({ commit, dispatch }, registerData) {
 		try {
 			const response = await Axios.post(api + '/auth/register', registerData);
 			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
+			dispatch('User/fetchProfile', null, { root: true });
 			router.push('/lodgings');
 		} catch (e) {
 			const message = { type: 'error', text: 'El correo ya existe' };
