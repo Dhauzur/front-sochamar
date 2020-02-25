@@ -448,7 +448,7 @@ export default {
 			mirrorLodging: 'Lodging/mirrorLodging',
 			lodgingSelect: 'Lodging/lodgingSelect',
 			loading: 'Lodging/loading',
-			rooms: 'Lodging/rooms',
+			rooms: 'Room/rooms',
 			rangeDate: 'Lodging/rangeDate',
 			lodgings: 'Lodging/lodgings',
 			companies: 'Lodging/companies',
@@ -472,7 +472,11 @@ export default {
 	},
 	created() {
 		this.selectCompany = this.company;
+		if (this.selectCompany) {
+			this.fetchRooms(this.selectCompany);
+		}
 		this.fetchCompany();
+		this.fetchLodgings();
 		this.setRangeDate({
 			start: moment(),
 			end: moment().add(15, 'day'),
@@ -528,6 +532,7 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 			fetchCompany: 'Lodging/fetchCompany',
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
+			fetchRooms: 'Room/fetchRooms',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),

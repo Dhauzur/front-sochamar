@@ -65,7 +65,7 @@ const actions = {
 			});
 	},
 	//Obtiene todos las compañias
-	async fetchCompany({ commit, dispatch }) {
+	async fetchCompany({ commit }) {
 		commit('setModeEdit', false);
 		commit('setCompanies', null);
 		commit('setLoading', 'Cargando compañias...');
@@ -77,7 +77,6 @@ const actions = {
 					type: 'success',
 					text: 'Compañias descargadas',
 				});
-				dispatch('fetchRooms');
 			})
 			.catch(error => {
 				commit('setCompanies', null);
@@ -88,31 +87,6 @@ const actions = {
 				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
-	//Obtiene todas las habitaciones
-	async fetchRooms({ commit, dispatch }) {
-		commit('setLoading', 'Cargando habitaciones...');
-		commit('setModeEdit', false);
-		commit('setRooms', null);
-		return Axios.get(api + '/rooms')
-			.then(response => {
-				commit('setLoading', '');
-				commit('setRooms', response.data.rooms);
-				commit('setMessage', {
-					type: 'success',
-					text: 'Habitaciones descargadas ',
-				});
-				dispatch('fetchLodgings');
-			})
-			.catch(error => {
-				commit('setRooms', null);
-				commit('setMessage', {
-					type: 'error',
-					text: 'Fetch rooms ' + error,
-				});
-				if (error.message == 'Request failed with status code 401') router.push('/login');
-			});
-	},
-
 	//Obtiene los hospedajes
 	async fetchLodgings({ commit }) {
 		commit('setLoading', 'Cargando hospedajes...');
@@ -445,37 +419,45 @@ const mutations = {
 	setCountLogingsCompany(state, value) {
 		state.countLogingsCompany = value;
 	},
-	setLodgings(state, value) {
+	setLodgings(state, values) {
 		let tempLodging = state.lodgings;
 		state.editMode = false;
 		state.lodgings = new DataSet([]);
-		if (value) {
+		if (values) {
 			tempLodging = new DataSet([]);
-			value.forEach(v => {
-				let company = state.companies.find(c => c.value == v.company);
+			const evaluateLodgingPush = (lodging, company) => {
 				if (state.company) {
-					if (state.company == v.company)
+					if (state.company === lodging.company)
 						tempLodging.add({
-							id: v.id,
-							group: v.group,
-							start: moment(v.start).hours(16),
-							end: moment(v.end).hours(13),
+							id: lodging.id,
+							group: lodging.group,
+							start: moment(lodging.start).hours(16),
+							end: moment(lodging.end).hours(13),
 							content: company.text,
-							service: v.service,
-							company: v.company,
-							passengers: v.passengers,
+							service: lodging.service,
+							company: lodging.company,
+							passengers: lodging.passengers,
 						});
-				} else
+				} else {
 					tempLodging.add({
-						id: v.id,
-						group: v.group,
-						start: moment(v.start).hours(16),
-						end: moment(v.end).hours(13),
+						id: lodging.id,
+						group: lodging.group,
+						start: moment(lodging.start).hours(16),
+						end: moment(lodging.end).hours(13),
 						content: company.text,
-						service: v.service,
-						company: v.company,
-						passengers: v.passengers,
+						service: lodging.service,
+						company: lodging.company,
+						passengers: lodging.passengers,
 					});
+				}
+			};
+			values.forEach(v => {
+				let company = state.companies.find(c => c.value == v.company);
+				/*Necesitamos seguir corriendo esta funcion aun si company es undefined
+				 * si es undefined, entonces creamos un objeto basico con la propiedad text.
+				 * Con esto evitamos el mensaje de 'company.text' is undefined en la interfaz de usuario*/
+				if (!company) company = { text: '' };
+				evaluateLodgingPush(v, company);
 			});
 			state.lodgings = tempLodging;
 			state.mirrorLodging = JSON.stringify(tempLodging);

@@ -154,10 +154,8 @@ export default {
 			}
 		},
 		clearInputs() {
-			this.form = {
-				name: '',
-				numberPassangerMax: '',
-			};
+			this.form.name = '';
+			this.form.numberPassangerMax = '';
 		},
 		...mapActions({
 			fetchRooms: 'Room/fetchRooms',

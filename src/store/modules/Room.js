@@ -24,18 +24,15 @@ const getters = {
 const actions = {
 	async deleteRoom({ commit, dispatch }, { id, companyId }) {
 		try {
-			await Axios.delete(api + '/rooms/one/' + id, { data: { companyId } }).then(response => {
-				commit('setMessage', {
-					type: 'success',
-					text: 'Habitación ' + response.data.delete + ' eliminada ',
-				});
-				if (response.data.lodgins)
-					commit('setMessage', {
-						type: 'info',
-						text: response.data.lodgins + ' hospedajes asociados eliminados ',
-					});
+			console.log(id);
+			const response = await Axios.delete(api + '/rooms/one/' + id, { data: { companyId } });
+			console.log(response);
+			const { name } = response.data;
+			commit('setMessage', {
+				type: 'success',
+				text: 'Habitación ' + name + ' eliminada ',
 			});
-			dispatch('fetchRooms');
+			dispatch('fetchRooms', companyId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -63,12 +60,12 @@ const actions = {
 	async fetchRooms({ commit }, companyId) {
 		commit('setRooms', null);
 		try {
-			await Axios.get(api + '/rooms/' + companyId).then(response => {
-				commit('setRooms', response.data.rooms);
-				commit('setMessage', {
-					type: 'success',
-					text: 'Habitaciones descargadas',
-				});
+			const response = await Axios.get(api + '/rooms/' + companyId);
+			const { rooms } = response.data;
+			commit('setRooms', rooms);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Habitaciones descargadas',
 			});
 		} catch (e) {
 			commit('setRooms', null);
