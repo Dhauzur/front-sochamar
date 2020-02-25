@@ -114,6 +114,7 @@ const actions = {
 	//fetch lodgings for company
 	async fetchLodgingsForCompany({ commit }, id) {
 		try {
+			console.log('entro aca');
 			const response = await Axios.get(`${api}/lodgings/company/${id}`);
 			commit('setLodgingsCompany', response.data.lodgings);
 			commit('setRangeDatePayments', response.data.lodgings);

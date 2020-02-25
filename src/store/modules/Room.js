@@ -1,11 +1,13 @@
 import { api } from '@/config/index.js';
 import Axios from 'axios';
 import router from '@/router/index.js';
+import { DataSet } from 'vue2vis';
 
 const state = {
 	message: '',
 	roomSelected: null,
 	rooms: [],
+	timelineRooms: new DataSet([]),
 	filterRoomWord: '',
 };
 
@@ -19,14 +21,26 @@ const getters = {
 			);
 		else return state.rooms;
 	},
+	timelineRooms: state => {
+		const dataSet = new DataSet([]);
+		const fillDataSet = rooms => {
+			rooms.forEach(room => {
+				dataSet.add({
+					id: room._id,
+					content: room.name,
+					numberPassangerMax: room.numberPassangerMax,
+				});
+			});
+		};
+		fillDataSet(state.rooms);
+		return dataSet;
+	},
 };
 
 const actions = {
 	async deleteRoom({ commit, dispatch }, { id, companyId }) {
 		try {
-			console.log(id);
 			const response = await Axios.delete(api + '/rooms/one/' + id, { data: { companyId } });
-			console.log(response);
 			const { name } = response.data;
 			commit('setMessage', {
 				type: 'success',
@@ -63,6 +77,7 @@ const actions = {
 			const response = await Axios.get(api + '/rooms/' + companyId);
 			const { rooms } = response.data;
 			commit('setRooms', rooms);
+			commit('setTimelineRooms', rooms);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Habitaciones descargadas',
@@ -99,6 +114,18 @@ const mutations = {
 				});
 			});
 		state.rooms = rooms;
+	},
+	setTimelineRooms(state, values) {
+		const dataSet = new DataSet([]);
+		const mappedValues = values.map(room => {
+			return {
+				id: room._id,
+				content: room.name,
+				numberPassangerMax: room.numberPassangerMax,
+			};
+		});
+		dataSet.add(mappedValues);
+		state.timelineRooms = dataSet;
 	},
 };
 

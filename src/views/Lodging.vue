@@ -73,7 +73,7 @@
 									class="p-2 col-12"
 									:items="lodgings"
 									:events="['rangechanged', 'click']"
-									:groups="rooms"
+									:groups="timelineRooms"
 									:options="options"
 									@click="enableEdit"
 									@rangechanged="rangechanged"
@@ -449,6 +449,7 @@ export default {
 			lodgingSelect: 'Lodging/lodgingSelect',
 			loading: 'Lodging/loading',
 			rooms: 'Room/rooms',
+			timelineRooms: 'Room/timelineRooms',
 			rangeDate: 'Lodging/rangeDate',
 			lodgings: 'Lodging/lodgings',
 			companies: 'Lodging/companies',
@@ -502,7 +503,9 @@ export default {
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
+			this.fetchRooms(this.company);
 			this.fetchLodgings();
+			console.log(this.lodgings);
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;

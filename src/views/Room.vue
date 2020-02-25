@@ -148,9 +148,10 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				this.createRoom(this.form);
-				this.clearInputs();
-				this.$v.$reset();
+				this.createRoom(this.form).then(() => {
+					this.clearInputs();
+					this.$v.$reset();
+				});
 			}
 		},
 		clearInputs() {
