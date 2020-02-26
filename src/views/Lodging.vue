@@ -477,9 +477,7 @@ export default {
 	},
 	created() {
 		this.selectCompany = this.company;
-		if (this.selectCompany) {
-			this.fetchRooms(this.selectCompany);
-		}
+		this.fetchRooms(this.selectCompany);
 		this.fetchCompany();
 		this.fetchLodgings();
 		this.setRangeDate({
@@ -505,13 +503,13 @@ export default {
 			return verificate;
 		},
 		/*parece que en esta funcion no esta el error*/
-		async setCompany(payload) {
+		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
-			await this.fetchRooms(this.company);
+			this.fetchRooms(this.company);
 			//we need to set rooms in lodging module too
 			this.setRooms(this.timelineRooms);
-			await this.fetchLodgings();
+			this.fetchLodgings();
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;

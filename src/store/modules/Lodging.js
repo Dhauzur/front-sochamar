@@ -336,20 +336,22 @@ const mutations = {
 	setCompanyLodging(state, value) {
 		state.company = value;
 	},
-	setCompanies(state, value) {
+	setCompanies(state, values) {
 		let companies = [];
 		companies.push({
 			value: null,
 			text: 'Todas las empresas',
 		});
-		if (value)
-			value.forEach(v => {
-				companies.push({
+		if (values) {
+			const mapValues = values.map(v => {
+				return {
 					value: v._id,
 					text: v.name,
 					prices: v.prices,
-				});
+				};
 			});
+			companies.push(...mapValues);
+		}
 		state.companies = companies;
 	},
 	updateService(state, value) {
