@@ -9,9 +9,11 @@ const state = {
 	rooms: [],
 	timelineRooms: new DataSet([]),
 	filterRoomWord: '',
+	idCompany: '',
 };
 
 const getters = {
+	idCompany: state => state.idCompany,
 	message: state => state.message,
 	roomSelected: state => state.roomSelected,
 	rooms: state => {
@@ -94,6 +96,9 @@ const actions = {
 };
 
 const mutations = {
+	setIdCompanyRoom(state, value) {
+		state.idCompany = value;
+	},
 	setMessage(state, value) {
 		state.message = value;
 	},

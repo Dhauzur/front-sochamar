@@ -505,7 +505,6 @@ export default {
 			this.setModeEdit(false);
 			this.fetchRooms(this.company);
 			this.fetchLodgings();
-			console.log(this.lodgings);
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;

@@ -109,7 +109,6 @@ export default {
 			form: {
 				name: '',
 				numberPassangerMax: '',
-				companyId: this.$route.params.company,
 			},
 			filterRoomWord: '',
 		};
@@ -119,6 +118,8 @@ export default {
 			rooms: 'Room/rooms',
 			roomSelected: 'Room/roomSelected',
 			message: 'Room/message',
+			companyLodging: 'Lodging/company',
+			idCompany: 'Room/idCompany',
 		}),
 	},
 	watch: {
@@ -129,7 +130,8 @@ export default {
 		},
 	},
 	mounted() {
-		this.fetchRooms(this.form.companyId);
+		this.setIdCompanyRoom(this.companyLodging);
+		this.fetchRooms(this.idCompany);
 	},
 	validations: {
 		form: {
@@ -166,6 +168,7 @@ export default {
 		...mapMutations({
 			selectRoom: 'Room/selectRoom',
 			filterRoom: 'Room/filterRoom',
+			setIdCompanyRoom: 'Room/setIdCompanyRoom',
 		}),
 	},
 };
