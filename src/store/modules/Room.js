@@ -59,6 +59,7 @@ const actions = {
 	},
 	async createRoom({ commit, dispatch }, room) {
 		try {
+			room.companyId = state.idCompany;
 			await Axios.post(api + '/rooms', room);
 			commit('setMessage', {
 				type: 'success',

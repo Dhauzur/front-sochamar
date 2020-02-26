@@ -47,10 +47,7 @@
 									<b-dropdown-item v-if="company" @click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
-									<b-dropdown-item
-										@click="
-											$router.push({ name: 'rooms', params: { company } })
-										"
+									<b-dropdown-item @click="$router.push({ name: 'rooms' })"
 										>Gestionar habitaciones</b-dropdown-item
 									>
 									<b-dropdown-item @click="$router.push({ name: 'companies' })"
