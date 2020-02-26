@@ -440,7 +440,7 @@ const mutations = {
 							passengers: lodging.passengers,
 						});
 				} else {
-					tempLodging.add({
+					/*tempLodging.add({
 						id: lodging.id,
 						group: lodging.group,
 						start: moment(lodging.start).hours(16),
@@ -449,7 +449,7 @@ const mutations = {
 						service: lodging.service,
 						company: lodging.company,
 						passengers: lodging.passengers,
-					});
+					});*/
 				}
 			};
 			values.forEach(v => {

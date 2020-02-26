@@ -69,7 +69,7 @@
 						<b-row>
 							<b-col cols="12">
 								<timeline
-									v-if="rooms.length > 0 && lodgings.length > 0"
+									v-if="timelineRooms.length > 0 && lodgings.length > 0"
 									class="p-2 col-12"
 									:items="lodgings"
 									:events="['rangechanged', 'click']"
@@ -500,12 +500,14 @@ export default {
 			});
 			return verificate;
 		},
-		setCompany(payload) {
+		/*parece que en esta funcion no esta el error*/
+		async setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
-			this.fetchRooms(this.company);
-			this.fetchLodgings();
-			console.log(this.lodgings);
+			await this.fetchLodgings();
+			await this.fetchRooms(this.company);
+			//we need to set rooms in lodging module too
+			this.setRooms(this.rooms);
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
@@ -548,6 +550,7 @@ export default {
 			setCompanyLodging: 'Lodging/setCompanyLodging',
 			setModeEdit: 'Lodging/setModeEdit',
 			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
+			setRooms: 'Lodging/setRooms',
 		}),
 	},
 };
