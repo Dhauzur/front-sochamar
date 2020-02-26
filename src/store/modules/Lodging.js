@@ -389,15 +389,7 @@ const mutations = {
 			});
 	},
 	setRooms(state, value) {
-		if (value) {
-			value.forEach(v => {
-				state.rooms.add({
-					id: v._id,
-					content: v.name,
-					numberPassangerMax: v.numberPassangerMax,
-				});
-			});
-		} else state.rooms = new DataSet([]);
+		state.rooms = value;
 	},
 	setRangeDate(state, value) {
 		state.rangeDate = value;
@@ -425,7 +417,6 @@ const mutations = {
 		state.lodgings = new DataSet([]);
 		if (values) {
 			tempLodging = new DataSet([]);
-			console.log(state.rooms);
 			const evaluateLodgingPush = (lodging, company) => {
 				if (state.company) {
 					if (state.company === lodging.company)

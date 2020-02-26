@@ -16,7 +16,10 @@
 							</b-col>
 						</b-row>
 						<b-row>
-							<b-col v-if="lodgings.length == 0 && company" class="mb-2">
+							<b-col
+								v-if="lodgings.length == 0 && company && timelineRooms.length > 0"
+								class="mb-2"
+							>
 								<b-row>
 									<b-col>
 										<b-button
@@ -42,12 +45,16 @@
 							</b-col>
 						</b-row>
 						<b-row>
-							<b-col v-if="company" md="6" lg="6" class="mb-2">
+							<b-col md="6" lg="6" class="mb-2">
 								<b-dropdown id="dropdown-1" text="Acciones" block>
-									<b-dropdown-item @click="createOneLodging()"
+									<b-dropdown-item
+										v-if="timelineRooms.length > 0"
+										@click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'rooms' })"
+									<b-dropdown-item
+										v-if="company"
+										@click="$router.push({ name: 'rooms' })"
 										>Gestionar habitaciones</b-dropdown-item
 									>
 									<b-dropdown-item @click="$router.push({ name: 'companies' })"
@@ -245,7 +252,6 @@ export default {
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onAdd: (item, callback) => {
-					console.log('esto pasa cuando añado el lodging');
 					if (this.company) {
 						item.start = moment(item.start).hours(16);
 						item.end = moment(item.start)
@@ -504,7 +510,7 @@ export default {
 			this.setModeEdit(false);
 			await this.fetchRooms(this.company);
 			//we need to set rooms in lodging module too
-			this.setRooms(this.rooms);
+			this.setRooms(this.timelineRooms);
 			await this.fetchLodgings();
 		},
 		detectInputChange(payload) {
