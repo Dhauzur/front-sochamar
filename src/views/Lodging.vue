@@ -42,9 +42,9 @@
 							</b-col>
 						</b-row>
 						<b-row>
-							<b-col md="6" lg="6" class="mb-2">
+							<b-col v-if="company" md="6" lg="6" class="mb-2">
 								<b-dropdown id="dropdown-1" text="Acciones" block>
-									<b-dropdown-item v-if="company" @click="createOneLodging()"
+									<b-dropdown-item @click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
 									<b-dropdown-item @click="$router.push({ name: 'rooms' })"

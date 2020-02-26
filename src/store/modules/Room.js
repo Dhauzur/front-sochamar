@@ -18,25 +18,10 @@ const getters = {
 	roomSelected: state => state.roomSelected,
 	rooms: state => {
 		if (state.filterRoomWord)
-			return state.rooms.filter(
-				c => c.name.includes(state.filterRoomWord) || c.rut.includes(state.filterRoomWord)
-			);
+			return state.rooms.filter(c => c.name.includes(state.filterRoomWord));
 		else return state.rooms;
 	},
-	timelineRooms: state => {
-		const dataSet = new DataSet([]);
-		const fillDataSet = rooms => {
-			rooms.forEach(room => {
-				dataSet.add({
-					id: room._id,
-					content: room.name,
-					numberPassangerMax: room.numberPassangerMax,
-				});
-			});
-		};
-		fillDataSet(state.rooms);
-		return dataSet;
-	},
+	timelineRooms: state => state.timelineRooms,
 };
 
 const actions = {
@@ -123,15 +108,21 @@ const mutations = {
 	},
 	setTimelineRooms(state, values) {
 		const dataSet = new DataSet([]);
-		const mappedValues = values.map(room => {
+		values.forEach(v => {
+			dataSet.add({
+				id: v._id,
+				content: v.name,
+				numberPassangerMax: v.numberPassangerMax,
+			});
+		});
+		/*const mappedValues = values.map(room => {
 			return {
 				id: room._id,
 				content: room.name,
 				numberPassangerMax: room.numberPassangerMax,
 			};
 		});
-		dataSet.add(mappedValues);
-
+		dataSet.add(mappedValues);*/
 		state.timelineRooms = dataSet;
 	},
 };

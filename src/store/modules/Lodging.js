@@ -137,7 +137,6 @@ const actions = {
 		state.lodgings.forEach((l, id) => {
 			//Si es diferente o si no existe
 			if (mirrorLodging._data[id] != l || !mirrorLodging[id]) {
-				console.log(l.group);
 				Axios.post(api + '/lodging', {
 					id: l.id,
 					group: l.group,
@@ -462,7 +461,6 @@ const mutations = {
 				evaluateLodgingPush(v, company);
 			});
 			state.lodgings = tempLodging;
-			console.log(tempLodging);
 			state.mirrorLodging = JSON.stringify(tempLodging);
 		} else state.lodgings = new DataSet([]);
 	},
