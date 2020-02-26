@@ -114,7 +114,6 @@ const actions = {
 	//fetch lodgings for company
 	async fetchLodgingsForCompany({ commit }, id) {
 		try {
-			console.log('entro aca');
 			const response = await Axios.get(`${api}/lodgings/company/${id}`);
 			commit('setLodgingsCompany', response.data.lodgings);
 			commit('setRangeDatePayments', response.data.lodgings);
@@ -138,6 +137,7 @@ const actions = {
 		state.lodgings.forEach((l, id) => {
 			//Si es diferente o si no existe
 			if (mirrorLodging._data[id] != l || !mirrorLodging[id]) {
+				console.log(l.group);
 				Axios.post(api + '/lodging', {
 					id: l.id,
 					group: l.group,
@@ -390,7 +390,7 @@ const mutations = {
 			});
 	},
 	setRooms(state, value) {
-		if (value)
+		if (value) {
 			value.forEach(v => {
 				state.rooms.add({
 					id: v._id,
@@ -398,7 +398,7 @@ const mutations = {
 					numberPassangerMax: v.numberPassangerMax,
 				});
 			});
-		else state.rooms = new DataSet([]);
+		} else state.rooms = new DataSet([]);
 	},
 	setRangeDate(state, value) {
 		state.rangeDate = value;
@@ -426,6 +426,7 @@ const mutations = {
 		state.lodgings = new DataSet([]);
 		if (values) {
 			tempLodging = new DataSet([]);
+			console.log(state.rooms);
 			const evaluateLodgingPush = (lodging, company) => {
 				if (state.company) {
 					if (state.company === lodging.company)
@@ -461,6 +462,7 @@ const mutations = {
 				evaluateLodgingPush(v, company);
 			});
 			state.lodgings = tempLodging;
+			console.log(tempLodging);
 			state.mirrorLodging = JSON.stringify(tempLodging);
 		} else state.lodgings = new DataSet([]);
 	},
