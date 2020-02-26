@@ -495,6 +495,7 @@ export default {
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
+			console.log(payload);
 			this.fetchLodgings();
 		},
 		detectInputChange(payload) {
