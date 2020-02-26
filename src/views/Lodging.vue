@@ -248,6 +248,7 @@ export default {
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onAdd: (item, callback) => {
+					console.log('esto pasa cuando añado el lodging');
 					if (this.company) {
 						item.start = moment(item.start).hours(16);
 						item.end = moment(item.start)
@@ -504,10 +505,10 @@ export default {
 		async setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
-			await this.fetchLodgings();
 			await this.fetchRooms(this.company);
 			//we need to set rooms in lodging module too
 			this.setRooms(this.rooms);
+			await this.fetchLodgings();
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;

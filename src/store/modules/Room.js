@@ -125,6 +125,7 @@ const mutations = {
 			};
 		});
 		dataSet.add(mappedValues);
+
 		state.timelineRooms = dataSet;
 	},
 };
