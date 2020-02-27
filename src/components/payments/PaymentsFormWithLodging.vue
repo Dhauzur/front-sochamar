@@ -72,14 +72,26 @@ export default {
 	},
 	computed: {
 		optionsLodgings() {
-			const result = this.lodgings.filter(({ idLodging }) =>
-				this.payments.includes(idLodging)
+			let index = [];
+			let lod = [...this.lodgings];
+			const pay = [...this.payments];
+			const lodgingsPaid = pay.filter(
+				({ idLodging }) => !lod.every(({ _id }) => idLodging === _id)
 			);
-			console.log(result);
-			let lodging = this.lodgings.map(item => {
+			if (lodgingsPaid.length > 0) {
+				for (const i in lodgingsPaid) {
+					index.push(
+						pay.map(({ idLodging }) => idLodging).indexOf(lodgingsPaid[i].idLodging)
+					);
+				}
+				for (var i = index.length - 1; i >= 0; i--) {
+					lod.splice(i, 1);
+				}
+			}
+			let lodging = lod.map(item => {
 				return {
 					text: `${item.start} - ${item.end}`,
-					value: { id: item._id, start: item.start, end: item.end },
+					value: item,
 				};
 			});
 			lodging.push({ value: null, text: 'Seleccione' });

@@ -39,9 +39,17 @@
 					</b-row>
 					<b-row>
 						<b-col>
-							<b-collapse id="collapse-1" v-model="visibleLodgingForm" class="mt-2">
+							<b-collapse
+								v-if="lodgings"
+								id="collapse-1"
+								v-model="visibleLodgingForm"
+								class="mt-2"
+							>
 								<payments-form-lodging :payments="items" :lodgings="lodgings" />
 							</b-collapse>
+							<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
+								No hay Hospedajes
+							</h6>
 						</b-col>
 						<b-col cols="12"
 							><b-collapse id="collapse-4" v-model="visible" class="mt-2">
@@ -96,16 +104,6 @@
 								</template>
 							</b-table>
 						</b-col>
-						<b-row v-else
-							><b-col>
-								No hay pagos registrados
-							</b-col></b-row
-						>
-						<b-row v-if="count === 0"
-							><b-col>
-								No hay Hospedajes
-							</b-col></b-row
-						>
 						<b-modal
 							ref="edit-modal"
 							size="xl"
@@ -127,6 +125,11 @@
 								<payments-form :item="selected" :on-close="onClose" :hide="hide" />
 							</template>
 						</b-modal>
+					</b-row>
+					<b-row v-if="!items.length > 0"
+						><b-col class="text-center">
+							<h6>No hay pagos registrados</h6>
+						</b-col>
 					</b-row>
 					<b-col cols="6" offset="6">
 						<b-form-input
