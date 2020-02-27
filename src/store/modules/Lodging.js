@@ -19,6 +19,7 @@ const state = {
 	rangeDatePayments: {},
 	lodgingsCompany: [],
 	countLogingsCompany: 0,
+	mountTotal: null,
 	rangeDate: {
 		start: null,
 		end: null,
@@ -41,6 +42,7 @@ const getters = {
 	rooms: state => state.rooms,
 	companies: state => state.companies,
 	company: state => state.company,
+	mountTotal: state => state.mountTotal,
 };
 
 const actions = {
@@ -171,6 +173,7 @@ const actions = {
 					service: l.service[0],
 					company: state.company,
 					passengers: state.lodgingPassengers,
+					mountTotal: state.mountTotal,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
 					.catch(error => {
@@ -480,6 +483,10 @@ const mutations = {
 			state.lodgings = tempLodging;
 			state.mirrorLodging = JSON.stringify(tempLodging);
 		} else state.lodgings = new DataSet([]);
+	},
+	setMountTotal(state, value) {
+		const add = (a, b) => a + b;
+		state.mountTotal = value.reduce(add);
 	},
 };
 

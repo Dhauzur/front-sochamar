@@ -324,6 +324,7 @@ export default {
 					if (dayPrice == '0000') dayPrice = 0;
 					prices.push(dayPrice);
 				});
+			this.mountTotal(prices);
 			return prices;
 		},
 		prices() {
@@ -536,6 +537,7 @@ export default {
 			updateService: 'Lodging/updateService',
 			setCompanyLodging: 'Lodging/setCompanyLodging',
 			setModeEdit: 'Lodging/setModeEdit',
+			mountTotal: 'Lodging/setMountTotal',
 			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
 		}),
 	},

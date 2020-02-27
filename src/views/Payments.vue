@@ -44,6 +44,7 @@ export default {
 		},
 	},
 	mounted() {
+		this.fetchOneCompany(this.idCompany);
 		this.fetchLodgingsForCompany(this.idCompany);
 		this.fetchPayments(this.idCompany);
 	},

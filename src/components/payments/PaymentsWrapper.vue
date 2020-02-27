@@ -45,7 +45,11 @@
 								v-model="visibleLodgingForm"
 								class="mt-2"
 							>
-								<payments-form-lodging :payments="items" :lodgings="lodgings" />
+								<payments-form-lodging
+									:payments="items"
+									:lodgings="lodgings"
+									:company="company"
+								/>
 							</b-collapse>
 							<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
 								No hay hospedajes

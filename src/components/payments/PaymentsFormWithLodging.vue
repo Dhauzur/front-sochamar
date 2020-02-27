@@ -15,6 +15,7 @@
 					v-model="$v.lodgingSelected.$model"
 					size="sm"
 					:options="optionsLodgings"
+					@change="setMount"
 				></b-form-select>
 			</b-col>
 			<b-col cols="12" md="6" lg="2"
@@ -22,6 +23,7 @@
 				><b-form-input
 					id="mount"
 					v-model="$v.mount.$model"
+					:disabled="true"
 					size="sm"
 					type="number"
 					placeholder="Ej: 10000"
@@ -67,6 +69,11 @@ export default {
 			type: Array,
 			required: false,
 			default: () => [],
+		},
+		company: {
+			type: Object,
+			required: false,
+			default: () => {},
 		},
 	},
 	data() {
@@ -143,6 +150,11 @@ export default {
 				this.clearInputs();
 				this.updatePayments(this.idCompany);
 			}
+		},
+		setMount() {
+			this.lodgingSelected
+				? (this.mount = this.lodgingSelected.mountTotal)
+				: (this.mount = '');
 		},
 		...mapActions({
 			save: 'Payments/savePayment',
