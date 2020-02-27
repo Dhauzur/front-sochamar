@@ -476,7 +476,6 @@ export default {
 	},
 	created() {
 		this.selectCompany = this.company;
-		console.log(typeof this.selectCompany);
 		this.fetchRooms(this.selectCompany);
 		this.fetchCompany();
 		this.fetchLodgings();
