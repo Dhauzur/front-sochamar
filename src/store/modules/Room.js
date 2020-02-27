@@ -1,13 +1,11 @@
 import { api } from '@/config/index.js';
 import Axios from 'axios';
 import router from '@/router/index.js';
-import { DataSet } from 'vue2vis';
 
 const state = {
 	message: '',
 	roomSelected: null,
 	rooms: [],
-	timelineRooms: new DataSet([]),
 	filterRoomWord: '',
 	idCompany: '',
 };
@@ -21,7 +19,6 @@ const getters = {
 			return state.rooms.filter(c => c.name.includes(state.filterRoomWord));
 		else return state.rooms;
 	},
-	timelineRooms: state => state.timelineRooms,
 };
 
 const actions = {
@@ -65,7 +62,6 @@ const actions = {
 			const response = await Axios.get(api + '/rooms/' + companyId);
 			const { rooms } = response.data;
 			commit('setRooms', rooms);
-			commit('setTimelineRooms', rooms);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Habitaciones descargadas',
@@ -105,25 +101,6 @@ const mutations = {
 				});
 			});
 		state.rooms = rooms;
-	},
-	setTimelineRooms(state, values) {
-		const dataSet = new DataSet([]);
-		values.forEach(v => {
-			dataSet.add({
-				id: v._id,
-				content: v.name,
-				numberPassangerMax: v.numberPassangerMax,
-			});
-		});
-		/*const mappedValues = values.map(room => {
-			return {
-				id: room._id,
-				content: room.name,
-				numberPassangerMax: room.numberPassangerMax,
-			};
-		});
-		dataSet.add(mappedValues);*/
-		state.timelineRooms = dataSet;
 	},
 };
 

@@ -17,7 +17,7 @@
 						</b-row>
 						<b-row>
 							<b-col
-								v-if="lodgings.length == 0 && company && timelineRooms.length > 0"
+								v-if="lodgings.length == 0 && company && rooms.length > 0"
 								class="mb-2"
 							>
 								<b-row>
@@ -48,7 +48,7 @@
 							<b-col md="6" lg="6" class="mb-2">
 								<b-dropdown id="dropdown-1" text="Acciones" block>
 									<b-dropdown-item
-										v-if="timelineRooms.length > 0"
+										v-if="rooms.length > 0 && selectCompany"
 										@click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
@@ -73,11 +73,11 @@
 						<b-row>
 							<b-col cols="12">
 								<timeline
-									v-if="timelineRooms.length > 0 && lodgings.length > 0"
+									v-if="rooms.length > 0 && lodgings.length > 0"
 									class="p-2 col-12"
 									:items="lodgings"
 									:events="['rangechanged', 'click']"
-									:groups="timelineRooms"
+									:groups="rooms"
 									:options="options"
 									@click="enableEdit"
 									@rangechanged="rangechanged"
@@ -452,8 +452,7 @@ export default {
 			mirrorLodging: 'Lodging/mirrorLodging',
 			lodgingSelect: 'Lodging/lodgingSelect',
 			loading: 'Lodging/loading',
-			rooms: 'Room/rooms',
-			timelineRooms: 'Room/timelineRooms',
+			rooms: 'Lodging/rooms',
 			rangeDate: 'Lodging/rangeDate',
 			lodgings: 'Lodging/lodgings',
 			companies: 'Lodging/companies',
@@ -477,6 +476,7 @@ export default {
 	},
 	created() {
 		this.selectCompany = this.company;
+		console.log(typeof this.selectCompany);
 		this.fetchRooms(this.selectCompany);
 		this.fetchCompany();
 		this.fetchLodgings();
@@ -506,10 +506,7 @@ export default {
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
-			this.fetchRooms(this.company);
-			//we need to set rooms in lodging module too
-			this.setRooms(this.timelineRooms);
-			this.fetchLodgings();
+			this.fetchRooms(this.company).then(() => this.fetchLodgings());
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
@@ -539,7 +536,7 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 			fetchCompany: 'Lodging/fetchCompany',
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
-			fetchRooms: 'Room/fetchRooms',
+			fetchRooms: 'Lodging/fetchRooms',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
@@ -552,7 +549,6 @@ export default {
 			setCompanyLodging: 'Lodging/setCompanyLodging',
 			setModeEdit: 'Lodging/setModeEdit',
 			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
-			setRooms: 'Lodging/setRooms',
 		}),
 	},
 };

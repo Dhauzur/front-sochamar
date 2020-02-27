@@ -111,6 +111,24 @@ const actions = {
 			});
 	},
 
+	async fetchRooms({ commit }, companyId) {
+		try {
+			const response = await Axios.get(api + '/rooms/' + companyId);
+			const { rooms } = response.data;
+			commit('setRooms', rooms);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Habitaciones descargados',
+			});
+		} catch (e) {
+			commit('setRooms', null);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al descargar habitaciones',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
 	//fetch lodgings for company
 	async fetchLodgingsForCompany({ commit }, id) {
 		try {
@@ -390,8 +408,17 @@ const mutations = {
 				}
 			});
 	},
-	setRooms(state, value) {
-		state.rooms = value;
+	setRooms(state, values) {
+		const dataSet = new DataSet([]);
+		const mappedValues = values.map(room => {
+			return {
+				id: room._id,
+				content: room.name,
+				numberPassangerMax: room.numberPassangerMax,
+			};
+		});
+		dataSet.add(mappedValues);
+		state.rooms = dataSet;
 	},
 	setRangeDate(state, value) {
 		state.rangeDate = value;

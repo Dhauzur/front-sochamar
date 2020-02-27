@@ -58,7 +58,7 @@
 					<b-col>
 						Nombre habitación
 						<b-form-input
-							v-model="$v.form.name.$model"
+							v-model.trim="$v.form.name.$model"
 							placeholder="Ej: N°1"
 						></b-form-input>
 						<div v-if="$v.form.name.$dirty" class="text-right">
@@ -71,6 +71,7 @@
 						Cantidad máxima de pasajeros
 						<b-form-input
 							v-model="$v.form.numberPassangerMax.$model"
+							type="number"
 							placeholder="Ej: 5"
 						></b-form-input>
 						<div v-if="$v.form.numberPassangerMax.$dirty" class="text-right">
