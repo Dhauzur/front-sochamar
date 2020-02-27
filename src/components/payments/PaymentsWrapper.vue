@@ -48,7 +48,7 @@
 								<payments-form-lodging :payments="items" :lodgings="lodgings" />
 							</b-collapse>
 							<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
-								No hay Hospedajes
+								No hay hospedajes
 							</h6>
 						</b-col>
 						<b-col cols="12"

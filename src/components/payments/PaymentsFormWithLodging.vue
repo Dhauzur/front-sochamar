@@ -1,44 +1,53 @@
 <template>
-	<b-row>
-		<b-col cols="12" md="6" lg="4">
-			<label for="date" class="mb-0 mt-2">Fecha</label>
-			<b-form-select
-				id="date"
-				v-model="$v.lodgingSelected.$model"
-				size="sm"
-				:options="optionsLodgings"
-			></b-form-select>
-		</b-col>
-		<b-col cols="12" md="6" lg="2"
-			><label for="mount" class="mb-0 mt-2">Monto</label
-			><b-form-input
-				id="mount"
-				v-model="$v.mount.$model"
-				size="sm"
-				type="number"
-				placeholder="Ej: 10000"
-			></b-form-input>
-		</b-col>
-		<b-col cols="12" md="9" lg="3">
-			<label for="voucher" class="mb-0 mt-2">Voucher</label>
-			<b-form-file
-				id="voucher"
-				ref="voucher"
-				v-model="$v.voucher.$model"
-				size="sm"
-				class="text-left"
-				placeholder="Subir vaucher"
-				drop-placeholder="Arrastrar aqui..."
-				@change="e => (voucher = e.target.files[0])"
-			></b-form-file>
-		</b-col>
-		<b-col cols="12" md="3" class="mt-4">
-			<b-button block variant="primary" class="btn-sm mt-2" @click="submit">
-				Agregar Pago
-			</b-button>
-			<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
-		</b-col>
-	</b-row>
+	<div>
+		<b-row v-if="optionsLodgings.length <= 1">
+			<b-col>
+				<h6 class="text-left mt-1 ml-1">
+					Todos los hospedajes pagos
+				</h6>
+			</b-col>
+		</b-row>
+		<b-row v-else>
+			<b-col cols="12" md="6" lg="4">
+				<label for="date" class="mb-0 mt-2">Fecha</label>
+				<b-form-select
+					id="date"
+					v-model="$v.lodgingSelected.$model"
+					size="sm"
+					:options="optionsLodgings"
+				></b-form-select>
+			</b-col>
+			<b-col cols="12" md="6" lg="2"
+				><label for="mount" class="mb-0 mt-2">Monto</label
+				><b-form-input
+					id="mount"
+					v-model="$v.mount.$model"
+					size="sm"
+					type="number"
+					placeholder="Ej: 10000"
+				></b-form-input>
+			</b-col>
+			<b-col cols="12" md="9" lg="3">
+				<label for="voucher" class="mb-0 mt-2">Voucher</label>
+				<b-form-file
+					id="voucher"
+					ref="voucher"
+					v-model="$v.voucher.$model"
+					size="sm"
+					class="text-left"
+					placeholder="Subir vaucher"
+					drop-placeholder="Arrastrar aqui..."
+					@change="e => (voucher = e.target.files[0])"
+				></b-form-file>
+			</b-col>
+			<b-col cols="12" md="3" class="mt-4">
+				<b-button block variant="primary" class="btn-sm mt-2" @click="submit">
+					Agregar Pago
+				</b-button>
+				<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
+			</b-col>
+		</b-row>
+	</div>
 </template>
 
 <script>
@@ -84,7 +93,7 @@ export default {
 						pay.map(({ idLodging }) => idLodging).indexOf(lodgingsPaid[i].idLodging)
 					);
 				}
-				for (var i = index.length - 1; i >= 0; i--) {
+				for (let i = index.length - 1; i >= 0; i--) {
 					lod.splice(i, 1);
 				}
 			}
