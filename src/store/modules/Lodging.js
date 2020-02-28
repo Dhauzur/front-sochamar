@@ -163,7 +163,6 @@ const actions = {
 					service: l.service[0],
 					company: state.company,
 					passengers: state.lodgingPassengers,
-					mountTotal: l.mountTotal,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
 					.catch(error => {
@@ -343,6 +342,7 @@ const mutations = {
 						.add(1, 'day'),
 					content: company.text,
 					service: ['[[1,1,1,1],[1,1,1,1]]'],
+					company: state.company,
 				});
 		} else {
 			state.message = {

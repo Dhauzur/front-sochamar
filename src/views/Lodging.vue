@@ -516,7 +516,6 @@ export default {
 			}
 			if (payload.target.value < 0) payload.target.value = numberPassangerMax;
 			this.updateService(payload.target);
-			this.setLodgingSelect(this.lodgingSelect.id);
 		},
 		enableEdit(payload) {
 			if (this.company && payload.item) {

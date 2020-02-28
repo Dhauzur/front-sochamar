@@ -223,8 +223,6 @@ export default {
 			lodgingSelect: 'Lodging/lodgingSelect',
 			lodgingPassengers: 'Lodging/lodgingPassengers',
 			passengers: 'Passengers/passengers',
-			idCompany: 'Lodging/company',
-			company: 'Company/company',
 		}),
 	},
 	watch: {
@@ -265,7 +263,6 @@ export default {
 					dateStart: newDate.dateStartLodging,
 					dateEnd: newDate.dateEndLodging,
 				});
-				this.setLodgingSelect(this.lodgingSelect.id);
 			} else {
 				this.$toasted.show('Existe un alojamiento para esas fechas');
 				if (newDate.start)
@@ -362,7 +359,6 @@ export default {
 			subOneService: 'Lodging/subOneService',
 			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
 			removeLodgingPassengers: 'Lodging/removeLodgingPassengers',
-			setLodgingSelect: 'Lodging/setLodgingSelect',
 		}),
 	},
 };
