@@ -5,7 +5,6 @@ import router from '@/router/index.js';
 const state = {
 	message: {},
 	token: localStorage.getItem('token') || '',
-	user: {},
 	loading: false,
 };
 
@@ -14,19 +13,18 @@ const getters = {
 	isLogged: state => {
 		return state.token ? true : false;
 	},
-	user: state => state.user,
 	loading: state => state.loading,
 };
 
 const actions = {
-	async login({ commit }, loginData) {
+	async login({ commit, dispatch }, loginData) {
 		try {
 			commit('setLoading', true);
 			const response = await Axios.post(api + '/auth/login', loginData);
-			const { token, user } = response.data;
-			commit('setUser', user);
+			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
+			dispatch('User/fetchProfile', null, { root: true });
 			router.push('/lodgings');
 		} catch (e) {
 			const message = {
@@ -37,14 +35,14 @@ const actions = {
 		}
 		commit('setLoading', false);
 	},
-	async register({ commit }, registerData) {
+	async register({ commit, dispatch }, registerData) {
 		try {
 			commit('setLoading', true);
 			const response = await Axios.post(api + '/auth/register', registerData);
-			const { user, token } = response.data;
-			commit('setUser', user);
+			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
+			dispatch('User/fetchProfile', null, { root: true });
 			router.push('/lodgings');
 		} catch (e) {
 			const message = { type: 'error', text: 'El correo ya existe' };
@@ -96,7 +94,6 @@ const mutations = {
 		state.token = '';
 		router.push('/login');
 	},
-	setUser: (state, user) => (state.user = user),
 	setIsLogged: (state, change) => (state.isLogged = change),
 	setMessage: (state, message) => (state.message = message),
 	setLoading: (state, change) => (state.loading = change),

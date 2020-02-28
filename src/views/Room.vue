@@ -35,7 +35,12 @@
 									<td>{{ r.name }}</td>
 									<td>{{ r.numberPassangerMax }}</td>
 									<td class="p-2">
-										<b-button variant="danger" @click="deleteRoom(r.id)">
+										<b-button
+											variant="danger"
+											@click="
+												deleteRoom({ id: r.id, companyId: form.companyId })
+											"
+										>
 											X
 										</b-button>
 									</td>
@@ -53,7 +58,7 @@
 					<b-col>
 						Nombre habitación
 						<b-form-input
-							v-model="$v.form.name.$model"
+							v-model.trim="$v.form.name.$model"
 							placeholder="Ej: N°1"
 						></b-form-input>
 						<div v-if="$v.form.name.$dirty" class="text-right">
@@ -66,6 +71,7 @@
 						Cantidad máxima de pasajeros
 						<b-form-input
 							v-model="$v.form.numberPassangerMax.$model"
+							type="number"
 							placeholder="Ej: 5"
 						></b-form-input>
 						<div v-if="$v.form.numberPassangerMax.$dirty" class="text-right">
@@ -113,6 +119,8 @@ export default {
 			rooms: 'Room/rooms',
 			roomSelected: 'Room/roomSelected',
 			message: 'Room/message',
+			companyLodging: 'Lodging/company',
+			idCompany: 'Room/idCompany',
 		}),
 	},
 	watch: {
@@ -123,7 +131,8 @@ export default {
 		},
 	},
 	mounted() {
-		this.fetchRooms();
+		this.setIdCompanyRoom(this.companyLodging);
+		this.fetchRooms(this.idCompany);
 	},
 	validations: {
 		form: {
@@ -142,16 +151,15 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				this.createRoom(this.form);
-				this.clearInputs();
-				this.$v.$reset();
+				this.createRoom(this.form).then(() => {
+					this.clearInputs();
+					this.$v.$reset();
+				});
 			}
 		},
 		clearInputs() {
-			this.form = {
-				name: '',
-				numberPassangerMax: '',
-			};
+			this.form.name = '';
+			this.form.numberPassangerMax = '';
 		},
 		...mapActions({
 			fetchRooms: 'Room/fetchRooms',
@@ -161,6 +169,7 @@ export default {
 		...mapMutations({
 			selectRoom: 'Room/selectRoom',
 			filterRoom: 'Room/filterRoom',
+			setIdCompanyRoom: 'Room/setIdCompanyRoom',
 		}),
 	},
 };

@@ -1,2 +1,2 @@
-Elimina un registros
+Elimina un registro
 db.getCollection('todos').deleteOne({ _id: ObjectId("5e0f88aea57db643d6cfa757") })

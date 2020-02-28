@@ -62,6 +62,17 @@
 							</small>
 						</div>
 					</b-form-group>
+					<!--ANALYST--><!--AQUI VA EL CHECKBOX-->
+					<b-form-row>
+						<b-form-checkbox
+							id="analyst-checkbox"
+							v-model="formData.analyst"
+							name="analyst-checkbox"
+						>
+							Analista
+						</b-form-checkbox>
+					</b-form-row>
+
 					<!--SUBMIT-->
 					<b-button :disabled="loading" type="submit" variant="primary"
 						>Finalizar registro <b-spinner v-if="loading" small type="grow"></b-spinner
@@ -88,6 +99,7 @@ export default {
 				name: '',
 				email: '',
 				password: '',
+				analyst: false,
 			},
 			errors: false,
 		};

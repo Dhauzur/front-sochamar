@@ -16,7 +16,10 @@
 							</b-col>
 						</b-row>
 						<b-row>
-							<b-col v-if="lodgings.length == 0 && company" class="mb-2">
+							<b-col
+								v-if="lodgings.length == 0 && company && rooms.length > 0"
+								class="mb-2"
+							>
 								<b-row>
 									<b-col>
 										<b-button
@@ -44,10 +47,14 @@
 						<b-row>
 							<b-col md="6" lg="6" class="mb-2">
 								<b-dropdown id="dropdown-1" text="Acciones" block>
-									<b-dropdown-item v-if="company" @click="createOneLodging()"
+									<b-dropdown-item
+										v-if="rooms.length > 0 && selectCompany"
+										@click="createOneLodging()"
 										>Agregar hospedaje</b-dropdown-item
 									>
-									<b-dropdown-item @click="$router.push({ name: 'rooms' })"
+									<b-dropdown-item
+										v-if="company"
+										@click="$router.push({ name: 'rooms' })"
 										>Gestionar habitaciones</b-dropdown-item
 									>
 									<b-dropdown-item @click="$router.push({ name: 'companies' })"
@@ -474,7 +481,9 @@ export default {
 	},
 	created() {
 		this.selectCompany = this.company;
+		this.fetchRooms(this.selectCompany);
 		this.fetchCompany();
+		this.fetchLodgings();
 		this.setRangeDate({
 			start: moment(),
 			end: moment().add(15, 'day'),
@@ -500,10 +509,11 @@ export default {
 			});
 			return verificate;
 		},
+		/*parece que en esta funcion no esta el error*/
 		setCompany(payload) {
 			this.setCompanyLodging(payload);
 			this.setModeEdit(false);
-			this.fetchLodgings();
+			this.fetchRooms(this.company).then(() => this.fetchLodgings());
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
@@ -534,6 +544,7 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 			fetchCompany: 'Lodging/fetchCompany',
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
+			fetchRooms: 'Lodging/fetchRooms',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
 			fetchOneCompany: 'Company/fetchOneCompany',

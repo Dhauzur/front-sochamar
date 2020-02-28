@@ -1,12 +1,18 @@
 <template lang="html">
 	<b-navbar-nav v-if="isLogged" class="ml-auto">
-		<b-nav-text class="mr-sm-3 pt-4" right v-text="fullName"> </b-nav-text>
+		<b-nav-text class="mr-sm-3 pt-4" right>
+			{{ user.name }}
+		</b-nav-text>
 		<b-nav-item-dropdown text="Lang" no-caret right>
 			<template v-slot:button-content>
-				<b-img alt="" rounded="circle" v-bind="mainProps" :src="profileAvatar"></b-img>
+				<b-img
+					rounded="circle"
+					alt="Circle image"
+					width="50"
+					src="https://picsum.photos/125/125/?image=58"
+				></b-img>
 			</template>
-
-			<b-dropdown-item to="/profile">Perfil </b-dropdown-item>
+			<b-dropdown-item href="#">Perfil</b-dropdown-item>
 			<b-dropdown-item href="#" @click="logout">Salir</b-dropdown-item>
 		</b-nav-item-dropdown>
 	</b-navbar-nav>
@@ -23,21 +29,10 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 export default {
-	data() {
-		return {
-			mainProps: { blank: false, blankColor: '#777', width: 50, height: 50, class: 'm1' },
-		};
-	},
 	computed: {
-		fullName() {
-			return this.profile.name + ' ' + this.profile.lastName;
-		},
-		profileAvatar() {
-			return this.profile.img;
-		},
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
-			profile: 'User/profile',
+			user: 'Auth/user',
 		}),
 	},
 	methods: {

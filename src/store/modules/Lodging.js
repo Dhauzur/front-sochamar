@@ -67,7 +67,7 @@ const actions = {
 			});
 	},
 	//Obtiene todos las compañias
-	async fetchCompany({ commit, dispatch }) {
+	async fetchCompany({ commit }) {
 		commit('setModeEdit', false);
 		commit('setCompanies', null);
 		commit('setLoading', 'Cargando compañias...');
@@ -79,7 +79,6 @@ const actions = {
 					type: 'success',
 					text: 'Compañias descargadas',
 				});
-				dispatch('fetchRooms');
 			})
 			.catch(error => {
 				commit('setCompanies', null);
@@ -90,31 +89,6 @@ const actions = {
 				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
-	//Obtiene todas las habitaciones
-	async fetchRooms({ commit, dispatch }) {
-		commit('setLoading', 'Cargando habitaciones...');
-		commit('setModeEdit', false);
-		commit('setRooms', null);
-		return Axios.get(api + '/rooms')
-			.then(response => {
-				commit('setLoading', '');
-				commit('setRooms', response.data.rooms);
-				commit('setMessage', {
-					type: 'success',
-					text: 'Habitaciones descargadas ',
-				});
-				dispatch('fetchLodgings');
-			})
-			.catch(error => {
-				commit('setRooms', null);
-				commit('setMessage', {
-					type: 'error',
-					text: 'Fetch rooms ' + error,
-				});
-				if (error.message == 'Request failed with status code 401') router.push('/login');
-			});
-	},
-
 	//Obtiene los hospedajes
 	async fetchLodgings({ commit }) {
 		commit('setLoading', 'Cargando hospedajes...');
@@ -139,6 +113,24 @@ const actions = {
 			});
 	},
 
+	async fetchRooms({ commit }, companyId) {
+		try {
+			const response = await Axios.get(api + '/rooms/' + companyId);
+			const { rooms } = response.data;
+			commit('setRooms', rooms);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Habitaciones descargados',
+			});
+		} catch (e) {
+			commit('setRooms', null);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al descargar habitaciones',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
 	//fetch lodgings for company
 	async fetchLodgingsForCompany({ commit }, id) {
 		try {
@@ -365,20 +357,22 @@ const mutations = {
 	setCompanyLodging(state, value) {
 		state.company = value;
 	},
-	setCompanies(state, value) {
+	setCompanies(state, values) {
 		let companies = [];
 		companies.push({
 			value: null,
 			text: 'Todas las empresas',
 		});
-		if (value)
-			value.forEach(v => {
-				companies.push({
+		if (values) {
+			const mapValues = values.map(v => {
+				return {
 					value: v._id,
 					text: v.name,
 					prices: v.prices,
-				});
+				};
 			});
+			companies.push(...mapValues);
+		}
 		state.companies = companies;
 	},
 	updateService(state, value) {
@@ -417,16 +411,17 @@ const mutations = {
 				}
 			});
 	},
-	setRooms(state, value) {
-		if (value)
-			value.forEach(v => {
-				state.rooms.add({
-					id: v._id,
-					content: v.name,
-					numberPassangerMax: v.numberPassangerMax,
-				});
-			});
-		else state.rooms = new DataSet([]);
+	setRooms(state, values) {
+		const dataSet = new DataSet([]);
+		const mappedValues = values.map(room => {
+			return {
+				id: room._id,
+				content: room.name,
+				numberPassangerMax: room.numberPassangerMax,
+			};
+		});
+		dataSet.add(mappedValues);
+		state.rooms = dataSet;
 	},
 	setRangeDate(state, value) {
 		state.rangeDate = value;
@@ -448,39 +443,47 @@ const mutations = {
 	setCountLogingsCompany(state, value) {
 		state.countLogingsCompany = value;
 	},
-	setLodgings(state, value) {
+	setLodgings(state, values) {
 		let tempLodging = state.lodgings;
 		state.editMode = false;
 		state.lodgings = new DataSet([]);
-		if (value) {
+		if (values) {
 			tempLodging = new DataSet([]);
-			value.forEach(v => {
-				let company = state.companies.find(c => c.value == v.company);
+			const evaluateLodgingPush = (lodging, company) => {
 				if (state.company) {
-					if (state.company == v.company)
+					if (state.company === lodging.company)
 						tempLodging.add({
-							id: v.id,
-							group: v.group,
-							start: moment(v.start).hours(16),
-							end: moment(v.end).hours(13),
+							id: lodging.id,
+							group: lodging.group,
+							start: moment(lodging.start).hours(16),
+							end: moment(lodging.end).hours(13),
 							content: company.text,
-							service: v.service,
-							company: v.company,
-							passengers: v.passengers,
-							mountTotal: v.mountTotal,
+							service: lodging.service,
+							company: lodging.company,
+							passengers: lodging.passengers,
+							mountTotal: lodging.mountTotal,
 						});
-				} else
+				} else {
 					tempLodging.add({
-						id: v.id,
-						group: v.group,
-						start: moment(v.start).hours(16),
-						end: moment(v.end).hours(13),
+						id: lodging.id,
+						group: lodging.group,
+						start: moment(lodging.start).hours(16),
+						end: moment(lodging.end).hours(13),
 						content: company.text,
-						service: v.service,
-						company: v.company,
-						passengers: v.passengers,
-						mountTotal: v.mountTotal,
+						service: lodging.service,
+						company: lodging.company,
+						passengers: lodging.passengers,
+						mountTotal: lodging.mountTotal,
 					});
+				}
+			};
+			values.forEach(v => {
+				let company = state.companies.find(c => c.value == v.company);
+				/*Necesitamos seguir corriendo esta funcion aun si company es undefined
+				 * si es undefined, entonces creamos un objeto basico con la propiedad text.
+				 * Con esto evitamos el mensaje de 'company.text' is undefined en la interfaz de usuario*/
+				if (!company) company = { text: '' };
+				evaluateLodgingPush(v, company);
 			});
 			state.lodgings = tempLodging;
 			state.mirrorLodging = JSON.stringify(tempLodging);

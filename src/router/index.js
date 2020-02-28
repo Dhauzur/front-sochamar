@@ -10,7 +10,7 @@ import Payments from '@/views/Payments';
 import Register from '@/views/Register';
 import Report from '@/views/Report.vue';
 import Room from '@/views/Room.vue';
-
+import Profile from '@/views/Profile';
 Vue.use(VueRouter);
 
 const routes = [
@@ -63,6 +63,11 @@ const routes = [
 		path: '/payments/:company',
 		name: 'payments',
 		component: Payments,
+	},
+	{
+		path: '/profile',
+		name: 'profile',
+		component: Profile,
 	},
 ];
 

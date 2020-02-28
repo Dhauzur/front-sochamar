@@ -39,3 +39,16 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Restricción si se indica un numero mayor de servicios a usar en una hospedaje de lo que permite una habitación
 * Corregido error que habilita la ediccion si el usuario hace doble click en un hospedaje y habilita el modo de edicion
 * Reemplazado componente BoostrapVue de alert, que recibia un msj y dejaba 20 segundos en pantalla. Ahora se utiliza un toasted con un watch
+
+`0.0.0`_ (2020-02-13) (Javier)
+-------------------------
+* Agregado flujo de recuperar contraseña.
+* Agregado componente passwordReset, su fin es trabajar con el jwt temporal y permitir la actualizacion de contraseña.
+* Agregado componente passwordRecover, es hijo de login y nos permite enviar el correo de recuperación desde el componente login.
+
+`0.0.0`_ (2020-02-18) (Javier)
+-------------------------
+* Agregado store User, ya es posible manipular propiedades del usuario.
+* Agregada interfaz profile, ya es posible vizualizar/manipular los propiedades del usuario.
+* Agregada funcionalidad de actualizar solo el avatar en profile.
+* Agregada funcionalidad de actualizar solo la contraseña en profile.
