@@ -7,35 +7,30 @@ const state = {
 	roomSelected: null,
 	rooms: [],
 	filterRoomWord: '',
+	idCompany: '',
 };
 
 const getters = {
+	idCompany: state => state.idCompany,
 	message: state => state.message,
 	roomSelected: state => state.roomSelected,
 	rooms: state => {
 		if (state.filterRoomWord)
-			return state.rooms.filter(
-				c => c.name.includes(state.filterRoomWord) || c.rut.includes(state.filterRoomWord)
-			);
+			return state.rooms.filter(c => c.name.includes(state.filterRoomWord));
 		else return state.rooms;
 	},
 };
 
 const actions = {
-	async deleteRoom({ commit, dispatch }, id) {
+	async deleteRoom({ commit, dispatch }, { id, companyId }) {
 		try {
-			await Axios.delete(api + '/rooms/one/' + id).then(response => {
-				commit('setMessage', {
-					type: 'success',
-					text: 'Habitación ' + response.data.delete + ' eliminada ',
-				});
-				if (response.data.lodgins)
-					commit('setMessage', {
-						type: 'info',
-						text: response.data.lodgins + ' hospedajes asociados eliminados ',
-					});
+			const response = await Axios.delete(api + '/rooms/one/' + id, { data: { companyId } });
+			const { name } = response.data;
+			commit('setMessage', {
+				type: 'success',
+				text: 'Habitación ' + name + ' eliminada ',
 			});
-			dispatch('fetchRooms');
+			dispatch('fetchRooms', companyId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -46,12 +41,13 @@ const actions = {
 	},
 	async createRoom({ commit, dispatch }, room) {
 		try {
+			room.companyId = state.idCompany;
 			await Axios.post(api + '/rooms', room);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Empresa creada ',
 			});
-			dispatch('fetchRooms');
+			dispatch('fetchRooms', room.companyId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -60,15 +56,15 @@ const actions = {
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
-	async fetchRooms({ commit }) {
+	async fetchRooms({ commit }, companyId) {
 		commit('setRooms', null);
 		try {
-			await Axios.get(api + '/rooms').then(response => {
-				commit('setRooms', response.data.rooms);
-				commit('setMessage', {
-					type: 'success',
-					text: 'Habitaciones descargadas',
-				});
+			const response = await Axios.get(api + '/rooms/' + companyId);
+			const { rooms } = response.data;
+			commit('setRooms', rooms);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Habitaciones descargadas',
 			});
 		} catch (e) {
 			commit('setRooms', null);
@@ -82,6 +78,9 @@ const actions = {
 };
 
 const mutations = {
+	setIdCompanyRoom(state, value) {
+		state.idCompany = value;
+	},
 	setMessage(state, value) {
 		state.message = value;
 	},

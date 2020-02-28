@@ -34,7 +34,6 @@ const actions = {
 			commit('setMessage', message);
 			commit('setLoading', false);
 		} catch (e) {
-			console.log(e);
 			const message = { type: 'error', text: 'Parametros invalidos' };
 			commit('setMessage', message);
 			commit('setLoading', false);
