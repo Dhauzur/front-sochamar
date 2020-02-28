@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build && ls -lR dist",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "create-env": "printenv > .env.production.local && cat .env.production.local"
   },
   "dependencies": {
     "axios": "^0.19.2",
