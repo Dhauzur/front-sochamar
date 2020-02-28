@@ -451,6 +451,7 @@ export default {
 			companies: 'Lodging/companies',
 			company: 'Lodging/company',
 			editMode: 'Lodging/editMode',
+			dataCompanySelected: 'Company/company',
 		}),
 	},
 	watch: {
@@ -461,10 +462,14 @@ export default {
 		},
 		lodgingSelect() {
 			if (this.lodgingSelect) {
+				this.setTotalMount();
 				if (this.lodgingSelect.passengers && this.editMode) {
 					this.setAllLodgingPassengers(this.lodgingSelect.passengers);
 				}
 			}
+		},
+		company(newVal) {
+			if (newVal) this.fetchOneCompany(this.company);
 		},
 	},
 	created() {
@@ -479,6 +484,9 @@ export default {
 		this.fetchAllPassengers();
 	},
 	methods: {
+		setTotalMount() {
+			this.mountTotal(this.dataCompanySelected.prices);
+		},
 		verifyOverlay(value) {
 			let verificate = true;
 			this.lodgings.forEach(lod => {
@@ -506,6 +514,7 @@ export default {
 			}
 			if (payload.target.value < 0) payload.target.value = numberPassangerMax;
 			this.updateService(payload.target);
+			this.setLodgingSelect(this.lodgingSelect.id);
 		},
 		enableEdit(payload) {
 			if (this.company && payload.item) {
@@ -527,6 +536,7 @@ export default {
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
+			fetchOneCompany: 'Company/fetchOneCompany',
 		}),
 		...mapMutations({
 			createOneLodging: 'Lodging/createOneLodging',
@@ -537,6 +547,7 @@ export default {
 			setCompanyLodging: 'Lodging/setCompanyLodging',
 			setModeEdit: 'Lodging/setModeEdit',
 			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
+			mountTotal: 'Lodging/setMountTotal',
 		}),
 	},
 };

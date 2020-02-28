@@ -26,7 +26,7 @@
 					:disabled="true"
 					size="sm"
 					type="number"
-					placeholder="Ej: 10000"
+					placeholder="Ej: 10000 CLP"
 				></b-form-input>
 			</b-col>
 			<b-col cols="12" md="9" lg="3">

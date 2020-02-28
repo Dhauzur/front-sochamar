@@ -486,11 +486,29 @@ const mutations = {
 			state.mirrorLodging = JSON.stringify(tempLodging);
 		} else state.lodgings = new DataSet([]);
 	},
-	setMountTotal(state, value) {
-		const add = (a, b) => a + b;
-		const result = value.finalyPrice.reduce(add);
-		console.log(result);
-		state.lodgings.update({ id: value.id, mountTotal: result });
+	/**
+	 * prices from company for calculate the total
+	 * @param {Array} prices
+	 */
+	setMountTotal(state, prices) {
+		let service = JSON.parse(state.lodgingSelect.service[0]);
+		let breakfast = 0,
+			lunch = 0,
+			dinner = 0,
+			lodging = 0;
+		if (prices) {
+			service.map(arr => {
+				arr.filter((item, index) => {
+					if (index === 0) breakfast = breakfast + item;
+					if (index === 1) lunch = lunch + item;
+					if (index === 2) dinner = dinner + item;
+					if (index === 3) lodging = lodging + item;
+				});
+			});
+		}
+		const mountTotal =
+			lodging * prices[3] + dinner * prices[2] + lunch * prices[1] + breakfast * prices[0];
+		state.lodgings.update({ id: state.lodgingSelect.id, mountTotal });
 	},
 };
 
