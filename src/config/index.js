@@ -1,2 +1,2 @@
-export const api = process.env.VUE_APP_URL;
-export const api_absolute = process.env.VUE_APP_ABSOLUTE;
+export const api = process.env.URL_API;
+export const api_absolute = process.env.URL_API_ABSOLUTE;

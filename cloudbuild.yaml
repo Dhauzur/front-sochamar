@@ -6,8 +6,8 @@ steps:
   entrypoint: npm
   args: ["run", "create-env"]
   env:
-    - "VUE_APP_URL=${VUE_APP_URL}"
-    - "VUE_APP_ABSOLUTE=${VUE_APP_ABSOLUTE}"
+    - "URL_API=${URL_API}"
+    - "URL_API_ABSOLUTE=${URL_API_ABSOLUTE}"
 - name: node:10.15.1
   entrypoint: npm
   args: ["run", "build"]
