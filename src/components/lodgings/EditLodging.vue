@@ -1,5 +1,6 @@
 <template lang="html">
 	<b-row v-if="lodgingSelect">
+		{{ setTotalMount }}
 		<b-col class="borderEdit m-3">
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
 			<b-row>
@@ -218,11 +219,40 @@ export default {
 				data: item,
 			}));
 		},
+		setTotalMount() {
+			const prices = this.company.prices;
+			let service = JSON.parse(this.lodgingSelect.service[0]);
+			if (prices) {
+				let breakfast = 0;
+				let lunch = 0;
+				let dinner = 0;
+				let lodging = 0;
+				service.map(arr => {
+					arr.filter((el, i) => {
+						if (i === 0) breakfast = breakfast + el;
+						if (i === 1) lunch = lunch + el;
+						if (i === 2) dinner = dinner + el;
+						if (i === 3) lodging = lodging + el;
+					});
+				});
+				const result =
+					lodging * prices[3] +
+					dinner * prices[2] +
+					lunch * prices[1] +
+					breakfast * prices[0];
+				console.log(result);
+				return result;
+			}
+			return null;
+			//this.mountTotal({ finalyPrice: this.finalyPrice, id: payload.item });
+		},
 		...mapGetters({
 			lodgings: 'Lodging/lodgings',
 			lodgingSelect: 'Lodging/lodgingSelect',
 			lodgingPassengers: 'Lodging/lodgingPassengers',
 			passengers: 'Passengers/passengers',
+			idCompany: 'Lodging/company',
+			company: 'Company/company',
 		}),
 	},
 	watch: {
@@ -238,6 +268,7 @@ export default {
 		},
 	},
 	mounted() {
+		this.fetchOneCompany(this.idCompany);
 		this.setDateIntheState();
 	},
 	methods: {
@@ -352,6 +383,7 @@ export default {
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
+			fetchOneCompany: 'Company/fetchOneCompany',
 		}),
 		...mapMutations({
 			sendDateChange: 'Lodging/dateChange',
@@ -359,6 +391,7 @@ export default {
 			subOneService: 'Lodging/subOneService',
 			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
 			removeLodgingPassengers: 'Lodging/removeLodgingPassengers',
+			mountTotal: 'Lodging/setMountTotal',
 		}),
 	},
 };

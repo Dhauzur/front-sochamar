@@ -173,7 +173,7 @@ const actions = {
 					service: l.service[0],
 					company: state.company,
 					passengers: state.lodgingPassengers,
-					mountTotal: state.mountTotal,
+					mountTotal: l.mountTotal,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
 					.catch(error => {
@@ -467,6 +467,7 @@ const mutations = {
 							service: v.service,
 							company: v.company,
 							passengers: v.passengers,
+							mountTotal: v.mountTotal,
 						});
 				} else
 					tempLodging.add({
@@ -478,6 +479,7 @@ const mutations = {
 						service: v.service,
 						company: v.company,
 						passengers: v.passengers,
+						mountTotal: v.mountTotal,
 					});
 			});
 			state.lodgings = tempLodging;
@@ -486,7 +488,9 @@ const mutations = {
 	},
 	setMountTotal(state, value) {
 		const add = (a, b) => a + b;
-		state.mountTotal = value.reduce(add);
+		const result = value.finalyPrice.reduce(add);
+		console.log(result);
+		state.lodgings.update({ id: value.id, mountTotal: result });
 	},
 };
 
