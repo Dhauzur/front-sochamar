@@ -6,8 +6,8 @@ steps:
   entrypoint: npm
   args: ["run", "create-env"]
   env:
-    - "URL_API=${URL_API}"
-    - "URL_API_ABSOLUTE=${URL_API_ABSOLUTE}"
+    - "URL_API=${_URL_API}"
+    - "URL_API_ABSOLUTE=${_URL_API_ABSOLUTE}"
 - name: node:10.15.1
   entrypoint: npm
   args: ["run", "build"]
