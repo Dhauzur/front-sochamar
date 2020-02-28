@@ -19,7 +19,6 @@ const state = {
 	rangeDatePayments: {},
 	lodgingsCompany: [],
 	countLogingsCompany: 0,
-	mountTotal: null,
 	rangeDate: {
 		start: null,
 		end: null,
@@ -42,7 +41,6 @@ const getters = {
 	rooms: state => state.rooms,
 	companies: state => state.companies,
 	company: state => state.company,
-	mountTotal: state => state.mountTotal,
 };
 
 const actions = {
@@ -345,7 +343,6 @@ const mutations = {
 						.add(1, 'day'),
 					content: company.text,
 					service: ['[[1,1,1,1],[1,1,1,1]]'],
-					company: state.company,
 				});
 		} else {
 			state.message = {
@@ -488,30 +485,6 @@ const mutations = {
 			state.lodgings = tempLodging;
 			state.mirrorLodging = JSON.stringify(tempLodging);
 		} else state.lodgings = new DataSet([]);
-	},
-	/**
-	 * prices from company for calculate the total
-	 * @param {Array} prices
-	 */
-	setMountTotal(state, prices) {
-		let service = JSON.parse(state.lodgingSelect.service[0]);
-		let breakfast = 0,
-			lunch = 0,
-			dinner = 0,
-			lodging = 0;
-		if (prices) {
-			service.map(arr => {
-				arr.filter((item, index) => {
-					if (index === 0) breakfast = breakfast + item;
-					if (index === 1) lunch = lunch + item;
-					if (index === 2) dinner = dinner + item;
-					if (index === 3) lodging = lodging + item;
-				});
-			});
-		}
-		const mountTotal =
-			lodging * prices[3] + dinner * prices[2] + lunch * prices[1] + breakfast * prices[0];
-		state.lodgings.update({ id: state.lodgingSelect.id, mountTotal });
 	},
 };
 

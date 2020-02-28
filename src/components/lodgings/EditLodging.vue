@@ -260,12 +260,13 @@ export default {
 						verificate = false;
 				}
 			});
-			if (verificate)
+			if (verificate) {
 				this.sendDateChange({
 					dateStart: newDate.dateStartLodging,
 					dateEnd: newDate.dateEndLodging,
 				});
-			else {
+				this.setLodgingSelect(this.lodgingSelect.id);
+			} else {
 				this.$toasted.show('Existe un alojamiento para esas fechas');
 				if (newDate.start)
 					setTimeout(() => (this.dateStartLodging = this.oldDateLodging), 1);
@@ -361,6 +362,7 @@ export default {
 			subOneService: 'Lodging/subOneService',
 			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
 			removeLodgingPassengers: 'Lodging/removeLodgingPassengers',
+			setLodgingSelect: 'Lodging/setLodgingSelect',
 		}),
 	},
 };
