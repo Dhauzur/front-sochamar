@@ -538,7 +538,6 @@ export default {
 			fetchRooms: 'Lodging/fetchRooms',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
-			fetchOneCompany: 'Company/fetchOneCompany',
 		}),
 		...mapMutations({
 			createOneLodging: 'Lodging/createOneLodging',

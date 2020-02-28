@@ -258,12 +258,12 @@ export default {
 						verificate = false;
 				}
 			});
-			if (verificate) {
+			if (verificate)
 				this.sendDateChange({
 					dateStart: newDate.dateStartLodging,
 					dateEnd: newDate.dateEndLodging,
 				});
-			} else {
+			else {
 				this.$toasted.show('Existe un alojamiento para esas fechas');
 				if (newDate.start)
 					setTimeout(() => (this.dateStartLodging = this.oldDateLodging), 1);
