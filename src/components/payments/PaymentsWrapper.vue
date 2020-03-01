@@ -21,15 +21,18 @@
 			</b-row>
 			<b-row v-else id="nav" class="justify-content-center">
 				<b-col md="12" lg="12" class="background-module pb-3 px-4">
-					<h3 class="my-4">Gestión de Pagos</h3>
+					<h3 class="my-4">
+						Gestión pagos de <span style="color: orange">{{ company.name }}</span>
+					</h3>
 					<b-row>
 						<b-col cols="4">
+							Realizar nuevo pago
 							<b-form-select
 								id="state"
 								v-model="inputSelectLodgingOrNew"
 								size="sm"
 								:options="[
-									{ value: null, text: 'Seleccione' },
+									{ value: null, text: 'Seleccione', disabled: true },
 									{ value: 0, text: 'Agregar pago por alojamiento' },
 									{ value: 1, text: 'Agregar pago por fecha' },
 								]"
@@ -60,9 +63,14 @@
 								<payments-form :count="count" /> </b-collapse
 						></b-col>
 					</b-row>
-					<b-row class="mb-3 mt-3">
-						<b-col>
-							<h4>{{ company.name }}</h4>
+					<b-row align-h="end">
+						<b-col md="4" class="m-2 ">
+							<b-form-input
+								v-model="wordForFilter"
+								size="sm"
+								placeholder="Filtrar por monto o fecha"
+								@input="onChange"
+							></b-form-input>
 						</b-col>
 					</b-row>
 					<b-row
@@ -135,14 +143,6 @@
 							<h6>No hay pagos registrados</h6>
 						</b-col>
 					</b-row>
-					<b-col cols="6" offset="6">
-						<b-form-input
-							v-model="wordForFilter"
-							size="sm"
-							placeholder="Filtrar por monto o fecha"
-							@input="onChange"
-						></b-form-input>
-					</b-col>
 				</b-col>
 			</b-row>
 		</b-container>
