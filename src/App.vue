@@ -14,11 +14,6 @@
 								Ver registros de trabajo
 							</router-link> -->
 						</b-nav-text>
-						<b-nav-text class="mr-3">
-							<router-link v-if="company" :to="`/payments/${company}`">
-								Pagos
-							</router-link>
-						</b-nav-text>
 						<!-- <b-nav-text class="mr-3">
 							<router-link to="/mantenimiento">
 								Enviar trabajo
@@ -78,9 +73,10 @@ export default {
 	// background-image: linear-gradient(-125deg, #e8f0f9, #295173, #192835);
 	// background-image: linear-gradient(50deg, #502d55, #502d55, #8e4b71, #e7c8b7);
 	// background-image: linear-gradient(50deg, #7b77c1, #908ac7d9, #dcccf173, #f5e9f38a);
-	background-image: linear-gradient(50deg, #2c6975, #6bb2a0, #cde0c9, #cde0c9, #edecde);
+	// background-image: linear-gradient(50deg, #2c6975, #6bb2a0, #edecde, #edecde, white, white);
 	// background-image: linear-gradient(50deg, #8EC5FC, #9FACE6);
 	// background-image: linear-gradient(50deg, #6ed8cc#0f5076, );
+	background-image: linear-gradient(10deg, #adadad, #f3f3f3, white);
 	height: 100vh;
 	a {
 		text-decoration: none;
@@ -102,7 +98,7 @@ export default {
 }
 
 .shadoNavBar {
-	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+	// box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
 	background-color: white !important;
 }
 
@@ -130,13 +126,26 @@ export default {
 }
 
 .background-module {
-	background-color: #d3e0da75;
+	background-color: #f3f3f347;
 	border-radius: 20px;
 	max-height: 80vh !important;
 	overflow-y: auto;
+	padding-bottom: 20px;
 }
 
 .btn {
 	border-radius: 20px !important;
+	margin: 10px;
+	margin-left: 0px;
+}
+
+.btn-secondary {
+	background-color: white !important;
+	// background-image: linear-gradient(50deg, #38787d, #d4dcd875#d4dcd875);
+	// background-image: linear-gradient(50deg, #e1eadb, #d4dcd875);
+	// box-shadow: 0px 0px 5px 0px #red;
+
+	border: 1px solid black !important;
+	color: black !important;
 }
 </style>

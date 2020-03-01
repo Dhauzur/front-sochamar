@@ -3,9 +3,10 @@
 		<!-- list passenger -->
 		<b-row>
 			<b-col v-if="passengersList.length > 0">
-				<h5 class="text-secondary">Listado de pasajeros</h5>
+				<h5 class="text-secondary">Listado de personas</h5>
 				<ListPassengers
 					:api="api"
+					:passenger="passenger"
 					:selected-passenger="selectedPassenger"
 					:delete-one="deleteOne"
 					:passengers="passengersList"
@@ -19,7 +20,7 @@
 				<!-- avatar -->
 				<b-col class="mt-3">
 					<h5 class="text-secondary">
-						{{ editMode ? 'Editar pasajero' : 'Crear nuevo pasajero' }}
+						{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
 					</h5>
 					<label for="upload">
 						<b-img
@@ -185,6 +186,7 @@
 						<b-badge
 							v-for="(item, index) in passenger.documents"
 							:key="index"
+							class="p-2"
 							pill
 							variant="secondary"
 							:href="`${api}/${item}`"
