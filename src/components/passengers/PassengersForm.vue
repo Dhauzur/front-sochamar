@@ -3,9 +3,10 @@
 		<!-- list passenger -->
 		<b-row>
 			<b-col v-if="passengersList.length > 0">
-				<h5 class="text-secondary">Listado de pasajeros</h5>
+				<h5 class="text-secondary">Listado de personas</h5>
 				<ListPassengers
 					:api="api"
+					:passenger="passenger"
 					:selected-passenger="selectedPassenger"
 					:delete-one="deleteOne"
 					:passengers="passengersList"
@@ -19,7 +20,7 @@
 				<!-- avatar -->
 				<b-col class="mt-3">
 					<h5 class="text-secondary">
-						{{ editMode ? 'Editar pasajero' : 'Crear nuevo pasajero' }}
+						{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
 					</h5>
 					<label for="upload">
 						<b-img
@@ -76,18 +77,7 @@
 							><label for="lastName" class="mb-0 mt-2">Apellido</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
-							<b-input
-								id="lastName"
-								v-model.trim="$v.passenger.lastName.$model"
-							></b-input>
-							<div v-if="$v.passenger.lastName.$dirty">
-								<small v-if="!$v.passenger.lastName.required" class="text-danger">
-									Campo requerido
-								</small>
-								<small v-if="!$v.passenger.lastName.minLength" class="text-danger">
-									Minimo 3 Caracteres
-								</small>
-							</div>
+							<b-input id="lastName" v-model.trim="passenger.lastName"></b-input>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -102,17 +92,9 @@
 						<b-col cols="12" class="text-right">
 							<b-input
 								id="age"
-								v-model.number="$v.passenger.age.$model"
+								v-model.number="passenger.age"
 								type="number"
 							></b-input>
-							<div v-if="$v.passenger.age.$dirty">
-								<small v-if="!$v.passenger.age.required" class="text-danger">
-									Campo requerido
-								</small>
-								<small v-if="!$v.passenger.age.between" class="text-danger">
-									Escriba una edad correcta
-								</small>
-							</div>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -125,14 +107,9 @@
 						<b-col cols="12">
 							<b-form-select
 								id="state"
-								v-model="$v.passenger.state.$model"
+								v-model="passenger.state"
 								:options="['soltero', 'casado']"
 							></b-form-select>
-							<div v-if="$v.passenger.state.$dirty" class="text-right">
-								<small v-if="!$v.passenger.state.required" class="text-danger">
-									Campo requerido
-								</small>
-							</div>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -148,15 +125,10 @@
 							<b-form-group id="birthdate" label-for="input-1" class="pb-0 mb-0">
 								<b-form-input
 									id="input-1"
-									v-model="$v.passenger.birthdate.$model"
+									v-model="passenger.birthdate"
 									type="date"
 								/>
 							</b-form-group>
-							<div v-if="$v.passenger.birthdate.$dirty" class="text-right">
-								<small v-if="!$v.passenger.birthdate.required" class="text-danger">
-									Campo requerido
-								</small>
-							</div>
 						</b-col>
 					</b-row>
 				</b-col>
@@ -164,46 +136,42 @@
 				<b-col cols="6">
 					<b-row>
 						<b-col cols="12" class="text-left text-secondary"
-							><label for="appointment" class="mb-0 mt-2">Cargo</label></b-col
-						>
-						<b-col cols="12">
-							<b-input
-								id="appointment"
-								v-model="$v.passenger.appointment.$model"
-							></b-input>
-							<div v-if="$v.passenger.appointment.$dirty" class="text-right">
-								<small
-									v-if="!$v.passenger.appointment.required"
-									class="text-danger"
-								>
-									Campo requerido
-								</small>
-								<small
-									v-if="!$v.passenger.appointment.minLength"
-									class="text-danger"
-								>
-									Minimo 4 Caracteres
-								</small>
-							</div>
+							><label for="phone" class="mb-0 mt-2">Telefono</label>
+							<b-input id="phone" v-model="passenger.phone"></b-input>
 						</b-col>
 					</b-row>
 				</b-col>
 			</b-row>
 			<!-- function -->
 			<b-row>
-				<b-col cols="12" class="text-left text-secondary"
+				<b-col cols="6" class="text-left text-secondary"
 					><label for="function" class="mb-0 mt-2">Función</label>
+					<b-input id="function" v-model="passenger.function"></b-input>
 				</b-col>
-				<b-col cols="6">
-					<b-input id="function" v-model="$v.passenger.function.$model"></b-input>
-					<div v-if="$v.passenger.function.$dirty" class="text-right">
-						<small v-if="!$v.passenger.function.required" class="text-danger">
-							Campo requerido
-						</small>
-						<small v-if="!$v.passenger.function.minLength" class="text-danger">
-							Minimo 4 Caracteres
-						</small>
-					</div>
+				<b-col cols="6" class="text-left text-secondary">
+					<label for="appointment" class="mb-0 mt-2">Cargo</label>
+					<b-input id="appointment" v-model="passenger.appointment"></b-input>
+				</b-col>
+			</b-row>
+			<!-- regions -->
+			<b-row>
+				<b-col cols="6" class="text-left text-secondary">
+					<label for="regions" class="mb-0 mt-2">Region</label>
+					<b-form-select
+						id="regions"
+						v-model="passenger.region"
+						:options="regiones"
+						@change="setComunas"
+					></b-form-select>
+				</b-col>
+				<b-col cols="6" class="text-left text-secondary"
+					><label for="comuna" class="mb-0 mt-2">Comuna</label>
+					<b-form-select
+						id="comuna"
+						v-model="passenger.comuna"
+						:options="comunas"
+						:disabled="disableComunaInput"
+					></b-form-select>
 				</b-col>
 			</b-row>
 			<!-- documents -->
@@ -218,11 +186,12 @@
 						<b-badge
 							v-for="(item, index) in passenger.documents"
 							:key="index"
+							class="p-2"
 							pill
 							variant="secondary"
 							:href="`${api}/${item}`"
 							target="_blank"
-							>Documento {{ index + 1 }}
+							>{{ cutText(item) }}
 						</b-badge>
 					</div>
 				</b-col>
@@ -250,9 +219,6 @@
 						@click.prevent="submitForm"
 						>Guardar
 					</b-button>
-					<small v-if="errors" class="mt-2 d-block text-danger">
-						Debe llenar el formulario correctamente
-					</small>
 				</b-col>
 			</b-row>
 		</b-form>
@@ -261,17 +227,21 @@
 
 <script>
 import { validationMixin } from 'vuelidate';
-import { required, minLength, between } from 'vuelidate/lib/validators';
+import { required, minLength } from 'vuelidate/lib/validators';
 import ListPassengers from './ListPassengers';
-import { mapActions, mapGetters, mapMutations } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { api_absolute } from '@/config/index.js';
 import avatarDefault from '@/assets/user-icon.png';
+import comunasRegiones from '@/data/comunas-regiones.json';
 
 export default {
 	components: { ListPassengers },
 	mixins: [validationMixin],
 	data() {
 		return {
+			regiones: [],
+			comunas: [],
+			disableComunaInput: true,
 			api: api_absolute,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 			form: new FormData(),
@@ -290,10 +260,13 @@ export default {
 				firstName: '',
 				lastName: '',
 				state: '',
+				phone: '',
 				age: '',
 				birthdate: '',
 				appointment: '',
 				function: '',
+				region: '',
+				comuna: '',
 			},
 		};
 	},
@@ -309,7 +282,7 @@ export default {
 		},
 		...mapGetters({
 			passengersList: 'Passengers/passengers',
-			errorMessage: 'Passengers/errorMessage',
+			message: 'Passengers/message',
 		}),
 	},
 	validations: {
@@ -318,73 +291,56 @@ export default {
 				required,
 				minLength: minLength(3),
 			},
-			lastName: {
-				required,
-				minLength: minLength(3),
-			},
-			state: {
-				required,
-			},
-			age: {
-				required,
-				between: between(1, 130),
-			},
-			birthdate: {
-				required,
-			},
-			appointment: {
-				required,
-				minLength: minLength(4),
-			},
-			function: {
-				required,
-				minLength: minLength(4),
-			},
 		},
+	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
+	},
+	mounted() {
+		this.regiones = comunasRegiones.map(item => item.region);
 	},
 	methods: {
 		async submitForm() {
 			// validations
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				this.errors = true;
-			} else {
-				// disable button for request to api
+			if (!this.$v.$invalid) {
 				this.disabled = true;
-				// set data for send
 				for (let index = 0; index < this.passenger.documents.length; index++) {
 					this.form.append('documents', this.passenger.documents[index]);
 				}
-				this.form.append('passenger', this.passenger.passenger);
 				this.form.set('firstName', this.passenger.firstName.toLowerCase());
-				this.form.set('lastName', this.passenger.lastName.toLowerCase());
-				this.form.set('age', this.passenger.age.toString());
-				this.form.set('birthdate', this.passenger.birthdate.toLowerCase());
-				this.form.set('appointment', this.passenger.appointment.toLowerCase());
-				this.form.set('function', this.passenger.function.toLowerCase());
-				this.form.set('state', this.passenger.state.toLowerCase());
-
-				// put passenger or cretae a new passenger
+				if (this.passenger.passenger)
+					this.form.append('passenger', this.passenger.passenger);
+				if (this.passenger.lastName)
+					this.form.set('lastName', this.passenger.lastName.toLowerCase());
+				if (this.passenger.age) this.form.set('age', this.passenger.age.toString());
+				if (this.passenger.birthdate)
+					this.form.set('birthdate', this.passenger.birthdate.toLowerCase());
+				if (this.passenger.appointment)
+					this.form.set('appointment', this.passenger.appointment.toLowerCase());
+				if (this.passenger.function)
+					this.form.set('function', this.passenger.function.toLowerCase());
+				if (this.passenger.state)
+					this.form.set('state', this.passenger.state.toLowerCase());
+				if (this.passenger.phone)
+					this.form.set('phone', this.passenger.phone.toLowerCase());
+				if (this.passenger.region) this.form.set('region', this.passenger.region);
+				if (this.passenger.comuna) this.form.set('comuna', this.passenger.comuna);
 				if (this.editMode) {
 					await this.editPassenger({
 						payload: this.form,
 						id: this.passenger._id,
 					});
-					// show success message success or error
-					this.showMessageToasted('Pasagero editado con exito');
-					// update list passenger
 					this.getAllPassengers();
 				} else {
-					// Save the passenger
 					await this.savePassenger(this.form);
-					// show success message or error
-					this.showMessageToasted('Pasagero guardado con exito');
-					// update list passenger
 					this.getAllPassengers();
-					// clear inputs
 					this.clearInputs();
 				}
-				// disable button for request to api
 				this.disabled = false;
 			}
 		},
@@ -403,6 +359,11 @@ export default {
 			this.$refs['avatar'].reset();
 			this.editMode = true;
 			this.passenger = passenger;
+			if (this.passenger.region === undefined) {
+				this.disableComunaInput = true;
+			} else {
+				this.setComunas();
+			}
 		},
 		clearInputs() {
 			this.$refs['document'].reset();
@@ -418,23 +379,14 @@ export default {
 				birthdate: '',
 				appointment: '',
 				function: '',
+				region: '',
+				comuna: '',
 			};
 			this.editMode = false;
 			this.$v.$reset();
 		},
 		deleteOne(id) {
 			this.deleteOnePassenger(id).then(() => this.getAllPassengers());
-			this.showMessageToasted('Eliminado exitosamente');
-		},
-		showMessageToasted(msg) {
-			if (this.errorMessage !== '') {
-				this.$toasted.show(this.errorMessage, { type: 'error' });
-				this.setErrorMessage('');
-			} else {
-				this.$toasted.show(msg, {
-					type: 'success',
-				});
-			}
 		},
 		formatNames(files) {
 			if (files.length === 1) {
@@ -443,13 +395,24 @@ export default {
 				return `${files.length} files selected`;
 			}
 		},
+		cutText(text) {
+			const extencion = text.split('.').pop();
+			if (text.length > 10) {
+				return `${text.split('.')[0].substr(0, 10)}...${extencion}`;
+			}
+			return text;
+		},
+		setComunas() {
+			let temp = comunasRegiones.filter(item => item.region === this.passenger.region);
+			this.comunas = temp[0].comunas;
+			this.disableComunaInput = false;
+		},
 		...mapActions({
 			getAllPassengers: 'Passengers/fetchAllPassengers',
 			savePassenger: 'Passengers/savePassenger',
 			editPassenger: 'Passengers/editPassenger',
 			deleteOnePassenger: 'Passengers/deleteOnePassenger',
 		}),
-		...mapMutations({ setErrorMessage: 'Passengers/setErrorMessage' }),
 	},
 };
 </script>

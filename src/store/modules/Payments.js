@@ -4,16 +4,19 @@ import Axios from 'axios';
 const state = {
 	message: '',
 	payments: [],
+	loading: false,
 };
 
 const getters = {
 	message: state => state.message,
 	payments: state => state.payments,
+	loading: state => state.loading,
 };
 
 const actions = {
 	async fetchPaymentsOfTheCompany({ commit }, id) {
 		try {
+			commit('setLoading', true);
 			const response = await Axios.get(`${api}/payments/${id}`);
 			commit('setPayments', response.data.payments);
 			if (response.data.payments.length > 0) {
@@ -29,6 +32,7 @@ const actions = {
 				text: error.message,
 			});
 		}
+		commit('setLoading', false);
 	},
 	async savePayment({ commit }, payload) {
 		try {
@@ -85,6 +89,9 @@ const mutations = {
 		setTimeout(() => {
 			state.message = '';
 		}, 300);
+	},
+	setLoading(state, value) {
+		state.loading = value;
 	},
 };
 

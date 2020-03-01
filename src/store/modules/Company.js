@@ -85,7 +85,7 @@ const actions = {
 	},
 	async fetchOneCompany({ commit }, id) {
 		try {
-			const response = await Axios.get(`${api}/company/params?id=${id}`);
+			const response = await Axios.get(`${api}/company/${id}`);
 			commit('setCompany', response.data.company);
 		} catch (error) {
 			commit('setCompany', null);

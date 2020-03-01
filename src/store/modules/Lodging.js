@@ -458,6 +458,7 @@ const mutations = {
 							service: lodging.service,
 							company: lodging.company,
 							passengers: lodging.passengers,
+							mountTotal: lodging.mountTotal,
 						});
 				} else {
 					tempLodging.add({
@@ -469,6 +470,7 @@ const mutations = {
 						service: lodging.service,
 						company: lodging.company,
 						passengers: lodging.passengers,
+						mountTotal: lodging.mountTotal,
 					});
 				}
 			};

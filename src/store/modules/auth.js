@@ -20,6 +20,7 @@ console.log(api);
 const actions = {
 	async login({ commit, dispatch }, loginData) {
 		try {
+			commit('setLoading', true);
 			const response = await Axios.post(api + '/auth/login', loginData);
 			const { token } = response.data;
 			commit('setToken', token);
@@ -33,9 +34,11 @@ const actions = {
 			};
 			commit('setMessage', message);
 		}
+		commit('setLoading', false);
 	},
 	async register({ commit, dispatch }, registerData) {
 		try {
+			commit('setLoading', true);
 			const response = await Axios.post(api + '/auth/register', registerData);
 			const { token } = response.data;
 			commit('setToken', token);
@@ -46,6 +49,7 @@ const actions = {
 			const message = { type: 'error', text: 'El correo ya existe' };
 			commit('setMessage', message);
 		}
+		commit('setLoading', false);
 	},
 	async updatePassword({ commit }, recoverData) {
 		commit('setLoading', true);
