@@ -8,7 +8,7 @@
 					<b-navbar-nav>
 						<b-nav-text class="mr-3">
 							<router-link to="/lodgings">
-								Hospedajes
+								Actividades
 							</router-link>
 							<!-- <router-link to="/home">
 								Ver registros de trabajo
@@ -98,8 +98,7 @@ export default {
 }
 
 .shadoNavBar {
-	// box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
-	background-color: white !important;
+	background-color: transparent !important;
 }
 
 /* width */
@@ -141,11 +140,7 @@ export default {
 
 .btn-secondary {
 	background-color: white !important;
-	// background-image: linear-gradient(50deg, #38787d, #d4dcd875#d4dcd875);
-	// background-image: linear-gradient(50deg, #e1eadb, #d4dcd875);
-	// box-shadow: 0px 0px 5px 0px #red;
-
-	border: 1px solid black !important;
-	color: black !important;
+	border: 1px solid #111213 !important;
+	color: #111213 !important;
 }
 </style>

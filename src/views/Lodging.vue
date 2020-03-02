@@ -7,7 +7,7 @@
 					<b-col>
 						<b-row>
 							<b-col md="6" lg="3" class="my-2">
-								<label>Selecione compañia</label>
+								<label>Selecione lugar </label>
 								<b-form-select
 									v-model="selectCompany"
 									:options="companies"
@@ -18,46 +18,36 @@
 						<b-row>
 							<b-col class="mb-2 d-flex justify-content-start flex-wrap">
 								<b-button
-									v-if="getMirrorLodging || editMode"
-									id="guardar-btn"
-									style="color: green !important; border-color: green !important"
-									@click="saveLodgings()"
+									id="empresas-btn"
+									@click="$router.push({ name: 'companies' })"
 								>
-									Guardar
+									Lugares
 								</b-button>
-								<b-tooltip target="guardar-btn" placement="bottom">
-									Guardar cambios realizados</b-tooltip
-								>
-								<b-button
-									v-if="rooms.length > 0 && selectCompany"
-									id="hospedaje-btn"
-									@click="createOneLodging()"
-								>
-									+ Hospedaje
-								</b-button>
-								<b-tooltip target="hospedaje-btn" placement="bottom"
-									>Agregar un hospedaje (Haga doble click en la linea de
-									tiempo)</b-tooltip
+								<b-tooltip target="empresas-btn" placement="bottom"
+									>Gestión de lugares</b-tooltip
 								>
 								<b-button
 									v-if="company"
 									id="habitaciones-btn"
 									@click="$router.push({ name: 'rooms' })"
 								>
-									Habitaciones
+									Turno
 								</b-button>
 								<b-tooltip target="habitaciones-btn" placement="bottom"
-									>Gestión de habitaciones</b-tooltip
+									>Gestión de turnos</b-tooltip
 								>
 								<b-button
-									id="empresas-btn"
-									@click="$router.push({ name: 'companies' })"
+									v-if="rooms.length > 0 && selectCompany"
+									id="hospedaje-btn"
+									@click="createOneLodging()"
 								>
-									Empresas
+									+ Actividad
 								</b-button>
-								<b-tooltip target="empresas-btn" placement="bottom"
-									>Gestión de empresas</b-tooltip
+								<b-tooltip target="hospedaje-btn" placement="bottom"
+									>Agregar una actividad (Haga doble click en la linea de
+									tiempo)</b-tooltip
 								>
+
 								<b-button
 									v-if="company"
 									id="pagos-btn"
@@ -69,6 +59,17 @@
 									>Gestión de pagos</b-tooltip
 								>
 								<PassengersDialog />
+								<b-button
+									v-if="getMirrorLodging || editMode"
+									id="guardar-btn"
+									style="color: green !important; border-color: green !important"
+									@click="saveLodgings()"
+								>
+									Guardar
+								</b-button>
+								<b-tooltip target="guardar-btn" placement="bottom">
+									Guardar cambios realizados</b-tooltip
+								>
 							</b-col>
 						</b-row>
 					</b-col>
@@ -585,7 +586,7 @@ export default {
 	border: none !important;
 	border-radius: 0px 10px 0px 0px !important;
 	background-color: #ffd5bb;
-	color: black;
+	color: #111213;
 	transition: all ease-in-out 0.3s;
 }
 td,

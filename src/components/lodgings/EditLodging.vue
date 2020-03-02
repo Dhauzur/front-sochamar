@@ -141,34 +141,19 @@
 					</button>
 				</b-card>
 				<!-- increment passengers  -->
-				<b-col sm="12">
-					<button
-						type="button"
-						class=" btn btn-primary btn-md mt-2 btn-block"
-						@click="addOneService(serviceSelected)"
-					>
-						Agregar un pasajero todos los dias a {{ serviceSelected }}
-					</button>
-				</b-col>
-				<!-- decrement passengers -->
-				<b-col sm="12">
-					<button
-						type="button"
-						class=" btn btn-primary btn-md mt-2 btn-block"
-						@click="subOneService(serviceSelected)"
-					>
-						Disminuir un pasajero todos los dias a {{ serviceSelected }}
-					</button>
-				</b-col>
-				<!-- delete lodging -->
-				<b-col sm="12">
-					<button
-						type="button"
-						class="btn btn-danger btn-md mt-2  btn-block"
+				<b-col sm="12" class="d-flex justify-content-start flex-wrap">
+					<b-button @click="addOneService(serviceSelected)">
+						+1 {{ serviceSelected }}
+					</b-button>
+					<b-button @click="subOneService(serviceSelected)">
+						-1 {{ serviceSelected }}
+					</b-button>
+					<b-button
+						style="border: 1px solid red !important; color: red !important;"
 						@click="deleteLodging(lodgingSelect)"
 					>
 						Eliminar
-					</button>
+					</b-button>
 				</b-col>
 			</b-row>
 		</b-col>
