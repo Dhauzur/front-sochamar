@@ -474,6 +474,7 @@ export default {
 		},
 		lodgingSelect() {
 			if (
+				this.lodgingSelect &&
 				Array.isArray(this.lodgingSelect.passengers) &&
 				this.lodgingSelect.passengers.length
 			) {
