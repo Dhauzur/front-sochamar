@@ -5,12 +5,14 @@ const state = {
 	message: '',
 	passengers: [],
 	search: [],
+	loading: false,
 };
 
 const getters = {
 	message: state => state.message,
 	passengers: state => state.passengers,
 	passengersResultSearch: state => state.search,
+	loading: state => state.loading,
 };
 
 const actions = {
@@ -28,6 +30,7 @@ const actions = {
 	},
 	async savePassenger({ commit }, payload) {
 		try {
+			commit('setLoading', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.post(`${api}/passengers/create`, payload, config);
 			commit('setMessage', {
@@ -40,9 +43,11 @@ const actions = {
 				text: error.message,
 			});
 		}
+		commit('setLoading', false);
 	},
 	async editPassenger({ commit }, { payload, id }) {
 		try {
+			commit('setLoading', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.put(`${api}/passengers/${id}`, payload, config);
 			commit('setMessage', {
@@ -55,6 +60,7 @@ const actions = {
 				text: error.message,
 			});
 		}
+		commit('setLoading', false);
 	},
 	async deleteAllPassengers({ commit }) {
 		try {
@@ -98,6 +104,9 @@ const mutations = {
 		setTimeout(() => {
 			state.message = '';
 		}, 300);
+	},
+	setLoading(state, value) {
+		state.loading = value;
 	},
 };
 

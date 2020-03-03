@@ -9,13 +9,13 @@
 				<b-row>
 					<b-col cols="10" class="text-left">
 						<div v-if="item.passenger" class="d-inline-block">
-							<b-link :href="`${api}/${item.passenger}`" target="_blank">
+							<b-link :href="setAvatarlist(item.passenger)" target="_blank">
 								<b-img
 									v-bind="mainProps"
 									rounded="circle"
 									style="border: 1px solid #6bb2a0"
 									alt="Circle image"
-									:src="`${api}/${item.passenger}`"
+									:src="setAvatarlist(item.passenger)"
 								></b-img>
 							</b-link>
 						</div>
@@ -42,10 +42,6 @@
 <script>
 export default {
 	props: {
-		api: {
-			type: String,
-			required: false,
-		},
 		selectedPassenger: {
 			type: Function,
 			required: false,
@@ -77,6 +73,12 @@ export default {
 				class: 'm1',
 			},
 		};
+	},
+	methods: {
+		setAvatarlist(element) {
+			if (typeof element === 'string') return element;
+			return URL.createObjectURL(element);
+		},
 	},
 };
 </script>
