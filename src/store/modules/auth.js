@@ -15,8 +15,7 @@ const getters = {
 	},
 	loading: state => state.loading,
 };
-console.log('api');
-console.log(api);
+
 const actions = {
 	async login({ commit, dispatch }, loginData) {
 		try {

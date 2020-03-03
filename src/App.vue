@@ -143,4 +143,7 @@ export default {
 	border: 1px solid #111213 !important;
 	color: #111213 !important;
 }
+.pointer {
+	cursor: pointer;
+}
 </style>
