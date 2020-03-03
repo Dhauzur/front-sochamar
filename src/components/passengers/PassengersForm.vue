@@ -232,18 +232,20 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 import ListPassengers from './ListPassengers';
 import { mapActions, mapGetters } from 'vuex';
 import avatarDefault from '@/assets/user-icon.png';
-import comunasRegiones from '@/data/comunas-regiones.json';
+import { api_absolute } from '@/config/index.js';
 
 export default {
 	components: { ListPassengers },
 	mixins: [validationMixin],
 	data() {
 		return {
+			comunasRegiones: [],
 			regiones: [],
 			comunas: [],
 			disableComunaInput: true,
@@ -305,9 +307,14 @@ export default {
 		},
 	},
 	mounted() {
-		this.regiones = comunasRegiones.map(item => item.region);
+		this.fetchRegions();
 	},
 	methods: {
+		async fetchRegions() {
+			const response = await axios.get(`${api_absolute}/comunas-regiones.json`);
+			this.comunasRegiones = response.data;
+			this.regiones = this.comunasRegiones.map(item => item.region);
+		},
 		async submitForm() {
 			// validations
 			this.$v.$touch();
@@ -405,7 +412,7 @@ export default {
 			return text;
 		},
 		setComunas() {
-			let temp = comunasRegiones.filter(item => item.region === this.passenger.region);
+			let temp = this.comunasRegiones.filter(item => item.region === this.passenger.region);
 			this.comunas = temp[0].comunas;
 			this.disableComunaInput = false;
 		},
