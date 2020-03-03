@@ -1,17 +1,18 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Company from '@/views/Company.vue';
-import Home from '@/views/Home.vue';
-import Lodging from '@/views/Lodging.vue';
-import Login from '@/views/Login';
-import Maintenance from '@/views/Maintenance.vue';
-import PasswordReset from '@/views/PasswordReset';
-import Payments from '@/views/Payments';
-import Register from '@/views/Register';
-import Report from '@/views/Report.vue';
-import Room from '@/views/Room.vue';
-import Profile from '@/views/Profile';
 Vue.use(VueRouter);
+
+const Company = () => import('@/views/Company.vue');
+const Home = () => import('@/views/Home.vue');
+const Lodging = () => import('@/views/Lodging.vue');
+const Login = () => import('@/views/Login');
+const Maintenance = () => import('@/views/Maintenance.vue');
+const PasswordReset = () => import('@/views/PasswordReset');
+const Payments = () => import('@/views/Payments');
+const Register = () => import('@/views/Register');
+const Report = () => import('@/views/Report.vue');
+const Room = () => import('@/views/Room.vue');
+const Profile = () => import('@/views/Profile');
 
 const routes = [
 	{
