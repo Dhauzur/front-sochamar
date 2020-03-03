@@ -36,6 +36,7 @@
 <script>
 import UserBar from './components/auth/UserBar';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import cookie from 'js-cookie';
 
 export default {
 	components: { UserBar },
@@ -47,7 +48,8 @@ export default {
 	},
 	created() {
 		if (this.isLogged) {
-			this.setToken(localStorage.getItem('token'));
+			if (cookie.get('auth_jwt')) this.setToken(cookie.get('auth_jwt'));
+			else this.setToken(localStorage.getItem('token'));
 			this.fetchProfile();
 		}
 	},
