@@ -18,7 +18,6 @@ module.exports = {
 				printWidth: 100,
 				useTabs: true,
 				tabWidth: 4,
-				printWidth: 100,
 				semi: true,
 				bracketSpacing: true,
 				arrowParens: "avoid",
