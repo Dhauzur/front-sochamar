@@ -48,7 +48,7 @@ export default {
 	},
 	created() {
 		if (this.isLogged) {
-			if (cookie.get('auth_jwt')) this.setToken(cookie.get('auth_jwt'));
+			if (cookie.get('auth_token')) this.setToken(cookie.get('auth_token'));
 			else this.setToken(localStorage.getItem('token'));
 			this.fetchProfile();
 		}
