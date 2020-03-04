@@ -32,6 +32,7 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * El total del pago se calculara automaticamente
 * Agregado atributo jefatura y subordinados
 * Recortado a 10 caracteres el nombre que se muestra en documentos(pagos y pasajeros)
+* Agregada caracteristica lazy-loading al vue-router
 
 `0.0.0`_ (2020-02-01) (Mauro)
 -------------------------
