@@ -1,13 +1,13 @@
 <template>
 	<b-row id="nav">
-		<b-col class="background-module">
+		<b-col>
 			<Loading v-if="loading" :msj="loading" />
 			<template v-else>
 				<b-row>
-					<b-col md="6" lg="3">
+					<b-col>
 						<b-row>
-							<b-col class="my-2">
-								<label>Selecione compañia</label>
+							<b-col md="6" lg="3" class="my-2">
+								<label>Selecione lugar </label>
 								<b-form-select
 									v-model="selectCompany"
 									:options="companies"
@@ -16,54 +16,60 @@
 							</b-col>
 						</b-row>
 						<b-row>
-							<b-col
-								v-if="lodgings.length == 0 && company && rooms.length > 0"
-								class="mb-2"
-							>
-								<b-row>
-									<b-col>
-										<b-button
-											variant="primary"
-											class="col-12"
-											@click="createOneLodging()"
-										>
-											Crear hospedaje
-										</b-button>
-									</b-col>
-								</b-row>
-							</b-col>
-						</b-row>
-						<b-row>
-							<b-col v-if="getMirrorLodging || editMode" class="mb-2">
-								<button
-									type="button"
-									class="btn btn-primary btn-block"
+							<b-col class="mb-2 d-flex justify-content-start flex-wrap">
+								<b-button
+									id="empresas-btn"
+									@click="$router.push({ name: 'companies' })"
+								>
+									Lugares
+								</b-button>
+								<b-tooltip target="empresas-btn" placement="bottom"
+									>Gestión de lugares</b-tooltip
+								>
+								<b-button
+									v-if="company"
+									id="habitaciones-btn"
+									@click="$router.push({ name: 'rooms' })"
+								>
+									Turno
+								</b-button>
+								<b-tooltip target="habitaciones-btn" placement="bottom"
+									>Gestión de turnos</b-tooltip
+								>
+								<b-button
+									v-if="rooms.length > 0 && selectCompany"
+									id="hospedaje-btn"
+									@click="createOneLodging()"
+								>
+									+ Actividad
+								</b-button>
+								<b-tooltip target="hospedaje-btn" placement="bottom"
+									>Agregar una actividad (Haga doble click en la linea de
+									tiempo)</b-tooltip
+								>
+
+								<b-button
+									v-if="company"
+									id="pagos-btn"
+									@click="$router.push('/payments/' + company)"
+								>
+									Pagos
+								</b-button>
+								<b-tooltip target="pagos-btn" placement="bottom"
+									>Gestión de pagos</b-tooltip
+								>
+								<PassengersDialog />
+								<b-button
+									v-if="getMirrorLodging || editMode"
+									id="guardar-btn"
+									style="color: green !important; border-color: green !important"
 									@click="saveLodgings()"
 								>
 									Guardar
-								</button>
-							</b-col>
-						</b-row>
-						<b-row>
-							<b-col md="6" lg="6" class="mb-2">
-								<b-dropdown id="dropdown-1" text="Acciones" block>
-									<b-dropdown-item
-										v-if="rooms.length > 0 && selectCompany"
-										@click="createOneLodging()"
-										>Agregar hospedaje</b-dropdown-item
-									>
-									<b-dropdown-item
-										v-if="company"
-										@click="$router.push({ name: 'rooms' })"
-										>Gestionar habitaciones</b-dropdown-item
-									>
-									<b-dropdown-item @click="$router.push({ name: 'companies' })"
-										>Gestionar compañias</b-dropdown-item
-									>
-								</b-dropdown>
-							</b-col>
-							<b-col md="4" lg="6">
-								<PassengersDialog />
+								</b-button>
+								<b-tooltip target="guardar-btn" placement="bottom">
+									Guardar cambios realizados</b-tooltip
+								>
 							</b-col>
 						</b-row>
 					</b-col>
@@ -554,40 +560,41 @@ export default {
 </script>
 
 <style lang="css">
+.vis-selected {
+	background-color: #f95b29 !important;
+	color: white !important;
+	transition: all ease-in-out 0.3s;
+	box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75);
+}
 .vis-time-axis .vis-text,
 .vis-time-axis .vis-text.vis-saturday,
 .vis-time-axis .vis-text.vis-sunday {
 	color: #111213 !important;
 }
 
-.vis-foreground .vis-group {
-	border: 1px solid #ffffff7a;
-}
-/* .vis-time-axis .vis-grid.vis-odd {
-	background: #ffffff7a;
-} */
 .vis-time-axis .vis-grid.vis-saturday,
 .vis-time-axis .vis-grid.vis-sunday {
 	background: #ffffff7a;
 }
-.vis-time-axis .vis-grid.vis-sunday {
-	border-right: 2px solid #2c6975;
-}
 .inputService {
 	max-width: 60px;
 }
-
+.vis-foreground .vis-group {
+	border-bottom: 1px solid #f7f5f5ab;
+}
 .vis-item {
-	border-color: #2c6975;
-	border-width: 1px;
-	border-radius: 25px !important;
-	background-color: #e6e9ec;
-	box-shadow: 0px 0px 15px -3px rgba(0, 0, 0, 0.75);
+	border: none !important;
+	border-radius: 0px 10px 0px 0px !important;
+	background-color: #ffd5bb;
+	color: #111213;
+	transition: all ease-in-out 0.3s;
 }
 td,
 th {
 	padding: 2px !important;
+	padding-bottom: 10px !important;
 	color: #111213;
 	min-width: 60px;
+	border-color: transparent !important;
 }
 </style>

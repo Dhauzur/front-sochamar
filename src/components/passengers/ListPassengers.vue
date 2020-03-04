@@ -1,7 +1,11 @@
 <template>
 	<div class="list ">
 		<b-list-group v-for="(item, index) in passengers" :key="index" class="list-passanger">
-			<b-list-group-item class="background-module-color " @click="selectedPassenger(item)">
+			<b-list-group-item
+				class="background-module-color "
+				:class="{ 'list-passanger-select': item._id == passenger._id }"
+				@click="selectedPassenger(item)"
+			>
 				<b-row>
 					<b-col cols="10" class="text-left">
 						<div v-if="item.passenger" class="d-inline-block">
@@ -16,9 +20,12 @@
 							</b-link>
 						</div>
 						<div class="d-inline-block ml-1">
-							{{ item.firstName }} {{ item.lastName }} - {{ item.appointment }}/{{
-								item.function
-							}}
+							<span>{{ item.firstName }} {{ item.lastName }}</span>
+							<span v-if="item.appointment || item.function">
+								- {{ item.appointment
+								}}<span v-if="item.appointment && item.function">/</span
+								>{{ item.function }}</span
+							>
 						</div>
 					</b-col>
 					<b-col cols="2">
@@ -51,6 +58,10 @@ export default {
 			type: Array,
 			required: false,
 		},
+		passenger: {
+			type: Object,
+			required: false,
+		},
 		deleteOne: {
 			type: Function,
 			required: false,
@@ -69,18 +80,26 @@ export default {
 	},
 };
 </script>
-
-<style lang="css" scoped>
-.list-passanger {
-	margin-bottom: 5px;
+<style lang="css">
+.list-passanger-select {
+	background-color: black !important;
+	color: white;
+}
+.modal-content {
+	background-image: linear-gradient(50deg, #adadad, #f3f3f3, white, white);
+	font-family: 'Avenir', Helvetica, Arial, sans-serif;
+	color: black;
+}
+.list-group {
+	margin-bottom: 5px !important;
 }
 .background-module-color {
-	border: none !important;
-	background-image: linear-gradient(10deg, #6bb2a0, #cde0c9, #cde0c9, #edecde, #edecde);
-	border-radius: 35px !important;
+	border: none;
+	border-radius: 0px 35px 35px 0px !important;
+	background-color: white;
 }
 .list {
-	max-height: 150px;
+	max-height: 200px;
 	overflow-y: scroll;
 }
 </style>
