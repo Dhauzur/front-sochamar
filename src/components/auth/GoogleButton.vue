@@ -6,7 +6,7 @@
 			width="40"
 			height="40"
 		/>
-		<a :href="google_auth_url"> Ingresa con google </a>
+		<a :href="google_auth_url"> Ingrese con google </a>
 	</div>
 </template>
 
