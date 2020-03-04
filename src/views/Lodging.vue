@@ -473,10 +473,14 @@ export default {
 			});
 		},
 		lodgingSelect() {
-			if (this.lodgingSelect) {
-				if (this.lodgingSelect.passengers && this.editMode) {
-					this.setAllLodgingPassengers(this.lodgingSelect.passengers);
-				}
+			if (
+				this.lodgingSelect &&
+				Array.isArray(this.lodgingSelect.passengers) &&
+				this.lodgingSelect.passengers.length
+			) {
+				this.setAllLodgingPassengers(this.lodgingSelect.passengers);
+			} else {
+				this.setAllLodgingPassengers([]);
 			}
 		},
 	},

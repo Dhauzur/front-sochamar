@@ -5,7 +5,6 @@
 			<b-col v-if="passengersList.length > 0">
 				<h5 class="text-secondary">Listado de personas</h5>
 				<ListPassengers
-					:api="api"
 					:passenger="passenger"
 					:selected-passenger="selectedPassenger"
 					:delete-one="deleteOne"
@@ -182,16 +181,22 @@
 						class="text-secondary"
 						>Sin Documentos</small
 					>
-					<div v-if="editMode && typeof passenger.documents[0] === 'string'">
+					<div
+						v-if="
+							editMode &&
+								Array.isArray(passenger.documents) &&
+								passenger.documents.length
+						"
+					>
 						<b-badge
 							v-for="(item, index) in passenger.documents"
 							:key="index"
 							class="p-2"
 							pill
 							variant="secondary"
-							:href="`${api}/${item}`"
+							:href="item.url"
 							target="_blank"
-							>{{ cutText(item) }}
+							>{{ cutText(item.name) }}
 						</b-badge>
 					</div>
 				</b-col>
@@ -213,11 +218,12 @@
 			<b-row>
 				<b-col class="mt-4">
 					<b-button
-						:disabled="disabled"
+						:disabled="loading"
 						block
 						class="btn btn-primary d-block"
 						@click.prevent="submitForm"
 						>Guardar
+						<b-spinner v-if="loading" small type="grow"></b-spinner>
 					</b-button>
 				</b-col>
 			</b-row>
@@ -226,26 +232,25 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 import ListPassengers from './ListPassengers';
 import { mapActions, mapGetters } from 'vuex';
-import { api_absolute } from '@/config/index.js';
 import avatarDefault from '@/assets/user-icon.png';
-import comunasRegiones from '@/data/comunas-regiones.json';
+import { api_absolute } from '@/config/index.js';
 
 export default {
 	components: { ListPassengers },
 	mixins: [validationMixin],
 	data() {
 		return {
+			comunasRegiones: [],
 			regiones: [],
 			comunas: [],
 			disableComunaInput: true,
-			api: api_absolute,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 			form: new FormData(),
-			disabled: false,
 			editMode: false,
 			selected: {},
 			formTouched: false,
@@ -273,7 +278,7 @@ export default {
 	computed: {
 		srcImageAvatar() {
 			if (typeof this.passenger.passenger === 'string') {
-				return `${this.api}/${this.passenger.passenger}`;
+				return this.passenger.passenger;
 			} else if (this.passenger.passenger) {
 				return URL.createObjectURL(this.passenger.passenger);
 			} else {
@@ -281,6 +286,7 @@ export default {
 			}
 		},
 		...mapGetters({
+			loading: 'Passengers/loading',
 			passengersList: 'Passengers/passengers',
 			message: 'Passengers/message',
 		}),
@@ -301,14 +307,18 @@ export default {
 		},
 	},
 	mounted() {
-		this.regiones = comunasRegiones.map(item => item.region);
+		this.fetchRegions();
 	},
 	methods: {
+		async fetchRegions() {
+			const response = await axios.get(`${api_absolute}/comunas-regiones.json`);
+			this.comunasRegiones = response.data;
+			this.regiones = this.comunasRegiones.map(item => item.region);
+		},
 		async submitForm() {
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				this.disabled = true;
 				for (let index = 0; index < this.passenger.documents.length; index++) {
 					this.form.append('documents', this.passenger.documents[index]);
 				}
@@ -341,7 +351,6 @@ export default {
 					this.getAllPassengers();
 					this.clearInputs();
 				}
-				this.disabled = false;
 			}
 		},
 		setDocuments(e) {
@@ -403,7 +412,7 @@ export default {
 			return text;
 		},
 		setComunas() {
-			let temp = comunasRegiones.filter(item => item.region === this.passenger.region);
+			let temp = this.comunasRegiones.filter(item => item.region === this.passenger.region);
 			this.comunas = temp[0].comunas;
 			this.disableComunaInput = false;
 		},
@@ -416,9 +425,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.pointer {
-	cursor: pointer;
-}
-</style>

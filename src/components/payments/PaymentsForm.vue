@@ -56,8 +56,8 @@
 					Voucher
 				</label>
 				<div v-if="editVoucher || item">
-					<b-link v-if="typeof editVoucher === 'string'" :href="`${api}/${editVoucher}`">
-						{{ editVoucher }}
+					<b-link v-if="typeof editVoucher === 'string'" :href="editVoucher">
+						{{ cutText(voucherName) }}
 					</b-link>
 				</div>
 				<div v-else>
@@ -95,7 +95,6 @@
 </template>
 
 <script>
-import { api_absolute } from '@/config/index.js';
 import { mapActions, mapGetters } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
@@ -123,7 +122,6 @@ export default {
 	},
 	data() {
 		return {
-			api: api_absolute,
 			text: '',
 			idCompany: this.$route.params.company,
 			form: new FormData(),
@@ -132,6 +130,7 @@ export default {
 			mount: '',
 			voucher: null,
 			editVoucher: null,
+			voucherName: null,
 			voucherList: null,
 			comments: '',
 			errors: '',
@@ -159,7 +158,10 @@ export default {
 		item: {
 			handler: function(value) {
 				if (value) {
-					if (value.voucher) this.editVoucher = value.voucher;
+					if (value.voucher) {
+						this.editVoucher = value.voucher.url;
+						this.voucherName = value.voucher.name;
+					}
 					this.startDate = value.startDate;
 					this.endDate = value.endDate;
 					this.mount = value.mount;
@@ -197,6 +199,13 @@ export default {
 					this.updatePayments(this.idCompany);
 				}
 			}
+		},
+		cutText(text) {
+			const extencion = text.split('.').pop();
+			if (text.length > 10) {
+				return `${text.split('.')[0].substr(0, 10)}...${extencion}`;
+			}
+			return text;
 		},
 		...mapActions({
 			save: 'Payments/savePayment',

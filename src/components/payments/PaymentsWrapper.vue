@@ -94,9 +94,9 @@
 									<b-link
 										v-if="row.item.voucher"
 										class="linka"
-										:href="`${api}/${row.item.voucher}`"
+										:href="row.item.voucher.url"
 										target="_blank"
-										>{{ cutText(row.item.voucher) }}</b-link
+										>{{ cutText(row.item.voucher.name) }}</b-link
 									>
 
 									<h6 v-else>Vacio</h6>
@@ -150,7 +150,6 @@
 </template>
 
 <script>
-import { api_absolute } from '@/config/index.js';
 import PaymentsForm from '@/components/payments/PaymentsForm';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
 
@@ -202,7 +201,6 @@ export default {
 	},
 	data() {
 		return {
-			api: api_absolute,
 			idCompany: this.$route.params.company,
 			fields: [
 				{ key: 'startDate', label: 'Inicio' },

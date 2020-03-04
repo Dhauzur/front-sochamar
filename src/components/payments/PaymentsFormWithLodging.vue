@@ -43,8 +43,15 @@
 				></b-form-file>
 			</b-col>
 			<b-col cols="12" md="3" class="mt-4">
-				<b-button block variant="primary" class="btn-sm mt-2" @click="submit">
+				<b-button
+					:disabled="loading"
+					block
+					variant="primary"
+					class="btn-sm mt-2"
+					@click="submit"
+				>
 					Agregar Pago
+					<b-spinner v-if="loading" small type="grow"></b-spinner>
 				</b-button>
 				<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
 			</b-col>
@@ -55,7 +62,7 @@
 <script>
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
 	mixins: [validationMixin],
@@ -113,6 +120,9 @@ export default {
 			lodging.push({ value: null, text: 'Seleccione' });
 			return lodging;
 		},
+		...mapGetters({
+			loading: 'Payments/loadingSave',
+		}),
 	},
 	validations: {
 		mount: {

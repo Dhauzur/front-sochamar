@@ -161,8 +161,8 @@ const actions = {
 					start: l.start,
 					end: l.end,
 					service: l.service[0],
+					passengers: l.passengers,
 					company: state.company,
-					passengers: state.lodgingPassengers,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
 					.catch(error => {
@@ -188,9 +188,17 @@ const mutations = {
 	},
 	updateLodgingPassengers(state, value) {
 		state.lodgingPassengers.push(value);
+		state.lodgings.update({
+			id: state.lodgingSelect.id,
+			passengers: state.lodgingPassengers,
+		});
 	},
 	removeLodgingPassengers(state, value) {
 		state.lodgingPassengers.splice(value, 1);
+		state.lodgings.update({
+			id: state.lodgingSelect.id,
+			passengers: state.lodgingPassengers,
+		});
 	},
 	setUpdatingService(state, value) {
 		state.updatingService = value;

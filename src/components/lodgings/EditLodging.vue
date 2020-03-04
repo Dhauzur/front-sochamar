@@ -199,7 +199,7 @@ export default {
 	computed: {
 		passengerFormatted() {
 			return this.passengers.map(item => ({
-				search: `${item.firstName} ${item.lastName}`,
+				search: `${item.firstName} ${item.lastName ? item.lastName : ''}`,
 				data: item,
 			}));
 		},
