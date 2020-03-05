@@ -1,11 +1,10 @@
 import { api } from '@/config/index.js';
 import Axios from 'axios';
 import router from '@/router/index.js';
-import cookie from 'js-cookie';
 
 const state = {
 	message: {},
-	token: localStorage.getItem('token') || cookie.get('auth_token'),
+	token: localStorage.getItem('token') || '',
 	loading: false,
 };
 
@@ -91,7 +90,6 @@ const mutations = {
 	},
 	logout: state => {
 		localStorage.removeItem('token');
-		cookie.remove('auth_token');
 		delete Axios.defaults.headers.common['Authorization'];
 		state.token = '';
 		router.push('/login');
