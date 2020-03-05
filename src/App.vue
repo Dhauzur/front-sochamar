@@ -65,26 +65,27 @@ export default {
 </style>
 <style lang="scss">
 @import '../node_modules/placeholder-loading/src/scss/placeholder-loading';
+@import url('https://fonts.googleapis.com/css?family=Kanit|Poppins|Righteous&display=swap');
 #app {
-	font-family: 'Avenir', Helvetica, Arial, sans-serif;
+	font-family: 'Poppins', sans-serif;
+	// font-family: 'Kanit', sans-serif;
+	// font-family: 'Righteous', cursive;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
-	color: #111213;
+	color: #ffffff;
 	overflow-x: hidden !important;
-	// background-image: linear-gradient(-125deg, #e8f0f9, #295173, #192835);
-	// background-image: linear-gradient(50deg, #502d55, #502d55, #8e4b71, #e7c8b7);
-	// background-image: linear-gradient(50deg, #7b77c1, #908ac7d9, #dcccf173, #f5e9f38a);
-	// background-image: linear-gradient(50deg, #2c6975, #6bb2a0, #edecde, #edecde, white, white);
-	// background-image: linear-gradient(50deg, #8EC5FC, #9FACE6);
-	// background-image: linear-gradient(50deg, #6ed8cc#0f5076, );
-	background-image: linear-gradient(10deg, #adadad, #f3f3f3, white);
+	// background-image: linear-gradient(10deg, #adadad, #f3f3f3, white);
+	background-color: transparent;
+	background-image: linear-gradient(80deg, #676b76, #676b76d4, #676b76);
 	height: 100vh;
-	a {
+	a,
+	.navbar-brand {
 		text-decoration: none;
+		color: #ffffff;
 	}
 	a:hover {
-		color: #8483e0;
+		color: #f3cfd4;
 	}
 }
 
@@ -92,11 +93,26 @@ export default {
 	padding: 30px;
 	a {
 		font-weight: bold;
-		color: #2c3e50;
+		color: #ffffff;
 		&.router-link-exact-active {
-			color: #42b983;
+			color: #f3cfd4;
 		}
 	}
+}
+
+.borderModule {
+	border-radius: 30px;
+	box-shadow: 0px 0px 20px -8px rgb(0, 0, 0);
+}
+
+input {
+	background: #c1c5d1 !important;
+	border: none !important;
+	color: #676b76;
+}
+input:focus {
+	outline-width: 0;
+	background: #ffffff7a !important;
 }
 
 .shadoNavBar {
@@ -127,7 +143,7 @@ export default {
 }
 
 .background-module {
-	background-color: #f3f3f347;
+	background-color: #f3f3f31f;
 	border-radius: 20px;
 	max-height: 80vh !important;
 	overflow-y: auto;
@@ -141,9 +157,15 @@ export default {
 }
 
 .btn-secondary {
-	background-color: white !important;
-	border: 1px solid #111213 !important;
-	color: #111213 !important;
+	background-color: #ecb099 !important;
+	border: none !important;
+	color: #ffffff !important;
+	transition: all ease-in-out 0.9s;
+}
+.btn-secondary:hover {
+	background-image: linear-gradient(10deg, #ecb099, #ff591b);
+
+	transition: all ease-in-out 1.9s;
 }
 .pointer {
 	cursor: pointer;

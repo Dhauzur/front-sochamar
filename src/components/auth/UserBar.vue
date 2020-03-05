@@ -1,6 +1,6 @@
 <template lang="html">
 	<b-navbar-nav v-if="isLogged" class="ml-auto">
-		<b-nav-text class="mr-sm-3 pt-4" right v-text="fullName"> </b-nav-text>
+		<b-nav-text class="mr-sm-3 pt-4" style="color: white" right v-text="fullName"> </b-nav-text>
 		<b-nav-item-dropdown text="Lang" no-caret right>
 			<template v-slot:button-content>
 				<b-img alt="" rounded="circle" v-bind="mainProps" :src="profileAvatar"></b-img>
@@ -45,5 +45,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="css" scoped></style>

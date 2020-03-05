@@ -13,6 +13,12 @@ Usar las siguientes palabras al inicio para añadir registros
 
 Se debe seguir este mismo esquema, previamente a solicitar el PR.
 
+`0.0.2`_ (2020-02-09) (Mauro, Jesus, Javier)
+* Corregido solapamiento de lodgings en diferentes eventos
+* Corregido input que se abria al selecionar un lodging (Este lanzaba error al ingresar datos)
+* Corregido total 0 cuando no existian servicios ingresados en dicha fecha
+* Remplazado estilos claros de la aplicacion a colores oscuros y cremas
+
 `0.0.1`_ (2020-02-09) (Mauro, Jesus, Javier)
 -------------------------
 * Agregado eslit+prettier
