@@ -22,42 +22,41 @@
 									@click="$router.push({ name: 'companies' })"
 								>
 									Lugares
+									<b-tooltip target="empresas-btn" placement="bottom">
+										Gestión de lugares
+									</b-tooltip>
 								</b-button>
-								<b-tooltip target="empresas-btn" placement="bottom"
-									>Gestión de lugares</b-tooltip
-								>
 								<b-button
 									v-if="company"
 									id="habitaciones-btn"
 									@click="$router.push({ name: 'rooms' })"
 								>
 									Turno
+									<b-tooltip target="habitaciones-btn" placement="bottom">
+										Gestión de turnos
+									</b-tooltip>
 								</b-button>
-								<b-tooltip target="habitaciones-btn" placement="bottom"
-									>Gestión de turnos</b-tooltip
-								>
 								<b-button
 									v-if="rooms.length > 0 && selectCompany"
 									id="hospedaje-btn"
 									@click="createOneLodging()"
 								>
 									+ Actividad
+									<b-tooltip target="hospedaje-btn" placement="bottom">
+										Agregar una actividad (Haga doble click en la linea de
+										tiempo)
+									</b-tooltip>
 								</b-button>
-								<b-tooltip target="hospedaje-btn" placement="bottom"
-									>Agregar una actividad (Haga doble click en la linea de
-									tiempo)</b-tooltip
-								>
-
 								<b-button
 									v-if="company"
 									id="pagos-btn"
 									@click="$router.push('/payments/' + company)"
 								>
 									Pagos
+									<b-tooltip target="pagos-btn" placement="bottom">
+										Gestión de pagos
+									</b-tooltip>
 								</b-button>
-								<b-tooltip target="pagos-btn" placement="bottom"
-									>Gestión de pagos</b-tooltip
-								>
 								<PassengersDialog />
 								<b-button
 									v-if="getMirrorLodging || editMode"
@@ -66,10 +65,10 @@
 									@click="saveLodgings()"
 								>
 									Guardar
+									<b-tooltip target="guardar-btn" placement="bottom">
+										Guardar cambios realizados
+									</b-tooltip>
 								</b-button>
-								<b-tooltip target="guardar-btn" placement="bottom">
-									Guardar cambios realizados</b-tooltip
-								>
 							</b-col>
 						</b-row>
 					</b-col>
