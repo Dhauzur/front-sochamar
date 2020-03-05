@@ -36,10 +36,14 @@
 <script>
 import UserBar from './components/auth/UserBar';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
-import cookie from 'js-cookie';
 
 export default {
 	components: { UserBar },
+	data() {
+		return {
+			oauthJWT: '',
+		};
+	},
 	computed: {
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
@@ -47,15 +51,25 @@ export default {
 		}),
 	},
 	created() {
-		if (this.isLogged) {
-			if (cookie.get('auth_token')) this.setToken(cookie.get('auth_token'));
-			else this.setToken(localStorage.getItem('token'));
+		this.oauthJWT = this.$route.query.token;
+		if (this.oauthJWT) {
+			this.deleteQueryFromRoute();
+			this.setToken(this.oauthJWT);
 			this.fetchProfile();
+			this.oauthJWT = '';
+		} else {
+			if (this.isLogged) {
+				this.setToken(localStorage.getItem('token'));
+				this.fetchProfile();
+			}
 		}
 	},
 	methods: {
 		...mapMutations({ setToken: 'Auth/setToken' }),
 		...mapActions({ fetchProfile: 'User/fetchProfile' }),
+		deleteQueryFromRoute() {
+			this.$router.replace({ query: null });
+		},
 	},
 };
 </script>
