@@ -75,7 +75,7 @@ const actions = {
 				commit('setPlaces', response.data.place);
 				commit('setMessage', {
 					type: 'success',
-					text: 'lugares descargadas',
+					text: 'lugares descargados',
 				});
 			})
 			.catch(error => {
@@ -98,7 +98,7 @@ const actions = {
 				commit('setLodgings', response.data.lodgings);
 				commit('setMessage', {
 					type: 'success',
-					text: 'Hospedajes descargadas ',
+					text: 'Hospedajes descargados ',
 				});
 			})
 			.catch(error => {
@@ -118,7 +118,7 @@ const actions = {
 			commit('setRooms', rooms);
 			commit('setMessage', {
 				type: 'success',
-				text: 'Habitaciones descargados',
+				text: 'Habitaciones descargadas',
 			});
 		} catch (e) {
 			commit('setRooms', null);
