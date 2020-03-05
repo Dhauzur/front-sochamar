@@ -230,16 +230,25 @@ export default {
 				end: moment().add(7, 'day'),
 				zoomMin: 604800000,
 				zoomMax: 5184000000,
-				hiddenDates: {
-					start: '2019-01-01 12:00:00',
-					end: '2019-01-01 11:00:00',
-					repeat: 'daily',
-				},
+				hiddenDates: [
+					{
+						start: '2019-01-01 00:00:00',
+						end: '2019-01-01 06:00:00',
+						repeat: 'daily',
+					},
+					{
+						start: '2019-01-01 16:00:00',
+						end: '2019-01-01 24:00:00',
+						repeat: 'daily',
+					},
+				],
 				onUpdate: (item, callback) => {
 					if (this.company) {
 						this.setModeEdit(true);
-						callback(item);
-						this.updateService(item);
+						if (this.verifyOverlay(item)) {
+							callback(item);
+							this.updateService(item);
+						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMoving: (item, callback) => {
@@ -258,7 +267,7 @@ export default {
 				},
 				onAdd: (item, callback) => {
 					if (this.company) {
-						item.start = moment(item.start).hours(16);
+						item.start = moment(item.start).hours(15);
 						item.end = moment(item.start)
 							.hours(12)
 							.add(1, 'day');
@@ -299,11 +308,13 @@ export default {
 						var itemService = [];
 						itemService.push(JSON.stringify(service));
 						item.service = itemService;
-						item.start = moment(item.start).hours(16);
+						item.start = moment(item.start).hours(15);
 						item.end = moment(item.end).hours(12);
-						this.setModeEdit(true);
-						this.updateService(item);
-						callback(item);
+						if (this.verifyOverlay(item)) {
+							this.setModeEdit(true);
+							this.updateService(item);
+							callback(item);
+						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 			},
@@ -333,7 +344,6 @@ export default {
 						(dailyService.service.accommodation
 							? dailyService.service.accommodation * this.prices.prices[3]
 							: 0);
-					if (dayPrice == '0000') dayPrice = 0;
 					prices.push(dayPrice);
 				});
 			return prices;
@@ -356,8 +366,7 @@ export default {
 					id: null,
 				});
 
-			// eslint-disable-next-line no-unused-vars
-			this.lodgings.forEach((l, il) => {
+			this.lodgings.forEach(l => {
 				var index = 0;
 				if (!this.editMode)
 					daysLodging.forEach(day => {
@@ -500,10 +509,20 @@ export default {
 		verifyOverlay(value) {
 			let verificate = true;
 			this.lodgings.forEach(lod => {
-				if (lod.group == value.group) {
+				if (lod.group == value.group && lod.id != value.id) {
+					console.log('HOURS =====');
+					console.log('Nuevo lodgings');
+					console.log(value.id);
+					console.log(moment(value.start).format('YYYY-MM-DD hh:mm'));
+					console.log(moment(value.end).format('YYYY-MM-DD hh:mm'));
+					console.log('Viejo lodgings');
+					console.log(lod.id);
+					console.log(moment(lod.start).format('YYYY-MM-DD hh:mm'));
+					console.log(moment(lod.end).format('YYYY-MM-DD hh:mm'));
+					console.log('===========');
 					if (
-						moment(value.start).isSameOrAfter(moment(lod.start)) &&
-						moment(value.end).isSameOrBefore(moment(lod.end))
+						moment(value.start).isSameOrBefore(moment(lod.end)) &&
+						moment(value.end).isSameOrAfter(moment(lod.start))
 					)
 						verificate = false;
 				}

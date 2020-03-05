@@ -225,7 +225,7 @@ const mutations = {
 		state.lodgings = new DataSet([]);
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
-			start: moment(value.dateStart).hours(16),
+			start: moment(value.dateStart).hours(15),
 			end: moment(value.dateEnd).hours(12),
 		});
 		let service = [];
@@ -247,7 +247,7 @@ const mutations = {
 			id: state.lodgingSelect.id,
 			service: itemService,
 		});
-		tempLodging.start = moment(value.dateStart).hours(16);
+		tempLodging.start = moment(value.dateStart).hours(15);
 		tempLodging.end = moment(value.dateEnd).hours(12);
 		tempLodging.service = itemService;
 		state.lodgingSelect = tempLodging;
@@ -333,9 +333,9 @@ const mutations = {
 			if (company.text == 'Turismo')
 				state.lodgings.add({
 					group: state.rooms.getIds()[0],
-					start: moment().hours(16),
+					start: moment().hours(15),
 					end: moment()
-						.hours(13)
+						.hours(12)
 						.add(1, 'day'),
 					content: company.text,
 					service: ['[[0,0,0,0],[0,0,0,0]]'],
@@ -344,9 +344,9 @@ const mutations = {
 			else
 				state.lodgings.add({
 					group: state.rooms.getIds()[0],
-					start: moment().hours(16),
+					start: moment().hours(15),
 					end: moment()
-						.hours(13)
+						.hours(12)
 						.add(1, 'day'),
 					content: company.text,
 					service: ['[[1,1,1,1],[1,1,1,1]]'],
@@ -460,8 +460,8 @@ const mutations = {
 						tempLodging.add({
 							id: lodging.id,
 							group: lodging.group,
-							start: moment(lodging.start).hours(16),
-							end: moment(lodging.end).hours(13),
+							start: moment(lodging.start).hours(15),
+							end: moment(lodging.end).hours(12),
 							content: company.text,
 							service: lodging.service,
 							company: lodging.company,
@@ -472,8 +472,8 @@ const mutations = {
 					tempLodging.add({
 						id: lodging.id,
 						group: lodging.group,
-						start: moment(lodging.start).hours(16),
-						end: moment(lodging.end).hours(13),
+						start: moment(lodging.start).hours(15),
+						end: moment(lodging.end).hours(12),
 						content: company.text,
 						service: lodging.service,
 						company: lodging.company,
