@@ -16,7 +16,7 @@ const getters = {
 };
 
 const actions = {
-	async fetchPaymentsOfTheCompany({ commit }, id) {
+	async fetchPaymentsOfThePlace({ commit }, id) {
 		try {
 			commit('setLoading', true);
 			const response = await Axios.get(`${api}/payments/${id}`);

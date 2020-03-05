@@ -6,10 +6,10 @@
 				<b-row class="mb-3">
 					<b-col cols="7">
 						<b-form-input
-							v-model="filterCompanyWord"
+							v-model="filterPlaceWord"
 							size="sm"
 							placeholder="Filtrar empresas"
-							@keyup="filterCompany(filterCompanyWord)"
+							@keyup="filterPlace(filterPlaceWord)"
 						></b-form-input>
 					</b-col>
 				</b-row>
@@ -29,9 +29,9 @@
 							</thead>
 							<tbody>
 								<tr
-									v-for="(c, index) in companies"
+									v-for="(c, index) in places"
 									:key="index"
-									@click="selectCompany(c.id)"
+									@click="selectPlace(c.id)"
 								>
 									<td>{{ c.name }}</td>
 									<td>{{ c.rut }}</td>
@@ -62,7 +62,7 @@
 										</table>
 									</td>
 									<td class="p-2">
-										<b-button variant="danger" @click="deleteCompany(c.id)">
+										<b-button variant="danger" @click="deletePlace(c.id)">
 											X
 										</b-button>
 									</td>
@@ -182,7 +182,7 @@ import { required, minLength } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
-	name: 'Company',
+	name: 'Place',
 	mixins: [validationMixin],
 	data() {
 		return {
@@ -195,14 +195,14 @@ export default {
 				lodging: '',
 			},
 			errors: '',
-			filterCompanyWord: '',
+			filterPlaceWord: '',
 		};
 	},
 	computed: {
 		...mapGetters({
-			companies: 'Company/companies',
-			companySelected: 'Company/companySelected',
-			message: 'Company/message',
+			places: 'Place/places',
+			placeSelected: 'Place/placeSelected',
+			message: 'Place/message',
 		}),
 	},
 	watch: {
@@ -213,7 +213,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.fetchCompany();
+		this.fetchPlace();
 	},
 	validations: {
 		form: {
@@ -252,7 +252,7 @@ export default {
 					this.form.dinner,
 					this.form.lodging
 				);
-				this.createCompany({ name: this.form.name, rut: this.form.rut, prices: tempArray });
+				this.createPlace({ name: this.form.name, rut: this.form.rut, prices: tempArray });
 				this.clearInputs();
 				this.$v.$reset();
 			}
@@ -268,13 +268,13 @@ export default {
 			};
 		},
 		...mapActions({
-			fetchCompany: 'Company/fetchCompany',
-			createCompany: 'Company/createCompany',
-			deleteCompany: 'Company/deleteCompany',
+			fetchPlace: 'Place/fetchPlace',
+			createPlace: 'Place/createPlace',
+			deletePlace: 'Place/deletePlace',
 		}),
 		...mapMutations({
-			selectCompany: 'Company/selectCompany',
-			filterCompany: 'Company/filterCompany',
+			selectPlace: 'Place/selectPlace',
+			filterPlace: 'Place/filterPlace',
 		}),
 	},
 };

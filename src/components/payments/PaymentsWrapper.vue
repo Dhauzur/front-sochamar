@@ -22,7 +22,7 @@
 			<b-row v-else id="nav" class="justify-content-center">
 				<b-col md="12" lg="12" class="background-module pb-3 px-4">
 					<h3 class="my-4">
-						Gestión pagos de <span style="color: orange">{{ company.name }}</span>
+						Gestión pagos de <span style="color: orange">{{ place.name }}</span>
 					</h3>
 					<b-row>
 						<b-col cols="4">
@@ -51,7 +51,7 @@
 								<payments-form-lodging
 									:payments="items"
 									:lodgings="lodgings"
-									:company="company"
+									:place="place"
 								/>
 							</b-collapse>
 							<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
@@ -157,7 +157,7 @@ export default {
 	name: 'PaymentsWrapper',
 	components: { PaymentsForm, PaymentsFormLodging },
 	props: {
-		company: {
+		place: {
 			type: Object,
 			required: true,
 			default: () => {},
@@ -201,7 +201,7 @@ export default {
 	},
 	data() {
 		return {
-			idCompany: this.$route.params.company,
+			idPlace: this.$route.params.place,
 			fields: [
 				{ key: 'startDate', label: 'Inicio' },
 				{ key: 'endDate', label: 'Fin' },
@@ -235,7 +235,7 @@ export default {
 	methods: {
 		async deletePayment(id) {
 			await this.delete(id);
-			this.updatePayments(this.idCompany);
+			this.updatePayments(this.idPlace);
 		},
 		onRowSelected(items) {
 			this.selected = items[0];

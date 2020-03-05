@@ -30,6 +30,7 @@ export default {
 	},
 	computed: {
 		fullName() {
+			if (!this.profile.name) return '';
 			return this.profile.name + ' ' + this.profile.lastName;
 		},
 		profileAvatar() {

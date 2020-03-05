@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
-const Company = () => import('@/views/Company.vue');
+const Place = () => import('@/views/Place.vue');
 const Home = () => import('@/views/Home.vue');
 const Lodging = () => import('@/views/Lodging.vue');
 const Login = () => import('@/views/Login');
@@ -36,9 +36,9 @@ const routes = [
 		component: Room,
 	},
 	{
-		path: '/companies',
-		name: 'companies',
-		component: Company,
+		path: '/places',
+		name: 'places',
+		component: Place,
 	},
 	{
 		path: '/reports',
@@ -61,7 +61,7 @@ const routes = [
 		component: PasswordReset,
 	},
 	{
-		path: '/payments/:company',
+		path: '/payments/:place',
 		name: 'payments',
 		component: Payments,
 	},

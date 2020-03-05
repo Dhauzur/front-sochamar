@@ -123,7 +123,7 @@ export default {
 	data() {
 		return {
 			text: '',
-			idCompany: this.$route.params.company,
+			idPlace: this.$route.params.place,
 			form: new FormData(),
 			startDate: '',
 			endDate: '',
@@ -183,7 +183,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				this.form.set('idCompany', this.idCompany);
+				this.form.set('idPlace', this.idPlace);
 				this.form.set('startDate', moment(this.startDate).format('YYYY-MM-DD'));
 				this.form.set('endDate', moment(this.endDate).format('YYYY-MM-DD'));
 				this.form.set('mount', this.mount);
@@ -191,12 +191,12 @@ export default {
 					this.form.set('voucher', this.editVoucher);
 					this.form.set('comments', this.comments);
 					await this.edit({ payload: this.form, id: this.item._id });
-					this.updatePayments(this.idCompany);
+					this.updatePayments(this.idPlace);
 					this.onClose(this.hide);
 				} else {
 					this.form.append('voucher', this.voucher);
 					await this.save(this.form);
-					this.updatePayments(this.idCompany);
+					this.updatePayments(this.idPlace);
 				}
 			}
 		},
@@ -210,7 +210,7 @@ export default {
 		...mapActions({
 			save: 'Payments/savePayment',
 			edit: 'Payments/editPayment',
-			updatePayments: 'Payments/fetchPaymentsOfTheCompany',
+			updatePayments: 'Payments/fetchPaymentsOfThePlace',
 		}),
 	},
 };

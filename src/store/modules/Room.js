@@ -7,11 +7,11 @@ const state = {
 	roomSelected: null,
 	rooms: [],
 	filterRoomWord: '',
-	idCompany: '',
+	idPlace: '',
 };
 
 const getters = {
-	idCompany: state => state.idCompany,
+	idPlace: state => state.idPlace,
 	message: state => state.message,
 	roomSelected: state => state.roomSelected,
 	rooms: state => {
@@ -22,15 +22,15 @@ const getters = {
 };
 
 const actions = {
-	async deleteRoom({ commit, dispatch }, { id, companyId }) {
+	async deleteRoom({ commit, dispatch }, { id, placeId }) {
 		try {
-			const response = await Axios.delete(api + '/rooms/one/' + id, { data: { companyId } });
+			const response = await Axios.delete(`${api}/rooms/one/${id}`, { data: { placeId } });
 			const { name } = response.data;
 			commit('setMessage', {
 				type: 'success',
 				text: 'Habitación ' + name + ' eliminada ',
 			});
-			dispatch('fetchRooms', companyId);
+			dispatch('fetchRooms', placeId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -41,13 +41,13 @@ const actions = {
 	},
 	async createRoom({ commit, dispatch }, room) {
 		try {
-			room.companyId = state.idCompany;
+			room.placeId = state.idPlace;
 			await Axios.post(api + '/rooms', room);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Empresa creada ',
 			});
-			dispatch('fetchRooms', room.companyId);
+			dispatch('fetchRooms', room.placeId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -56,10 +56,10 @@ const actions = {
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
-	async fetchRooms({ commit }, companyId) {
-		commit('setRooms', null);
+	async fetchRooms({ commit }, placeId) {
 		try {
-			const response = await Axios.get(api + '/rooms/' + companyId);
+			commit('setRooms', null);
+			const response = await Axios.get(`${api}/rooms/${placeId}`);
 			const { rooms } = response.data;
 			commit('setRooms', rooms);
 			commit('setMessage', {
@@ -78,8 +78,8 @@ const actions = {
 };
 
 const mutations = {
-	setIdCompanyRoom(state, value) {
-		state.idCompany = value;
+	setIdPlaceRoom(state, value) {
+		state.idPlace = value;
 	},
 	setMessage(state, value) {
 		state.message = value;

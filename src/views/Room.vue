@@ -37,9 +37,7 @@
 									<td class="p-2">
 										<b-button
 											variant="danger"
-											@click="
-												deleteRoom({ id: r.id, companyId: form.companyId })
-											"
+											@click="deleteRoom({ id: r.id, placeId: form.idPlace })"
 										>
 											X
 										</b-button>
@@ -119,8 +117,8 @@ export default {
 			rooms: 'Room/rooms',
 			roomSelected: 'Room/roomSelected',
 			message: 'Room/message',
-			companyLodging: 'Lodging/company',
-			idCompany: 'Room/idCompany',
+			placeLodging: 'Lodging/places',
+			idPlace: 'Room/idPlace',
 		}),
 	},
 	watch: {
@@ -131,8 +129,8 @@ export default {
 		},
 	},
 	mounted() {
-		this.setIdCompanyRoom(this.companyLodging);
-		this.fetchRooms(this.idCompany);
+		this.setIdPlaceRoom(this.placeLodging);
+		this.fetchRooms(this.idPlace);
 	},
 	validations: {
 		form: {
@@ -169,7 +167,7 @@ export default {
 		...mapMutations({
 			selectRoom: 'Room/selectRoom',
 			filterRoom: 'Room/filterRoom',
-			setIdCompanyRoom: 'Room/setIdCompanyRoom',
+			setIdPlaceRoom: 'Room/setIdPlaceRoom',
 		}),
 	},
 };

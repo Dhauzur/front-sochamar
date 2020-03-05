@@ -77,7 +77,7 @@ export default {
 			required: false,
 			default: () => [],
 		},
-		company: {
+		place: {
 			type: Object,
 			required: false,
 			default: () => {},
@@ -86,7 +86,7 @@ export default {
 	data() {
 		return {
 			form: new FormData(),
-			idCompany: this.$route.params.company,
+			idPlace: this.$route.params.place,
 			lodgingSelected: null,
 			mount: '',
 			voucher: null,
@@ -150,7 +150,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				this.form.set('idCompany', this.idCompany);
+				this.form.set('idPlace', this.idPlace);
 				this.form.set('idLodging', this.lodgingSelected.id);
 				this.form.set('startDate', this.lodgingSelected.start);
 				this.form.set('endDate', this.lodgingSelected.end);
@@ -158,7 +158,7 @@ export default {
 				this.form.append('voucher', this.voucher);
 				await this.save(this.form);
 				this.clearInputs();
-				this.updatePayments(this.idCompany);
+				this.updatePayments(this.idPlace);
 			}
 		},
 		setMount() {
@@ -168,7 +168,7 @@ export default {
 		},
 		...mapActions({
 			save: 'Payments/savePayment',
-			updatePayments: 'Payments/fetchPaymentsOfTheCompany',
+			updatePayments: 'Payments/fetchPaymentsOfThePlace',
 		}),
 	},
 };

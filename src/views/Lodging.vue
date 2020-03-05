@@ -9,9 +9,9 @@
 							<b-col md="6" lg="3" class="my-2">
 								<label>Selecione lugar </label>
 								<b-form-select
-									v-model="selectCompany"
-									:options="companies"
-									@change="setCompany"
+									v-model="selectPlace"
+									:options="places"
+									@change="setPlace"
 								/>
 							</b-col>
 						</b-row>
@@ -19,7 +19,7 @@
 							<b-col class="mb-2 d-flex justify-content-start flex-wrap">
 								<b-button
 									id="empresas-btn"
-									@click="$router.push({ name: 'companies' })"
+									@click="$router.push({ name: 'places' })"
 								>
 									Lugares
 									<b-tooltip target="empresas-btn" placement="bottom">
@@ -27,7 +27,7 @@
 									</b-tooltip>
 								</b-button>
 								<b-button
-									v-if="company"
+									v-if="place"
 									id="habitaciones-btn"
 									@click="$router.push({ name: 'rooms' })"
 								>
@@ -37,7 +37,7 @@
 									</b-tooltip>
 								</b-button>
 								<b-button
-									v-if="rooms.length > 0 && selectCompany"
+									v-if="rooms.length > 0 && selectPlace"
 									id="hospedaje-btn"
 									@click="createOneLodging()"
 								>
@@ -48,9 +48,9 @@
 									</b-tooltip>
 								</b-button>
 								<b-button
-									v-if="company"
+									v-if="place"
 									id="pagos-btn"
-									@click="$router.push('/payments/' + company)"
+									@click="$router.push(`/payments/${place}`)"
 								>
 									Pagos
 									<b-tooltip target="pagos-btn" placement="bottom">
@@ -88,7 +88,7 @@
 									@rangechanged="rangechanged"
 								/>
 							</b-col>
-							<b-col v-if="prices && company" cols="12" class="px-4 overflow-auto">
+							<b-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
 								<table class="table table-bordered ">
 									<thead>
 										<tr>
@@ -104,7 +104,7 @@
 									<tbody>
 										<tr>
 											<td>ALOJAMIENTO</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[3] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -127,7 +127,7 @@
 										</tr>
 										<tr>
 											<td>DESAYUNO</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[0] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -148,7 +148,7 @@
 										</tr>
 										<tr>
 											<td>ALMUERZO</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[1] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -167,7 +167,7 @@
 										</tr>
 										<tr>
 											<td>CENA</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[2] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -184,7 +184,7 @@
 												/>
 											</td>
 										</tr>
-										<tr v-if="company">
+										<tr v-if="place">
 											<td colspan="2">TOTAL</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
 												{{ finalyPrice[index] }}
@@ -222,7 +222,7 @@ export default {
 	},
 	data() {
 		return {
-			selectCompany: null,
+			selectPlace: null,
 			options: {
 				stack: true,
 				editable: true,
@@ -236,7 +236,7 @@ export default {
 					repeat: 'daily',
 				},
 				onUpdate: (item, callback) => {
-					if (this.company) {
+					if (this.place) {
 						this.setModeEdit(true);
 						callback(item);
 						this.updateService(item);
@@ -244,29 +244,29 @@ export default {
 				},
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
-					if (this.company) {
+					if (this.place) {
 						if (this.verifyOverlay(item)) callback(item);
 						else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onRemove: (item, callback) => {
-					if (this.lodgings.length > 1 && this.company) {
+					if (this.lodgings.length > 1 && this.place) {
 						this.setModeEdit(false);
 						this.deleteLodging(item);
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onAdd: (item, callback) => {
-					if (this.company) {
+					if (this.place) {
 						item.start = moment(item.start).hours(16);
 						item.end = moment(item.start)
 							.hours(12)
 							.add(1, 'day');
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							var company = this.companies.find(c => c.value == this.company).text;
-							item.content = company;
-							if (company != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
+							var place = this.places.find(c => c.value == this.place).text;
+							item.content = place;
+							if (place != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
 							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
 							var timestamp = new Date().getTime().toString(16);
 							timestamp +
@@ -282,7 +282,7 @@ export default {
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMove: (item, callback) => {
-					if (this.company) {
+					if (this.place) {
 						var service = [];
 						var numberDays = moment(item.end).diff(
 							moment(item.start).format('YYYY-MM-DD'),
@@ -318,7 +318,7 @@ export default {
 		finalyPrice() {
 			var prices = [];
 			var dayPrice = 0;
-			if (this.company)
+			if (this.place)
 				this.proyectionTable.forEach(dailyService => {
 					dayPrice =
 						(dailyService.service.breakfast
@@ -339,7 +339,7 @@ export default {
 			return prices;
 		},
 		prices() {
-			if (this.company) return this.companies.find(c => c.value == this.company);
+			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
 		},
 		proyectionTable() {
@@ -366,8 +366,8 @@ export default {
 							moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 						) {
 							if (
-								!this.company &&
-								this.companies.find(c => c.value == l.company).text == 'Turismo'
+								!this.place &&
+								this.places.find(c => c.value == l.place).text == 'Turismo'
 							) {
 								var numberPassangerMax = this.rooms.get(l.group).numberPassangerMax;
 								day.service = {
@@ -460,8 +460,8 @@ export default {
 			rooms: 'Lodging/rooms',
 			rangeDate: 'Lodging/rangeDate',
 			lodgings: 'Lodging/lodgings',
-			companies: 'Lodging/companies',
-			company: 'Lodging/company',
+			places: 'Lodging/places',
+			place: 'Lodging/place',
 			editMode: 'Lodging/editMode',
 		}),
 	},
@@ -484,9 +484,9 @@ export default {
 		},
 	},
 	created() {
-		this.selectCompany = this.company;
-		this.fetchRooms(this.selectCompany);
-		this.fetchCompany();
+		this.selectPlace = this.place;
+		this.fetchRooms(this.selectPlace);
+		this.fetchPlace();
 		this.fetchLodgings();
 		this.setRangeDate({
 			start: moment(),
@@ -511,10 +511,10 @@ export default {
 			return verificate;
 		},
 		/*parece que en esta funcion no esta el error*/
-		setCompany(payload) {
-			this.setCompanyLodging(payload);
+		setPlace(payload) {
+			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
-			this.fetchRooms(this.company).then(() => this.fetchLodgings());
+			this.fetchRooms(this.place).then(() => this.fetchLodgings());
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
@@ -527,7 +527,7 @@ export default {
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
-			if (this.company && payload.item) {
+			if (this.place && payload.item) {
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
@@ -542,7 +542,7 @@ export default {
 		},
 		...mapActions({
 			saveLodgings: 'Lodging/saveLodgings',
-			fetchCompany: 'Lodging/fetchCompany',
+			fetchPlace: 'Lodging/fetchPlace',
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
 			fetchRooms: 'Lodging/fetchRooms',
 			fetchLodgings: 'Lodging/fetchLodgings',
@@ -554,7 +554,7 @@ export default {
 			setLodgingSelect: 'Lodging/setLodgingSelect',
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
-			setCompanyLodging: 'Lodging/setCompanyLodging',
+			setPlaceLodging: 'Lodging/setPlaceLodging',
 			setModeEdit: 'Lodging/setModeEdit',
 			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
 		}),

@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<payments-wrapper
-			:lodgings="lodgingsCompany"
-			:company="company"
+			:lodgings="lodgingsPlace"
+			:place="place"
 			:items="payments"
 			:loading="loading"
 			:update-payments="fetchPayments"
@@ -23,17 +23,17 @@ export default {
 	},
 	data() {
 		return {
-			idCompany: this.$route.params.company,
+			idPlace: this.$route.params.place,
 		};
 	},
 	computed: {
 		...mapGetters({
-			company: 'Company/company',
+			place: 'Place/place',
 			payments: 'Payments/payments',
 			message: 'Payments/message',
 			loading: 'Payments/loading',
-			countLodgings: 'Lodging/countLogingsCompany',
-			lodgingsCompany: 'Lodging/lodgingsCompany',
+			countLodgings: 'Lodging/countLogingsPlace',
+			lodgingsPlace: 'Lodging/lodgingsPlace',
 		}),
 	},
 	watch: {
@@ -44,15 +44,15 @@ export default {
 		},
 	},
 	mounted() {
-		this.fetchOneCompany(this.idCompany);
-		this.fetchLodgingsForCompany(this.idCompany);
-		this.fetchPayments(this.idCompany);
+		this.fetchOnePlace(this.idPlace);
+		this.fetchLodgingsForPlace(this.idPlace);
+		this.fetchPayments(this.idPlace);
 	},
 	methods: {
 		...mapActions({
-			fetchLodgingsForCompany: 'Lodging/fetchLodgingsForCompany',
-			fetchOneCompany: 'Company/fetchOneCompany',
-			fetchPayments: 'Payments/fetchPaymentsOfTheCompany',
+			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
+			fetchOnePlace: 'Place/fetchOnePlace',
+			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
 			deleteOnePayment: 'Payments/deleteOnePayment',
 		}),
 	},

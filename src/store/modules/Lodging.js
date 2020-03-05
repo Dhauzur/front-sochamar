@@ -13,12 +13,12 @@ const state = {
 	editMode: false,
 	lodgings: new DataSet([]),
 	rooms: new DataSet([]),
-	companies: [],
+	Places: [],
 	lodgingPassengers: [],
-	company: null,
+	place: null,
 	rangeDatePayments: {},
-	lodgingsCompany: [],
-	countLogingsCompany: 0,
+	lodgingsPlace: [],
+	countLogingsPlace: 0,
 	rangeDate: {
 		start: null,
 		end: null,
@@ -35,19 +35,19 @@ const getters = {
 	editMode: state => state.editMode,
 	lodgings: state => state.lodgings,
 	rangeDatePayments: state => state.rangeDatePayments,
-	lodgingsCompany: state => state.lodgingsCompany,
-	countLogingsCompany: state => state.countLogingsCompany,
+	lodgingsPlace: state => state.lodgingsPlace,
+	countLogingsPlace: state => state.countLogingsPlace,
 	rangeDate: state => state.rangeDate,
 	rooms: state => state.rooms,
-	companies: state => state.companies,
-	company: state => state.company,
+	places: state => state.Places,
+	place: state => state.place,
 };
 
 const actions = {
 	//Elimina un unico hospedaje
 	async deleteLodging({ commit }, value) {
 		commit('setLoading', 'Eliminando hospedaje...');
-		return Axios.delete(api + '/lodging/delete/company/' + value.id)
+		return Axios.delete(api + '/lodging/delete/place/' + value.id)
 			.then(() => {
 				commit('setLoading', '');
 				commit('setDeletLodging', value);
@@ -64,25 +64,25 @@ const actions = {
 				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
 	},
-	//Obtiene todos las compañias
-	async fetchCompany({ commit }) {
+	//Obtiene todos las lugares
+	async fetchPlace({ commit }) {
 		commit('setModeEdit', false);
-		commit('setCompanies', null);
-		commit('setLoading', 'Cargando compañias...');
-		return Axios.get(api + '/company')
+		commit('setPlaces', null);
+		commit('setLoading', 'Cargando lugares...');
+		return Axios.get(api + '/place')
 			.then(response => {
 				commit('setLoading', '');
-				commit('setCompanies', response.data.company);
+				commit('setPlaces', response.data.place);
 				commit('setMessage', {
 					type: 'success',
-					text: 'Compañias descargadas',
+					text: 'lugares descargadas',
 				});
 			})
 			.catch(error => {
-				commit('setCompanies', null);
+				commit('setPlaces', null);
 				commit('setMessage', {
 					type: 'error',
-					text: 'Fetch company ' + error,
+					text: 'Fetch place ' + error,
 				});
 				if (error.message == 'Request failed with status code 401') router.push('/login');
 			});
@@ -111,9 +111,9 @@ const actions = {
 			});
 	},
 
-	async fetchRooms({ commit }, companyId) {
+	async fetchRooms({ commit }, placeId) {
 		try {
-			const response = await Axios.get(api + '/rooms/' + companyId);
+			const response = await Axios.get(api + '/rooms/' + placeId);
 			const { rooms } = response.data;
 			commit('setRooms', rooms);
 			commit('setMessage', {
@@ -129,15 +129,15 @@ const actions = {
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
-	//fetch lodgings for company
-	async fetchLodgingsForCompany({ commit }, id) {
+	//fetch lodgings for place
+	async fetchLodgingsForPlace({ commit }, id) {
 		try {
-			const response = await Axios.get(`${api}/lodgings/company/${id}`);
-			commit('setLodgingsCompany', response.data.lodgings);
+			const response = await Axios.get(`${api}/lodgings/place/${id}`);
+			commit('setLodgingsPlace', response.data.lodgings);
 			commit('setRangeDatePayments', response.data.lodgings);
-			commit('setCountLogingsCompany', response.data.count);
+			commit('setcountLogingsPlace', response.data.count);
 		} catch (error) {
-			commit('setLodgingsCompany', null);
+			commit('setLodgingsPlace', null);
 			commit('setMessage', {
 				type: 'error',
 				text: 'Fetch lodgings ' + error,
@@ -162,7 +162,7 @@ const actions = {
 					end: l.end,
 					service: l.service[0],
 					passengers: l.passengers,
-					company: state.company,
+					place: state.place,
 				})
 					.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)))
 					.catch(error => {
@@ -317,7 +317,7 @@ const mutations = {
 	},
 	createOneLodging(state) {
 		state.editMode = false;
-		let company = state.companies.find(c => c.value == state.company);
+		let place = state.Places.find(c => c.value == state.place);
 		let verificate = true;
 		state.lodgings.forEach(lod => {
 			if (
@@ -330,16 +330,16 @@ const mutations = {
 				verificate = false;
 		});
 		if (verificate) {
-			if (company.text == 'Turismo')
+			if (place.text == 'Turismo')
 				state.lodgings.add({
 					group: state.rooms.getIds()[0],
 					start: moment().hours(16),
 					end: moment()
 						.hours(13)
 						.add(1, 'day'),
-					content: company.text,
+					content: place.text,
 					service: ['[[0,0,0,0],[0,0,0,0]]'],
-					company: state.company,
+					place: state.place,
 				});
 			else
 				state.lodgings.add({
@@ -348,9 +348,9 @@ const mutations = {
 					end: moment()
 						.hours(13)
 						.add(1, 'day'),
-					content: company.text,
+					content: place.text,
 					service: ['[[1,1,1,1],[1,1,1,1]]'],
-					company: state.company,
+					place: state.place,
 				});
 		} else {
 			state.message = {
@@ -359,12 +359,12 @@ const mutations = {
 			};
 		}
 	},
-	setCompanyLodging(state, value) {
-		state.company = value;
+	setPlaceLodging(state, value) {
+		state.place = value;
 	},
-	setCompanies(state, values) {
-		let companies = [];
-		companies.push({
+	setPlaces(state, values) {
+		let Places = [];
+		Places.push({
 			value: null,
 			text: 'Todas las empresas',
 		});
@@ -376,9 +376,9 @@ const mutations = {
 					prices: v.prices,
 				};
 			});
-			companies.push(...mapValues);
+			Places.push(...mapValues);
 		}
-		state.companies = companies;
+		state.Places = Places;
 	},
 	updateService(state, value) {
 		state.updatingService = null;
@@ -442,11 +442,11 @@ const mutations = {
 		});
 		state.rangeDatePayments = { startDate: min, endDate: max };
 	},
-	setLodgingsCompany(state, value) {
-		state.lodgingsCompany = value;
+	setLodgingsPlace(state, value) {
+		state.lodgingsPlace = value;
 	},
-	setCountLogingsCompany(state, value) {
-		state.countLogingsCompany = value;
+	setcountLogingsPlace(state, value) {
+		state.countLogingsPlace = value;
 	},
 	setLodgings(state, values) {
 		let tempLodging = state.lodgings;
@@ -454,17 +454,17 @@ const mutations = {
 		state.lodgings = new DataSet([]);
 		if (values) {
 			tempLodging = new DataSet([]);
-			const evaluateLodgingPush = (lodging, company) => {
-				if (state.company) {
-					if (state.company === lodging.company)
+			const evaluateLodgingPush = (lodging, place) => {
+				if (state.place) {
+					if (state.place === lodging.place)
 						tempLodging.add({
 							id: lodging.id,
 							group: lodging.group,
 							start: moment(lodging.start).hours(16),
 							end: moment(lodging.end).hours(13),
-							content: company.text,
+							content: place.text,
 							service: lodging.service,
-							company: lodging.company,
+							place: lodging.place,
 							passengers: lodging.passengers,
 							mountTotal: lodging.mountTotal,
 						});
@@ -474,21 +474,21 @@ const mutations = {
 						group: lodging.group,
 						start: moment(lodging.start).hours(16),
 						end: moment(lodging.end).hours(13),
-						content: company.text,
+						content: place.text,
 						service: lodging.service,
-						company: lodging.company,
+						place: lodging.place,
 						passengers: lodging.passengers,
 						mountTotal: lodging.mountTotal,
 					});
 				}
 			};
 			values.forEach(v => {
-				let company = state.companies.find(c => c.value == v.company);
-				/*Necesitamos seguir corriendo esta funcion aun si company es undefined
+				let place = state.Places.find(c => c.value == v.place);
+				/*Necesitamos seguir corriendo esta funcion aun si place es undefined
 				 * si es undefined, entonces creamos un objeto basico con la propiedad text.
-				 * Con esto evitamos el mensaje de 'company.text' is undefined en la interfaz de usuario*/
-				if (!company) company = { text: '' };
-				evaluateLodgingPush(v, company);
+				 * Con esto evitamos el mensaje de 'place.text' is undefined en la interfaz de usuario*/
+				if (!place) place = { text: '' };
+				evaluateLodgingPush(v, place);
 			});
 			state.lodgings = tempLodging;
 			state.mirrorLodging = JSON.stringify(tempLodging);

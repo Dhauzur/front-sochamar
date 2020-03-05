@@ -43,7 +43,6 @@ export default {
 	computed: {
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
-			company: 'Lodging/company',
 		}),
 	},
 	created() {
