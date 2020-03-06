@@ -74,12 +74,12 @@
 					</b-col>
 				</b-row>
 				<b-row>
-					<b-col md="8">
+					<b-col lg="9">
 						<b-row>
 							<b-col cols="12">
 								<timeline
 									v-if="rooms.length > 0 && lodgings.length > 0"
-									class="p-2 col-12"
+									class="p-2"
 									:items="lodgings"
 									:events="['rangechanged', 'click']"
 									:groups="rooms"
@@ -200,12 +200,38 @@
 										</tr>
 									</tbody>
 								</table>
+								<b-row v-if="lodgingSelect">
+									<b-col>
+										<b-form-group
+											id="input-group-1"
+											label="Espacio de trabajo:"
+											label-for="input-1"
+										>
+											<b-form-select
+												id="input-1"
+												v-model="serviceSelected"
+												style="text-align: center; text-align-last:center;"
+												:options="services"
+											/>
+										</b-form-group>
+									</b-col>
+									<b-col class="mt-4 flex-wrap">
+										<b-button @click="addOneService(serviceSelected)">
+											+1 {{ serviceSelected }}
+										</b-button>
+										<b-button @click="subOneService(serviceSelected)">
+											-1 {{ serviceSelected }}
+										</b-button>
+									</b-col>
+								</b-row>
 							</b-col>
 						</b-row>
 					</b-col>
-					<b-col md="4">
-						<EditLodging v-if="lodgingSelect" />
-					</b-col>
+					<transition name="fade">
+						<b-col v-if="lodgingSelect" lg="3">
+							<EditLodging />
+						</b-col>
+					</transition>
 				</b-row>
 				<b-row> </b-row>
 			</template>
@@ -230,14 +256,22 @@ export default {
 	},
 	data() {
 		return {
+			services: [
+				{ text: 'Todos los servicios', value: 'todos los servicios' },
+				{ text: 'Desayuno', value: 'desayuno' },
+				{ text: 'Almuerzo', value: 'almuerzo' },
+				{ text: 'Cena', value: 'cena' },
+				{ text: 'Alojamiento', value: 'alojamiento' },
+			],
+			serviceSelected: 'todos los servicios',
 			selectCompany: null,
 			options: {
 				stack: true,
 				editable: true,
 				start: moment(),
-				end: moment().add(7, 'day'),
-				zoomMin: 604800000,
-				zoomMax: 5184000000,
+				end: moment().add(14, 'day'),
+				zoomMin: 1000 * 60 * 60 * 24 * 7,
+				zoomMax: 1000 * 60 * 60 * 24 * 30,
 				hiddenDates: [
 					{
 						start: '2019-01-01 00:00:00',
@@ -566,6 +600,8 @@ export default {
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
 		...mapMutations({
+			addOneService: 'Lodging/addOneService',
+			subOneService: 'Lodging/subOneService',
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
 			setLodgingSelect: 'Lodging/setLodgingSelect',
@@ -580,8 +616,16 @@ export default {
 </script>
 
 <style lang="css">
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+	opacity: 0;
+}
+
 .vis-selected {
-	background-color: #229231 !important;
+	background-color: #ff591b !important;
 	color: white !important;
 	transition: all ease-in-out 0.3s;
 	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
@@ -591,7 +635,7 @@ export default {
 .vis-inner,
 .vis-time-axis .vis-text.vis-saturday,
 .vis-time-axis .vis-text.vis-sunday {
-	color: #676b76 !important;
+	color: #3a3b3e !important;
 }
 
 .vis-time-axis .vis-grid.vis-saturday,
@@ -612,7 +656,7 @@ export default {
 .vis-item {
 	border: none !important;
 	border-radius: 0px 10px 0px 0px !important;
-	background-color: #78aa8f;
+	background-color: #ecb099;
 	color: white;
 	transition: all ease-in-out 0.3s;
 }

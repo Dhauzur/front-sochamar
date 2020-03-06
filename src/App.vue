@@ -88,10 +88,10 @@ export default {
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	color: #ffffff;
-	overflow-x: hidden !important;
+	overflow-x: hidden;
 	// background-image: linear-gradient(10deg, #adadad, #f3f3f3, white);
 	background-color: transparent;
-	background-image: linear-gradient(80deg, #676b76, #676b76d4, #676b76);
+	background-image: linear-gradient(80deg, #676b76, #676b76de, #676b76);
 	height: 100vh;
 	a,
 	.navbar-brand {
@@ -99,7 +99,7 @@ export default {
 		color: #ffffff;
 	}
 	a:hover {
-		color: #f3cfd4;
+		color: #ecb099;
 	}
 }
 
@@ -109,7 +109,7 @@ export default {
 		font-weight: bold;
 		color: #ffffff;
 		&.router-link-exact-active {
-			color: #f3cfd4;
+			color: #ecb099;
 		}
 	}
 }
@@ -120,13 +120,16 @@ export default {
 }
 
 input {
-	background: #c1c5d1 !important;
+	background: #56565666 !important;
 	border: none !important;
-	color: #676b76;
+	color: white !important;
+	text-align: center;
+	text-align-last: center;
+	font-weight: bold;
 }
 input:focus {
 	outline-width: 0;
-	background: #ffffff7a !important;
+	border-bottom: 3px solid #676b769e !important;
 }
 
 .shadoNavBar {
@@ -157,7 +160,7 @@ input:focus {
 }
 
 .background-module {
-	background-color: #f3f3f31f;
+	background-color: #c1c5d1;
 	border-radius: 20px;
 	max-height: 80vh !important;
 	overflow-y: auto;
@@ -171,14 +174,13 @@ input:focus {
 }
 
 .btn-secondary {
-	background-color: #ecb099 !important;
+	background-color: #4c4a4a7a !important;
 	border: none !important;
-	color: #ffffff !important;
+	color: white !important;
 	transition: all ease-in-out 0.9s;
 }
 .btn-secondary:hover {
 	background-image: linear-gradient(10deg, #ecb099, #ff591b);
-
 	transition: all ease-in-out 1.9s;
 }
 .pointer {
