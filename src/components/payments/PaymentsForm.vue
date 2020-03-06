@@ -1,8 +1,8 @@
 <template>
 	<div>
-		<b-row class="mb-3">
+		<b-row class="mb-3 text-left">
 			<b-col cols="12" md="6" lg="3">
-				<label for="total" class="mb-0 mt-2">Total</label>
+				<label for="Total" class="mb-0 mt-2"><small>Total</small></label>
 				<b-form-input
 					id="total"
 					v-model="$v.mount.$model"
@@ -18,7 +18,7 @@
 				</div>
 			</b-col>
 			<b-col cols="12" md="6" lg="2">
-				<label for="in" class="mb-0 mt-2">Ingreso</label>
+				<label for="in" class="mb-0 mt-2"><small>Ingreso</small></label>
 				<b-form-group id="in" label-for="input-1" class="pb-0 mb-0">
 					<b-form-input
 						id="in"
@@ -35,7 +35,7 @@
 				</div>
 			</b-col>
 			<b-col cols="12" md="6" lg="2">
-				<label for="out" class="mb-0 mt-2">Salida</label>
+				<label for="out" class="mb-0 mt-2"><small>Salida</small></label>
 				<b-form-group id="out" label-for="input-1" class="pb-0 mb-0">
 					<b-form-input
 						id="out"
@@ -51,10 +51,8 @@
 					</small>
 				</div>
 			</b-col>
-			<b-col cols="12" md="6" lg="3" class="text-center">
-				<label>
-					Voucher
-				</label>
+			<b-col cols="12" md="6" lg="3">
+				<label for="voucher" class="mb-0 mt-2"><small>Voucher</small></label>
 				<div v-if="editVoucher || item">
 					<b-link v-if="typeof editVoucher === 'string'" :href="editVoucher">
 						{{ cutText(voucherName) }}
