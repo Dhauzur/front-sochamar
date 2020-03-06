@@ -36,14 +36,12 @@
 				</b-row>
 			</transition>
 			<b-row>
-				<!--  services -->
-
-				<!-- aucomplete passengers -->
+				<!-- aucomplete persons -->
 				<b-col cols="12">
 					<autocomplete
 						v-if="!showPopover"
-						:items="passengerFormatted"
-						:selected="addPassengerToLodging"
+						:items="personFormatted"
+						:selected="addPersonToLodging"
 						placeholder="Agregar un pasajero"
 					/>
 
@@ -55,7 +53,7 @@
 						Eliminar actividad
 					</b-button>
 				</b-col>
-				<!-- badge passenger -->
+				<!-- badge person -->
 				<b-col v-if="!showPopover">
 					<b-badge
 						v-for="(item, i) in lodgingPersons"
@@ -65,7 +63,7 @@
 						target="_blank"
 						class="ml-1 mr-1"
 						>{{ item.search }}: {{ item.dateStart }} - {{ item.dateEnd }}
-						<span class="text-danger ml-1 pointer" @click="removeLodgingPassengers(i)"
+						<span class="text-danger ml-1 pointer" @click="removeLodgingPersons(i)"
 							>X</span
 						>
 					</b-badge>
@@ -74,10 +72,10 @@
 					<LodgingsDate
 						label="Fecha inicio"
 						:start="true"
-						:set-date="date => (dateStartPassengers = date)"
+						:set-date="date => (dateStartPersons = date)"
 						:date-start="dateStart"
 						:date-end="dateEnd"
-						:is-passenger-date="true"
+						:is-person-date="true"
 						:error-date="errorDate"
 					/>
 				</b-col>
@@ -85,18 +83,18 @@
 					<LodgingsDate
 						label="Fecha fin"
 						:start="false"
-						:set-date="date => (dateEndPassengers = date)"
+						:set-date="date => (dateEndPersons = date)"
 						:date-start="dateStart"
 						:date-end="dateEnd"
-						:is-passenger-date="true"
+						:is-person-date="true"
 						:error-date="errorDate"
 					/>
 				</b-col>
 				<b-col class="mb-2 d-flex justify-content-start flex-wrap">
 					<b-button
 						v-show="showPopover"
-						:disabled="datePassengersInvalid"
-						@click="setDatePassenger"
+						:disabled="datePersonsInvalid"
+						@click="setDatePerson"
 					>
 						Agregar
 					</b-button>
@@ -104,7 +102,7 @@
 						v-if="showPopover"
 						variant="danger"
 						class="btn-sm"
-						@click="cancelAddPassenger"
+						@click="cancelAddPerson"
 					>
 						Cancelar
 					</b-button>
@@ -139,11 +137,7 @@ export default {
 			oldDateLodging: null,
 			personSelected: null,
 			results: [],
-			passengerSelected: null,
-			isLoadingPassenger: false,
 			showPopover: false,
-			dateStartPassengers: null,
-			dateEndPassengers: null,
 		};
 	},
 	computed: {
@@ -290,8 +284,8 @@ export default {
 		}),
 		...mapMutations({
 			sendDateChange: 'Lodging/dateChange',
-			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
-			removeLodgingPassengers: 'Lodging/removeLodgingPassengers',
+			updateLodgingPersons: 'Lodging/updateLodgingPersons',
+			removeLodgingPersons: 'Lodging/removeLodgingPersons',
 		}),
 	},
 };
