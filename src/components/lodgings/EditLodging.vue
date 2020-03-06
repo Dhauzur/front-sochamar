@@ -1,6 +1,6 @@
 <template lang="html">
 	<b-row v-if="lodgingSelect">
-		<b-col class="borderEdit m-3">
+		<b-col class="borderModule p-3 m-3">
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
 			<b-row>
 				<b-col md="4" lg="6">
@@ -148,10 +148,7 @@
 					<b-button @click="subOneService(serviceSelected)">
 						-1 {{ serviceSelected }}
 					</b-button>
-					<b-button
-						style="border: 1px solid red !important; color: red !important;"
-						@click="deleteLodging(lodgingSelect)"
-					>
+					<b-button variant="danger" @click="deleteLodging(lodgingSelect)">
 						Eliminar
 					</b-button>
 				</b-col>
@@ -350,12 +347,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.borderEdit {
-	border: 1px solid #dee2e6;
-	padding: 15px;
-	border-radius: 30px;
-	box-shadow: 0px 0px 20px -8px rgb(0, 0, 0);
-}
 .pointer {
 	cursor: pointer;
 }

@@ -100,13 +100,7 @@
 						</div>
 					</b-col>
 					<b-col cols="12" md class="mt-3">
-						<b-button
-							block
-							variant="primary"
-							size="sm"
-							class="col-12"
-							@click="onsubmit()"
-						>
+						<b-button block size="sm" class="col-12" @click="onsubmit()">
 							Guardar
 						</b-button>
 						<small v-if="errors" class="mt-2 d-block text-danger">

@@ -61,7 +61,7 @@
 								<b-button
 									v-if="getMirrorLodging || editMode"
 									id="guardar-btn"
-									style="color: green !important; border-color: green !important"
+									variant="success"
 									@click="saveLodgings()"
 								>
 									Guardar
@@ -74,7 +74,7 @@
 					</b-col>
 				</b-row>
 				<b-row>
-					<b-col cols="12" xl="8">
+					<b-col md="8">
 						<b-row>
 							<b-col cols="12">
 								<timeline
@@ -113,7 +113,8 @@
 												}}</span>
 												<input
 													v-if="
-														editMode && p.service.accommodation !== null
+														editMode &&
+															p.service.accommodation !== undefined
 													"
 													:id="p.id + ',' + p.date"
 													v-model="p.service.accommodation"
@@ -135,7 +136,10 @@
 													p.service.breakfast
 												}}</span>
 												<input
-													v-if="editMode && p.service.breakfast !== null"
+													v-if="
+														editMode &&
+															p.service.breakfast !== undefined
+													"
 													:id="p.id + ',' + p.date"
 													v-model="p.service.breakfast"
 													type="number"
@@ -154,7 +158,7 @@
 											<td v-for="(p, index) in proyectionTable" :key="index">
 												<span v-if="!editMode">{{ p.service.lunch }}</span>
 												<input
-													v-if="editMode && p.service.lunch !== null"
+													v-if="editMode && p.service.lunch != undefined"
 													:id="p.id + ',' + p.date"
 													v-model="p.service.lunch"
 													type="number"
@@ -173,7 +177,9 @@
 											<td v-for="(p, index) in proyectionTable" :key="index">
 												<span v-if="!editMode">{{ p.service.dinner }}</span>
 												<input
-													v-if="editMode && p.service.dinner !== null"
+													v-if="
+														editMode && p.service.dinner !== undefined
+													"
 													:id="p.id + ',' + p.date"
 													v-model="p.service.dinner"
 													type="number"
@@ -184,10 +190,12 @@
 												/>
 											</td>
 										</tr>
-										<tr v-if="place">
+										<tr v-if="place" class="borderModule">
 											<td colspan="2">TOTAL</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
-												{{ finalyPrice[index] }}
+												<span v-if="finalyPrice[index] != 0">{{
+													finalyPrice[index]
+												}}</span>
 											</td>
 										</tr>
 									</tbody>
@@ -195,7 +203,7 @@
 							</b-col>
 						</b-row>
 					</b-col>
-					<b-col cols="12" xl="4">
+					<b-col md="4">
 						<EditLodging v-if="lodgingSelect" />
 					</b-col>
 				</b-row>
@@ -230,16 +238,25 @@ export default {
 				end: moment().add(7, 'day'),
 				zoomMin: 604800000,
 				zoomMax: 5184000000,
-				hiddenDates: {
-					start: '2019-01-01 12:00:00',
-					end: '2019-01-01 11:00:00',
-					repeat: 'daily',
-				},
+				hiddenDates: [
+					{
+						start: '2019-01-01 00:00:00',
+						end: '2019-01-01 06:00:00',
+						repeat: 'daily',
+					},
+					{
+						start: '2019-01-01 16:00:00',
+						end: '2019-01-01 24:00:00',
+						repeat: 'daily',
+					},
+				],
 				onUpdate: (item, callback) => {
 					if (this.place) {
 						this.setModeEdit(true);
-						callback(item);
-						this.updateService(item);
+						if (this.verifyOverlay(item)) {
+							callback(item);
+							this.updateService(item);
+						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMoving: (item, callback) => {
@@ -258,7 +275,7 @@ export default {
 				},
 				onAdd: (item, callback) => {
 					if (this.place) {
-						item.start = moment(item.start).hours(16);
+						item.start = moment(item.start).hours(15);
 						item.end = moment(item.start)
 							.hours(12)
 							.add(1, 'day');
@@ -299,11 +316,13 @@ export default {
 						var itemService = [];
 						itemService.push(JSON.stringify(service));
 						item.service = itemService;
-						item.start = moment(item.start).hours(16);
+						item.start = moment(item.start).hours(15);
 						item.end = moment(item.end).hours(12);
-						this.setModeEdit(true);
-						this.updateService(item);
-						callback(item);
+						if (this.verifyOverlay(item)) {
+							this.setModeEdit(true);
+							this.updateService(item);
+							callback(item);
+						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 			},
@@ -333,7 +352,6 @@ export default {
 						(dailyService.service.accommodation
 							? dailyService.service.accommodation * this.prices.prices[3]
 							: 0);
-					if (dayPrice == '0000') dayPrice = 0;
 					prices.push(dayPrice);
 				});
 			return prices;
@@ -356,8 +374,7 @@ export default {
 					id: null,
 				});
 
-			// eslint-disable-next-line no-unused-vars
-			this.lodgings.forEach((l, il) => {
+			this.lodgings.forEach(l => {
 				var index = 0;
 				if (!this.editMode)
 					daysLodging.forEach(day => {
@@ -501,10 +518,10 @@ export default {
 		verifyOverlay(value) {
 			let verificate = true;
 			this.lodgings.forEach(lod => {
-				if (lod.group == value.group) {
+				if (lod.group == value.group && lod.id != value.id) {
 					if (
-						moment(value.start).isSameOrAfter(moment(lod.start)) &&
-						moment(value.end).isSameOrBefore(moment(lod.end))
+						moment(value.start).isSameOrBefore(moment(lod.end)) &&
+						moment(value.end).isSameOrAfter(moment(lod.start))
 					)
 						verificate = false;
 				}
@@ -565,39 +582,46 @@ export default {
 
 <style lang="css">
 .vis-selected {
-	background-color: #f95b29 !important;
+	background-color: #229231 !important;
 	color: white !important;
 	transition: all ease-in-out 0.3s;
-	box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75);
+	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
 }
 .vis-time-axis .vis-text,
+.vis-label,
+.vis-inner,
 .vis-time-axis .vis-text.vis-saturday,
 .vis-time-axis .vis-text.vis-sunday {
-	color: #111213 !important;
+	color: #676b76 !important;
 }
 
 .vis-time-axis .vis-grid.vis-saturday,
 .vis-time-axis .vis-grid.vis-sunday {
-	background: #ffffff7a;
+	background: #ffffff7a !important;
+	border: none !important;
 }
+
 .inputService {
 	max-width: 60px;
 }
-.vis-foreground .vis-group {
-	border-bottom: 1px solid #f7f5f5ab;
+.vis-timeline {
+	box-shadow: 5px 5px 25px -5px rgba(5, 5, 5, 1);
+	margin-bottom: 15px;
+	background-color: #c1c5d1;
+	border-radius: 0px 40px 0px 40px !important;
 }
 .vis-item {
 	border: none !important;
 	border-radius: 0px 10px 0px 0px !important;
-	background-color: #ffd5bb;
-	color: #111213;
+	background-color: #78aa8f;
+	color: white;
 	transition: all ease-in-out 0.3s;
 }
 td,
 th {
 	padding: 2px !important;
 	padding-bottom: 10px !important;
-	color: #111213;
+	color: white;
 	min-width: 60px;
 	border-color: transparent !important;
 }

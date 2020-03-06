@@ -38,7 +38,7 @@
 						</div>
 					</b-col>
 					<b-col cols="12" md="3" class="mt-2">
-						<b-button block variant="primary" class="col-12 mt-3" @click="onsubmit()">
+						<b-button block class="col-12 mt-3" @click="onsubmit()">
 							Guardar
 						</b-button>
 						<small v-if="errors" class="mt-2 d-block text-danger">
