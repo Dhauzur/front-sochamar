@@ -6,6 +6,7 @@
 					<h4 class="my-4">Gestión de <span style="color: orange">Lugares</span></h4>
 				</b-col>
 				<b-row class="mb-3 text-left">
+					<b-col cols="12" class="mb-3"><h6>Agregar nuevo</h6></b-col>
 					<b-col cols="12" md lg="8">
 						<label for="name" class="mb-0"><small>Nombre</small></label>
 						<b-form-input
@@ -168,20 +169,20 @@
 							</table>
 						</b-col>
 					</b-row>
-					<b-row>
-						<b-col cols="6" offset="6">
-							<b-form-input
-								v-model="filterPlaceWord"
-								size="sm"
-								placeholder="Filtrar empresas"
-								@keyup="filterPlace(filterPlaceWord)"
-							></b-form-input>
-						</b-col>
-					</b-row>
 				</template>
 				<template v-else>
-					<h6>No hay lugares Agregados</h6>
+					<h6 class="m-5">Vacio</h6>
 				</template>
+				<b-row>
+					<b-col cols="6" offset="6">
+						<b-form-input
+							v-model="filterPlaceWord"
+							size="sm"
+							placeholder="Filtrar empresas"
+							@keyup="filterPlace(filterPlaceWord)"
+						></b-form-input>
+					</b-col>
+				</b-row>
 			</b-col>
 		</b-row>
 	</b-container>

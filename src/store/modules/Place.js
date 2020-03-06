@@ -16,9 +16,12 @@ const getters = {
 	place: state => state.place,
 	places: state => {
 		if (state.filterPlaceWord)
-			return state.places.filter(
-				c => c.name.includes(state.filterPlaceWord) || c.rut.includes(state.filterPlaceWord)
-			);
+			return state.places.filter(place => {
+				return (
+					place.name.toLowerCase().indexOf(state.filterPlaceWord.toLowerCase()) > -1 ||
+					place.rut.toLowerCase().indexOf(state.filterPlaceWord.toLowerCase()) > -1
+				);
+			});
 		else return state.places;
 	},
 };
