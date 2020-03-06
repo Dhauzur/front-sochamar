@@ -1,20 +1,20 @@
 <template>
-	<b-button id="show-btn" @click="$bvModal.show('passengers-modal')"
+	<b-button id="show-btn" @click="$bvModal.show('persons-modal')"
 		>Personas
 		<b-tooltip target="show-btn" placement="bottom">Gestión de personas</b-tooltip>
-		<b-modal id="passengers-modal" hide-footer>
+		<b-modal id="persons-modal" hide-footer>
 			<template v-slot:modal-title>Personas</template>
 			<div class="d-block text-center">
-				<PassengersForm />
+				<persons-form />
 			</div> </b-modal
 	></b-button>
 </template>
 
 <script>
-import PassengersForm from './PassengersForm';
+import PersonsForm from './PersonsForm';
 
 export default {
-	components: { PassengersForm },
+	components: { PersonsForm },
 };
 </script>
 

@@ -57,7 +57,7 @@
 										Gestión de pagos
 									</b-tooltip>
 								</b-button>
-								<PassengersDialog />
+								<persons-dialog />
 								<b-button
 									v-if="getMirrorLodging || editMode"
 									id="guardar-btn"
@@ -79,11 +79,11 @@
 							<b-col cols="12">
 								<timeline
 									v-if="periods.length > 0 && lodgings.length > 0"
-									class="p-2 col-12"
-									:items="lodgings"
 									:events="['rangechanged', 'click']"
 									:groups="periods"
+									:items="lodgings"
 									:options="options"
+									class="p-2 col-12"
 									@click="enableEdit"
 									@rangechanged="rangechanged"
 								/>
@@ -214,30 +214,30 @@
 </template>
 
 <script>
-import { Timeline } from 'vue2vis';
-import PassengersDialog from '../components/passengers/PassengersDialog';
-import moment from 'moment';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
-import Loading from '@/components/Loading';
+import { Timeline } from 'vue2vis';
 import EditLodging from '@/components/lodgings/EditLodging';
+import Loading from '@/components/Loading';
+import moment from 'moment';
+import PersonsDialog from '../components/persons/PersonsDialog';
 
 export default {
 	components: {
-		Timeline,
-		Loading,
 		EditLodging,
-		PassengersDialog,
+		Loading,
+		PersonsDialog,
+		Timeline,
 	},
 	data() {
 		return {
 			selectPlace: null,
 			options: {
-				stack: true,
 				editable: true,
-				start: moment(),
 				end: moment().add(7, 'day'),
-				zoomMin: 604800000,
+				stack: true,
+				start: moment(),
 				zoomMax: 5184000000,
+				zoomMin: 604800000,
 				hiddenDates: [
 					{
 						start: '2019-01-01 00:00:00',
@@ -470,17 +470,17 @@ export default {
 			return dates;
 		},
 		...mapGetters({
-			message: 'Lodging/message',
-			updatingService: 'Lodging/updatingService',
-			mirrorLodging: 'Lodging/mirrorLodging',
-			lodgingSelect: 'Lodging/lodgingSelect',
-			loading: 'Lodging/loading',
-			periods: 'Lodging/periods',
-			rangeDate: 'Lodging/rangeDate',
-			lodgings: 'Lodging/lodgings',
-			places: 'Lodging/places',
-			place: 'Lodging/place',
 			editMode: 'Lodging/editMode',
+			loading: 'Lodging/loading',
+			lodgings: 'Lodging/lodgings',
+			lodgingSelect: 'Lodging/lodgingSelect',
+			message: 'Lodging/message',
+			mirrorLodging: 'Lodging/mirrorLodging',
+			periods: 'Lodging/periods',
+			place: 'Lodging/place',
+			places: 'Lodging/places',
+			rangeDate: 'Lodging/rangeDate',
+			updatingService: 'Lodging/updatingService',
 		}),
 	},
 	watch: {
@@ -492,12 +492,12 @@ export default {
 		lodgingSelect() {
 			if (
 				this.lodgingSelect &&
-				Array.isArray(this.lodgingSelect.passengers) &&
-				this.lodgingSelect.passengers.length
+				Array.isArray(this.lodgingSelect.persons) &&
+				this.lodgingSelect.persons.length
 			) {
-				this.setAllLodgingPassengers(this.lodgingSelect.passengers);
+				this.setAllLodgingPersons(this.lodgingSelect.persons);
 			} else {
-				this.setAllLodgingPassengers([]);
+				this.setAllLodgingPersons([]);
 			}
 		},
 	},
@@ -512,7 +512,7 @@ export default {
 		});
 	},
 	mounted() {
-		this.fetchAllPassengers();
+		this.fetchAllPersons();
 	},
 	methods: {
 		verifyOverlay(value) {
@@ -559,22 +559,22 @@ export default {
 			}
 		},
 		...mapActions({
-			saveLodgings: 'Lodging/saveLodgings',
-			fetchPlace: 'Lodging/fetchPlace',
-			fetchAllPassengers: 'Passengers/fetchAllPassengers',
-			fetchPeriods: 'Lodging/fetchPeriods',
-			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
+			fetchAllPersons: 'Persons/fetchAllPersons',
+			fetchLodgings: 'Lodging/fetchLodgings',
+			fetchPeriods: 'Lodging/fetchPeriods',
+			fetchPlace: 'Lodging/fetchPlace',
+			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
-			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
+			createOneLodging: 'Lodging/createOneLodging',
+			setAllLodgingPersons: 'Lodging/setAllLodgingPersons',
 			setLodgingSelect: 'Lodging/setLodgingSelect',
+			setModeEdit: 'Lodging/setModeEdit',
+			setPlaceLodging: 'Lodging/setPlaceLodging',
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
-			setPlaceLodging: 'Lodging/setPlaceLodging',
-			setModeEdit: 'Lodging/setModeEdit',
-			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
 		}),
 	},
 };

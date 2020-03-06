@@ -14,7 +14,7 @@ const state = {
 	lodgings: new DataSet([]),
 	periods: new DataSet([]),
 	Places: [],
-	lodgingPassengers: [],
+	lodgingPersons: [],
 	place: null,
 	rangeDatePayments: {},
 	lodgingsPlace: [],
@@ -27,7 +27,7 @@ const state = {
 
 const getters = {
 	message: state => state.message,
-	lodgingPassengers: state => state.lodgingPassengers,
+	lodgingPersons: state => state.lodgingPersons,
 	updatingService: state => state.updatingService,
 	mirrorLodging: state => state.mirrorLodging,
 	lodgingSelect: state => state.lodgingSelect,
@@ -171,7 +171,7 @@ const actions = {
 							start: l.start,
 							end: l.end,
 							service: l.service[0],
-							passengers: l.passengers,
+							persons: l.persons,
 							place: state.place,
 						})
 						.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)));
@@ -192,21 +192,21 @@ const mutations = {
 	setMessage(state, value) {
 		state.message = value;
 	},
-	setAllLodgingPassengers(state, values) {
-		state.lodgingPassengers = values;
+	setAllLodgingPersons(state, values) {
+		state.lodgingPersons = values;
 	},
-	updateLodgingPassengers(state, value) {
-		state.lodgingPassengers.push(value);
+	updateLodgingPersons(state, value) {
+		state.lodgingPersons.push(value);
 		state.lodgings.update({
 			id: state.lodgingSelect.id,
-			passengers: state.lodgingPassengers,
+			Persons: state.lodgingPersons,
 		});
 	},
-	removeLodgingPassengers(state, value) {
-		state.lodgingPassengers.splice(value, 1);
+	removeLodgingPersons(state, value) {
+		state.lodgingPersons.splice(value, 1);
 		state.lodgings.update({
 			id: state.lodgingSelect.id,
-			passengers: state.lodgingPassengers,
+			Persons: state.lodgingPersons,
 		});
 	},
 	setUpdatingService(state, value) {
@@ -474,7 +474,7 @@ const mutations = {
 							content: place.text,
 							service: lodging.service,
 							place: lodging.place,
-							passengers: lodging.passengers,
+							persons: lodging.persons,
 							mountTotal: lodging.mountTotal,
 						});
 				} else {
@@ -486,7 +486,7 @@ const mutations = {
 						content: place.text,
 						service: lodging.service,
 						place: lodging.place,
-						passengers: lodging.passengers,
+						persons: lodging.persons,
 						mountTotal: lodging.mountTotal,
 					});
 				}

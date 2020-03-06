@@ -1,31 +1,33 @@
 <template>
 	<div class="list ">
-		<b-list-group v-for="(item, index) in passengers" :key="index" class="list-passanger">
+		<b-list-group v-for="(item, index) in persons" :key="index" class="list-passanger">
 			<b-list-group-item
 				class="background-module-color "
-				:class="{ 'list-passanger-select': item._id == passenger._id }"
-				@click="selectedPassenger(item)"
+				:class="{ 'list-passanger-select': item._id == person._id }"
+				@click="selectedPerson(item)"
 			>
 				<b-row>
 					<b-col cols="10" class="text-left">
-						<div v-if="item.passenger" class="d-inline-block">
-							<b-link :href="setAvatarlist(item.passenger)" target="_blank">
+						<div v-if="item.avatar" class="d-inline-block">
+							<b-link :href="setAvatarlist(item.avatar)" target="_blank">
 								<b-img
 									v-bind="mainProps"
 									rounded="circle"
 									style="border: 1px solid #6bb2a0"
 									alt="Circle image"
-									:src="setAvatarlist(item.passenger)"
+									:src="setAvatarlist(item.avatar)"
 								></b-img>
 							</b-link>
 						</div>
 						<div class="d-inline-block ml-1">
 							<span>{{ item.firstName }} {{ item.lastName }}</span>
 							<span v-if="item.appointment || item.function">
-								- {{ item.appointment
-								}}<span v-if="item.appointment && item.function">/</span
-								>{{ item.function }}</span
-							>
+								- {{ item.appointment }}
+								<span v-if="item.appointment && item.function">
+									/
+								</span>
+								{{ item.function }}
+							</span>
 						</div>
 					</b-col>
 					<b-col cols="2">
@@ -42,23 +44,23 @@
 <script>
 export default {
 	props: {
-		selectedPassenger: {
+		deleteOne: {
 			type: Function,
 			required: false,
 		},
-		getAllPassengers: {
+		getAllpersons: {
 			type: Function,
 			required: false,
 		},
-		passengers: {
+		persons: {
 			type: Array,
 			required: false,
 		},
-		passenger: {
+		person: {
 			type: Object,
 			required: false,
 		},
-		deleteOne: {
+		selectedPerson: {
 			type: Function,
 			required: false,
 		},
@@ -68,9 +70,9 @@ export default {
 			mainProps: {
 				blank: false,
 				blankColor: '#777',
-				width: 30,
-				height: 30,
 				class: 'm1',
+				height: 30,
+				width: 30,
 			},
 		};
 	},

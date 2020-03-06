@@ -3,9 +3,9 @@ import Vuex from 'vuex';
 import Auth from './modules/auth';
 import Lodging from './modules/Lodging';
 import Maintenance from './modules/Maintenance';
-import Passengers from './modules/Passengers';
 import Payments from './modules/Payments';
 import Period from './modules/Period';
+import Persons from './modules/Persons';
 import Place from './modules/Place';
 import User from './modules/user';
 
@@ -16,9 +16,9 @@ export default new Vuex.Store({
 		Auth,
 		Lodging,
 		Maintenance,
-		Passengers,
 		Payments,
 		Period,
+		Persons,
 		Place,
 		User,
 	},

@@ -30,7 +30,7 @@ export default {
 			required: false,
 			default: () => false,
 		},
-		isPassengerDate: {
+		isPersonDate: {
 			type: Boolean,
 			required: false,
 		},
@@ -71,7 +71,7 @@ export default {
 	},
 	methods: {
 		onchange(e) {
-			if (this.isPassengerDate) {
+			if (this.isPersonDate) {
 				this.error = '';
 				this.errorDate(false);
 				if (this.start) {
