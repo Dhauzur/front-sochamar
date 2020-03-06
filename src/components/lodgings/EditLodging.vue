@@ -2,33 +2,39 @@
 	<b-row v-if="lodgingSelect">
 		<b-col class="borderModule p-3 m-3">
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
-			<b-row v-if="!showPopover">
-				<b-col>
-					<b-form-group id="input-group-1" label="Fecha inicio" label-for="input-1">
-						<b-form-input
-							id="input-1"
-							v-model="dateStartLodging"
-							type="date"
-							:value="dateStartLodging"
-							class="col-xs-2 "
-							required
-							@change="dateChange({ dateStartLodging, dateEndLodging, start: true })"
-						/>
-					</b-form-group>
-				</b-col>
-				<b-col>
-					<b-form-group id="input-group-1" label="Fecha fin" label-for="input-1">
-						<b-form-input
-							id="input-1"
-							v-model="dateEndLodging"
-							type="date"
-							class="col-xs-2 "
-							required
-							@change="dateChange({ dateStartLodging, dateEndLodging, start: false })"
-						/>
-					</b-form-group>
-				</b-col>
-			</b-row>
+			<transition name="fade">
+				<b-row v-if="!showPopover">
+					<b-col>
+						<b-form-group id="input-group-1" label="Fecha inicio" label-for="input-1">
+							<b-form-input
+								id="input-1"
+								v-model="dateStartLodging"
+								type="date"
+								:value="dateStartLodging"
+								class="col-xs-2 "
+								required
+								@change="
+									dateChange({ dateStartLodging, dateEndLodging, start: true })
+								"
+							/>
+						</b-form-group>
+					</b-col>
+					<b-col>
+						<b-form-group id="input-group-1" label="Fecha fin" label-for="input-1">
+							<b-form-input
+								id="input-1"
+								v-model="dateEndLodging"
+								type="date"
+								class="col-xs-2 "
+								required
+								@change="
+									dateChange({ dateStartLodging, dateEndLodging, start: false })
+								"
+							/>
+						</b-form-group>
+					</b-col>
+				</b-row>
+			</transition>
 			<b-row>
 				<!--  services -->
 
