@@ -7,9 +7,9 @@
 				</h6>
 			</b-col>
 		</b-row>
-		<b-row v-else>
+		<b-row v-else class="text-left">
 			<b-col cols="12" md="6" lg="4">
-				<label for="date" class="mb-0 mt-2">Fecha</label>
+				<label for="date" class="mb-0 mt-2"><small>Fecha</small></label>
 				<b-form-select
 					id="date"
 					v-model="$v.lodgingSelected.$model"
@@ -18,9 +18,9 @@
 					@change="setMount"
 				></b-form-select>
 			</b-col>
-			<b-col cols="12" md="6" lg="2"
-				><label for="mount" class="mb-0 mt-2">Monto</label
-				><b-form-input
+			<b-col cols="12" md="6" lg="2">
+				<label for="mount" class="mb-0 mt-2"><small>Monto</small></label>
+				<b-form-input
 					id="mount"
 					v-model="$v.mount.$model"
 					:disabled="true"
@@ -30,7 +30,7 @@
 				></b-form-input>
 			</b-col>
 			<b-col cols="12" md="9" lg="3">
-				<label for="voucher" class="mb-0 mt-2">Voucher</label>
+				<label for="voucher" class="mb-0 mt-2"><small>Voucher</small></label>
 				<b-form-file
 					id="voucher"
 					ref="voucher"
@@ -43,13 +43,7 @@
 				></b-form-file>
 			</b-col>
 			<b-col cols="12" md="3" class="mt-4">
-				<b-button
-					:disabled="loading"
-					block
-					variant="primary"
-					class="btn-sm mt-2"
-					@click="submit"
-				>
+				<b-button :disabled="loading" block class="btn-sm mt-2" @click="submit">
 					Agregar Pago
 					<b-spinner v-if="loading" small type="grow"></b-spinner>
 				</b-button>
