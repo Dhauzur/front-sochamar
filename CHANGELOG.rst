@@ -13,14 +13,23 @@ Usar las siguientes palabras al inicio para añadir registros
 
 Se debe seguir este mismo esquema, previamente a solicitar el PR.
 
-`0.0.2`_ (2020-02-09) (Mauro, Jesus, Javier)
+`0.0.2` _ (2020-02-09) (Mauro, Jesus, Javier)
+-------------------------
 * Corregido solapamiento de lodgings en diferentes eventos
 * Corregido input que se abria al selecionar un lodging (Este lanzaba error al ingresar datos)
 * Corregido total 0 cuando no existian servicios ingresados en dicha fecha
 * Remplazado estilos claros de la aplicacion a colores oscuros y cremas
 * Mejorado card a transition col la confirmacion de passangers
 * Remplazado servicios generales y especificos a lodging
-
+* Agregado flujo de recuperar contraseña.
+* Agregado componente passwordReset, su fin es trabajar con el jwt temporal y permitir la actualizacion de contraseña.
+* Agregado componente passwordRecover, es hijo de login y nos permite enviar el correo de recuperación desde el componente login.
+* Agregado store User, ya es posible manipular propiedades del usuario.
+* Agregada interfaz profile, ya es posible vizualizar/manipular los propiedades del usuario.
+* Agregada funcionalidad de actualizar solo el avatar en profile.
+* Agregada funcionalidad de actualizar solo la contraseña en profile.
+* Mejorado componente lodging y rooms, tenian problemas con las nuevas relaciones de documentos que tiene user en la api.
+* Agregado login mediante google y manejo del token jwt enviado por esta acción.
 
 `0.0.1`_ (2020-02-09) (Mauro, Jesus, Javier)
 -------------------------
@@ -49,16 +58,3 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Restricción si se indica un numero mayor de servicios a usar en una hospedaje de lo que permite una habitación
 * Corregido error que habilita la ediccion si el usuario hace doble click en un hospedaje y habilita el modo de edicion
 * Reemplazado componente BoostrapVue de alert, que recibia un msj y dejaba 20 segundos en pantalla. Ahora se utiliza un toasted con un watch
-
-`0.0.0`_ (2020-02-13) (Javier)
--------------------------
-* Agregado flujo de recuperar contraseña.
-* Agregado componente passwordReset, su fin es trabajar con el jwt temporal y permitir la actualizacion de contraseña.
-* Agregado componente passwordRecover, es hijo de login y nos permite enviar el correo de recuperación desde el componente login.
-
-`0.0.0`_ (2020-02-18) (Javier)
--------------------------
-* Agregado store User, ya es posible manipular propiedades del usuario.
-* Agregada interfaz profile, ya es posible vizualizar/manipular los propiedades del usuario.
-* Agregada funcionalidad de actualizar solo el avatar en profile.
-* Agregada funcionalidad de actualizar solo la contraseña en profile.
