@@ -199,14 +199,14 @@ const mutations = {
 		state.lodgingPersons.push(value);
 		state.lodgings.update({
 			id: state.lodgingSelect.id,
-			Persons: state.lodgingPersons,
+			persons: state.lodgingPersons,
 		});
 	},
 	removeLodgingPersons(state, value) {
 		state.lodgingPersons.splice(value, 1);
 		state.lodgings.update({
 			id: state.lodgingSelect.id,
-			Persons: state.lodgingPersons,
+			persons: state.lodgingPersons,
 		});
 	},
 	setUpdatingService(state, value) {
