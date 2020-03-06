@@ -16,7 +16,10 @@ const getters = {
 	periodSelected: state => state.periodSelected,
 	periods: state => {
 		if (state.filterPeriodWord)
-			return state.periods.filter(c => c.name.includes(state.filterPeriodWord));
+			return state.periods.filter(
+				period =>
+					period.name.toLowerCase().indexOf(state.filterPeriodWord.toLowerCase()) > -1
+			);
 		else return state.periods;
 	},
 };

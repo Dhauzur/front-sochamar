@@ -3,7 +3,7 @@
 		<b-row class="justify-content-center">
 			<b-col md="12" lg="10" class="background-module pb-3">
 				<b-col cols="12" class="mb-3">
-					<h4 class="my-4">Gestión de <span style="color: orange">Lugares</span></h4>
+					<h4 class="my-4">Gestión de <span style="color: orange">lugares</span></h4>
 				</b-col>
 				<b-row class="mb-3 text-left">
 					<b-col cols="12" class="mb-3"><h6>Agregar nuevo</h6></b-col>
@@ -109,8 +109,7 @@
 						</small>
 					</b-col>
 				</b-row>
-				<template v-if="hasPlaces">
-					<hr />
+				<div v-if="hasPlaces">
 					<b-row
 						style="max-height: 150px; overflow-y: auto;"
 						class="background-into-module mr-2 mb-3"
@@ -169,16 +168,16 @@
 							</table>
 						</b-col>
 					</b-row>
-				</template>
-				<template v-else>
+				</div>
+				<div v-else>
 					<h6 class="m-5">Vacio</h6>
-				</template>
+				</div>
 				<b-row>
 					<b-col cols="6" offset="6">
 						<b-form-input
 							v-model="filterPlaceWord"
 							size="sm"
-							placeholder="Filtrar empresas"
+							placeholder="Filtrar lugar"
 							@keyup="filterPlace(filterPlaceWord)"
 						></b-form-input>
 					</b-col>

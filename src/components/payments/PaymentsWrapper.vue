@@ -25,8 +25,8 @@
 						Gestión pagos de <span style="color: orange">{{ place.name }}</span>
 					</h3>
 					<b-row>
+						<b-col cols="12" class="mb-3 text-left"><h6>Agregar nuevo</h6></b-col>
 						<b-col cols="4">
-							Realizar nuevo pago
 							<b-form-select
 								id="state"
 								v-model="inputSelectLodgingOrNew"
@@ -40,7 +40,7 @@
 							></b-form-select>
 						</b-col>
 					</b-row>
-					<b-row>
+					<b-row class="mb-5">
 						<b-col>
 							<b-collapse
 								v-if="lodgings"
@@ -62,16 +62,6 @@
 							><b-collapse id="collapse-4" v-model="visible" class="mt-2">
 								<payments-form :count="count" /> </b-collapse
 						></b-col>
-					</b-row>
-					<b-row align-h="end">
-						<b-col md="4" class="m-2 ">
-							<b-form-input
-								v-model="wordForFilter"
-								size="sm"
-								placeholder="Filtrar por monto o fecha"
-								@input="onChange"
-							></b-form-input>
-						</b-col>
 					</b-row>
 					<b-row
 						style="max-height: 150px; overflow-y: auto;"
@@ -141,6 +131,16 @@
 					<b-row v-if="!items.length > 0"
 						><b-col class="text-center">
 							<h6>No hay pagos registrados</h6>
+						</b-col>
+					</b-row>
+					<b-row align-h="end">
+						<b-col md="4" class="m-2 ">
+							<b-form-input
+								v-model="wordForFilter"
+								size="sm"
+								placeholder="Filtrar por monto o fecha"
+								@input="onChange"
+							></b-form-input>
 						</b-col>
 					</b-row>
 				</b-col>

@@ -2,12 +2,13 @@
 	<b-container>
 		<b-row class="justify-content-center">
 			<b-col cols="12" md="10" lg="8" class="background-module py-3">
-				<b-row class="mb-3">
+				<b-row>
 					<b-col>
-						<h4>Ingresar nuevo turno</h4>
+						<h4 class="my-5">Gestión de <span style="color: orange">turnos</span></h4>
 					</b-col>
 				</b-row>
-				<b-row class="mb-3 text-left">
+				<b-row class="mb-5 text-left">
+					<b-col cols="12" class="mb-3"><h6>Agregar nuevo</h6></b-col>
 					<b-col cols="12" md="4">
 						<label for="name" class="mb-0"><small>Nombre del turno</small></label>
 						<b-form-input
@@ -47,7 +48,6 @@
 					</b-col>
 				</b-row>
 				<template v-if="hasPeriods">
-					<h4 class="my-5">Gestión de turnos</h4>
 					<b-row
 						style="max-height: 150px; overflow-y: auto;"
 						class="background-into-module mr-2 mb-3"
@@ -90,18 +90,18 @@
 							</table>
 						</b-col>
 					</b-row>
-					<b-row class="mb-3">
-						<b-col cols="6" offset="6">
-							<b-form-input
-								v-model="filterPeriodWord"
-								size="sm"
-								placeholder="Filtrar turno"
-								@keyup="filterPeriod(filterPeriodWord)"
-							></b-form-input>
-						</b-col>
-					</b-row>
 				</template>
-				<template v-else><h6>No hay turnos agregados</h6></template>
+				<template v-else><h6 class="m-5">Vacio</h6></template>
+				<b-row class="mb-3">
+					<b-col cols="6" offset="6">
+						<b-form-input
+							v-model="filterPeriodWord"
+							size="sm"
+							placeholder="Filtrar turno"
+							@keyup="filterPeriod(filterPeriodWord)"
+						></b-form-input>
+					</b-col>
+				</b-row>
 			</b-col>
 		</b-row>
 	</b-container>
