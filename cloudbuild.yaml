@@ -8,6 +8,7 @@ steps:
   env:
     - "VUE_APP_URL=${_VUE_APP_URL}"
     - "VUE_APP_URL_ABSOLUTE=${_VUE_APP_URL_ABSOLUTE}"
+    - "VUE_APP_GOOGLE_AUTH_URL=${_VUE_APP_GOOGLE_AUTH_URL}"
 - name: node:10.15.1
   entrypoint: npm
   args: ["run", "build"]

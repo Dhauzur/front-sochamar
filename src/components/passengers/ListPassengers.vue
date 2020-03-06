@@ -2,20 +2,20 @@
 	<div class="list ">
 		<b-list-group v-for="(item, index) in passengers" :key="index" class="list-passanger">
 			<b-list-group-item
-				class="background-module-color "
+				class="list-passangers"
 				:class="{ 'list-passanger-select': item._id == passenger._id }"
 				@click="selectedPassenger(item)"
 			>
 				<b-row>
 					<b-col cols="10" class="text-left">
 						<div v-if="item.passenger" class="d-inline-block">
-							<b-link :href="`${api}/${item.passenger}`" target="_blank">
+							<b-link :href="setAvatarlist(item.passenger)" target="_blank">
 								<b-img
 									v-bind="mainProps"
 									rounded="circle"
 									style="border: 1px solid #6bb2a0"
 									alt="Circle image"
-									:src="`${api}/${item.passenger}`"
+									:src="setAvatarlist(item.passenger)"
 								></b-img>
 							</b-link>
 						</div>
@@ -42,10 +42,6 @@
 <script>
 export default {
 	props: {
-		api: {
-			type: String,
-			required: false,
-		},
 		selectedPassenger: {
 			type: Function,
 			required: false,
@@ -78,6 +74,12 @@ export default {
 			},
 		};
 	},
+	methods: {
+		setAvatarlist(element) {
+			if (typeof element === 'string') return element;
+			return URL.createObjectURL(element);
+		},
+	},
 };
 </script>
 <style lang="css">
@@ -86,20 +88,27 @@ export default {
 	color: white;
 }
 .modal-content {
-	background-image: linear-gradient(50deg, #adadad, #f3f3f3, white, white);
-	font-family: 'Avenir', Helvetica, Arial, sans-serif;
+	background-image: linear-gradient(80deg, #676b76, #676b76de, #676b76);
+	font-family: 'Poppins', sans-serif;
 	color: black;
 }
 .list-group {
 	margin-bottom: 5px !important;
 }
-.background-module-color {
+.list-passangers {
 	border: none;
-	border-radius: 0px 35px 35px 0px !important;
-	background-color: white;
+	border-radius: 0px 35px 0px 35px !important;
+	background-color: #c1c5d1;
 }
 .list {
 	max-height: 200px;
 	overflow-y: scroll;
+}
+label,
+h4,
+h5,
+h6,
+h3 {
+	color: white !important;
 }
 </style>

@@ -2,13 +2,13 @@
 	<b-container>
 		<b-row id="nav" class="justify-content-center">
 			<b-col md="8" lg="6" class="background-module pb-3 px-4">
-				<h3 class="my-4">Gestión de empresas</h3>
+				<h3 class="my-4">Gestión de lugares</h3>
 				<b-row class="mb-3">
 					<b-col cols="7">
 						<b-form-input
 							v-model="filterCompanyWord"
 							size="sm"
-							placeholder="Filtrar empresas"
+							placeholder="Filtrar lugares"
 							@keyup="filterCompany(filterCompanyWord)"
 						></b-form-input>
 					</b-col>
@@ -18,7 +18,7 @@
 					class="background-into-module mr-2 mb-3"
 				>
 					<b-col>
-						<table class="table table-bordered table-hover">
+						<table class="table  table-hover">
 							<thead>
 								<tr>
 									<th>Nombre</th>
@@ -163,7 +163,7 @@
 				</b-row>
 				<b-row class="mb-3">
 					<b-col>
-						<b-button block variant="primary" class="col-12" @click="onsubmit()">
+						<b-button block class="col-12" @click="onsubmit()">
 							Crear
 						</b-button>
 						<small v-if="errors" class="mt-2 d-block text-danger">

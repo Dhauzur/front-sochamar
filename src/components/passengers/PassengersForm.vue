@@ -3,9 +3,8 @@
 		<!-- list passenger -->
 		<b-row>
 			<b-col v-if="passengersList.length > 0">
-				<h5 class="text-secondary">Listado de personas</h5>
+				<h5>Listado de personas</h5>
 				<ListPassengers
-					:api="api"
 					:passenger="passenger"
 					:selected-passenger="selectedPassenger"
 					:delete-one="deleteOne"
@@ -19,7 +18,7 @@
 			<b-row>
 				<!-- avatar -->
 				<b-col class="mt-3">
-					<h5 class="text-secondary">
+					<h5>
 						{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
 					</h5>
 					<label for="upload">
@@ -43,18 +42,18 @@
 					></b-form-file>
 				</b-col>
 				<b-col cols="12">
-					<label for="upload" class="pointer text-secondary">{{
+					<label for="upload" class="pointer ">{{
 						typeof passenger.passenger === 'string' ? 'Cambiar avatar' : 'Subir avatar'
 					}}</label>
 				</b-col>
 				<!-- button for change view to new passenger -->
 				<div v-if="editMode" class="text-right position-absolute" style="top: 0; right: 0;">
-					<Button class="btn btn-secondary btn-sm" @click="clearInputs">Nuevo </Button>
+					<b-button @click="clearInputs">Nuevo </b-button>
 				</div>
 				<!-- firstName -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left"
 							><label for="firstName" class="mb-0 mt-2">Nombre</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
@@ -73,7 +72,7 @@
 				<!-- lastName -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="lastName" class="mb-0 mt-2">Apellido</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
@@ -86,7 +85,7 @@
 				<!-- age -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="age" class="mb-0 mt-2">Edad</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
@@ -101,7 +100,7 @@
 				<!-- state -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="state" class="mb-0 mt-2">Estado</label>
 						</b-col>
 						<b-col cols="12">
@@ -118,7 +117,7 @@
 				<!-- birthdate -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="birthdate" class="mb-0 mt-2">Fecha nacimiento</label>
 						</b-col>
 						<b-col cols="12">
@@ -135,7 +134,7 @@
 				<!-- appointment -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="phone" class="mb-0 mt-2">Telefono</label>
 							<b-input id="phone" v-model="passenger.phone"></b-input>
 						</b-col>
@@ -144,18 +143,18 @@
 			</b-row>
 			<!-- function -->
 			<b-row>
-				<b-col cols="6" class="text-left text-secondary"
+				<b-col cols="6" class="text-left "
 					><label for="function" class="mb-0 mt-2">Función</label>
 					<b-input id="function" v-model="passenger.function"></b-input>
 				</b-col>
-				<b-col cols="6" class="text-left text-secondary">
+				<b-col cols="6" class="text-left ">
 					<label for="appointment" class="mb-0 mt-2">Cargo</label>
 					<b-input id="appointment" v-model="passenger.appointment"></b-input>
 				</b-col>
 			</b-row>
 			<!-- regions -->
 			<b-row>
-				<b-col cols="6" class="text-left text-secondary">
+				<b-col cols="6" class="text-left ">
 					<label for="regions" class="mb-0 mt-2">Region</label>
 					<b-form-select
 						id="regions"
@@ -164,7 +163,7 @@
 						@change="setComunas"
 					></b-form-select>
 				</b-col>
-				<b-col cols="6" class="text-left text-secondary"
+				<b-col cols="6" class="text-left "
 					><label for="comuna" class="mb-0 mt-2">Comuna</label>
 					<b-form-select
 						id="comuna"
@@ -177,21 +176,24 @@
 			<!-- documents -->
 			<b-row>
 				<b-col cols="12" class="mt-2">
-					<small
-						v-if="!passenger.documents && !passenger.documents[0] && editMode"
-						class="text-secondary"
+					<small v-if="!passenger.documents && !passenger.documents[0] && editMode"
 						>Sin Documentos</small
 					>
-					<div v-if="editMode && typeof passenger.documents[0] === 'string'">
+					<div
+						v-if="
+							editMode &&
+								Array.isArray(passenger.documents) &&
+								passenger.documents.length
+						"
+					>
 						<b-badge
 							v-for="(item, index) in passenger.documents"
 							:key="index"
 							class="p-2"
 							pill
-							variant="secondary"
-							:href="`${api}/${item}`"
+							:href="item.url"
 							target="_blank"
-							>{{ cutText(item) }}
+							>{{ cutText(item.name) }}
 						</b-badge>
 					</div>
 				</b-col>
@@ -213,11 +215,12 @@
 			<b-row>
 				<b-col class="mt-4">
 					<b-button
-						:disabled="disabled"
+						:disabled="loading"
 						block
 						class="btn btn-primary d-block"
 						@click.prevent="submitForm"
 						>Guardar
+						<b-spinner v-if="loading" small type="grow"></b-spinner>
 					</b-button>
 				</b-col>
 			</b-row>
@@ -226,26 +229,25 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 import ListPassengers from './ListPassengers';
 import { mapActions, mapGetters } from 'vuex';
-import { api_absolute } from '@/config/index.js';
 import avatarDefault from '@/assets/user-icon.png';
-import comunasRegiones from '@/data/comunas-regiones.json';
+import { api_absolute } from '@/config/index.js';
 
 export default {
 	components: { ListPassengers },
 	mixins: [validationMixin],
 	data() {
 		return {
+			comunasRegiones: [],
 			regiones: [],
 			comunas: [],
 			disableComunaInput: true,
-			api: api_absolute,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 			form: new FormData(),
-			disabled: false,
 			editMode: false,
 			selected: {},
 			formTouched: false,
@@ -273,7 +275,7 @@ export default {
 	computed: {
 		srcImageAvatar() {
 			if (typeof this.passenger.passenger === 'string') {
-				return `${this.api}/${this.passenger.passenger}`;
+				return this.passenger.passenger;
 			} else if (this.passenger.passenger) {
 				return URL.createObjectURL(this.passenger.passenger);
 			} else {
@@ -281,6 +283,7 @@ export default {
 			}
 		},
 		...mapGetters({
+			loading: 'Passengers/loading',
 			passengersList: 'Passengers/passengers',
 			message: 'Passengers/message',
 		}),
@@ -301,14 +304,18 @@ export default {
 		},
 	},
 	mounted() {
-		this.regiones = comunasRegiones.map(item => item.region);
+		this.fetchRegions();
 	},
 	methods: {
+		async fetchRegions() {
+			const response = await axios.get(`${api_absolute}/comunas-regiones.json`);
+			this.comunasRegiones = response.data;
+			this.regiones = this.comunasRegiones.map(item => item.region);
+		},
 		async submitForm() {
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				this.disabled = true;
 				for (let index = 0; index < this.passenger.documents.length; index++) {
 					this.form.append('documents', this.passenger.documents[index]);
 				}
@@ -341,7 +348,6 @@ export default {
 					this.getAllPassengers();
 					this.clearInputs();
 				}
-				this.disabled = false;
 			}
 		},
 		setDocuments(e) {
@@ -403,7 +409,7 @@ export default {
 			return text;
 		},
 		setComunas() {
-			let temp = comunasRegiones.filter(item => item.region === this.passenger.region);
+			let temp = this.comunasRegiones.filter(item => item.region === this.passenger.region);
 			this.comunas = temp[0].comunas;
 			this.disableComunaInput = false;
 		},
@@ -416,9 +422,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.pointer {
-	cursor: pointer;
-}
-</style>

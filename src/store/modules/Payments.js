@@ -5,12 +5,14 @@ const state = {
 	message: '',
 	payments: [],
 	loading: false,
+	loadingSave: false,
 };
 
 const getters = {
 	message: state => state.message,
 	payments: state => state.payments,
 	loading: state => state.loading,
+	loadingSave: state => state.loadingSave,
 };
 
 const actions = {
@@ -36,6 +38,7 @@ const actions = {
 	},
 	async savePayment({ commit }, payload) {
 		try {
+			commit('setLoadingSave', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 			await Axios.post(`${api}/payments/create`, payload, config);
 			commit('setMessage', {
@@ -48,6 +51,7 @@ const actions = {
 				text: error.message,
 			});
 		}
+		commit('setLoadingSave', false);
 	},
 	async editPayment({ commit }, { payload, id }) {
 		try {
@@ -92,6 +96,9 @@ const mutations = {
 	},
 	setLoading(state, value) {
 		state.loading = value;
+	},
+	setLoadingSave(state, value) {
+		state.loadingSave = value;
 	},
 };
 

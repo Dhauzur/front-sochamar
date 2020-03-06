@@ -34,6 +34,7 @@
 						<b-spinner v-if="loading" small type="grow"></b-spinner>
 					</b-button>
 				</b-form>
+				<GoogleButton></GoogleButton>
 				<p>
 					¿No tienes una cuenta?
 					<router-link to="/register">registrate</router-link>
@@ -52,9 +53,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import PasswordRecover from '../components/auth/PasswordRecover';
+import GoogleButton from '../components/auth/GoogleButton';
+
 export default {
 	components: {
 		PasswordRecover,
+		GoogleButton,
 	},
 	data() {
 		return {

@@ -107,7 +107,9 @@ export default {
 .autocomplete-results {
 	position: absolute;
 	z-index: 1;
-	background-color: #ffffff;
+
+	background-color: transparent;
+	background-image: linear-gradient(80deg, #676b76, #676b769e, #676b76);
 	padding: 0;
 	margin: 0;
 	max-height: 120px;
@@ -124,7 +126,7 @@ export default {
 
 .autocomplete-result.is-active,
 .autocomplete-result:hover {
-	background-color: #8b8ac7d9;
-	color: #ffffff;
+	background-color: #c1c5d1;
+	color: #3a3b3e;
 }
 </style>

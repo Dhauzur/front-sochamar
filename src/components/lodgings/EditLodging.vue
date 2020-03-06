@@ -1,158 +1,112 @@
 <template lang="html">
 	<b-row v-if="lodgingSelect">
-		<b-col class="borderEdit m-3">
+		<b-col class="borderModule p-3 m-3">
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
-			<b-row>
-				<b-col md="4" lg="6">
-					<b-form-group
-						id="input-group-1"
-						label="Fecha inicio"
-						label-for="input-1"
-						description="Selecione la fecha que desea cambiar."
-					>
-						<b-form-input
-							id="input-1"
-							v-model="dateStartLodging"
-							type="date"
-							:value="dateStartLodging"
-							class="col-xs-2 "
-							style="text-align: center; text-align-last:center;"
-							required
-							@change="dateChange({ dateStartLodging, dateEndLodging, start: true })"
-						/>
-					</b-form-group>
-				</b-col>
-				<b-col md="4" lg="6">
-					<b-form-group
-						id="input-group-1"
-						label="Fecha fin"
-						label-for="input-1"
-						description="Selecione la fecha que desea cambiar."
-					>
-						<b-form-input
-							id="input-1"
-							v-model="dateEndLodging"
-							type="date"
-							class="col-xs-2 "
-							style="text-align: center; text-align-last:center;"
-							required
-							@change="dateChange({ dateStartLodging, dateEndLodging, start: false })"
-						/>
-					</b-form-group>
-				</b-col>
-			</b-row>
+			<transition name="fade">
+				<b-row v-if="!showPopover">
+					<b-col>
+						<b-form-group id="input-group-1" label="Fecha inicio" label-for="input-1">
+							<b-form-input
+								id="input-1"
+								v-model="dateStartLodging"
+								type="date"
+								:value="dateStartLodging"
+								class="col-xs-2 "
+								required
+								@change="
+									dateChange({ dateStartLodging, dateEndLodging, start: true })
+								"
+							/>
+						</b-form-group>
+					</b-col>
+					<b-col>
+						<b-form-group id="input-group-1" label="Fecha fin" label-for="input-1">
+							<b-form-input
+								id="input-1"
+								v-model="dateEndLodging"
+								type="date"
+								class="col-xs-2 "
+								required
+								@change="
+									dateChange({ dateStartLodging, dateEndLodging, start: false })
+								"
+							/>
+						</b-form-group>
+					</b-col>
+				</b-row>
+			</transition>
 			<b-row>
 				<!--  services -->
-				<b-col sm="12">
-					<b-form-group
-						id="input-group-1"
-						label="Espacio de trabajo:"
-						label-for="input-1"
-						description="Selecione el lugar de donde enviará información."
-					>
-						<b-form-select
-							id="input-1"
-							v-model="serviceSelected"
-							class="col-xs-2"
-							style="text-align: center; text-align-last:center;"
-							:options="services"
-							required
-						/>
-					</b-form-group>
-				</b-col>
-			</b-row>
-			<b-row>
+
 				<!-- aucomplete passengers -->
-				<b-col sm="12" class="position-relative">
+				<b-col cols="12">
 					<autocomplete
+						v-if="!showPopover"
 						:items="passengerFormatted"
 						:selected="addPassengerToLodging"
 						placeholder="Agregar un pasajero"
 					/>
+
+					<b-button
+						v-if="!showPopover"
+						variant="danger"
+						@click="deleteLodging(lodgingSelect)"
+					>
+						Eliminar actividad
+					</b-button>
 				</b-col>
 				<!-- badge passenger -->
-				<b-col v-if="!showPopover" sm="12" class="mt-2 mt-xl-1">
+				<b-col v-if="!showPopover">
 					<b-badge
 						v-for="(item, i) in lodgingPassengers"
 						:id="`show${i}`"
 						:key="i"
 						pill
-						variant="primary"
 						target="_blank"
 						class="ml-1 mr-1"
-						>{{ item.search }}
+						>{{ item.search }}: {{ item.dateStart }} - {{ item.dateEnd }}
 						<span class="text-danger ml-1 pointer" @click="removeLodgingPassengers(i)"
 							>X</span
 						>
-						<b-tooltip :target="`show${i}`" placement="bottom"
-							>{{ item.dateStart }} - {{ item.dateEnd }}</b-tooltip
-						>
 					</b-badge>
 				</b-col>
-				<!-- popover date passengers -->
-				<b-card
-					v-show="showPopover"
-					class="shadow bg-white rounded my-3 ml-3 position-absolute"
-					style="z-index: 2050; top: 150px"
-				>
-					<template v-slot:header>
-						<div class="d-flex">
-							<span class="mb-0 flex-grow-1"
-								>Indique la fecha que se hospedara el pasajero</span
-							>
-							<b-button variant="danger" class="btn-sm" @click="cancelAddPassenger">
-								X
-							</b-button>
-						</div>
-					</template>
-					<b-row>
-						<!-- start date passenger -->
-						<b-col sm="6">
-							<LodgingsDate
-								label="Fecha inicio"
-								:start="true"
-								:set-date="date => (dateStartPassengers = date)"
-								:date-start="dateStart"
-								:date-end="dateEnd"
-								:is-passenger-date="true"
-								:error-date="errorDate"
-							/>
-						</b-col>
-						<!-- end date passenger -->
-						<b-col sm="6">
-							<LodgingsDate
-								label="Fecha fin"
-								:start="false"
-								:set-date="date => (dateEndPassengers = date)"
-								:date-start="dateStart"
-								:date-end="dateEnd"
-								:is-passenger-date="true"
-								:error-date="errorDate"
-							/>
-						</b-col>
-					</b-row>
-					<button
+				<b-col v-show="showPopover">
+					<LodgingsDate
+						label="Fecha inicio"
+						:start="true"
+						:set-date="date => (dateStartPassengers = date)"
+						:date-start="dateStart"
+						:date-end="dateEnd"
+						:is-passenger-date="true"
+						:error-date="errorDate"
+					/>
+				</b-col>
+				<b-col v-show="showPopover">
+					<LodgingsDate
+						label="Fecha fin"
+						:start="false"
+						:set-date="date => (dateEndPassengers = date)"
+						:date-start="dateStart"
+						:date-end="dateEnd"
+						:is-passenger-date="true"
+						:error-date="errorDate"
+					/>
+				</b-col>
+				<b-col class="mb-2 d-flex justify-content-start flex-wrap">
+					<b-button
+						v-show="showPopover"
 						:disabled="datePassengersInvalid"
-						type="button"
-						class="btn btn-secondary btn-md mt-2 btn-block"
 						@click="setDatePassenger"
 					>
-						Ok
-					</button>
-				</b-card>
-				<!-- increment passengers  -->
-				<b-col sm="12" class="d-flex justify-content-start flex-wrap">
-					<b-button @click="addOneService(serviceSelected)">
-						+1 {{ serviceSelected }}
-					</b-button>
-					<b-button @click="subOneService(serviceSelected)">
-						-1 {{ serviceSelected }}
+						Agregar
 					</b-button>
 					<b-button
-						style="border: 1px solid red !important; color: red !important;"
-						@click="deleteLodging(lodgingSelect)"
+						v-if="showPopover"
+						variant="danger"
+						class="btn-sm"
+						@click="cancelAddPassenger"
 					>
-						Eliminar
+						Cancelar
 					</b-button>
 				</b-col>
 			</b-row>
@@ -186,20 +140,12 @@ export default {
 			showPopover: false,
 			dateStartPassengers: null,
 			dateEndPassengers: null,
-			services: [
-				{ text: 'Todos los servicios', value: 'todos los servicios' },
-				{ text: 'Desayuno', value: 'desayuno' },
-				{ text: 'Almuerzo', value: 'almuerzo' },
-				{ text: 'Cena', value: 'cena' },
-				{ text: 'Alojamiento', value: 'alojamiento' },
-			],
-			serviceSelected: 'todos los servicios',
 		};
 	},
 	computed: {
 		passengerFormatted() {
 			return this.passengers.map(item => ({
-				search: `${item.firstName} ${item.lastName}`,
+				search: `${item.firstName} ${item.lastName ? item.lastName : ''}`,
 				data: item,
 			}));
 		},
@@ -340,8 +286,6 @@ export default {
 		}),
 		...mapMutations({
 			sendDateChange: 'Lodging/dateChange',
-			addOneService: 'Lodging/addOneService',
-			subOneService: 'Lodging/subOneService',
 			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
 			removeLodgingPassengers: 'Lodging/removeLodgingPassengers',
 		}),
@@ -350,12 +294,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.borderEdit {
-	border: 1px solid #dee2e6;
-	padding: 15px;
-	border-radius: 30px;
-	box-shadow: 0px 0px 20px -8px rgb(0, 0, 0);
-}
 .pointer {
 	cursor: pointer;
 }
