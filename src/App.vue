@@ -113,7 +113,9 @@ export default {
 		}
 	}
 }
-
+::placeholder {
+	color: #b7b3b3 !important;
+}
 .fade-enter-active,
 .fade-leave-active {
 	transition: opacity 0.5s;
@@ -168,7 +170,7 @@ input:focus {
 }
 
 .background-module {
-	background-color: #c1c5d1;
+	// background-color: #c1c5d1;
 	border-radius: 20px;
 	max-height: 80vh !important;
 	overflow-y: auto;
