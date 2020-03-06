@@ -18,6 +18,9 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Corregido input que se abria al selecionar un lodging (Este lanzaba error al ingresar datos)
 * Corregido total 0 cuando no existian servicios ingresados en dicha fecha
 * Remplazado estilos claros de la aplicacion a colores oscuros y cremas
+* Mejorado card a transition col la confirmacion de passangers
+* Remplazado servicios generales y especificos a lodging
+
 
 `0.0.1`_ (2020-02-09) (Mauro, Jesus, Javier)
 -------------------------
