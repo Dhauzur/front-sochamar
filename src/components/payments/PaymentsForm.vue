@@ -56,9 +56,13 @@
 					Voucher
 				</label>
 				<div v-if="editVoucher || item">
-					<b-link v-if="typeof editVoucher === 'string'" :href="editVoucher">
+					<span
+						v-if="typeof editVoucher === 'string'"
+						class="pointer"
+						:href="editVoucher"
+					>
 						{{ cutText(voucherName) }}
-					</b-link>
+					</span>
 				</div>
 				<div v-else>
 					<b-form-file
@@ -73,7 +77,7 @@
 				</div>
 			</b-col>
 			<b-col cols="12" md="12" lg="2" class="mt-4">
-				<b-button block variant="primary" class="btn-sm mt-2" @click="submit">{{
+				<b-button block class="btn-sm mt-2" @click="submit">{{
 					item ? 'Actualizar' : 'Agregar Pago'
 				}}</b-button>
 			</b-col>

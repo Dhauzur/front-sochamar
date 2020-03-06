@@ -2,7 +2,7 @@
 	<div class="list ">
 		<b-list-group v-for="(item, index) in passengers" :key="index" class="list-passanger">
 			<b-list-group-item
-				class="background-module-color "
+				class="list-passangers"
 				:class="{ 'list-passanger-select': item._id == passenger._id }"
 				@click="selectedPassenger(item)"
 			>
@@ -88,20 +88,27 @@ export default {
 	color: white;
 }
 .modal-content {
-	background-image: linear-gradient(50deg, #adadad, #f3f3f3, white, white);
-	font-family: 'Avenir', Helvetica, Arial, sans-serif;
+	background-image: linear-gradient(80deg, #676b76, #676b76de, #676b76);
+	font-family: 'Poppins', sans-serif;
 	color: black;
 }
 .list-group {
 	margin-bottom: 5px !important;
 }
-.background-module-color {
+.list-passangers {
 	border: none;
-	border-radius: 0px 35px 35px 0px !important;
-	background-color: white;
+	border-radius: 0px 35px 0px 35px !important;
+	background-color: #c1c5d1;
 }
 .list {
 	max-height: 200px;
 	overflow-y: scroll;
+}
+label,
+h4,
+h5,
+h6,
+h3 {
+	color: white !important;
 }
 </style>
