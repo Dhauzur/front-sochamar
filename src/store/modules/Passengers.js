@@ -1,5 +1,5 @@
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 const state = {
 	message: '',
@@ -18,7 +18,7 @@ const getters = {
 const actions = {
 	async fetchAllPassengers({ commit }) {
 		try {
-			const response = await Axios.get(api + '/passengers');
+			const response = await axios.get(api + '/passengers');
 			commit('setPassengers', response.data.passengers);
 		} catch (error) {
 			commit('setPassengers', null);
@@ -32,7 +32,7 @@ const actions = {
 		try {
 			commit('setLoading', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.post(`${api}/passengers/create`, payload, config);
+			await axios.post(`${api}/passengers/create`, payload, config);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Guardado exitosamente',
@@ -49,7 +49,7 @@ const actions = {
 		try {
 			commit('setLoading', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.put(`${api}/passengers/${id}`, payload, config);
+			await axios.put(`${api}/passengers/${id}`, payload, config);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',
@@ -64,7 +64,7 @@ const actions = {
 	},
 	async deleteAllPassengers({ commit }) {
 		try {
-			await Axios.delete(`${api}/passengers/delete/all`);
+			await axios.delete(`${api}/passengers/delete/all`);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Eliminado todo los pagos',
@@ -78,7 +78,7 @@ const actions = {
 	},
 	async deleteOnePassenger({ commit }, id) {
 		try {
-			await Axios.delete(`${api}/passengers/${id}`);
+			await axios.delete(`${api}/passengers/${id}`);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Pasajero eliminado',

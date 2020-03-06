@@ -55,7 +55,7 @@
 
 <script>
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 export default {
 	data() {
@@ -80,7 +80,8 @@ export default {
 	},
 	methods: {
 		fetchReports() {
-			Axios.get(api + '/reports')
+			axios
+				.get(api + '/reports')
 				.then(response => (this.reports = response.data.reports))
 				.catch(() => {
 					console.error('Error al descargar reportes');
@@ -91,7 +92,7 @@ export default {
 			const data = new URLSearchParams();
 			data.append('member', this.form.member);
 			data.append('whatWasDone', this.form.whatWasDone);
-			Axios({
+			axios({
 				method: 'POST',
 				headers: { 'content-type': 'application/x-www-form-urlencoded' },
 				data,

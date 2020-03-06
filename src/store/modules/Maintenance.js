@@ -1,5 +1,5 @@
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 import moments from 'moment';
 
 const state = {
@@ -55,15 +55,10 @@ const actions = {
 	async fetchActivities({ commit }) {
 		try {
 			commit('setLoading', 'Cargando actividades...');
-			return Axios.get(api + '/activities')
-				.then(response => {
-					commit('setLoading', '');
-					commit('setActivities', response.data);
-					return true;
-				})
-				.catch(error => {
-					return 'Error al intentar hacer la descarga: ' + error;
-				});
+			const response = await axios.get(`${api}/activities`);
+			commit('setLoading', '');
+			commit('setActivities', response.data);
+			return true;
 		} catch (error) {
 			console.error('Error al intentar hacer la descarga');
 		}

@@ -11,7 +11,7 @@ const PasswordReset = () => import('@/views/PasswordReset');
 const Payments = () => import('@/views/Payments');
 const Register = () => import('@/views/Register');
 const Report = () => import('@/views/Report.vue');
-const Room = () => import('@/views/Room.vue');
+const Periods = () => import('@/views/Periods.vue');
 const Profile = () => import('@/views/Profile');
 
 const routes = [
@@ -31,9 +31,9 @@ const routes = [
 		component: Maintenance,
 	},
 	{
-		path: '/rooms',
-		name: 'rooms',
-		component: Room,
+		path: '/periods/:placeId',
+		name: 'periods',
+		component: Periods,
 	},
 	{
 		path: '/places',

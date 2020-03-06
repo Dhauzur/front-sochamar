@@ -5,8 +5,8 @@ import Lodging from './modules/Lodging';
 import Maintenance from './modules/Maintenance';
 import Passengers from './modules/Passengers';
 import Payments from './modules/Payments';
+import Period from './modules/Period';
 import Place from './modules/Place';
-import Room from './modules/Room';
 import User from './modules/user';
 
 Vue.use(Vuex);
@@ -18,8 +18,8 @@ export default new Vuex.Store({
 		Maintenance,
 		Passengers,
 		Payments,
+		Period,
 		Place,
-		Room,
 		User,
 	},
 });

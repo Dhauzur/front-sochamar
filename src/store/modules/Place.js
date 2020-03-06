@@ -1,5 +1,5 @@
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 import router from '@/router/index.js';
 
 const state = {
@@ -26,7 +26,7 @@ const getters = {
 const actions = {
 	async deletePlace({ commit, dispatch }, id) {
 		try {
-			await Axios.delete(api + '/place/one/' + id).then(response => {
+			await axios.delete(`${api}/place/one/${id}`).then(response => {
 				commit('setMessage', {
 					type: 'success',
 					text: 'Lugar ' + response.data.delete + ' eliminada ',
@@ -48,7 +48,7 @@ const actions = {
 	},
 	async createPlace({ commit, dispatch }, place) {
 		try {
-			await Axios.post(api + '/place', place);
+			await axios.post(`${api}/place`, place);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Empresa creada ',
@@ -64,7 +64,8 @@ const actions = {
 	},
 	async fetchPlace({ commit }) {
 		commit('setPlaces', null);
-		return Axios.get(api + '/place')
+		return axios
+			.get(`${api}/place`)
 			.then(response => {
 				commit('setMessage', {
 					type: 'success',
@@ -83,7 +84,7 @@ const actions = {
 	},
 	async fetchOnePlace({ commit }, id) {
 		try {
-			const response = await Axios.get(`${api}/place/${id}`);
+			const response = await axios.get(`${api}/place/${id}`);
 			commit('setPlace', response.data.place);
 		} catch (error) {
 			commit('setPlace', null);

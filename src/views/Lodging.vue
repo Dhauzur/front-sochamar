@@ -29,7 +29,7 @@
 								<b-button
 									v-if="place"
 									id="habitaciones-btn"
-									@click="$router.push({ name: 'rooms' })"
+									@click="$router.push(`/periods/${place}`)"
 								>
 									Turno
 									<b-tooltip target="habitaciones-btn" placement="bottom">
@@ -37,7 +37,7 @@
 									</b-tooltip>
 								</b-button>
 								<b-button
-									v-if="rooms.length > 0 && selectPlace"
+									v-if="periods.length > 0 && selectPlace"
 									id="hospedaje-btn"
 									@click="createOneLodging()"
 								>
@@ -78,11 +78,11 @@
 						<b-row>
 							<b-col cols="12">
 								<timeline
-									v-if="rooms.length > 0 && lodgings.length > 0"
+									v-if="periods.length > 0 && lodgings.length > 0"
 									class="p-2 col-12"
 									:items="lodgings"
 									:events="['rangechanged', 'click']"
-									:groups="rooms"
+									:groups="periods"
 									:options="options"
 									@click="enableEdit"
 									@rangechanged="rangechanged"
@@ -369,7 +369,8 @@ export default {
 								!this.place &&
 								this.places.find(c => c.value == l.place).text == 'Turismo'
 							) {
-								var numberPassangerMax = this.rooms.get(l.group).numberPassangerMax;
+								var numberPassangerMax = this.periods.get(l.group)
+									.numberPassangerMax;
 								day.service = {
 									breakfast: day.service.breakfast
 										? numberPassangerMax + day.service.breakfast
@@ -457,7 +458,7 @@ export default {
 			mirrorLodging: 'Lodging/mirrorLodging',
 			lodgingSelect: 'Lodging/lodgingSelect',
 			loading: 'Lodging/loading',
-			rooms: 'Lodging/rooms',
+			periods: 'Lodging/periods',
 			rangeDate: 'Lodging/rangeDate',
 			lodgings: 'Lodging/lodgings',
 			places: 'Lodging/places',
@@ -485,7 +486,7 @@ export default {
 	},
 	created() {
 		this.selectPlace = this.place;
-		this.fetchRooms(this.selectPlace);
+		this.fetchPeriods(this.selectPlace);
 		this.fetchPlace();
 		this.fetchLodgings();
 		this.setRangeDate({
@@ -514,11 +515,11 @@ export default {
 		setPlace(payload) {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
-			this.fetchRooms(this.place).then(() => this.fetchLodgings());
+			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
-			var numberPassangerMax = this.rooms.get(this.lodgingSelect.group).numberPassangerMax;
+			var numberPassangerMax = this.periods.get(this.lodgingSelect.group).numberPassangerMax;
 			if (payload.target.value > numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
 				payload.target.value = numberPassangerMax;
@@ -544,7 +545,7 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 			fetchPlace: 'Lodging/fetchPlace',
 			fetchAllPassengers: 'Passengers/fetchAllPassengers',
-			fetchRooms: 'Lodging/fetchRooms',
+			fetchPeriods: 'Lodging/fetchPeriods',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
 		}),
