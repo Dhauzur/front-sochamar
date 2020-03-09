@@ -6,10 +6,10 @@
 				<b-img alt="" rounded="circle" v-bind="mainProps" :src="profileAvatar"></b-img>
 			</template>
 			<b-dropdown-item to="/profile">
-				<span class="text-secondary">Perfil</span>
+				<span>Perfil</span>
 			</b-dropdown-item>
 			<b-dropdown-item href="#" @click="logout">
-				<span class="text-secondary">Salir</span>
+				<span>Salir</span>
 			</b-dropdown-item>
 		</b-nav-item-dropdown>
 	</b-navbar-nav>

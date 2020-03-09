@@ -75,7 +75,7 @@
 								:fields="fields"
 								:items="itemFiltered"
 								selectable
-								class="table table-bordered table-hover"
+								class="table table-hover"
 								select-mode="single"
 								responsive="sm"
 								@row-selected="onRowSelected"
@@ -83,7 +83,6 @@
 								<template v-slot:cell(voucher)="row">
 									<b-link
 										v-if="row.item.voucher"
-										class="linka"
 										:href="row.item.voucher.url"
 										target="_blank"
 										>{{ cutText(row.item.voucher.name) }}</b-link

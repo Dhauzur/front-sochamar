@@ -3,8 +3,9 @@
 		<!-- list person -->
 		<b-row>
 			<b-col v-if="personsList.length > 0">
-				<h5 class="text-secondary">Listado de personas</h5>
+				<h5>Listado de personas</h5>
 				<persons-list
+					:passenger="passenger"
 					:delete-one="deleteOne"
 					:get-all-persons="getAllPersons"
 					:person="person"
@@ -18,7 +19,7 @@
 			<b-row>
 				<!-- avatar -->
 				<b-col class="mt-3">
-					<h5 class="text-secondary">
+					<h5>
 						{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
 					</h5>
 					<label for="upload">
@@ -42,18 +43,18 @@
 					></b-form-file>
 				</b-col>
 				<b-col cols="12">
-					<label for="upload" class="pointer text-secondary">{{
+					<label for="upload" class="pointer">{{
 						typeof person.avatar === 'string' ? 'Cambiar avatar' : 'Subir avatar'
 					}}</label>
 				</b-col>
 				<!-- button for change view to new person -->
 				<div v-if="editMode" class="text-right position-absolute" style="top: 0; right: 0;">
-					<Button class="btn btn-secondary btn-sm" @click="clearInputs">Nuevo </Button>
+					<b-button @click="clearInputs">Nuevo </b-button>
 				</div>
 				<!-- firstName -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left"
 							><label for="firstName" class="mb-0 mt-2">Nombre</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
@@ -72,7 +73,7 @@
 				<!-- lastName -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="lastName" class="mb-0 mt-2">Apellido</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
@@ -85,7 +86,7 @@
 				<!-- age -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="age" class="mb-0 mt-2">Edad</label>
 						</b-col>
 						<b-col cols="12" class="text-right">
@@ -96,7 +97,7 @@
 				<!-- state -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="state" class="mb-0 mt-2">Estado</label>
 						</b-col>
 						<b-col cols="12">
@@ -113,7 +114,7 @@
 				<!-- birthdate -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="birthdate" class="mb-0 mt-2">Fecha nacimiento</label>
 						</b-col>
 						<b-col cols="12">
@@ -126,7 +127,7 @@
 				<!-- appointment -->
 				<b-col cols="6">
 					<b-row>
-						<b-col cols="12" class="text-left text-secondary"
+						<b-col cols="12" class="text-left "
 							><label for="phone" class="mb-0 mt-2">Telefono</label>
 							<b-input id="phone" v-model="person.phone"></b-input>
 						</b-col>
@@ -135,18 +136,18 @@
 			</b-row>
 			<!-- function -->
 			<b-row>
-				<b-col cols="6" class="text-left text-secondary"
+				<b-col cols="6" class="text-left "
 					><label for="function" class="mb-0 mt-2">Función</label>
 					<b-input id="function" v-model="person.function"></b-input>
 				</b-col>
-				<b-col cols="6" class="text-left text-secondary">
+				<b-col cols="6" class="text-left ">
 					<label for="appointment" class="mb-0 mt-2">Cargo</label>
 					<b-input id="appointment" v-model="person.appointment"></b-input>
 				</b-col>
 			</b-row>
 			<!-- regions -->
 			<b-row>
-				<b-col cols="6" class="text-left text-secondary">
+				<b-col cols="6" class="text-left ">
 					<label for="regions" class="mb-0 mt-2">Region</label>
 					<b-form-select
 						id="regions"
@@ -155,7 +156,7 @@
 						@change="setComunas"
 					></b-form-select>
 				</b-col>
-				<b-col cols="6" class="text-left text-secondary"
+				<b-col cols="6" class="text-left "
 					><label for="comuna" class="mb-0 mt-2">Comuna</label>
 					<b-form-select
 						id="comuna"
@@ -168,9 +169,7 @@
 			<!-- documents -->
 			<b-row>
 				<b-col cols="12" class="mt-2">
-					<small
-						v-if="!person.documents && !person.documents[0] && editMode"
-						class="text-secondary"
+					<small v-if="!person.documents && !person.documents[0] && editMode"
 						>Sin Documentos</small
 					>
 					<div
@@ -183,7 +182,6 @@
 							:key="index"
 							class="p-2"
 							pill
-							variant="secondary"
 							:href="item.url"
 							target="_blank"
 							>{{ cutText(item.name) }}

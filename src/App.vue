@@ -112,6 +112,9 @@ export default {
 		}
 	}
 }
+.dropdown-menu {
+	background-color: #4c4a4a7a !important;
+}
 ::placeholder {
 	color: #b7b3b3 !important;
 }

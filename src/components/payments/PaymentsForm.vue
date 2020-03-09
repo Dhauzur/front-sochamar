@@ -54,9 +54,13 @@
 			<b-col cols="12" md="6" lg="3">
 				<label for="voucher" class="mb-0 mt-2"><small>Voucher</small></label>
 				<div v-if="editVoucher || item">
-					<b-link v-if="typeof editVoucher === 'string'" :href="editVoucher">
+					<span
+						v-if="typeof editVoucher === 'string'"
+						class="pointer"
+						:href="editVoucher"
+					>
 						{{ cutText(voucherName) }}
-					</b-link>
+					</span>
 				</div>
 				<div v-else>
 					<b-form-file
