@@ -7,8 +7,8 @@
 				<b-collapse id="nav-text-collapse" is-nav>
 					<b-navbar-nav>
 						<b-nav-text class="mr-3">
-							<router-link to="/lodgings">
-								Actividades
+							<router-link to="/management">
+								Administracion
 							</router-link>
 							<!-- <router-link to="/home">
 								Ver registros de trabajo
@@ -179,21 +179,26 @@ input:focus {
 	padding-bottom: 20px;
 }
 
-.btn {
+.btn,
+.nav-item {
 	border-radius: 20px !important;
 	margin: 10px;
 	margin-left: 0px;
 }
 
-.btn-secondary {
+.btn-secondary,
+.nav-item {
 	background-color: #4c4a4a7a !important;
 	border: none !important;
+	border-radius: 20px !important;
 	color: white !important;
 	transition: all ease-in-out 0.9s;
 }
-.btn-secondary:hover {
-	background-image: linear-gradient(10deg, #ecb099, #ff591b);
-	transition: all ease-in-out 1.9s;
+.btn-secondary:hover,
+.nav-item:hover,
+.nav-item > .active {
+	background-image: linear-gradient(10deg, #ecb099, #ff591b) !important;
+	border-radius: 20px !important;
 }
 .pointer {
 	cursor: pointer;

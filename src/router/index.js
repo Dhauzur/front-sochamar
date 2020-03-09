@@ -2,9 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
-const Place = () => import('@/views/Place.vue');
 const Home = () => import('@/views/Home.vue');
-const Lodging = () => import('@/views/Lodging.vue');
 const Login = () => import('@/views/Login');
 const Maintenance = () => import('@/views/Maintenance.vue');
 const PasswordReset = () => import('@/views/PasswordReset');
@@ -13,12 +11,13 @@ const Register = () => import('@/views/Register');
 const Report = () => import('@/views/Report.vue');
 const Periods = () => import('@/views/Periods.vue');
 const Profile = () => import('@/views/Profile');
+const Management = () => import('@/views/Management');
 
 const routes = [
 	{
-		path: '/lodgings',
-		name: 'lodgings',
-		component: Lodging,
+		path: '/management',
+		name: 'management',
+		component: Management,
 	},
 	{
 		path: '/home',
@@ -34,11 +33,6 @@ const routes = [
 		path: '/periods/:placeId',
 		name: 'periods',
 		component: Periods,
-	},
-	{
-		path: '/places',
-		name: 'places',
-		component: Place,
 	},
 	{
 		path: '/reports',

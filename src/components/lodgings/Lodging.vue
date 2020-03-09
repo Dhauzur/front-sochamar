@@ -1,12 +1,12 @@
 <template>
-	<b-row id="nav">
+	<b-row>
 		<b-col>
 			<Loading v-if="loading" :msj="loading" />
 			<template v-else>
 				<b-row>
-					<b-col>
+					<b-col lg="9">
 						<b-row>
-							<b-col md="6" lg="3" class="my-2">
+							<b-col md="6" lg="3" class="m-2">
 								<label>Selecione lugar </label>
 								<b-form-select
 									v-model="selectPlace"
@@ -14,67 +14,54 @@
 									@change="setPlace"
 								/>
 							</b-col>
-						</b-row>
-						<b-row>
-							<b-col class="mb-2 d-flex justify-content-start flex-wrap">
-								<b-button
-									id="empresas-btn"
-									@click="$router.push({ name: 'places' })"
-								>
-									Lugares
-									<b-tooltip target="empresas-btn" placement="bottom">
-										Gestión de lugares
-									</b-tooltip>
-								</b-button>
-								<b-button
-									v-if="place"
-									id="habitaciones-btn"
-									@click="$router.push(`/periods/${place}`)"
-								>
-									Turno
-									<b-tooltip target="habitaciones-btn" placement="bottom">
-										Gestión de turnos
-									</b-tooltip>
-								</b-button>
+							<b-col class="mt-auto d-flex justify-content-start flex-wrap">
 								<b-button
 									v-if="periods.length > 0 && selectPlace"
-									id="hospedaje-btn"
+									id="add-lodging-btn"
+									sm="sm"
 									@click="createOneLodging()"
 								>
 									+ Actividad
-									<b-tooltip target="hospedaje-btn" placement="bottom">
+									<b-tooltip target="add-lodging-btn" placement="bottom">
 										Agregar una actividad (Haga doble click en la linea de
 										tiempo)
 									</b-tooltip>
 								</b-button>
 								<b-button
 									v-if="place"
+									@click.prevent="$bvModal.show('periods-modal')"
+									>Turnos
+									<b-modal id="periods-modal" size="lg" hide-footer>
+										<template v-slot:modal-title
+											>Turnos -
+											<span style="color: orange">{{
+												selectPlace
+											}}</span></template
+										>
+										<Period :id-place="place" /> </b-modal
+								></b-button>
+								<b-button
+									v-if="place"
 									id="pagos-btn"
 									@click="$router.push(`/payments/${place}`)"
 								>
 									Pagos
-									<b-tooltip target="pagos-btn" placement="bottom">
-										Gestión de pagos
-									</b-tooltip>
 								</b-button>
-								<persons-dialog />
+
 								<b-button
 									v-if="getMirrorLodging || editMode"
-									id="guardar-btn"
+									id="save-btn"
+									sm="sm"
 									variant="success"
 									@click="saveLodgings()"
 								>
 									Guardar
-									<b-tooltip target="guardar-btn" placement="bottom">
+									<b-tooltip target="save-btn" placement="bottom">
 										Guardar cambios realizados
 									</b-tooltip>
 								</b-button>
 							</b-col>
 						</b-row>
-					</b-col>
-				</b-row>
-				<b-row>
-					<b-col lg="9">
 						<b-row>
 							<b-col cols="12">
 								<timeline
@@ -216,10 +203,10 @@
 										</b-form-group>
 									</b-col>
 									<b-col class="mt-4 flex-wrap">
-										<b-button @click="addOneService(serviceSelected)">
+										<b-button sm="sm" @click="addOneService(serviceSelected)">
 											+1 {{ serviceSelected }}
 										</b-button>
-										<b-button @click="subOneService(serviceSelected)">
+										<b-button sm="sm" @click="subOneService(serviceSelected)">
 											-1 {{ serviceSelected }}
 										</b-button>
 									</b-col>
@@ -243,16 +230,16 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
 import EditLodging from '@/components/lodgings/EditLodging';
+import Period from '@/components/periods/Period';
 import Loading from '@/components/Loading';
 import moment from 'moment';
-import PersonsDialog from '../components/persons/PersonsDialog';
 
 export default {
 	components: {
 		EditLodging,
 		Loading,
-		PersonsDialog,
 		Timeline,
+		Period,
 	},
 	data() {
 		return {
