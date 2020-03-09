@@ -1,5 +1,5 @@
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 import router from '@/router/index.js';
 
 const state = {
@@ -20,7 +20,7 @@ const actions = {
 	async login({ commit, dispatch }, loginData) {
 		try {
 			commit('setLoading', true);
-			const response = await Axios.post(api + '/auth/login', loginData);
+			const response = await axios.post(api + '/auth/login', loginData);
 			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
@@ -38,7 +38,7 @@ const actions = {
 	async register({ commit, dispatch }, registerData) {
 		try {
 			commit('setLoading', true);
-			const response = await Axios.post(api + '/auth/register', registerData);
+			const response = await axios.post(api + '/auth/register', registerData);
 			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
@@ -54,9 +54,9 @@ const actions = {
 		commit('setLoading', true);
 		try {
 			const { password, token } = recoverData;
-			Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-			await Axios.put(api + '/auth/user/password', { password });
-			Axios.defaults.headers.common['Authorization'] = '';
+			axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+			await axios.put(api + '/auth/user/password', { password });
+			axios.defaults.headers.common['Authorization'] = '';
 			commit('setLoading', false);
 			const message = { type: 'success', text: 'Contraseña cambiada con exito' };
 			commit('setMessage', message);
@@ -70,7 +70,7 @@ const actions = {
 	async requestPasswordRecoverEmail({ commit }, email) {
 		commit('setLoading', true);
 		try {
-			await Axios.post(api + '/auth/send/passwordRecover', { email });
+			await axios.post(api + '/auth/send/passwordRecover', { email });
 			const message = { type: 'success', text: 'Correo de recuperación enviado con exito' };
 			commit('setMessage', message);
 			commit('setLoading', false);
@@ -85,12 +85,12 @@ const actions = {
 const mutations = {
 	setToken: (state, token) => {
 		localStorage.setItem('token', token);
-		Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 		state.token = token;
 	},
 	logout: state => {
 		localStorage.removeItem('token');
-		delete Axios.defaults.headers.common['Authorization'];
+		delete axios.defaults.headers.common['Authorization'];
 		state.token = '';
 		router.push('/login');
 	},

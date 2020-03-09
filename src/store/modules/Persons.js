@@ -1,38 +1,38 @@
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 const state = {
 	message: '',
-	passengers: [],
+	persons: [],
 	search: [],
 	loading: false,
 };
 
 const getters = {
 	message: state => state.message,
-	passengers: state => state.passengers,
-	passengersResultSearch: state => state.search,
+	persons: state => state.persons,
+	personsResultSearch: state => state.search,
 	loading: state => state.loading,
 };
 
 const actions = {
-	async fetchAllPassengers({ commit }) {
+	async fetchAllPersons({ commit }) {
 		try {
-			const response = await Axios.get(api + '/passengers');
-			commit('setPassengers', response.data.passengers);
+			const response = await axios.get(api + '/persons');
+			commit('setPersons', response.data.persons);
 		} catch (error) {
-			commit('setPassengers', null);
+			commit('setPersons', null);
 			commit('setMessage', {
 				type: 'error',
 				text: error.message,
 			});
 		}
 	},
-	async savePassenger({ commit }, payload) {
+	async savePerson({ commit }, payload) {
 		try {
 			commit('setLoading', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.post(`${api}/passengers/create`, payload, config);
+			await axios.post(`${api}/persons/create`, payload, config);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Guardado exitosamente',
@@ -45,11 +45,11 @@ const actions = {
 		}
 		commit('setLoading', false);
 	},
-	async editPassenger({ commit }, { payload, id }) {
+	async editPerson({ commit }, { payload, id }) {
 		try {
 			commit('setLoading', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.put(`${api}/passengers/${id}`, payload, config);
+			await axios.put(`${api}/persons/${id}`, payload, config);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',
@@ -62,9 +62,9 @@ const actions = {
 		}
 		commit('setLoading', false);
 	},
-	async deleteAllPassengers({ commit }) {
+	async deleteAllPersons({ commit }) {
 		try {
-			await Axios.delete(`${api}/passengers/delete/all`);
+			await axios.delete(`${api}/persons/delete/all`);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Eliminado todo los pagos',
@@ -76,9 +76,9 @@ const actions = {
 			});
 		}
 	},
-	async deleteOnePassenger({ commit }, id) {
+	async deleteOnePerson({ commit }, id) {
 		try {
-			await Axios.delete(`${api}/passengers/${id}`);
+			await axios.delete(`${api}/persons/${id}`);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Pasajero eliminado',
@@ -93,10 +93,10 @@ const actions = {
 };
 
 const mutations = {
-	setPassengers(state, value) {
-		state.passengers = value;
+	setPersons(state, value) {
+		state.persons = value;
 	},
-	setSearchPassengers(state, value) {
+	setSearchPersons(state, value) {
 		state.search = value;
 	},
 	setMessage(state, value) {

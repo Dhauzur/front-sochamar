@@ -1,8 +1,8 @@
 <template>
 	<div>
-		<b-row class="mb-3">
+		<b-row class="mb-3 text-left">
 			<b-col cols="12" md="6" lg="3">
-				<label for="total" class="mb-0 mt-2">Total</label>
+				<label for="Total" class="mb-0 mt-2"><small>Total</small></label>
 				<b-form-input
 					id="total"
 					v-model="$v.mount.$model"
@@ -18,7 +18,7 @@
 				</div>
 			</b-col>
 			<b-col cols="12" md="6" lg="2">
-				<label for="in" class="mb-0 mt-2">Ingreso</label>
+				<label for="in" class="mb-0 mt-2"><small>Ingreso</small></label>
 				<b-form-group id="in" label-for="input-1" class="pb-0 mb-0">
 					<b-form-input
 						id="in"
@@ -35,7 +35,7 @@
 				</div>
 			</b-col>
 			<b-col cols="12" md="6" lg="2">
-				<label for="out" class="mb-0 mt-2">Salida</label>
+				<label for="out" class="mb-0 mt-2"><small>Salida</small></label>
 				<b-form-group id="out" label-for="input-1" class="pb-0 mb-0">
 					<b-form-input
 						id="out"
@@ -51,10 +51,8 @@
 					</small>
 				</div>
 			</b-col>
-			<b-col cols="12" md="6" lg="3" class="text-center">
-				<label>
-					Voucher
-				</label>
+			<b-col cols="12" md="6" lg="3">
+				<label for="voucher" class="mb-0 mt-2"><small>Voucher</small></label>
 				<div v-if="editVoucher || item">
 					<span
 						v-if="typeof editVoucher === 'string'"
@@ -127,7 +125,7 @@ export default {
 	data() {
 		return {
 			text: '',
-			idCompany: this.$route.params.company,
+			idPlace: this.$route.params.place,
 			form: new FormData(),
 			startDate: '',
 			endDate: '',
@@ -187,7 +185,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				this.form.set('idCompany', this.idCompany);
+				this.form.set('idPlace', this.idPlace);
 				this.form.set('startDate', moment(this.startDate).format('YYYY-MM-DD'));
 				this.form.set('endDate', moment(this.endDate).format('YYYY-MM-DD'));
 				this.form.set('mount', this.mount);
@@ -195,12 +193,12 @@ export default {
 					this.form.set('voucher', this.editVoucher);
 					this.form.set('comments', this.comments);
 					await this.edit({ payload: this.form, id: this.item._id });
-					this.updatePayments(this.idCompany);
+					this.updatePayments(this.idPlace);
 					this.onClose(this.hide);
 				} else {
 					this.form.append('voucher', this.voucher);
 					await this.save(this.form);
-					this.updatePayments(this.idCompany);
+					this.updatePayments(this.idPlace);
 				}
 			}
 		},
@@ -214,7 +212,7 @@ export default {
 		...mapActions({
 			save: 'Payments/savePayment',
 			edit: 'Payments/editPayment',
-			updatePayments: 'Payments/fetchPaymentsOfTheCompany',
+			updatePayments: 'Payments/fetchPaymentsOfThePlace',
 		}),
 	},
 };

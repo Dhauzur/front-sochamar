@@ -22,11 +22,11 @@
 			<b-row v-else id="nav" class="justify-content-center">
 				<b-col md="12" lg="12" class="background-module pb-3 px-4">
 					<h3 class="my-4">
-						Gestión pagos de <span style="color: orange">{{ company.name }}</span>
+						Gestión pagos de <span style="color: orange">{{ place.name }}</span>
 					</h3>
 					<b-row>
+						<b-col cols="12" class="mb-3 text-left"><h6>Agregar nuevo</h6></b-col>
 						<b-col cols="4">
-							Realizar nuevo pago
 							<b-form-select
 								id="state"
 								v-model="inputSelectLodgingOrNew"
@@ -40,7 +40,7 @@
 							></b-form-select>
 						</b-col>
 					</b-row>
-					<b-row>
+					<b-row class="mb-5">
 						<b-col>
 							<b-collapse
 								v-if="lodgings"
@@ -51,7 +51,7 @@
 								<payments-form-lodging
 									:payments="items"
 									:lodgings="lodgings"
-									:company="company"
+									:place="place"
 								/>
 							</b-collapse>
 							<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
@@ -62,16 +62,6 @@
 							><b-collapse id="collapse-4" v-model="visible" class="mt-2">
 								<payments-form :count="count" /> </b-collapse
 						></b-col>
-					</b-row>
-					<b-row align-h="end">
-						<b-col md="4" class="m-2 ">
-							<b-form-input
-								v-model="wordForFilter"
-								size="sm"
-								placeholder="Filtrar por monto o fecha"
-								@input="onChange"
-							></b-form-input>
-						</b-col>
 					</b-row>
 					<b-row
 						style="max-height: 150px; overflow-y: auto;"
@@ -142,6 +132,16 @@
 							<h6>No hay pagos registrados</h6>
 						</b-col>
 					</b-row>
+					<b-row align-h="end">
+						<b-col md="4" class="m-2 ">
+							<b-form-input
+								v-model="wordForFilter"
+								size="sm"
+								placeholder="Filtrar por monto o fecha"
+								@input="onChange"
+							></b-form-input>
+						</b-col>
+					</b-row>
 				</b-col>
 			</b-row>
 		</b-container>
@@ -156,7 +156,7 @@ export default {
 	name: 'PaymentsWrapper',
 	components: { PaymentsForm, PaymentsFormLodging },
 	props: {
-		company: {
+		place: {
 			type: Object,
 			required: true,
 			default: () => {},
@@ -200,7 +200,7 @@ export default {
 	},
 	data() {
 		return {
-			idCompany: this.$route.params.company,
+			idPlace: this.$route.params.place,
 			fields: [
 				{ key: 'startDate', label: 'Inicio' },
 				{ key: 'endDate', label: 'Fin' },
@@ -234,7 +234,7 @@ export default {
 	methods: {
 		async deletePayment(id) {
 			await this.delete(id);
-			this.updatePayments(this.idCompany);
+			this.updatePayments(this.idPlace);
 		},
 		onRowSelected(items) {
 			this.selected = items[0];

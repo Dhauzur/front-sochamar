@@ -36,14 +36,12 @@
 				</b-row>
 			</transition>
 			<b-row>
-				<!--  services -->
-
-				<!-- aucomplete passengers -->
+				<!-- aucomplete persons -->
 				<b-col cols="12">
 					<autocomplete
 						v-if="!showPopover"
-						:items="passengerFormatted"
-						:selected="addPassengerToLodging"
+						:items="personFormatted"
+						:selected="addPersonToLodging"
 						placeholder="Agregar un pasajero"
 					/>
 
@@ -55,17 +53,17 @@
 						Eliminar actividad
 					</b-button>
 				</b-col>
-				<!-- badge passenger -->
+				<!-- badge person -->
 				<b-col v-if="!showPopover">
 					<b-badge
-						v-for="(item, i) in lodgingPassengers"
+						v-for="(item, i) in lodgingPersons"
 						:id="`show${i}`"
 						:key="i"
 						pill
 						target="_blank"
 						class="ml-1 mr-1"
 						>{{ item.search }}: {{ item.dateStart }} - {{ item.dateEnd }}
-						<span class="text-danger ml-1 pointer" @click="removeLodgingPassengers(i)"
+						<span class="text-danger ml-1 pointer" @click="removeLodgingPersons(i)"
 							>X</span
 						>
 					</b-badge>
@@ -74,10 +72,10 @@
 					<LodgingsDate
 						label="Fecha inicio"
 						:start="true"
-						:set-date="date => (dateStartPassengers = date)"
+						:set-date="date => (dateStartPersons = date)"
 						:date-start="dateStart"
 						:date-end="dateEnd"
-						:is-passenger-date="true"
+						:is-person-date="true"
 						:error-date="errorDate"
 					/>
 				</b-col>
@@ -85,18 +83,18 @@
 					<LodgingsDate
 						label="Fecha fin"
 						:start="false"
-						:set-date="date => (dateEndPassengers = date)"
+						:set-date="date => (dateEndPersons = date)"
 						:date-start="dateStart"
 						:date-end="dateEnd"
-						:is-passenger-date="true"
+						:is-person-date="true"
 						:error-date="errorDate"
 					/>
 				</b-col>
 				<b-col class="mb-2 d-flex justify-content-start flex-wrap">
 					<b-button
 						v-show="showPopover"
-						:disabled="datePassengersInvalid"
-						@click="setDatePassenger"
+						:disabled="datePersonsInvalid"
+						@click="setDatePerson"
 					>
 						Agregar
 					</b-button>
@@ -104,7 +102,7 @@
 						v-if="showPopover"
 						variant="danger"
 						class="btn-sm"
-						@click="cancelAddPassenger"
+						@click="cancelAddPerson"
 					>
 						Cancelar
 					</b-button>
@@ -128,32 +126,32 @@ export default {
 	},
 	data() {
 		return {
-			dateStartLodging: null,
-			dateEndLodging: null,
-			oldDateLodging: null,
-			dateStart: null,
 			dateEnd: null,
-			datePassengersInvalid: false,
+			dateEndLodging: null,
+			dateEndPersons: null,
+			datePersonsInvalid: false,
+			dateStart: null,
+			dateStartLodging: null,
+			dateStartPersons: null,
+			isLoadingPerson: false,
+			oldDateLodging: null,
+			personSelected: null,
 			results: [],
-			passengerSelected: null,
-			isLoadingPassenger: false,
 			showPopover: false,
-			dateStartPassengers: null,
-			dateEndPassengers: null,
 		};
 	},
 	computed: {
-		passengerFormatted() {
-			return this.passengers.map(item => ({
+		personFormatted() {
+			return this.persons.map(item => ({
 				search: `${item.firstName} ${item.lastName ? item.lastName : ''}`,
 				data: item,
 			}));
 		},
 		...mapGetters({
+			lodgingPersons: 'Lodging/lodgingPersons',
 			lodgings: 'Lodging/lodgings',
 			lodgingSelect: 'Lodging/lodgingSelect',
-			lodgingPassengers: 'Lodging/lodgingPassengers',
-			passengers: 'Passengers/passengers',
+			persons: 'Persons/persons',
 		}),
 	},
 	watch: {
@@ -208,67 +206,67 @@ export default {
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 		},
 		/**
-		 * used for disabled button when passenger date is invalid
+		 * used for disabled button when person date is invalid
 		 */
 		errorDate(boolean) {
-			this.datePassengersInvalid = boolean;
+			this.datePersonsInvalid = boolean;
 		},
 		/**
-		 * set date passenger in the store
+		 * set date person in the store
 		 */
-		setDatePassenger() {
-			if (this.dateStartPassengers === null) {
-				this.dateStartPassengers = this.dateStart;
+		setDatePerson() {
+			if (this.dateStartPersons === null) {
+				this.dateStartPersons = this.dateStart;
 			}
-			if (this.dateEndPassengers === null) {
-				this.dateEndPassengers = this.dateEnd;
+			if (this.dateEndPersons === null) {
+				this.dateEndPersons = this.dateEnd;
 			}
 
 			this.verifyOverlay() === 'OK'
-				? this.updateLodgingPassengers({
-						id: this.passengerSelected.data._id,
-						search: this.passengerSelected.search,
-						dateStart: this.dateStartPassengers,
-						dateEnd: this.dateEndPassengers,
+				? this.updateLodgingPersons({
+						id: this.personSelected.data._id,
+						search: this.personSelected.search,
+						dateStart: this.dateStartPersons,
+						dateEnd: this.dateEndPersons,
 				  })
 				: this.$toasted.show(`Ya existe un pasajero para el rango de fecha selecionado`, {
 						type: 'error',
 				  });
 
-			this.passengerSelected = null;
+			this.personSelected = null;
 			this.showPopover = false;
 		},
 		/**
-		 * cancel the adiction passenger when close the popover
+		 * cancel the adiction person when close the popover
 		 */
-		cancelAddPassenger() {
+		cancelAddPerson() {
 			this.showPopover = false;
-			this.passengerSelected = '';
+			this.personSelected = '';
 		},
 		/**
-		 * add a passenger to lodging from autocomplete
+		 * add a person to lodging from autocomplete
 		 * show popover for set date
 		 */
-		addPassengerToLodging(selected) {
+		addPersonToLodging(selected) {
 			this.showPopover = true;
-			this.passengerSelected = selected;
+			this.personSelected = selected;
 		},
 		/**
-		 * check if date of passenger ir already taken
+		 * check if date of person ir already taken
 		 */
 		verifyOverlay() {
 			let verificate = null;
-			let temp = this.lodgingPassengers.filter(passenger => {
-				return passenger.id === this.passengerSelected.data._id;
+			let temp = this.lodgingPersons.filter(person => {
+				return person.id === this.personSelected.data._id;
 			});
 
 			if (temp.length > 0) {
 				temp.map(item => {
 					if (
-						(moment(this.dateStartPassengers).isBefore(moment(item.dateStart)) &&
-							moment(this.dateEndPassengers).isBefore(moment(item.dateStart))) ||
-						(moment(this.dateStartPassengers).isAfter(moment(item.dateEnd)) &&
-							moment(this.dateEndPassengers).isAfter(moment(item.dateEnd)))
+						(moment(this.dateStartPersons).isBefore(moment(item.dateStart)) &&
+							moment(this.dateEndPersons).isBefore(moment(item.dateStart))) ||
+						(moment(this.dateStartPersons).isAfter(moment(item.dateEnd)) &&
+							moment(this.dateEndPersons).isAfter(moment(item.dateEnd)))
 					) {
 						verificate = 'OK';
 					} else {
@@ -286,15 +284,9 @@ export default {
 		}),
 		...mapMutations({
 			sendDateChange: 'Lodging/dateChange',
-			updateLodgingPassengers: 'Lodging/updateLodgingPassengers',
-			removeLodgingPassengers: 'Lodging/removeLodgingPassengers',
+			updateLodgingPersons: 'Lodging/updateLodgingPersons',
+			removeLodgingPersons: 'Lodging/removeLodgingPersons',
 		}),
 	},
 };
 </script>
-
-<style lang="css" scoped>
-.pointer {
-	cursor: pointer;
-}
-</style>

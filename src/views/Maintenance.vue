@@ -131,7 +131,7 @@
 
 <script>
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 export default {
 	data() {
@@ -167,7 +167,7 @@ export default {
 			data.append('workPlace', this.form.workPlace);
 			data.append('whatWasDone', this.form.whatWasDone);
 			data.append('ncamas', this.form.ncamas);
-			Axios({
+			axios({
 				method: 'POST',
 				headers: { 'content-type': 'application/x-www-form-urlencoded' },
 				data,

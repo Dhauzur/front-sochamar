@@ -1,5 +1,5 @@
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 const state = {
 	message: '',
@@ -16,10 +16,10 @@ const getters = {
 };
 
 const actions = {
-	async fetchPaymentsOfTheCompany({ commit }, id) {
+	async fetchPaymentsOfThePlace({ commit }, id) {
 		try {
 			commit('setLoading', true);
-			const response = await Axios.get(`${api}/payments/${id}`);
+			const response = await axios.get(`${api}/payments/${id}`);
 			commit('setPayments', response.data.payments);
 			if (response.data.payments.length > 0) {
 				commit('setMessage', {
@@ -40,7 +40,7 @@ const actions = {
 		try {
 			commit('setLoadingSave', true);
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.post(`${api}/payments/create`, payload, config);
+			await axios.post(`${api}/payments/create`, payload, config);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Guardado exitosamente',
@@ -56,7 +56,7 @@ const actions = {
 	async editPayment({ commit }, { payload, id }) {
 		try {
 			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await Axios.put(`${api}/payments/${id}`, payload, config);
+			await axios.put(`${api}/payments/${id}`, payload, config);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',
@@ -70,7 +70,7 @@ const actions = {
 	},
 	async deleteOnePayment({ commit }, id) {
 		try {
-			await Axios.delete(`${api}/payments/${id}`);
+			await axios.delete(`${api}/payments/${id}`);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Eliminado datos de pago',

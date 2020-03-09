@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import axios from 'axios';
 import { api } from '@/config/index.js';
 
 const state = {
@@ -16,7 +16,7 @@ const getters = {
 const actions = {
 	async fetchProfile({ commit }) {
 		try {
-			const response = await Axios.get(api + '/user/profile');
+			const response = await axios.get(api + '/user/profile');
 			const profile = response.data;
 			commit('setProfile', profile);
 		} catch (e) {
@@ -27,7 +27,7 @@ const actions = {
 	async updateProfile({ commit }, profileData) {
 		commit('setLoading', true);
 		try {
-			const response = await Axios.put(api + '/user/profile', profileData);
+			const response = await axios.put(api + '/user/profile', profileData);
 			const profile = response.data;
 			commit('setProfile', profile);
 			const message = { type: 'success', text: 'Perfil modificado con exito' };
@@ -43,7 +43,7 @@ const actions = {
 		commit('setLoading', true);
 		const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 		try {
-			const response = await Axios.patch(api + '/user/avatar', avatar, config);
+			const response = await axios.patch(api + '/user/avatar', avatar, config);
 			const { img } = response.data;
 			commit('setAvatar', img);
 			const message = { type: 'success', text: 'Avatar actualizado con exito' };
@@ -58,7 +58,7 @@ const actions = {
 	async updatePassword({ commit }, password) {
 		commit('setLoading', true);
 		try {
-			await Axios.patch(api + '/user/password', { password });
+			await axios.patch(api + '/user/password', { password });
 			const message = { type: 'success', text: 'Contraseña actualizada con exito' };
 			commit('setMessage', message);
 			commit('setLoading', false);

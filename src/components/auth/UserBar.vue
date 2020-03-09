@@ -1,13 +1,16 @@
 <template lang="html">
 	<b-navbar-nav v-if="isLogged" class="ml-auto">
-		<b-nav-text class="mr-sm-3 pt-4" style="color: white" right v-text="fullName"> </b-nav-text>
+		<b-nav-text class="mr-sm-3 pt-4 text-white" right v-text="fullName"></b-nav-text>
 		<b-nav-item-dropdown text="Lang" no-caret right>
 			<template v-slot:button-content>
 				<b-img alt="" rounded="circle" v-bind="mainProps" :src="profileAvatar"></b-img>
 			</template>
-
-			<b-dropdown-item to="/profile">Perfil </b-dropdown-item>
-			<b-dropdown-item href="#" @click="logout">Salir</b-dropdown-item>
+			<b-dropdown-item to="/profile">
+				<span>Perfil</span>
+			</b-dropdown-item>
+			<b-dropdown-item href="#" @click="logout">
+				<span>Salir</span>
+			</b-dropdown-item>
 		</b-nav-item-dropdown>
 	</b-navbar-nav>
 	<b-navbar-nav v-else class="ml-auto">
@@ -30,10 +33,12 @@ export default {
 	},
 	computed: {
 		fullName() {
-			return this.profile.name + ' ' + this.profile.lastName;
+			if (this.profile.name) return `${this.profile.name} ${this.profile.lastName}`;
+			return '';
 		},
 		profileAvatar() {
-			return this.profile.img;
+			if (this.profile.img) return this.profile.img;
+			return '';
 		},
 		...mapGetters({
 			isLogged: 'Auth/isLogged',

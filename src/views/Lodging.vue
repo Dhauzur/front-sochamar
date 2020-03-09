@@ -9,9 +9,9 @@
 							<b-col md="6" lg="3" class="my-2">
 								<label>Selecione lugar </label>
 								<b-form-select
-									v-model="selectCompany"
-									:options="companies"
-									@change="setCompany"
+									v-model="selectPlace"
+									:options="places"
+									@change="setPlace"
 								/>
 							</b-col>
 						</b-row>
@@ -19,7 +19,7 @@
 							<b-col class="mb-2 d-flex justify-content-start flex-wrap">
 								<b-button
 									id="empresas-btn"
-									@click="$router.push({ name: 'companies' })"
+									@click="$router.push({ name: 'places' })"
 								>
 									Lugares
 									<b-tooltip target="empresas-btn" placement="bottom">
@@ -27,9 +27,9 @@
 									</b-tooltip>
 								</b-button>
 								<b-button
-									v-if="company"
+									v-if="place"
 									id="habitaciones-btn"
-									@click="$router.push({ name: 'rooms' })"
+									@click="$router.push(`/periods/${place}`)"
 								>
 									Turno
 									<b-tooltip target="habitaciones-btn" placement="bottom">
@@ -37,7 +37,7 @@
 									</b-tooltip>
 								</b-button>
 								<b-button
-									v-if="rooms.length > 0 && selectCompany"
+									v-if="periods.length > 0 && selectPlace"
 									id="hospedaje-btn"
 									@click="createOneLodging()"
 								>
@@ -48,16 +48,16 @@
 									</b-tooltip>
 								</b-button>
 								<b-button
-									v-if="company"
+									v-if="place"
 									id="pagos-btn"
-									@click="$router.push('/payments/' + company)"
+									@click="$router.push(`/payments/${place}`)"
 								>
 									Pagos
 									<b-tooltip target="pagos-btn" placement="bottom">
 										Gestión de pagos
 									</b-tooltip>
 								</b-button>
-								<PassengersDialog />
+								<persons-dialog />
 								<b-button
 									v-if="getMirrorLodging || editMode"
 									id="guardar-btn"
@@ -78,17 +78,17 @@
 						<b-row>
 							<b-col cols="12">
 								<timeline
-									v-if="rooms.length > 0 && lodgings.length > 0"
-									class="p-2"
-									:items="lodgings"
+									v-if="periods.length > 0 && lodgings.length > 0"
 									:events="['rangechanged', 'click']"
-									:groups="rooms"
+									:groups="periods"
+									:items="lodgings"
 									:options="options"
+									class="p-2"
 									@click="enableEdit"
 									@rangechanged="rangechanged"
 								/>
 							</b-col>
-							<b-col v-if="prices && company" cols="12" class="px-4 overflow-auto">
+							<b-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
 								<table class="table table-bordered ">
 									<thead>
 										<tr>
@@ -104,7 +104,7 @@
 									<tbody>
 										<tr>
 											<td>ALOJAMIENTO</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[3] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -128,7 +128,7 @@
 										</tr>
 										<tr>
 											<td>DESAYUNO</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[0] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -152,7 +152,7 @@
 										</tr>
 										<tr>
 											<td>ALMUERZO</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[1] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -171,7 +171,7 @@
 										</tr>
 										<tr>
 											<td>CENA</td>
-											<td v-if="company">
+											<td v-if="place">
 												{{ prices.prices[2] }}
 											</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
@@ -190,7 +190,7 @@
 												/>
 											</td>
 										</tr>
-										<tr v-if="company" class="   borderModule">
+										<tr v-if="place" class="borderModule">
 											<td colspan="2">TOTAL</td>
 											<td v-for="(p, index) in proyectionTable" :key="index">
 												<span v-if="finalyPrice[index] != 0">{{
@@ -240,19 +240,19 @@
 </template>
 
 <script>
-import { Timeline } from 'vue2vis';
-import PassengersDialog from '../components/passengers/PassengersDialog';
-import moment from 'moment';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
-import Loading from '@/components/Loading';
+import { Timeline } from 'vue2vis';
 import EditLodging from '@/components/lodgings/EditLodging';
+import Loading from '@/components/Loading';
+import moment from 'moment';
+import PersonsDialog from '../components/persons/PersonsDialog';
 
 export default {
 	components: {
-		Timeline,
-		Loading,
 		EditLodging,
-		PassengersDialog,
+		Loading,
+		PersonsDialog,
+		Timeline,
 	},
 	data() {
 		return {
@@ -264,9 +264,8 @@ export default {
 				{ text: 'Alojamiento', value: 'alojamiento' },
 			],
 			serviceSelected: 'todos los servicios',
-			selectCompany: null,
+			selectPlace: null,
 			options: {
-				stack: true,
 				editable: true,
 				start: moment(),
 				end: moment().add(14, 'day'),
@@ -285,7 +284,7 @@ export default {
 					},
 				],
 				onUpdate: (item, callback) => {
-					if (this.company) {
+					if (this.place) {
 						this.setModeEdit(true);
 						if (this.verifyOverlay(item)) {
 							callback(item);
@@ -295,29 +294,29 @@ export default {
 				},
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
-					if (this.company) {
+					if (this.place) {
 						if (this.verifyOverlay(item)) callback(item);
 						else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onRemove: (item, callback) => {
-					if (this.lodgings.length > 1 && this.company) {
+					if (this.lodgings.length > 1 && this.place) {
 						this.setModeEdit(false);
 						this.deleteLodging(item);
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onAdd: (item, callback) => {
-					if (this.company) {
+					if (this.place) {
 						item.start = moment(item.start).hours(15);
 						item.end = moment(item.start)
 							.hours(12)
 							.add(1, 'day');
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							var company = this.companies.find(c => c.value == this.company).text;
-							item.content = company;
-							if (company != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
+							var place = this.places.find(c => c.value == this.place).text;
+							item.content = place;
+							if (place != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
 							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
 							var timestamp = new Date().getTime().toString(16);
 							timestamp +
@@ -333,7 +332,7 @@ export default {
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				onMove: (item, callback) => {
-					if (this.company) {
+					if (this.place) {
 						var service = [];
 						var numberDays = moment(item.end).diff(
 							moment(item.start).format('YYYY-MM-DD'),
@@ -371,7 +370,7 @@ export default {
 		finalyPrice() {
 			var prices = [];
 			var dayPrice = 0;
-			if (this.company)
+			if (this.place)
 				this.proyectionTable.forEach(dailyService => {
 					dayPrice =
 						(dailyService.service.breakfast
@@ -391,7 +390,7 @@ export default {
 			return prices;
 		},
 		prices() {
-			if (this.company) return this.companies.find(c => c.value == this.company);
+			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
 		},
 		proyectionTable() {
@@ -417,10 +416,11 @@ export default {
 							moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 						) {
 							if (
-								!this.company &&
-								this.companies.find(c => c.value == l.company).text == 'Turismo'
+								!this.place &&
+								this.places.find(c => c.value == l.place).text == 'Turismo'
 							) {
-								var numberPassangerMax = this.rooms.get(l.group).numberPassangerMax;
+								var numberPassangerMax = this.periods.get(l.group)
+									.numberPassangerMax;
 								day.service = {
 									breakfast: day.service.breakfast
 										? numberPassangerMax + day.service.breakfast
@@ -503,17 +503,17 @@ export default {
 			return dates;
 		},
 		...mapGetters({
-			message: 'Lodging/message',
-			updatingService: 'Lodging/updatingService',
-			mirrorLodging: 'Lodging/mirrorLodging',
-			lodgingSelect: 'Lodging/lodgingSelect',
-			loading: 'Lodging/loading',
-			rooms: 'Lodging/rooms',
-			rangeDate: 'Lodging/rangeDate',
-			lodgings: 'Lodging/lodgings',
-			companies: 'Lodging/companies',
-			company: 'Lodging/company',
 			editMode: 'Lodging/editMode',
+			loading: 'Lodging/loading',
+			lodgings: 'Lodging/lodgings',
+			lodgingSelect: 'Lodging/lodgingSelect',
+			message: 'Lodging/message',
+			mirrorLodging: 'Lodging/mirrorLodging',
+			periods: 'Lodging/periods',
+			place: 'Lodging/place',
+			places: 'Lodging/places',
+			rangeDate: 'Lodging/rangeDate',
+			updatingService: 'Lodging/updatingService',
 		}),
 	},
 	watch: {
@@ -525,19 +525,19 @@ export default {
 		lodgingSelect() {
 			if (
 				this.lodgingSelect &&
-				Array.isArray(this.lodgingSelect.passengers) &&
-				this.lodgingSelect.passengers.length
+				Array.isArray(this.lodgingSelect.persons) &&
+				this.lodgingSelect.persons.length
 			) {
-				this.setAllLodgingPassengers(this.lodgingSelect.passengers);
+				this.setAllLodgingPersons(this.lodgingSelect.persons);
 			} else {
-				this.setAllLodgingPassengers([]);
+				this.setAllLodgingPersons([]);
 			}
 		},
 	},
 	created() {
-		this.selectCompany = this.company;
-		this.fetchRooms(this.selectCompany);
-		this.fetchCompany();
+		this.selectPlace = this.place;
+		this.fetchPeriods(this.selectPlace);
+		this.fetchPlace();
 		this.fetchLodgings();
 		this.setRangeDate({
 			start: moment(),
@@ -545,7 +545,7 @@ export default {
 		});
 	},
 	mounted() {
-		this.fetchAllPassengers();
+		this.fetchAllPersons();
 	},
 	methods: {
 		verifyOverlay(value) {
@@ -562,14 +562,14 @@ export default {
 			return verificate;
 		},
 		/*parece que en esta funcion no esta el error*/
-		setCompany(payload) {
-			this.setCompanyLodging(payload);
+		setPlace(payload) {
+			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
-			this.fetchRooms(this.company).then(() => this.fetchLodgings());
+			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
-			var numberPassangerMax = this.rooms.get(this.lodgingSelect.group).numberPassangerMax;
+			var numberPassangerMax = this.periods.get(this.lodgingSelect.group).numberPassangerMax;
 			if (payload.target.value > numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
 				payload.target.value = numberPassangerMax;
@@ -578,7 +578,7 @@ export default {
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
-			if (this.company && payload.item) {
+			if (this.place && payload.item) {
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
@@ -592,24 +592,24 @@ export default {
 			}
 		},
 		...mapActions({
-			saveLodgings: 'Lodging/saveLodgings',
-			fetchCompany: 'Lodging/fetchCompany',
-			fetchAllPassengers: 'Passengers/fetchAllPassengers',
-			fetchRooms: 'Lodging/fetchRooms',
-			fetchLodgings: 'Lodging/fetchLodgings',
 			deleteLodging: 'Lodging/deleteLodging',
+			fetchAllPersons: 'Persons/fetchAllPersons',
+			fetchLodgings: 'Lodging/fetchLodgings',
+			fetchPeriods: 'Lodging/fetchPeriods',
+			fetchPlace: 'Lodging/fetchPlace',
+			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
 			addOneService: 'Lodging/addOneService',
 			subOneService: 'Lodging/subOneService',
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
+			setAllLodgingPersons: 'Lodging/setAllLodgingPersons',
 			setLodgingSelect: 'Lodging/setLodgingSelect',
+			setModeEdit: 'Lodging/setModeEdit',
+			setPlaceLodging: 'Lodging/setPlaceLodging',
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
-			setCompanyLodging: 'Lodging/setCompanyLodging',
-			setModeEdit: 'Lodging/setModeEdit',
-			setAllLodgingPassengers: 'Lodging/setAllLodgingPassengers',
 		}),
 	},
 };
