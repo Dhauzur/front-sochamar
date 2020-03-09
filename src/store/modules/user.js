@@ -26,6 +26,8 @@ const actions = {
 	},
 	async updateProfile({ commit }, profileData) {
 		commit('setLoading', true);
+		delete profileData.analyst;
+		delete profileData.img;
 		try {
 			const response = await axios.put(api + '/user/profile', profileData);
 			const profile = response.data;
