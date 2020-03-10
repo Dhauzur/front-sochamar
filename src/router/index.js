@@ -78,7 +78,7 @@ const routes = [
 				path: 'periods/:placeId',
 				name: 'periods',
 				component: Periods,
-				meta: { title: 'Administrar', subtitle: 'Turnos' },
+				meta: { title: 'Administrar', subtitle: 'Turnos', layout: 'layout' },
 			},
 			{
 				path: 'payments/:place',
