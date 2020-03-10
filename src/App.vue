@@ -21,7 +21,7 @@ export default {
 			return this.profile.img;
 		},
 		fullName() {
-			return this.profile.name + ' ' + this.profile.lastName;
+			return `${this.profile.name} ${this.profile.lastName}`;
 		},
 		layout() {
 			return this.$route.meta.layout || 'default';
@@ -46,11 +46,11 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations({ setToken: 'Auth/setToken', logout: 'Auth/logout' }),
-		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 		deleteQueryFromRoute() {
 			this.$router.replace({ query: null });
 		},
+		...mapMutations({ setToken: 'Auth/setToken', logout: 'Auth/logout' }),
+		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
 };
 </script>

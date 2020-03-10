@@ -25,6 +25,40 @@ const routes = [
 		meta: { title: 'Inicio', layout: 'layout' },
 	},
 	{
+		path: '/mantenimiento',
+		name: 'mantenimiento',
+		component: Maintenance,
+		meta: { title: 'Mantenimiento', layout: 'layout' },
+	},
+	{
+		path: '/reports',
+		name: 'reports',
+		component: Report,
+		meta: { title: 'Informes', layout: 'layout' },
+	},
+	{
+		path: '/login',
+		name: 'login',
+		component: Login,
+	},
+	{
+		path: '/register',
+		name: 'register',
+		component: Register,
+	},
+	{
+		path: '/passwordReset',
+		name: 'passwordReset',
+		component: PasswordReset,
+		meta: { title: 'Recuperar contraseña' },
+	},
+	{
+		path: '/profile',
+		name: 'profile',
+		component: Profile,
+		meta: { title: 'Perfil', layout: 'layout' },
+	},
+	{
 		path: '/management',
 		component: Management,
 		children: [
@@ -59,40 +93,6 @@ const routes = [
 				meta: { title: 'Administrar', subtitle: 'Personas', layout: 'layout' },
 			},
 		],
-	},
-	{
-		path: '/mantenimiento',
-		name: 'mantenimiento',
-		component: Maintenance,
-		meta: { title: 'Mantenimiento', layout: 'layout' },
-	},
-	{
-		path: '/reports',
-		name: 'reports',
-		component: Report,
-		meta: { title: 'Informes', layout: 'layout' },
-	},
-	{
-		path: '/login',
-		name: 'login',
-		component: Login,
-	},
-	{
-		path: '/register',
-		name: 'register',
-		component: Register,
-	},
-	{
-		path: '/passwordReset',
-		name: 'passwordReset',
-		component: PasswordReset,
-		meta: { title: 'Recuperar contraseña' },
-	},
-	{
-		path: '/profile',
-		name: 'profile',
-		component: Profile,
-		meta: { title: 'Perfil', layout: 'layout' },
 	},
 	{
 		path: '*',
