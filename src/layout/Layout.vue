@@ -13,7 +13,7 @@
 				<v-list-item link to="/">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="orange darken-2" dark v-on="on">mdi-home</v-icon>
+							<v-icon color="primary" dark v-on="on">mdi-home</v-icon>
 						</template>
 						<span>Inicio</span>
 					</v-tooltip>
@@ -22,7 +22,7 @@
 				<v-list-item link to="/management/lodgings">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="orange darken-2" dark v-on="on">mdi-widgets</v-icon>
+							<v-icon color="primary" dark v-on="on">mdi-widgets</v-icon>
 						</template>
 						<span>Administrar Hospedajes</span>
 					</v-tooltip>
@@ -31,7 +31,7 @@
 				<v-list-item link to="/reports">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="orange darken-2" dark v-on="on"
+							<v-icon color="primary" dark v-on="on"
 								>mdi-file-settings-outline</v-icon
 							>
 						</template>

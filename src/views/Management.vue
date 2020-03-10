@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-toolbar dark color="orange darken-2">
+		<v-toolbar dark color="secondary">
 			<v-btn icon @click="() => $router.back()">
 				<v-icon>mdi-arrow-left</v-icon>
 			</v-btn>

@@ -2,7 +2,7 @@
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
 			<v-col v-if="!passwordRecover" cols="12" sm="8" md="4">
-				<v-card outlined>
+				<v-card outlined light>
 					<v-toolbar color="primary" dark flat>
 						<v-toolbar-title>Ingresar a phlain</v-toolbar-title>
 					</v-toolbar>
