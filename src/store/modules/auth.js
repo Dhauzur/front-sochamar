@@ -25,7 +25,7 @@ const actions = {
 			commit('setToken', token);
 			commit('setIsLogged', true);
 			dispatch('User/fetchProfile', null, { root: true });
-			router.push('/lodgings');
+			router.push('/management/lodgings');
 		} catch (e) {
 			const message = {
 				type: 'error',
@@ -43,7 +43,7 @@ const actions = {
 			commit('setToken', token);
 			commit('setIsLogged', true);
 			dispatch('User/fetchProfile', null, { root: true });
-			router.push('/lodgings');
+			router.push('/management/lodgings');
 		} catch (e) {
 			const message = { type: 'error', text: 'El correo ya existe' };
 			commit('setMessage', message);

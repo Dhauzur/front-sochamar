@@ -245,7 +245,7 @@ import { Timeline } from 'vue2vis';
 import EditLodging from '@/components/lodgings/EditLodging';
 import Loading from '@/components/Loading';
 import moment from 'moment';
-import PersonsDialog from '../components/persons/PersonsDialog';
+import PersonsDialog from '@/components/persons/PersonsDialog';
 
 export default {
 	components: {

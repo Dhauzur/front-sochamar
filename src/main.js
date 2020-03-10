@@ -7,10 +7,16 @@ import router from './router';
 import store from './store';
 import BootstrapVue from 'bootstrap-vue';
 import Toasted from 'vue-toasted';
+import Layout from '@/layout/Layout.vue';
+import Default from '@/layout/Default.vue';
 
 // app.js
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+// dynamic layout
+Vue.component('layout', Layout);
+Vue.component('default', Default);
 
 // This imports all the layout components such as <b-container>, <b-row>, <b-col>:
 import { LayoutPlugin } from 'bootstrap-vue';
@@ -18,6 +24,7 @@ import { ModalPlugin } from 'bootstrap-vue';
 import { CardPlugin } from 'bootstrap-vue';
 import { VBScrollspyPlugin } from 'bootstrap-vue';
 import { DropdownPlugin, TablePlugin } from 'bootstrap-vue';
+import vuetify from './plugins/vuetify';
 
 Vue.use(CardPlugin);
 Vue.use(LayoutPlugin);
@@ -35,5 +42,6 @@ Vue.config.productionTip = false;
 new Vue({
 	router,
 	store,
+	vuetify,
 	render: h => h(App),
 }).$mount('#app');

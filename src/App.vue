@@ -1,52 +1,34 @@
 <template>
-	<div id="app">
-		<div class="shadoNavBar">
-			<b-navbar toggleable="sm">
-				<b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
-				<b-navbar-brand>Sochamar</b-navbar-brand>
-				<b-collapse id="nav-text-collapse" is-nav>
-					<b-navbar-nav>
-						<b-nav-text class="mr-3">
-							<router-link to="/lodgings">
-								Actividades
-							</router-link>
-							<!-- <router-link to="/home">
-								Ver registros de trabajo
-							</router-link> -->
-						</b-nav-text>
-						<!-- <b-nav-text class="mr-3">
-							<router-link to="/mantenimiento">
-								Enviar trabajo
-							</router-link>
-						</b-nav-text> -->
-						<b-nav-text class="mr-3">
-							<router-link to="/reports">
-								Enviar informe
-							</router-link>
-						</b-nav-text>
-					</b-navbar-nav>
-					<UserBar />
-				</b-collapse>
-			</b-navbar>
-		</div>
-		<router-view />
-	</div>
+	<v-app id="app">
+		<component :is="layout">
+			<router-view />
+		</component>
+	</v-app>
 </template>
 
 <script>
-import UserBar from './components/auth/UserBar';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
-	components: { UserBar },
 	data() {
 		return {
 			oauthJWT: '',
+			drawer: true,
 		};
 	},
 	computed: {
+		profileAvatar() {
+			return this.profile.img;
+		},
+		fullName() {
+			return this.profile.name + ' ' + this.profile.lastName;
+		},
+		layout() {
+			return this.$route.meta.layout || 'default';
+		},
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
+			profile: 'User/profile',
 		}),
 	},
 	created() {
@@ -64,7 +46,7 @@ export default {
 		}
 	},
 	methods: {
-		...mapMutations({ setToken: 'Auth/setToken' }),
+		...mapMutations({ setToken: 'Auth/setToken', logout: 'Auth/logout' }),
 		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 		deleteQueryFromRoute() {
 			this.$router.replace({ query: null });
