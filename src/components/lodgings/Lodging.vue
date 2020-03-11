@@ -8,8 +8,14 @@
 						<v-col>
 							<v-row>
 								<v-col md="6" lg="3" class="my-2">
-									<label>Selecione lugar</label>
-									<v-select :items="places" dense outlined></v-select>
+									<label class="text--primary">Selecione lugar</label>
+									<v-select
+										:value="place"
+										:items="places"
+										dense
+										outlined
+										@change="setPlace"
+									></v-select>
 								</v-col>
 							</v-row>
 							<v-row>
@@ -18,7 +24,7 @@
 										v-if="periods.length > 0 && selectPlace"
 										id="hospedaje-btn"
 										small
-										color="primary"
+										color="white"
 										rounded
 										@click="createOneLodging()"
 									>
@@ -31,6 +37,7 @@
 										variant="success"
 										rounded
 										small
+										class="ml-2"
 										@click="saveLodgings()"
 									>
 										Guardar
@@ -55,7 +62,7 @@
 									/>
 								</v-col>
 								<v-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
-									<table class="table table-bordered ">
+									<table class="table table-bordered">
 										<thead>
 											<tr>
 												<td>Actividad</td>
@@ -608,7 +615,7 @@ export default {
 
 <style lang="css">
 .vis-selected {
-	background-color: #ff591b !important;
+	background-color: #c06240 !important;
 	color: white !important;
 	transition: all ease-in-out 0.3s;
 	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
@@ -639,16 +646,15 @@ export default {
 .vis-item {
 	border: none !important;
 	border-radius: 0px 10px 0px 0px !important;
-	background-color: #ecb099;
+	background-color: #e0a15a;
 	color: white;
 	transition: all ease-in-out 0.3s;
 }
 td,
 th {
+	border: 1px solid gray;
 	padding: 2px !important;
 	padding-bottom: 10px !important;
-	color: white;
 	min-width: 60px;
-	border-color: transparent !important;
 }
 </style>

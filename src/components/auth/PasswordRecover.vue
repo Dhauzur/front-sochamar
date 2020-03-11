@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<v-card outlined>
-			<v-toolbar color="primary" dark flat>
+			<v-toolbar color="secondary" dark flat>
 				<v-toolbar-title>Recuperar contraseña</v-toolbar-title>
 			</v-toolbar>
 			<v-card-text>
@@ -19,7 +19,7 @@
 			<v-card-actions>
 				<v-btn
 					:loading="loading"
-					color="error"
+					color="white"
 					rounded
 					@click="disablePasswordRecover(false)"
 				>

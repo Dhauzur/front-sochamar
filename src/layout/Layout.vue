@@ -1,6 +1,13 @@
 <template>
 	<div>
-		<v-navigation-drawer v-model="drawer" mini-variant app clipped mobile-break-point="768">
+		<v-navigation-drawer
+			v-model="drawer"
+			color="secondary"
+			mini-variant
+			app
+			clipped
+			mobile-break-point="768"
+		>
 			<v-list>
 				<v-list-item class="px-2" link to="/profile">
 					<v-list-item-avatar>
@@ -13,7 +20,7 @@
 				<v-list-item link to="/">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="primary" dark v-on="on">mdi-home</v-icon>
+							<v-icon color="white" dark v-on="on">mdi-home</v-icon>
 						</template>
 						<span>Inicio</span>
 					</v-tooltip>
@@ -22,7 +29,7 @@
 				<v-list-item link to="/management/lodgings">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="primary" dark v-on="on">mdi-widgets</v-icon>
+							<v-icon color="white" dark v-on="on">mdi-widgets</v-icon>
 						</template>
 						<span>Administrar Hospedajes</span>
 					</v-tooltip>
@@ -31,9 +38,7 @@
 				<v-list-item link to="/reports">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="primary" dark v-on="on"
-								>mdi-file-settings-outline</v-icon
-							>
+							<v-icon color="white" dark v-on="on">mdi-file-settings-outline</v-icon>
 						</template>
 						<span>Enviar informes</span>
 					</v-tooltip>
