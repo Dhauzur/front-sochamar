@@ -15,7 +15,7 @@ const Report = () => import('@/views/Report.vue');
 const Periods = () => import('@/views/Periods.vue');
 const Profile = () => import('@/views/Profile');
 const Persons = () => import('@/views/Persons');
-
+const PlaceServices = () => import('@/views/PlaceServices');
 const routes = [
 	{
 		path: '/home',
@@ -59,6 +59,16 @@ const routes = [
 				meta: { title: 'Administrar', subtitle: 'Personas', layout: 'layout' },
 			},
 		],
+	},
+	{
+		path: '/placeServices/:placeId',
+		name: 'placeServices',
+		component: PlaceServices,
+		meta: {
+			title: 'Administrar servicios',
+			subtitle: 'Servicios',
+			layout: 'layout',
+		},
 	},
 	{
 		path: '/mantenimiento',

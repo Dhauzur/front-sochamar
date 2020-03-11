@@ -99,9 +99,16 @@
 											</table>
 										</td>
 										<td class="p-2">
-											<b-button variant="info">
+											<v-btn
+												rounded
+												color="success"
+												:to="{
+													name: 'placeServices',
+													params: { placeId: c.id },
+												}"
+											>
 												Gestionar Servicios
-											</b-button>
+											</v-btn>
 										</td>
 										<td class="p-2">
 											<b-button variant="danger" @click="deletePlace(c.id)">

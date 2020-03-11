@@ -8,7 +8,7 @@ import Period from './modules/Period';
 import Persons from './modules/Persons';
 import Place from './modules/Place';
 import User from './modules/user';
-
+import PlaceServices from './modules/PlaceServices';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -21,5 +21,6 @@ export default new Vuex.Store({
 		Persons,
 		Place,
 		User,
+		PlaceServices,
 	},
 });
