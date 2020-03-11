@@ -1,7 +1,20 @@
 <template>
 	<v-row>
 		<v-col>
-			<Loading v-if="loading" :msj="loading" />
+			<div v-if="loading">
+				<v-dialog :value="loading" persistent width="300">
+					<v-card color="secondary" dark>
+						<v-card-text>
+							Cargando...
+							<v-progress-linear
+								indeterminate
+								color="white"
+								class="mb-0"
+							></v-progress-linear>
+						</v-card-text>
+					</v-card>
+				</v-dialog>
+			</div>
 			<template v-else>
 				<v-row>
 					<v-col>
@@ -20,7 +33,7 @@
 						<v-row>
 							<v-col class="mb-2 d-flex justify-content-start flex-wrap">
 								<v-btn
-									v-if="periods.length > 0 && selectPlace"
+									v-if="periods.length > 0 && place"
 									id="hospedaje-btn"
 									small
 									color="white"
@@ -199,11 +212,11 @@
 							</v-col>
 						</v-row>
 					</v-col>
-					<!-- <transition name="fade">
-							<v-col v-if="lodgingSelect" lg="3">
-								<EditLodging />
-							</v-col>
-						</transition> -->
+					<transition name="fade">
+						<v-col v-if="lodgingSelect" lg="3">
+							<EditLodging />
+						</v-col>
+					</transition>
 				</v-row>
 				<v-row> </v-row>
 			</template>
@@ -215,13 +228,11 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
 // import EditLodging from '@/components/lodgings/EditLodging';
-import Loading from '@/components/Loading';
 import moment from 'moment';
 
 export default {
 	components: {
 		// EditLodging,
-		Loading,
 		Timeline,
 	},
 	data() {

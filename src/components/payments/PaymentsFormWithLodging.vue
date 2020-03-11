@@ -15,13 +15,16 @@
 					dense
 					:items="optionsLodgings"
 					label="Fecha"
+					:error-messages="lodgingSelectedErrors"
 					@change="setMount"
+					@input="$v.lodgingSelected.$touch()"
+					@blur="$v.lodgingSelected.$touch()"
 				></v-select>
 			</v-col>
 			<v-col cols="12" md="6" lg="2">
 				<v-text-field
 					id="mount"
-					v-model="$v.mount.$model"
+					v-model="mount"
 					type="number"
 					readonly
 					dense
@@ -94,6 +97,18 @@ export default {
 		};
 	},
 	computed: {
+		voucherErrors() {
+			const errors = [];
+			if (!this.$v.voucher.$dirty) return errors;
+			!this.$v.voucher.required && errors.push('campo requerido');
+			return errors;
+		},
+		lodgingSelectedErrors() {
+			const errors = [];
+			if (!this.$v.lodgingSelected.$dirty) return errors;
+			!this.$v.lodgingSelected.required && errors.push('campo requerido');
+			return errors;
+		},
 		optionsLodgings() {
 			let index = [];
 			let lod = [...this.lodgings];
