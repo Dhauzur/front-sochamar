@@ -1,7 +1,7 @@
 <template>
 	<div>
-		<v-row class="mb-3 text-left">
-			<v-form ref="form">
+		<v-form ref="form">
+			<v-row class="mb-3 text-left">
 				<!-- mount -->
 				<v-col cols="12" md="6" lg="3">
 					<v-text-field
@@ -59,35 +59,33 @@
 				</v-col>
 				<!-- voucher -->
 				<v-col cols="12" md="6" lg="3">
-					<div>
-						<v-file-input
-							id="voucher"
-							ref="voucher"
-							v-model="voucher"
-							label="Subir vaucher"
-							dense
-							clearable
-							outline
-							prepend-icon="mdi-paperclip"
-							:error-messages="voucherErrors"
-							@input="$v.voucher.$touch()"
-							@blur="$v.voucher.$touch()"
-						>
-							<template v-slot:selection="{ text }">
-								<v-chip small label color="secondary">
-									{{ text }}
-								</v-chip>
-							</template>
-						</v-file-input>
-					</div>
+					<v-file-input
+						id="voucher"
+						ref="voucher"
+						v-model="voucher"
+						label="Subir vaucher"
+						dense
+						clearable
+						outline
+						prepend-icon="mdi-paperclip"
+						:error-messages="voucherErrors"
+						@input="$v.voucher.$touch()"
+						@blur="$v.voucher.$touch()"
+					>
+						<template v-slot:selection="{ text }">
+							<v-chip small label color="secondary">
+								{{ text }}
+							</v-chip>
+						</template>
+					</v-file-input>
 				</v-col>
 				<v-col cols="12" md="12" lg="2">
 					<v-btn dark small rounded color="primary" block @click="submit">
 						Guardar
 					</v-btn>
 				</v-col>
-			</v-form>
-		</v-row>
+			</v-row>
+		</v-form>
 	</div>
 </template>
 
@@ -207,5 +205,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss" scoped></style>

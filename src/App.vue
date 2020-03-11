@@ -104,19 +104,6 @@ export default {
 	// box-shadow: 0px 0px 20px -8px rgb(0, 0, 0);
 }
 
-input {
-	// background: #56565666 !important;
-	border: none !important;
-	// color: white !important;
-	text-align: center;
-	text-align-last: center;
-	font-weight: bold;
-}
-input:focus {
-	outline-width: 0;
-	// border-bottom: 3px solid #676b769e !important;
-}
-
 .shadoNavBar {
 	background-color: transparent !important;
 }

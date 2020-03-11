@@ -1,54 +1,69 @@
 <template>
 	<div>
-		<b-container>
-			<v-row id="nav" class="justify-content-center">
-				<v-col md="12" lg="12" class="pb-3 px-4">
-					<h3 class="my-4">
-						Gestión pagos de
-						<span class="secondary--text">{{ place.name }}</span>
-					</h3>
-					<v-row>
-						<v-col cols="12" class="mb-3 text-left"><h6>Agregar nuevo</h6></v-col>
-						<v-col cols="4">
-							<b-form-select
-								id="state"
-								v-model="inputSelectLodgingOrNew"
-								size="sm"
-								:options="[
-									{ value: null, text: 'Seleccione', disabled: true },
-									{ value: 0, text: 'Agregar pago por alojamiento' },
-									{ value: 1, text: 'Agregar pago por fecha' },
-								]"
-								@change="areaExpanded"
-							></b-form-select>
-						</v-col>
-					</v-row>
-					<v-row class="mb-5">
-						<v-col>
-							<b-collapse
-								v-if="lodgings"
-								id="collapse-1"
-								v-model="visibleLodgingForm"
-								class="mt-2"
-							>
-								<payments-form-lodging
-									:payments="items"
-									:lodgings="lodgings"
-									:place="place"
-								/>
-							</b-collapse>
-							<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
-								No hay hospedajes
-							</h6>
-						</v-col>
-						<v-col cols="12"
-							><b-collapse id="collapse-4" v-model="visible" class="mt-2">
-								<payments-form :count="count" /> </b-collapse
-						></v-col>
-					</v-row>
-					<v-row class="background-into-module mr-2 mb-3">
-						<v-col v-if="itemFiltered.length > 0" cols="12">
+		<v-row>
+			<v-col cols="12">
+				<h3 class="my-4 black--text">
+					Gestión pagos de
+					<span class="secondary--text">{{ place.name }}</span>
+				</h3>
+				<v-row>
+					<v-col cols="12" class="mb-3 text-left"
+						><h6 class="black--text">Agregar nuevo</h6></v-col
+					>
+					<v-col cols="4">
+						<v-select
+							id="state"
+							v-model="inputSelectLodgingOrNew"
+							dense
+							:items="[
+								{ value: null, text: 'Seleccione', disabled: true },
+								{ value: 0, text: 'Agregar pago por alojamiento' },
+								{ value: 1, text: 'Agregar pago por fecha' },
+							]"
+							@change="areaExpanded"
+						></v-select>
+					</v-col>
+				</v-row>
+				<v-row class="mb-5">
+					<v-col>
+						<b-collapse
+							v-if="lodgings"
+							id="collapse-1"
+							v-model="visibleLodgingForm"
+							class="mt-2"
+						>
+							<payments-form-lodging
+								:payments="items"
+								:lodgings="lodgings"
+								:place="place"
+							/>
+						</b-collapse>
+						<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
+							No hay hospedajes
+						</h6>
+					</v-col>
+					<v-col cols="12"
+						><b-collapse id="collapse-4" v-model="visible" class="mt-2">
+							<payments-form :count="count" /> </b-collapse
+					></v-col>
+				</v-row>
+				<v-row class="background-into-module mr-2 mb-3">
+					<v-col v-if="itemFiltered.length > 0" cols="12">
+						<v-card>
+							<v-card-title>
+								Lista de pagos
+								<v-spacer></v-spacer>
+								<v-spacer></v-spacer>
+								<v-text-field
+									v-model="wordForFilter"
+									append-icon="mdi-magnify"
+									label="Filtrar por monto o fecha"
+									single-line
+									hide-details
+								></v-text-field>
+							</v-card-title>
 							<v-data-table
+								:search="wordForFilter"
 								:headers="fields"
 								:items="itemFiltered"
 								:items-per-page="5"
@@ -56,8 +71,8 @@
 							>
 								<template v-slot:item.voucher="props">
 									<v-btn text :href="props.item.voucher.url" small>
-										{{ props.item.voucher.name }}</v-btn
-									>
+										{{ props.item.voucher.name }}
+									</v-btn>
 								</template>
 								<template v-slot:item.comments="props">
 									<v-edit-dialog
@@ -75,27 +90,22 @@
 										</template>
 									</v-edit-dialog>
 								</template>
+								<template v-slot:item.actions="{ item }">
+									<v-icon color="error" small @click="deleteItem(item._id)">
+										mdi-close
+									</v-icon>
+								</template>
 							</v-data-table>
-						</v-col>
-					</v-row>
-					<v-row v-if="!items.length > 0"
-						><v-col class="text-center">
-							<h6>No hay pagos registrados</h6>
-						</v-col>
-					</v-row>
-					<v-row align-h="end">
-						<v-col md="4" class="m-2 ">
-							<b-form-input
-								v-model="wordForFilter"
-								size="sm"
-								placeholder="Filtrar por monto o fecha"
-								@input="onChange"
-							></b-form-input>
-						</v-col>
-					</v-row>
-				</v-col>
-			</v-row>
-		</b-container>
+						</v-card>
+					</v-col>
+				</v-row>
+				<v-row v-if="!items.length > 0"
+					><v-col class="text-center">
+						<h6>No hay pagos registrados</h6>
+					</v-col>
+				</v-row>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 
@@ -156,7 +166,7 @@ export default {
 				{ value: 'mount', text: 'Monto' },
 				{ value: 'voucher', text: 'Voucher' },
 				{ value: 'comments', text: 'Comentarios' },
-				{ value: 'delete', text: '' },
+				{ text: 'Acción', value: 'actions' },
 			],
 			selected: {},
 			index: '',
@@ -168,24 +178,15 @@ export default {
 		};
 	},
 	watch: {
-		/**
-		 * listener if a row is selected
-		 */
-		selected(newVal) {
-			console.log(newVal);
-
-			this.showModal = true;
-		},
 		items() {
 			if (this.wordForFilter === '') {
 				this.itemFiltered = this.items;
-				console.log(this.itemFiltered);
 			}
 		},
 	},
 	methods: {
-		async deletePayment(id) {
-			await this.delete(id);
+		async deleteItem(id) {
+			confirm('Are you sure you want to delete this item?') && (await this.delete(id));
 			this.updatePayments(this.idPlace);
 		},
 		onRowSelected(items) {
@@ -194,15 +195,6 @@ export default {
 		onClose(close) {
 			close();
 			this.$refs.selectableTable.clearSelected();
-		},
-		onChange() {
-			this.itemFiltered = this.items.filter(item => {
-				return (
-					item.mount.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1 ||
-					item.startDate.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1 ||
-					item.endDate.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1
-				);
-			});
 		},
 		cutText(text) {
 			const extencion = text.split('.').pop();
@@ -224,8 +216,6 @@ export default {
 			}
 		},
 		saveComment(item) {
-			console.log(item);
-
 			let form = new FormData();
 			form.set('comments', item.comments);
 			this.edit({ payload: form, id: item._id });

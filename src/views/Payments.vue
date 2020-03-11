@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<v-container fluid>
 		<payments-wrapper
 			:lodgings="lodgingsPlace"
 			:place="place"
@@ -9,7 +9,7 @@
 			:count="countLodgings"
 			:delete="deleteOnePayment"
 		/>
-	</div>
+	</v-container>
 </template>
 
 <script>

@@ -94,8 +94,6 @@ export default {
 	},
 	methods: {
 		onSubmit() {
-			console.log(this.loginData);
-
 			this.login(this.loginData);
 		},
 		toastedMessage(newVal) {
