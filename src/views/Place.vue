@@ -37,69 +37,6 @@
 							</small>
 						</div>
 					</b-col>
-				</b-row>
-				<b-row class="mb-3 text-left">
-					<b-col>
-						<h6>Precios</h6>
-					</b-col>
-				</b-row>
-				<b-row class="mb-5 text-left">
-					<b-col cols="12" md>
-						<label for="breakfast" class="mb-0"><small>Desayuno</small></label>
-						<b-form-input
-							id="breakfast"
-							v-model="$v.form.breakfast.$model"
-							type="number"
-							placeholder="Ej: 4000"
-						></b-form-input>
-						<div v-if="$v.form.breakfast.$dirty" class="text-right">
-							<small v-if="!$v.form.breakfast.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</b-col>
-					<b-col cols="12" md>
-						<label for="lunch" class="mb-0"><small>Almuerzo</small></label>
-						<b-form-input
-							id="lunch"
-							v-model="$v.form.lunch.$model"
-							type="number"
-							placeholder="Ej: 8000"
-						></b-form-input>
-						<div v-if="$v.form.lunch.$dirty" class="text-right">
-							<small v-if="!$v.form.lunch.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</b-col>
-					<b-col cols="12" md>
-						<label for="dinner" class="mb-0"><small>Cena</small></label>
-						<b-form-input
-							id="dinner"
-							v-model="$v.form.dinner.$model"
-							type="number"
-							placeholder="Ej: 6000"
-						></b-form-input>
-						<div v-if="$v.form.dinner.$dirty" class="text-right">
-							<small v-if="!$v.form.dinner.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</b-col>
-					<b-col cols="12" md>
-						<label for="lodging" class="mb-0"><small>Alojamiento</small></label>
-						<b-form-input
-							id="lodging"
-							v-model="$v.form.lodging.$model"
-							type="number"
-							placeholder="Ej: 25000"
-						></b-form-input>
-						<div v-if="$v.form.lodging.$dirty" class="text-right">
-							<small v-if="!$v.form.lodging.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</b-col>
 					<b-col cols="12" md class="mt-3">
 						<b-button block size="sm" class="col-12" @click="onsubmit()">
 							Guardar
@@ -109,6 +46,8 @@
 						</small>
 					</b-col>
 				</b-row>
+
+				<!--TABLE-->
 				<div v-if="hasPlaces">
 					<b-row
 						style="max-height: 150px; overflow-y: auto;"
@@ -121,6 +60,7 @@
 										<th>Nombre</th>
 										<th>RUT / ID</th>
 										<th>Precios</th>
+										<th>Servicios</th>
 										<th>Eliminar</th>
 									</tr>
 								</thead>
@@ -157,6 +97,11 @@
 													</tr>
 												</tbody>
 											</table>
+										</td>
+										<td class="p-2">
+											<b-button variant="info">
+												Gestionar Servicios
+											</b-button>
 										</td>
 										<td class="p-2">
 											<b-button variant="danger" @click="deletePlace(c.id)">
