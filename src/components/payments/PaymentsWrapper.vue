@@ -47,22 +47,23 @@
 							<payments-form :count="count" /> </b-collapse
 					></v-col>
 				</v-row>
-				<v-row class="background-into-module mr-2 mb-3">
+				<v-row class="mr-2 mb-3">
 					<v-col v-if="itemFiltered.length > 0" cols="12">
 						<v-card>
 							<v-card-title>
 								Lista de pagos
-								<v-spacer></v-spacer>
-								<v-spacer></v-spacer>
+								<v-spacer /><v-spacer />
 								<v-text-field
 									v-model="wordForFilter"
 									append-icon="mdi-magnify"
-									label="Filtrar por monto o fecha"
+									label="Filtrar"
 									single-line
 									hide-details
 								></v-text-field>
 							</v-card-title>
+							<!-- data table -->
 							<v-data-table
+								dense
 								:search="wordForFilter"
 								:headers="fields"
 								:items="itemFiltered"

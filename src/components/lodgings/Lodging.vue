@@ -2,7 +2,7 @@
 	<v-row>
 		<v-col>
 			<div v-if="loading">
-				<v-dialog :value="loading" persistent width="300">
+				<v-dialog :value="loading" persistent width="300" hide-overlay>
 					<v-card color="secondary" dark>
 						<v-card-text>
 							Cargando...
@@ -28,20 +28,47 @@
 									outlined
 									@change="setPlace"
 								></v-select>
+								<v-tooltip v-if="periods.length > 0 && place" bottom>
+									<template v-slot:activator="{ on }">
+										<v-btn
+											color="accent"
+											dark
+											small
+											absolute
+											bottom
+											left
+											fab
+											@click="createOneLodging()"
+											v-on="on"
+										>
+											<v-icon>mdi-plus</v-icon>
+										</v-btn>
+									</template>
+									<span>Añadir un hospedaje</span>
+								</v-tooltip>
+
+								<v-tooltip v-if="getMirrorLodging || editMode" bottom>
+									<template v-slot:activator="{ on }">
+										<v-btn
+											color="success"
+											dark
+											small
+											absolute
+											bottom
+											center
+											fab
+											@click="saveLodgings()"
+											v-on="on"
+										>
+											<v-icon>mdi-content-save</v-icon>
+										</v-btn>
+									</template>
+									<span>Guardar</span>
+								</v-tooltip>
 							</v-col>
 						</v-row>
-						<v-row>
+						<!-- <v-row>
 							<v-col class="mb-2 d-flex justify-content-start flex-wrap">
-								<v-btn
-									v-if="periods.length > 0 && place"
-									id="hospedaje-btn"
-									small
-									color="white"
-									rounded
-									@click="createOneLodging()"
-								>
-									+ Actividad
-								</v-btn>
 								<v-btn
 									v-if="getMirrorLodging || editMode"
 									id="guardar-btn"
@@ -55,7 +82,7 @@
 									Guardar
 								</v-btn>
 							</v-col>
-						</v-row>
+						</v-row> -->
 					</v-col>
 				</v-row>
 				<v-row>
