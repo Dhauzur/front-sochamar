@@ -67,22 +67,6 @@
 								</v-tooltip>
 							</v-col>
 						</v-row>
-						<!-- <v-row>
-							<v-col class="mb-2 d-flex justify-content-start flex-wrap">
-								<v-btn
-									v-if="getMirrorLodging || editMode"
-									id="guardar-btn"
-									color="success"
-									variant="success"
-									rounded
-									small
-									class="ml-2"
-									@click="saveLodgings()"
-								>
-									Guardar
-								</v-btn>
-							</v-col>
-						</v-row> -->
 					</v-col>
 				</v-row>
 				<v-row>
