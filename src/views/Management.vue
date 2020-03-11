@@ -19,7 +19,9 @@
 				</v-tabs>
 			</template>
 		</v-toolbar>
-		<router-view></router-view>
+		<v-container>
+			<router-view />
+		</v-container>
 	</div>
 </template>
 
