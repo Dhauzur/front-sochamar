@@ -110,7 +110,6 @@ export default {
 			mount: '',
 			voucher: null,
 			voucherName: null,
-			voucherList: null,
 			comments: '',
 			errors: '',
 		};

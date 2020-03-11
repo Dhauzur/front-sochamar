@@ -2,13 +2,13 @@
 	<div>
 		<v-row v-if="optionsLodgings.length <= 1">
 			<v-col>
-				<h6 class="text-left mt-1 ml-1">
+				<h6 class="text-left mt-1 ml-1 accent--text">
 					Todos los hospedajes pagos
 				</h6>
 			</v-col>
 		</v-row>
 		<v-row v-else class="text-left">
-			<v-col cols="12" md="6" lg="4" class="pt-5">
+			<v-col cols="12" md="6" lg="4">
 				<v-select
 					id="date"
 					v-model="$v.lodgingSelected.$model"
@@ -24,21 +24,30 @@
 					v-model="$v.mount.$model"
 					type="number"
 					readonly
+					dense
 					label="Monto"
 					placeholder="Ej: 10000 CLP"
 				></v-text-field>
 			</v-col>
-			<v-col cols="12" md="9" lg="3">
-				<b-form-file
+			<v-col cols="12" md="9" lg="3" pt>
+				<v-file-input
 					id="voucher"
 					ref="voucher"
 					v-model="$v.voucher.$model"
-					size="sm"
-					class="text-left"
-					placeholder="Subir vaucher"
-					drop-placeholder="Arrastrar aqui..."
-					@change="e => (voucher = e.target.files[0])"
-				></b-form-file>
+					label="Subir vaucher"
+					dense
+					clearable
+					prepend-icon="mdi-paperclip"
+					:error-messages="voucherErrors"
+					@input="$v.voucher.$touch()"
+					@blur="$v.voucher.$touch()"
+				>
+					<template v-slot:selection="{ text }">
+						<v-chip small label color="secondary">
+							{{ text }}
+						</v-chip>
+					</template>
+				</v-file-input>
 			</v-col>
 			<v-col cols="12" md="3" class="mt-4">
 				<v-btn :loading="loading" block color="primary" rounded small @click="submit">

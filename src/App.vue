@@ -63,49 +63,20 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Kanit|Poppins|Righteous&display=swap');
 #app {
 	font-family: 'Poppins', sans-serif;
-	// font-family: 'Kanit', sans-serif;
-	// font-family: 'Righteous', cursive;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
-	// color: #ffffff;
 	overflow-x: hidden;
-	// background-image: linear-gradient(10deg, #adadad, #f3f3f3, white);
 	background-color: #ebecee;
-	// background-image: linear-gradient(80deg, #676b76, #676b76de, #676b76);
 	height: 100vh;
-	a,
-	.navbar-brand {
-		text-decoration: none;
-		// color: #ffffff;
-	}
 }
 
-#nav {
-	padding: 30px;
-	a {
-		font-weight: bold;
-		// color: #ffffff;
-	}
-}
-.dropdown-menu {
-	background-color: #4c4a4a7a !important;
-}
 .fade-enter-active,
 .fade-leave-active {
 	transition: opacity 0.5s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
 	opacity: 0;
-}
-
-.borderModule {
-	border-radius: 30px;
-	// box-shadow: 0px 0px 20px -8px rgb(0, 0, 0);
-}
-
-.shadoNavBar {
-	background-color: transparent !important;
 }
 
 /* width */
@@ -128,30 +99,6 @@ export default {
 	background: transparent;
 }
 
-.background-module {
-	// background-color: #c1c5d1;
-	border-radius: 20px;
-	max-height: 80vh !important;
-	overflow-y: auto;
-	padding-bottom: 20px;
-}
-
-.btn {
-	border-radius: 20px !important;
-	margin: 10px;
-	margin-left: 0px;
-}
-
-.btn-secondary {
-	// background-color: #4c4a4a7a !important;
-	border: none !important;
-	// color: white !important;
-	transition: all ease-in-out 0.9s;
-}
-.btn-secondary:hover {
-	// background-image: linear-gradient(10deg, #ecb099, #ff591b);
-	transition: all ease-in-out 1.9s;
-}
 .pointer {
 	cursor: pointer;
 }
