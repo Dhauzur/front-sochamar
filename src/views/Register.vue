@@ -1,7 +1,7 @@
 <template lang="html">
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
-			<v-col cols="12" sm="8" md="4" lg="3">
+			<v-col cols="12" sm="8" md="4">
 				<v-card outlined>
 					<v-toolbar color="secondary" dark flat>
 						<v-toolbar-title>Registrate</v-toolbar-title>
