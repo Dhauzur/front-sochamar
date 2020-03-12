@@ -11,7 +11,8 @@
 						type="number"
 						placeholder="Ej: 10000"
 						label="Total"
-						outline
+						outlined
+						rounded
 						dense
 						:error-messages="mountErrors"
 						@input="$v.mount.$touch()"
@@ -34,7 +35,8 @@
 								v-model="dates"
 								dense
 								clearable
-								outline
+								outlined
+								rounded
 								label="Fecha de ingreso y salida"
 								prepend-icon="mdi-event"
 								:error-messages="datesErrors"
@@ -45,6 +47,8 @@
 						</template>
 						<v-date-picker
 							v-model="dates"
+							outlined
+							rounded
 							range
 							:min="startDate"
 							:max="endDate"
@@ -63,10 +67,11 @@
 						id="voucher"
 						ref="voucher"
 						v-model="voucher"
-						label="Subir vaucher"
+						label="voucher"
 						dense
 						clearable
-						outline
+						outlined
+						rounded
 						prepend-icon="mdi-paperclip"
 						:error-messages="voucherErrors"
 						@input="$v.voucher.$touch()"
@@ -80,7 +85,7 @@
 					</v-file-input>
 				</v-col>
 				<v-col cols="12" md="12" lg="2">
-					<v-btn dark small rounded color="primary" block @click="submit">
+					<v-btn dark small rounded color="primary" block class="mt-2" @click="submit">
 						Guardar
 					</v-btn>
 				</v-col>

@@ -53,8 +53,27 @@
 							</v-col>
 						</v-row>
 						<v-row v-if="Boolean(rooms)">
+							<v-col cols="12" md="8" class="mt-5 text-left">
+								Lista de Habitaciones
+							</v-col>
+							<v-col cols="12" md="4">
+								<v-text-field
+									v-model="filterRoomWord"
+									dense
+									outlined
+									rounded
+									append-icon="mdi-magnify"
+									label="Filtrar"
+									hide-details
+								></v-text-field>
+							</v-col>
 							<v-col>
-								<v-data-table :headers="fields" :items="rooms" :items-per-page="5">
+								<v-data-table
+									:search="filterRoomWord"
+									:headers="fields"
+									:items="rooms"
+									:items-per-page="5"
+								>
 									<template v-slot:item.actions="{ item }">
 										<v-icon
 											color="error"
@@ -177,7 +196,6 @@ export default {
 		}),
 		...mapMutations({
 			selectRoom: 'Room/selectRoom',
-			filterRoom: 'Room/filterRoom',
 			setIdPlaceRoom: 'Room/setIdPlaceRoom',
 		}),
 	},

@@ -1,112 +1,122 @@
 <template>
-	<div>
-		<v-row>
-			<v-col cols="12">
-				<h3 class="my-4 black--text">
-					Gestión pagos de
-					<span class="secondary--text">{{ place.name }}</span>
-				</h3>
-				<v-row>
-					<v-col cols="12" class="mb-3 text-left"
-						><h6 class="black--text">Agregar nuevo</h6></v-col
-					>
-					<v-col cols="4">
-						<v-select
-							id="state"
-							v-model="inputSelectLodgingOrNew"
-							dense
-							:items="[
-								{ value: null, text: 'Seleccione', disabled: true },
-								{ value: 0, text: 'Agregar pago por alojamiento' },
-								{ value: 1, text: 'Agregar pago por fecha' },
-							]"
-							@change="areaExpanded"
-						></v-select>
-					</v-col>
-				</v-row>
-				<v-row class="mb-5">
-					<v-col>
-						<b-collapse
-							v-if="lodgings"
-							id="collapse-1"
-							v-model="visibleLodgingForm"
-							class="mt-2"
-						>
-							<payments-form-lodging
-								:payments="items"
-								:lodgings="lodgings"
-								:place="place"
-							/>
-						</b-collapse>
-						<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
-							No hay hospedajes
-						</h6>
-					</v-col>
-					<v-col cols="12"
-						><b-collapse id="collapse-4" v-model="visible" class="mt-2">
-							<payments-form :count="count" /> </b-collapse
-					></v-col>
-				</v-row>
-				<v-row class="mr-2 mb-3">
-					<v-col v-if="itemFiltered.length > 0" cols="12">
-						<v-card>
-							<v-card-title>
-								Lista de pagos
-								<v-spacer /><v-spacer />
+	<v-row justify="center">
+		<v-col cols="12" sm="10">
+			<v-card class="mx-auto" outlined>
+				<v-list-item three-line>
+					<v-list-item-content>
+						<div class="overline mb-4">
+							Gestión pagos de
+							<span class="secondary--text">{{ place.name }}</span>
+						</div>
+						<v-list-item-title class="headline mb-1">Agregar nuevo</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>
+				<v-card-actions>
+					<v-container>
+						<v-row>
+							<v-col cols="12" md="4">
+								<v-select
+									id="state"
+									v-model="inputSelectLodgingOrNew"
+									dense
+									outlined
+									rounded
+									:items="[
+										{ value: null, text: 'Seleccione', disabled: true },
+										{ value: 0, text: 'Agregar pago por alojamiento' },
+										{ value: 1, text: 'Agregar pago por fecha' },
+									]"
+									@change="areaExpanded"
+								></v-select>
+							</v-col>
+						</v-row>
+						<v-row class="mb-5">
+							<v-col>
+								<b-collapse
+									v-if="lodgings"
+									id="collapse-1"
+									v-model="visibleLodgingForm"
+									class="mt-2"
+								>
+									<payments-form-lodging
+										:payments="items"
+										:lodgings="lodgings"
+										:place="place"
+									/>
+								</b-collapse>
+								<h6
+									v-if="!lodgings && visibleLodgingForm"
+									class="text-left mt-1 ml-1"
+								>
+									No hay hospedajes
+								</h6>
+							</v-col>
+							<v-col cols="12"
+								><b-collapse id="collapse-4" v-model="visible" class="mt-2">
+									<payments-form :count="count" /> </b-collapse
+							></v-col>
+						</v-row>
+						<v-row v-if="itemFiltered.length > 0" class="mr-2 mb-3">
+							<v-col cols="12" md="8" class="mt-5 text-left">
+								Lista de Pagos
+							</v-col>
+							<v-col cols="12" md="4">
 								<v-text-field
 									v-model="wordForFilter"
+									dense
+									outlined
+									rounded
 									append-icon="mdi-magnify"
 									label="Filtrar"
-									single-line
 									hide-details
 								></v-text-field>
-							</v-card-title>
-							<!-- data table -->
-							<v-data-table
-								:search="wordForFilter"
-								:headers="fields"
-								:items="itemFiltered"
-								:items-per-page="5"
-								class="elevation-1"
-							>
-								<template v-slot:item.voucher="props">
-									<v-btn text :href="props.item.voucher.url" small>
-										{{ props.item.voucher.name }}
-									</v-btn>
-								</template>
-								<template v-slot:item.comments="props">
-									<v-edit-dialog
-										:return-value.sync="props.item.comments"
-										@save="saveComment(props.item)"
-									>
-										{{ props.item.comments }}
-										<template v-slot:input>
-											<v-text-field
-												v-model="props.item.comments"
-												label="Comentario"
-												single-line
-												counter
-											></v-text-field>
-										</template>
-									</v-edit-dialog>
-								</template>
-								<template v-slot:item.actions="{ item }">
-									<v-icon color="error" small @click="deleteItem(item._id)">
-										mdi-close
-									</v-icon>
-								</template>
-							</v-data-table>
-						</v-card>
-					</v-col>
-				</v-row>
-				<v-row v-if="!items.length > 0"
-					><v-col class="text-center">
-						<h6>No hay pagos registrados</h6>
-					</v-col>
-				</v-row>
-			</v-col>
-		</v-row>
-	</div>
+							</v-col>
+							<v-col cols="12">
+								<v-data-table
+									:search="wordForFilter"
+									:headers="fields"
+									:items="itemFiltered"
+									:items-per-page="5"
+								>
+									<template v-slot:item.voucher="props">
+										<v-btn text :href="props.item.voucher.url" small>
+											{{ props.item.voucher.name }}
+										</v-btn>
+									</template>
+									<template v-slot:item.comments="props">
+										<v-edit-dialog
+											:return-value.sync="props.item.comments"
+											@save="saveComment(props.item)"
+										>
+											{{ props.item.comments }}
+											<template v-slot:input>
+												<v-text-field
+													v-model="props.item.comments"
+													label="Comentario"
+													single-line
+													counter
+												></v-text-field>
+											</template>
+										</v-edit-dialog>
+									</template>
+									<template v-slot:item.actions="{ item }">
+										<v-icon color="error" small @click="deleteItem(item._id)">
+											mdi-close
+										</v-icon>
+									</template>
+								</v-data-table>
+							</v-col>
+						</v-row>
+						<v-row v-if="!items.length > 0"
+							><v-col class="text-center">
+								<h6>No hay pagos registrados</h6>
+							</v-col>
+						</v-row>
+					</v-container>
+				</v-card-actions>
+			</v-card>
+		</v-col>
+	</v-row>
 </template>
 
 <script>

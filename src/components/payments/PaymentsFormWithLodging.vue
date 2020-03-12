@@ -13,6 +13,8 @@
 					id="date"
 					v-model="$v.lodgingSelected.$model"
 					dense
+					outlined
+					rounded
 					:items="optionsLodgings"
 					label="Fecha"
 					:error-messages="lodgingSelectedErrors"
@@ -28,6 +30,8 @@
 					type="number"
 					readonly
 					dense
+					outlined
+					rounded
 					label="Monto"
 					placeholder="Ej: 10000 CLP"
 				></v-text-field>
@@ -37,8 +41,10 @@
 					id="voucher"
 					ref="voucher"
 					v-model="$v.voucher.$model"
-					label="Subir vaucher"
+					label="Voucher"
 					dense
+					outlined
+					rounded
 					clearable
 					prepend-icon="mdi-paperclip"
 					:error-messages="voucherErrors"
@@ -52,7 +58,7 @@
 					</template>
 				</v-file-input>
 			</v-col>
-			<v-col cols="12" md="3" class="mt-4">
+			<v-col cols="12" md="3" class="mt-1">
 				<v-btn :loading="loading" block color="primary" rounded small @click="submit">
 					Agregar Pago
 				</v-btn>

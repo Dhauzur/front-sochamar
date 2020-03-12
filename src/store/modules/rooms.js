@@ -16,13 +16,7 @@ const getters = {
 	loading: state => state.loading,
 	message: state => state.message,
 	roomSelected: state => state.roomSelected,
-	rooms: state => {
-		if (state.filterRoomWord)
-			return state.rooms.filter(
-				room => room.name.toLowerCase().indexOf(state.filterRoomWord.toLowerCase()) > -1
-			);
-		else return state.rooms;
-	},
+	rooms: state => state.rooms,
 };
 
 const actions = {
@@ -92,9 +86,6 @@ const mutations = {
 	},
 	setMessage(state, value) {
 		state.message = value;
-	},
-	filterRoom(state, value) {
-		state.filterRoomWord = value;
 	},
 	selectRoom(state, value) {
 		state.roomSelected = state.rooms.find(c => c.id == value);
