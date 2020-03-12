@@ -7,7 +7,7 @@ import Payments from './modules/Payments';
 import Period from './modules/Period';
 import Persons from './modules/Persons';
 import Place from './modules/Place';
-import rooms from './modules/rooms';
+import Room from './modules/rooms';
 import User from './modules/user';
 
 Vue.use(Vuex);
@@ -21,7 +21,7 @@ export default new Vuex.Store({
 		Period,
 		Persons,
 		Place,
-		rooms,
+		Room,
 		User,
 	},
 });

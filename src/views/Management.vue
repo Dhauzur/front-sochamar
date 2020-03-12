@@ -10,7 +10,8 @@
 			<template v-if="tab === 1"><place /></template>
 			<template v-if="tab === 2"><persons /></template>
 			<template v-if="tab === 3"><periods :id-place="place"/></template>
-			<template v-if="tab === 4"><payments :id-place="place"/></template>
+			<template v-if="tab === 4"><rooms :id-place="place"/></template>
+			<template v-if="tab === 5"><payments :id-place="place"/></template>
 		</v-container>
 	</div>
 </template>
@@ -25,6 +26,7 @@ export default {
 		Place: () => import('@/components/place/Place'),
 		Periods: () => import('@/components/periods/Periods'),
 		Persons: () => import('@/components/persons/Persons'),
+		Rooms: () => import('@/components/rooms/Rooms'),
 	},
 	data() {
 		return {
@@ -34,7 +36,7 @@ export default {
 	computed: {
 		items() {
 			const tabs = ['Hospedajes', 'Lugares', 'Personas'];
-			if (this.place) tabs.push('Turnos', 'Pagos');
+			if (this.place) tabs.push('Turnos', 'Habitaciones', 'Pagos');
 			return tabs;
 		},
 		...mapGetters({
