@@ -567,8 +567,8 @@ export default {
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
-			this.sheet = !this.sheete;
 			if (this.place && payload.item) {
+				this.sheet = !this.sheete;
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
