@@ -1,6 +1,6 @@
 <template lang="html">
 	<v-row justify="center">
-		<v-col cols="9">
+		<v-col cols="12" sm="10" md="8">
 			<v-card class="mx-auto" outlined :loading="loading">
 				<v-list-item three-line>
 					<v-list-item-content>
@@ -13,7 +13,7 @@
 				<v-card-actions>
 					<v-container>
 						<v-row>
-							<v-col>
+							<v-col cols="12" md="4">
 								<v-text-field
 									v-model="$v.form.name.$model"
 									label="Nombre de la Habitación"
@@ -26,7 +26,7 @@
 									@blur="$v.form.name.$touch()"
 								></v-text-field>
 							</v-col>
-							<v-col>
+							<v-col cols="12" md="4">
 								<v-text-field
 									v-model="$v.form.numberPassangerMax.$model"
 									label="Cantidad máxima de pasajeros"
@@ -40,7 +40,7 @@
 									@blur="$v.form.numberPassangerMax.$touch()"
 								></v-text-field>
 							</v-col>
-							<v-col>
+							<v-col cols="12" md="4">
 								<v-btn
 									rounded
 									block
@@ -52,46 +52,24 @@
 								</v-btn>
 							</v-col>
 						</v-row>
-						<v-row>
+						<v-row v-if="Boolean(rooms)">
 							<v-col>
-								<v-simple-table>
-									<template v-slot:default>
-										<thead>
-											<tr>
-												<th>Nombre del turno</th>
-												<th>Cantidad máx. de pasajeros</th>
-												<th>Eliminar</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr
-												v-for="(room, index) in rooms"
-												:key="index"
-												class="p-0"
-												@click="selectRoom(room.id)"
-											>
-												<td class="p-0 align-middle">{{ room.name }}</td>
-												<td class="p-0 align-middle">
-													{{ room.numberPassangerMax }}
-												</td>
-												<td class="p-0 align-middle">
-													<v-icon
-														color="error"
-														small
-														@click="
-															deleteRoom({
-																id: room.id,
-																placeId: idPlace,
-															})
-														"
-													>
-														mdi-delete
-													</v-icon>
-												</td>
-											</tr>
-										</tbody>
+								<v-data-table :headers="fields" :items="rooms" :items-per-page="5">
+									<template v-slot:item.actions="{ item }">
+										<v-icon
+											color="error"
+											small
+											@click="
+												deleteRoom({
+													id: item.id,
+													placeId: idPlace,
+												})
+											"
+										>
+											mdi-delete
+										</v-icon>
 									</template>
-								</v-simple-table>
+								</v-data-table>
 							</v-col>
 						</v-row>
 					</v-container>
@@ -117,6 +95,11 @@ export default {
 	},
 	data() {
 		return {
+			fields: [
+				{ value: 'name', text: 'Nombre del turno' },
+				{ value: 'numberPassangerMax', text: 'Cant. Max de personas' },
+				{ value: 'actions', text: 'Acción' },
+			],
 			errors: '',
 			form: {
 				name: '',
