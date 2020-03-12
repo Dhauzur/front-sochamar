@@ -1,7 +1,8 @@
 <template>
-	<v-row>
+	<v-row justify="center">
 		<v-col>
 			<div v-if="loading">
+				<!-- loading -->
 				<v-dialog :value="loading" persistent width="300" hide-overlay>
 					<v-card color="secondary" dark>
 						<v-card-text>
@@ -16,70 +17,83 @@
 				</v-dialog>
 			</div>
 			<template v-else>
-				<v-row>
-					<v-col cols="12" md="4" lg="3">
-						<v-select
-							:value="place"
-							:items="places"
-							dense
-							label="Selecione lugar"
-							outlined
-							rounded
-							@change="setPlace"
-						></v-select>
-					</v-col>
-					<v-col cols="6" md="1" class="mt-2">
-						<v-tooltip v-if="periods.length > 0 && place" bottom>
-							<template v-slot:activator="{ on }">
-								<v-btn
-									color="accent"
-									dark
-									block
-									small
-									rounded
-									@click="createOneLodging()"
-									v-on="on"
-								>
-									<v-icon>mdi-plus</v-icon><span>Actividad</span>
-								</v-btn>
-							</template>
-							<span>Añadir un hospedaje</span>
-						</v-tooltip>
-					</v-col>
-					<v-col cols="6" md="1" class="mt-2">
-						<v-tooltip v-if="getMirrorLodging || editMode" bottom>
-							<template v-slot:activator="{ on }">
-								<v-btn
-									color="success"
-									dark
-									block
-									small
-									rounded
-									@click="saveLodgings()"
-									v-on="on"
-								>
-									<v-icon>mdi-content-save</v-icon><span>Guardar</span>
-								</v-btn>
-							</template>
-							<span>Guardar</span>
-						</v-tooltip>
-					</v-col>
-				</v-row>
-				<v-row>
-					<v-col lg="12">
+				<v-card>
+					<v-card-title>
 						<v-row>
-							<v-col cols="12">
-								<timeline
-									v-if="periods.length > 0 && lodgings.length > 0"
-									:events="['rangechanged', 'click']"
-									:groups="periods"
-									:items="lodgings"
-									:options="options"
-									class="p-2"
-									@click="enableEdit"
-									@rangechanged="rangechanged"
-								/>
+							<!-- select place  -->
+							<v-col cols="12" md="4">
+								<v-select
+									:value="place"
+									:items="places"
+									dense
+									label="Selecione lugar"
+									outlined
+									rounded
+									@change="setPlace"
+								>
+								</v-select>
 							</v-col>
+							<!-- activity button -->
+							<v-col v-if="periods.length > 0 && place" cols="6" md="2" class="mt-2">
+								<div>
+									<v-tooltip>
+										<template v-slot:activator="{ on }">
+											<v-btn
+												color="accent"
+												dark
+												block
+												small
+												rounded
+												@click="createOneLodging()"
+												v-on="on"
+											>
+												<v-icon>mdi-plus</v-icon><span>Actividad</span>
+											</v-btn>
+										</template>
+										<span>Añadir un hospedaje</span>
+									</v-tooltip>
+								</div>
+							</v-col>
+							<!-- save button -->
+							<v-col v-if="getMirrorLodging || editMode" cols="6" md="2" class="mt-2">
+								<div>
+									<v-tooltip>
+										<template v-slot:activator="{ on }">
+											<v-btn
+												color="success"
+												dark
+												block
+												small
+												rounded
+												@click="saveLodgings()"
+												v-on="on"
+											>
+												<v-icon>mdi-content-save</v-icon
+												><span>Guardar</span>
+											</v-btn>
+										</template>
+										<span>Guardar</span>
+									</v-tooltip>
+								</div>
+							</v-col>
+						</v-row>
+					</v-card-title>
+					<!-- time-line -->
+					<v-card-text>
+						<timeline
+							v-if="periods.length > 0 && lodgings.length > 0"
+							:events="['rangechanged', 'click']"
+							:groups="periods"
+							:items="lodgings"
+							:options="options"
+							class="p-2"
+							@click="enableEdit"
+							@rangechanged="rangechanged"
+						/>
+					</v-card-text>
+					<!-- service table -->
+					<v-card-text>
+						<v-row>
 							<v-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
 								<table class="table table-bordered">
 									<thead>
@@ -192,40 +206,51 @@
 										</tr>
 									</tbody>
 								</table>
-								<v-row v-if="lodgingSelect">
-									<v-col>
-										<b-form-group
-											id="input-group-1"
-											label="Espacio de trabajo:"
-											label-for="input-1"
-										>
-											<b-form-select
-												id="input-1"
-												v-model="serviceSelected"
-												style="text-align: center; text-align-last:center;"
-												:options="services"
-											/>
-										</b-form-group>
-									</v-col>
-									<v-col class="mt-4 flex-wrap">
-										<b-button @click="addOneService(serviceSelected)">
-											+1 {{ serviceSelected }}
-										</b-button>
-										<b-button @click="subOneService(serviceSelected)">
-											-1 {{ serviceSelected }}
-										</b-button>
-									</v-col>
-								</v-row>
 							</v-col>
 						</v-row>
-					</v-col>
-					<v-bottom-sheet v-model="sheet">
-						<v-sheet class="text-center" height="500px">
-							<EditLodging />
-						</v-sheet>
-					</v-bottom-sheet>
-				</v-row>
-				<v-row> </v-row>
+					</v-card-text>
+					<v-card-text>
+						<v-row v-if="lodgingSelect">
+							<v-col cols="12" sm="4">
+								<v-select
+									id="services_select"
+									v-model="serviceSelected"
+									:items="services"
+									dense
+									label="Selecione lugar"
+									outlined
+									rounded
+								>
+								</v-select>
+							</v-col>
+							<v-col cols="6" md="3" class="mt-1">
+								<v-btn
+									rounded
+									small
+									color="primary"
+									@click="addOneService(serviceSelected)"
+								>
+									+1 {{ serviceSelected }}
+								</v-btn>
+							</v-col>
+							<v-col cols="6" md="3" class="mt-1">
+								<v-btn
+									rounded
+									small
+									color="primary"
+									@click="subOneService(serviceSelected)"
+								>
+									-1 {{ serviceSelected }}
+								</v-btn>
+							</v-col>
+						</v-row>
+					</v-card-text>
+				</v-card>
+				<v-bottom-sheet v-model="sheet">
+					<v-sheet class="text-center" height="500px">
+						<EditLodging />
+					</v-sheet>
+				</v-bottom-sheet>
 			</template>
 		</v-col>
 	</v-row>
