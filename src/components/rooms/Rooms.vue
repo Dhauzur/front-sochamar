@@ -40,8 +40,9 @@
 									@blur="$v.form.numberPassangerMax.$touch()"
 								></v-text-field>
 							</v-col>
-							<v-col cols="12" md="4">
+							<v-col cols="12" md="4" class="mt-2">
 								<v-btn
+									small
 									rounded
 									block
 									color="primary"
