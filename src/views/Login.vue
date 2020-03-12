@@ -1,7 +1,7 @@
 <template lang="html">
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
-			<v-col v-if="!passwordRecover" cols="12" sm="8" md="4">
+			<v-col v-if="!passwordRecover" cols="12" sm="8" md="4" lg="3">
 				<v-card outlined light>
 					<v-toolbar color="secondary" dark flat>
 						<v-toolbar-title>Ingresar a phlain</v-toolbar-title>

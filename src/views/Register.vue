@@ -1,9 +1,9 @@
 <template lang="html">
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
-			<v-col cols="12" sm="8" md="4">
+			<v-col cols="12" sm="8" md="4" lg="3">
 				<v-card outlined>
-					<v-toolbar color="primary" dark flat>
+					<v-toolbar color="secondary" dark flat>
 						<v-toolbar-title>Registrate</v-toolbar-title>
 					</v-toolbar>
 					<v-card-text>
@@ -90,6 +90,12 @@
 							Finalizar Registro
 						</v-btn>
 					</v-card-actions>
+					<v-card-text>
+						¿Ya tienes una cuenta?
+						<v-btn block text color="primary" small to="/login">
+							Ingresa ya
+						</v-btn>
+					</v-card-text>
 					<small v-if="errors" class="mt-2 d-block text-danger">
 						Debe rellenar el formulario correctamente
 					</small>

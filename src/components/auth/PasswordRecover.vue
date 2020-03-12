@@ -17,14 +17,10 @@
 				</v-form>
 			</v-card-text>
 			<v-card-actions>
-				<v-btn
-					:loading="loading"
-					color="white"
-					rounded
-					@click="disablePasswordRecover(false)"
-				>
+				<v-btn text color="primary" @click="disablePasswordRecover(false)">
 					Cancelar
 				</v-btn>
+				<v-spacer />
 				<v-btn :loading="loading" color="primary" rounded @click="handleSubmit">
 					Enviar Recuperación
 				</v-btn>
