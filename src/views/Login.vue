@@ -3,11 +3,8 @@
 		<v-row align="center" justify="center">
 			<v-col v-if="!passwordRecover" cols="12" sm="8" md="4" lg="3">
 				<v-card outlined light style="position: relative">
-					<!-- reemplazar imagen del logo -->
-					<v-img
-						src="https://bccic.ca/wp-content/uploads/2016/12/example-logo-660x330.png"
-						height="170px"
-					></v-img>
+					<!-- reemplazar imagen por el logo final -->
+					<v-img src="@/assets/example.jpeg" height="190px"></v-img>
 					<v-card-subtitle>
 						Ingresar
 					</v-card-subtitle>
@@ -26,6 +23,7 @@
 							<v-text-field
 								id="password-input"
 								v-model.trim="loginData.password"
+								:append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
 								label="Contraseña"
 								name="password"
 								prepend-icon="mdi-lock"
