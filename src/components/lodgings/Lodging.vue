@@ -217,7 +217,7 @@
 									v-model="serviceSelected"
 									:items="services"
 									dense
-									label="Selecione lugar"
+									label="Sericios"
 									outlined
 									rounded
 								>
