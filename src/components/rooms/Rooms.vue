@@ -1,116 +1,104 @@
 <template lang="html">
-	<b-container>
-		<b-row class="justify-content-center">
-			<b-col cols="12" md="10" lg="8" class="background-module py-3">
-				<b-row>
-					<b-col>
-						<h4 class="my-5">
+	<v-row justify="center">
+		<v-col cols="9">
+			<v-card class="mx-auto" outlined :loading="loading">
+				<v-list-item three-line>
+					<v-list-item-content>
+						<div class="overline mb-4">
 							Gestión de <span style="color: orange">Habitaciones</span>
-						</h4>
-					</b-col>
-				</b-row>
-				<b-row class="mb-5 text-left">
-					<b-col cols="12" class="mb-3"><h6>Agregar nuevo</h6></b-col>
-					<b-col cols="12" md="4">
-						<label for="name" class="mb-0">
-							<small>
-								Nombre de la Habitación
-							</small>
-						</label>
-						<b-form-input
-							id="name"
-							v-model.trim="$v.form.name.$model"
-							placeholder="Ej: N°1"
-						></b-form-input>
-						<div v-if="$v.form.name.$dirty" class="text-right">
-							<small v-if="!$v.form.name.required" class="text-danger">
-								Campo requerido
-							</small>
 						</div>
-					</b-col>
-					<b-col cols="12" md="5">
-						<label for="max" class="mb-0">
-							<small>Cantidad máxima de pasajeros</small>
-						</label>
-						<b-form-input
-							id="max"
-							v-model="$v.form.numberPassangerMax.$model"
-							type="number"
-							placeholder="Ej: 5"
-						></b-form-input>
-						<div v-if="$v.form.numberPassangerMax.$dirty" class="text-right">
-							<small v-if="!$v.form.numberPassangerMax.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</b-col>
-					<b-col cols="12" md="3" class="mt-2">
-						<b-button block class="col-12 mt-3" @click="onsubmit()">
-							Guardar
-						</b-button>
-						<small v-if="errors" class="mt-2 d-block text-danger">
-							Debe llenar el formulario correctamente
-						</small>
-					</b-col>
-				</b-row>
-				<template v-if="hasRooms">
-					<b-row
-						style="max-height: 150px; overflow-y: auto;"
-						class="background-into-module mr-2 mb-3"
-					>
-						<b-col>
-							<table class="table table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>Nombre del turno</th>
-										<th>Cantidad máx. de pasajeros</th>
-										<th>Eliminar</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr
-										v-for="(room, index) in rooms"
-										:key="index"
-										class="p-0"
-										@click="selectRoom(room.id)"
-									>
-										<td class="p-0 align-middle">{{ room.name }}</td>
-										<td class="p-0 align-middle">
-											{{ room.numberPassangerMax }}
-										</td>
-										<td class="p-0 align-middle">
-											<b-button
-												variant="danger"
-												@click="
-													deleteRoom({
-														id: room.id,
-														placeId: idPlace,
-													})
-												"
+						<v-list-item-title class="headline mb-1">Agregar nueva</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>
+				<v-card-actions>
+					<v-container>
+						<v-row>
+							<v-col>
+								<v-text-field
+									v-model="$v.form.name.$model"
+									label="Nombre de la Habitación"
+									placeholder="N-1"
+									outlined
+									dense
+									rounded
+									:error-messages="nameErrors"
+									@input="$v.form.name.$touch()"
+									@blur="$v.form.name.$touch()"
+								></v-text-field>
+							</v-col>
+							<v-col>
+								<v-text-field
+									v-model="$v.form.numberPassangerMax.$model"
+									label="Cantidad máxima de pasajeros"
+									outlined
+									dense
+									rounded
+									type="number"
+									placeholder="4"
+									:error-messages="maxPersonsErrors"
+									@input="$v.form.numberPassangerMax.$touch()"
+									@blur="$v.form.numberPassangerMax.$touch()"
+								></v-text-field>
+							</v-col>
+							<v-col>
+								<v-btn
+									rounded
+									block
+									color="primary"
+									:loading="loading"
+									@click="onsubmit()"
+								>
+									Guardar
+								</v-btn>
+							</v-col>
+						</v-row>
+						<v-row>
+							<v-col>
+								<v-simple-table>
+									<template v-slot:default>
+										<thead>
+											<tr>
+												<th>Nombre del turno</th>
+												<th>Cantidad máx. de pasajeros</th>
+												<th>Eliminar</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												v-for="(room, index) in rooms"
+												:key="index"
+												class="p-0"
+												@click="selectRoom(room.id)"
 											>
-												X
-											</b-button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</b-col>
-					</b-row>
-				</template>
-				<template v-else><h6 class="m-5">Vacio</h6></template>
-				<b-row class="mb-3">
-					<b-col cols="6" offset="6">
-						<b-form-input
-							v-model="filterRoomWord"
-							size="sm"
-							placeholder="Filtrar turno"
-							@keyup="filterRoom(filterRoomWord)"
-						></b-form-input>
-					</b-col>
-				</b-row>
-			</b-col>
-		</b-row>
-	</b-container>
+												<td class="p-0 align-middle">{{ room.name }}</td>
+												<td class="p-0 align-middle">
+													{{ room.numberPassangerMax }}
+												</td>
+												<td class="p-0 align-middle">
+													<v-icon
+														color="error"
+														small
+														@click="
+															deleteRoom({
+																id: room.id,
+																placeId: idPlace,
+															})
+														"
+													>
+														mdi-delete
+													</v-icon>
+												</td>
+											</tr>
+										</tbody>
+									</template>
+								</v-simple-table>
+							</v-col>
+						</v-row>
+					</v-container>
+				</v-card-actions>
+			</v-card>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
@@ -138,10 +126,23 @@ export default {
 		};
 	},
 	computed: {
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.form.name.$dirty) return errors;
+			!this.$v.form.name.required && errors.push('El monto es querido');
+			return errors;
+		},
+		maxPersonsErrors() {
+			const errors = [];
+			if (!this.$v.form.numberPassangerMax.$dirty) return errors;
+			!this.$v.form.numberPassangerMax.required && errors.push('El monto es querido');
+			return errors;
+		},
 		hasRooms() {
 			return Array.isArray(this.rooms) && this.rooms.length;
 		},
 		...mapGetters({
+			loading: 'Room/loading',
 			rooms: 'Room/rooms',
 			roomSelected: 'Room/roomSelected',
 			message: 'Room/message',

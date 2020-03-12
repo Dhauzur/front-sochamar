@@ -5,6 +5,7 @@ import router from '@/router/index.js';
 const state = {
 	filterRoomWord: '',
 	idPlace: '',
+	loading: false,
 	message: '',
 	rooms: null,
 	roomSelected: null,
@@ -12,6 +13,7 @@ const state = {
 
 const getters = {
 	idPlace: state => state.idPlace,
+	loading: state => state.loading,
 	message: state => state.message,
 	roomSelected: state => state.roomSelected,
 	rooms: state => {
@@ -43,11 +45,12 @@ const actions = {
 	},
 	async createRoom({ commit, dispatch }, room) {
 		try {
+			commit('setLoading', true);
 			room.placeId = state.idPlace;
 			await axios.post(api + '/rooms', room);
 			commit('setMessage', {
 				type: 'success',
-				text: 'Empresa creada ',
+				text: 'Habitacion creada ',
 			});
 			dispatch('fetchRooms', room.placeId);
 		} catch (e) {
@@ -57,17 +60,15 @@ const actions = {
 			});
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
+		commit('setLoading', false);
 	},
 	async fetchRooms({ commit }, placeId) {
 		try {
+			commit('setLoading', true);
 			commit('setRooms', null);
 			const response = await axios.get(`${api}/rooms/${placeId}`);
 			const { rooms } = response.data;
 			commit('setRooms', rooms);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Turnos descargados',
-			});
 		} catch (e) {
 			commit('setRooms', null);
 			commit('setMessage', {
@@ -76,10 +77,14 @@ const actions = {
 			});
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
+		commit('setLoading', false);
 	},
 };
 
 const mutations = {
+	setLoading(state, value) {
+		state.loading = value;
+	},
 	setIdPlaceRoom(state, value) {
 		state.idPlace = value;
 	},
