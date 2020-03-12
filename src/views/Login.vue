@@ -23,12 +23,13 @@
 							<v-text-field
 								id="password-input"
 								v-model.trim="loginData.password"
-								:append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+								:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
 								label="Contraseña"
 								name="password"
 								prepend-icon="mdi-lock"
-								type="password"
+								:type="showPassword ? 'text' : 'password'"
 								required
+								@click:append="showPassword = !showPassword"
 							/>
 						</v-form>
 					</v-card-text>
@@ -77,6 +78,7 @@ export default {
 	},
 	data() {
 		return {
+			showPassword: false,
 			loginData: {
 				email: '',
 				password: '',
