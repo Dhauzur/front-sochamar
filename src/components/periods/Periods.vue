@@ -1,110 +1,102 @@
 <template lang="html">
-	<b-container>
-		<b-row class="justify-content-center">
-			<b-col cols="12" md="10" lg="8" class="background-module py-3">
-				<b-row>
-					<b-col>
-						<h4 class="my-5">Gestión de <span style="color: orange">turnos</span></h4>
-					</b-col>
-				</b-row>
-				<b-row class="mb-5 text-left">
-					<b-col cols="12" class="mb-3"><h6>Agregar nuevo</h6></b-col>
-					<b-col cols="12" md="4">
-						<label for="name" class="mb-0"><small>Nombre del turno</small></label>
-						<b-form-input
-							id="name"
-							v-model.trim="$v.form.name.$model"
-							placeholder="Ej: N°1"
-						></b-form-input>
-						<div v-if="$v.form.name.$dirty" class="text-right">
-							<small v-if="!$v.form.name.required" class="text-danger">
-								Campo requerido
-							</small>
+	<v-row justify="center">
+		<v-col cols="12" sm="10" md="8">
+			<v-card class="mx-auto" outlined :loading="loading">
+				<v-list-item three-line>
+					<v-list-item-content>
+						<div class="headline mb-4">
+							Gestión de <span class="secondary--text">Turnos</span>
 						</div>
-					</b-col>
-					<b-col cols="12" md="5">
-						<label for="max" class="mb-0">
-							<small>Cantidad máxima de pasajeros</small>
-						</label>
-						<b-form-input
-							id="max"
-							v-model="$v.form.numberPassangerMax.$model"
-							type="number"
-							placeholder="Ej: 5"
-						></b-form-input>
-						<div v-if="$v.form.numberPassangerMax.$dirty" class="text-right">
-							<small v-if="!$v.form.numberPassangerMax.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</b-col>
-					<b-col cols="12" md="3" class="mt-2">
-						<b-button block class="col-12 mt-3" @click="onsubmit()">
-							Guardar
-						</b-button>
-						<small v-if="errors" class="mt-2 d-block text-danger">
-							Debe llenar el formulario correctamente
-						</small>
-					</b-col>
-				</b-row>
-				<template v-if="hasPeriods">
-					<b-row
-						style="max-height: 150px; overflow-y: auto;"
-						class="background-into-module mr-2 mb-3"
-					>
-						<b-col>
-							<table class="table table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>Nombre del turno</th>
-										<th>Cantidad máx. de pasajeros</th>
-										<th>Eliminar</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr
-										v-for="(period, index) in periods"
-										:key="index"
-										class="p-0"
-										@click="selectPeriod(period.id)"
-									>
-										<td class="p-0 align-middle">{{ period.name }}</td>
-										<td class="p-0 align-middle">
-											{{ period.numberPassangerMax }}
-										</td>
-										<td class="p-0 align-middle">
-											<b-button
-												variant="danger"
-												@click="
-													deletePeriod({
-														id: period.id,
-														placeId: idPlace,
-													})
-												"
-											>
-												X
-											</b-button>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</b-col>
-					</b-row>
-				</template>
-				<template v-else><h6 class="m-5">Vacio</h6></template>
-				<b-row class="mb-3">
-					<b-col cols="6" offset="6">
-						<b-form-input
-							v-model="filterPeriodWord"
-							size="sm"
-							placeholder="Filtrar turno"
-							@keyup="filterPeriod(filterPeriodWord)"
-						></b-form-input>
-					</b-col>
-				</b-row>
-			</b-col>
-		</b-row>
-	</b-container>
+						<v-list-item-title class="overline mb-1">Agregar nuevo</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>
+				<v-card-actions>
+					<v-container>
+						<v-row>
+							<v-col cols="12" md="4">
+								<v-text-field
+									v-model="$v.form.name.$model"
+									label="Nombre del turno"
+									placeholder="N-1"
+									outlined
+									dense
+									rounded
+									:error-messages="nameErrors"
+									@input="$v.form.name.$touch()"
+									@blur="$v.form.name.$touch()"
+								></v-text-field>
+							</v-col>
+							<v-col cols="12" md="4">
+								<v-text-field
+									v-model="$v.form.numberPassangerMax.$model"
+									label="Cant. máxima de personas"
+									outlined
+									dense
+									rounded
+									type="number"
+									placeholder="4"
+									:error-messages="maxPersonsErrors"
+									@input="$v.form.numberPassangerMax.$touch()"
+									@blur="$v.form.numberPassangerMax.$touch()"
+								></v-text-field>
+							</v-col>
+							<v-col cols="12" md="4" class="mt-2">
+								<v-btn
+									small
+									rounded
+									block
+									color="primary"
+									:loading="loading"
+									@click="onsubmit()"
+								>
+									Guardar
+								</v-btn>
+							</v-col>
+						</v-row>
+						<v-row v-if="Boolean(periods)">
+							<v-col cols="12" md="8" class="mt-5 text-left">
+								Lista de Habitaciones
+							</v-col>
+							<v-col cols="12" md="4">
+								<v-text-field
+									v-model="filterPeriodWord"
+									dense
+									outlined
+									rounded
+									append-icon="mdi-magnify"
+									label="Filtrar"
+									hide-details
+								></v-text-field>
+							</v-col>
+							<v-col>
+								<v-data-table
+									:search="filterPeriodWord"
+									:headers="fields"
+									:items="periods"
+									:items-per-page="5"
+								>
+									<template v-slot:item.actions="{ item }">
+										<v-icon
+											color="error"
+											small
+											@click="
+												deletePeriod({
+													id: item.id,
+													placeId: idPlace,
+												})
+											"
+										>
+											mdi-delete
+										</v-icon>
+									</template>
+								</v-data-table>
+							</v-col>
+						</v-row>
+					</v-container>
+				</v-card-actions>
+			</v-card>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
@@ -123,6 +115,11 @@ export default {
 	},
 	data() {
 		return {
+			fields: [
+				{ value: 'name', text: 'Nombre del turno' },
+				{ value: 'numberPassangerMax', text: 'Cant. Max de personas' },
+				{ value: 'actions', text: 'Acción' },
+			],
 			errors: '',
 			form: {
 				name: '',
@@ -132,10 +129,23 @@ export default {
 		};
 	},
 	computed: {
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.form.name.$dirty) return errors;
+			!this.$v.form.name.required && errors.push('El nombre es querido');
+			return errors;
+		},
+		maxPersonsErrors() {
+			const errors = [];
+			if (!this.$v.form.numberPassangerMax.$dirty) return errors;
+			!this.$v.form.numberPassangerMax.required && errors.push('Campo es querido');
+			return errors;
+		},
 		hasPeriods() {
 			return Array.isArray(this.periods) && this.periods.length;
 		},
 		...mapGetters({
+			loading: 'Period/loading',
 			periods: 'Period/periods',
 			periodSelected: 'Period/periodSelected',
 			message: 'Period/message',
@@ -187,7 +197,6 @@ export default {
 		}),
 		...mapMutations({
 			selectPeriod: 'Period/selectPeriod',
-			filterPeriod: 'Period/filterPeriod',
 			setIdPlacePeriod: 'Period/setIdPlacePeriod',
 		}),
 	},

@@ -4,10 +4,10 @@
 			<v-card class="mx-auto" outlined :loading="loading">
 				<v-list-item three-line>
 					<v-list-item-content>
-						<div class="overline mb-4">
-							Gestión de <span style="color: orange">Habitaciones</span>
+						<div class="headline mb-4">
+							Gestión de <span class="secondary--text">Habitaciones</span>
 						</div>
-						<v-list-item-title class="headline mb-1">Agregar nueva</v-list-item-title>
+						<v-list-item-title class="overline mb-1">Agregar nueva</v-list-item-title>
 					</v-list-item-content>
 				</v-list-item>
 				<v-card-actions>
@@ -29,7 +29,7 @@
 							<v-col cols="12" md="4">
 								<v-text-field
 									v-model="$v.form.numberPassangerMax.$model"
-									label="Cantidad máxima de pasajeros"
+									label="Cant. máxima de personas"
 									outlined
 									dense
 									rounded
@@ -132,13 +132,13 @@ export default {
 		nameErrors() {
 			const errors = [];
 			if (!this.$v.form.name.$dirty) return errors;
-			!this.$v.form.name.required && errors.push('El monto es querido');
+			!this.$v.form.name.required && errors.push('El nombre es querido');
 			return errors;
 		},
 		maxPersonsErrors() {
 			const errors = [];
 			if (!this.$v.form.numberPassangerMax.$dirty) return errors;
-			!this.$v.form.numberPassangerMax.required && errors.push('El monto es querido');
+			!this.$v.form.numberPassangerMax.required && errors.push('Campo es querido');
 			return errors;
 		},
 		hasRooms() {

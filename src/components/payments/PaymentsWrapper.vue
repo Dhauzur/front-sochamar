@@ -4,11 +4,11 @@
 			<v-card class="mx-auto" outlined>
 				<v-list-item three-line>
 					<v-list-item-content>
-						<div class="overline mb-4">
+						<div class="headline mb-4">
 							Gestión pagos de
 							<span class="secondary--text">{{ place.name }}</span>
 						</div>
-						<v-list-item-title class="headline mb-1">Agregar nuevo</v-list-item-title>
+						<v-list-item-title class="overline mb-1">Agregar nuevo</v-list-item-title>
 					</v-list-item-content>
 				</v-list-item>
 				<v-card-actions>
@@ -56,7 +56,10 @@
 									<payments-form :count="count" /> </b-collapse
 							></v-col>
 						</v-row>
-						<v-row v-if="itemFiltered.length > 0" class="mr-2 mb-3">
+						<v-row
+							v-if="Array.isArray(itemFiltered) && itemFiltered.length"
+							class="mr-2 mb-3"
+						>
 							<v-col cols="12" md="8" class="mt-5 text-left">
 								Lista de Pagos
 							</v-col>
