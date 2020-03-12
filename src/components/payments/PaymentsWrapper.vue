@@ -63,7 +63,6 @@
 							</v-card-title>
 							<!-- data table -->
 							<v-data-table
-								dense
 								:search="wordForFilter"
 								:headers="fields"
 								:items="itemFiltered"

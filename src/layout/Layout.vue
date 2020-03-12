@@ -1,18 +1,23 @@
 <template>
 	<div>
+		<!-- global appbar -->
+		<v-app-bar app dense clipped-right>
+			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
+			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
+			<v-spacer></v-spacer>
+			<span class="hidden-sm-and-down">{{ fullName }}</span>
+		</v-app-bar>
 		<v-navigation-drawer
 			v-model="drawer"
-			color="secondary"
-			mini-variant
 			app
-			clipped
+			mini-variant
+			mini-variant-width="62"
+			color="secondary"
 			mobile-break-point="768"
 		>
 			<v-list>
-				<v-list-item class="px-2" link to="/profile">
-					<v-list-item-avatar>
-						<v-img :src="profileAvatar"></v-img>
-					</v-list-item-avatar>
+				<v-list-item class="px-2" link to="/">
+					Logo
 				</v-list-item>
 			</v-list>
 			<v-divider></v-divider>
@@ -22,49 +27,51 @@
 						<template v-slot:activator="{ on }">
 							<v-icon color="white" dark v-on="on">mdi-home</v-icon>
 						</template>
-						<span>Inicio</span>
+						<span class="white--text">Inicio</span>
 					</v-tooltip>
 					<v-list-item-title>Inicio</v-list-item-title>
 				</v-list-item>
-				<v-list-item link to="/management/lodgings">
+				<v-list-item link to="/management">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
 							<v-icon color="white" dark v-on="on">mdi-widgets</v-icon>
 						</template>
-						<span>Administrar Hospedajes</span>
+						<span class="white--text">Administrar Hospedajes</span>
 					</v-tooltip>
 					<v-list-item-title>Administrar</v-list-item-title>
 				</v-list-item>
 				<v-list-item link to="/reports">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="white" dark v-on="on">mdi-file-settings-outline</v-icon>
+							<v-icon color="white" dark v-on="on">mdi-file-settings</v-icon>
 						</template>
-						<span>Enviar informes</span>
+						<span class="white--text">Enviar informes</span>
 					</v-tooltip>
 					<v-list-item-title>Enviar informes</v-list-item-title>
 				</v-list-item>
 			</v-list>
-		</v-navigation-drawer>
-		<v-app-bar dense>
-			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
-			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
-			<v-spacer></v-spacer>
-			{{ fullName }}
-			<v-menu bottom left>
-				<template v-slot:activator="{ on }">
-					<v-btn icon v-on="on">
-						<v-icon>mdi-dots-vertical</v-icon>
-					</v-btn>
-				</template>
-
+			<template v-slot:append>
 				<v-list>
-					<v-list-item @click="logout">
-						<v-list-item-title>Salir</v-list-item-title>
+					<v-list-item class="px-2">
+						<v-menu bottom left>
+							<template v-slot:activator="{ on }">
+								<v-list-item-avatar icon v-on="on">
+									<v-img :src="profileAvatar"></v-img>
+								</v-list-item-avatar>
+							</template>
+							<v-list>
+								<v-list-item link to="/profile">
+									<span>Perfil</span>
+								</v-list-item>
+								<v-list-item link @click="logout">
+									<span>Salir</span>
+								</v-list-item>
+							</v-list>
+						</v-menu>
 					</v-list-item>
 				</v-list>
-			</v-menu>
-		</v-app-bar>
+			</template>
+		</v-navigation-drawer>
 		<v-content>
 			<router-view />
 		</v-content>

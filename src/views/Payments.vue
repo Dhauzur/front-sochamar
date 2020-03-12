@@ -21,10 +21,11 @@ export default {
 	components: {
 		PaymentsWrapper,
 	},
-	data() {
-		return {
-			idPlace: this.$route.params.place,
-		};
+	props: {
+		idPlace: {
+			type: String,
+			required: true,
+		},
 	},
 	computed: {
 		...mapGetters({

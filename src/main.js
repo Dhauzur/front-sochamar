@@ -10,10 +10,6 @@ import Toasted from 'vue-toasted';
 import Layout from '@/layout/Layout.vue';
 import Default from '@/layout/Default.vue';
 
-// app.js
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-
 // dynamic layout
 Vue.component('layout', Layout);
 Vue.component('default', Default);

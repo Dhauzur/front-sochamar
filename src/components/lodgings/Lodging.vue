@@ -17,56 +17,52 @@
 			</div>
 			<template v-else>
 				<v-row>
-					<v-col>
-						<v-row>
-							<v-col md="6" lg="3" class="my-2">
-								<label class="text--primary">Selecione lugar</label>
-								<v-select
-									:value="place"
-									:items="places"
-									dense
-									outlined
-									@change="setPlace"
-								></v-select>
-								<v-tooltip v-if="periods.length > 0 && place" bottom>
-									<template v-slot:activator="{ on }">
-										<v-btn
-											color="accent"
-											dark
-											small
-											absolute
-											bottom
-											left
-											fab
-											@click="createOneLodging()"
-											v-on="on"
-										>
-											<v-icon>mdi-plus</v-icon>
-										</v-btn>
-									</template>
-									<span>Añadir un hospedaje</span>
-								</v-tooltip>
-
-								<v-tooltip v-if="getMirrorLodging || editMode" bottom>
-									<template v-slot:activator="{ on }">
-										<v-btn
-											color="success"
-											dark
-											small
-											absolute
-											bottom
-											center
-											fab
-											@click="saveLodgings()"
-											v-on="on"
-										>
-											<v-icon>mdi-content-save</v-icon>
-										</v-btn>
-									</template>
-									<span>Guardar</span>
-								</v-tooltip>
-							</v-col>
-						</v-row>
+					<v-col cols="12" md="4" lg="3">
+						<v-select
+							:value="place"
+							:items="places"
+							dense
+							label="Selecione lugar"
+							outlined
+							rounded
+							@change="setPlace"
+						></v-select>
+					</v-col>
+					<v-col cols="6" md="1" class="mt-2">
+						<v-tooltip v-if="periods.length > 0 && place" bottom>
+							<template v-slot:activator="{ on }">
+								<v-btn
+									color="accent"
+									dark
+									block
+									small
+									rounded
+									@click="createOneLodging()"
+									v-on="on"
+								>
+									<v-icon>mdi-plus</v-icon><span>Actividad</span>
+								</v-btn>
+							</template>
+							<span>Añadir un hospedaje</span>
+						</v-tooltip>
+					</v-col>
+					<v-col cols="6" md="1" class="mt-2">
+						<v-tooltip v-if="getMirrorLodging || editMode" bottom>
+							<template v-slot:activator="{ on }">
+								<v-btn
+									color="success"
+									dark
+									block
+									small
+									rounded
+									@click="saveLodgings()"
+									v-on="on"
+								>
+									<v-icon>mdi-content-save</v-icon><span>Guardar</span>
+								</v-btn>
+							</template>
+							<span>Guardar</span>
+						</v-tooltip>
 					</v-col>
 				</v-row>
 				<v-row>
@@ -223,11 +219,11 @@
 							</v-col>
 						</v-row>
 					</v-col>
-					<transition name="fade">
-						<v-col v-if="lodgingSelect" lg="3">
+					<v-bottom-sheet v-model="sheet">
+						<v-sheet class="text-center" height="500px">
 							<EditLodging />
-						</v-col>
-					</transition>
+						</v-sheet>
+					</v-bottom-sheet>
 				</v-row>
 				<v-row> </v-row>
 			</template>
@@ -238,16 +234,17 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
-// import EditLodging from '@/components/lodgings/EditLodging';
+import EditLodging from '@/components/lodgings/EditLodging';
 import moment from 'moment';
 
 export default {
 	components: {
-		// EditLodging,
+		EditLodging,
 		Timeline,
 	},
 	data() {
 		return {
+			sheet: false,
 			services: [
 				{ text: 'Todos los servicios', value: 'todos los servicios' },
 				{ text: 'Desayuno', value: 'desayuno' },
@@ -570,6 +567,7 @@ export default {
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
+			this.sheet = !this.sheete;
 			if (this.place && payload.item) {
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);

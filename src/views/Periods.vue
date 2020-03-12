@@ -115,9 +115,14 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
 export default {
 	name: 'Period',
 	mixins: [validationMixin],
+	props: {
+		idPlace: {
+			type: String,
+			required: true,
+		},
+	},
 	data() {
 		return {
-			idPlace: this.$route.params.placeId,
 			errors: '',
 			form: {
 				name: '',
