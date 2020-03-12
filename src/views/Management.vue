@@ -20,11 +20,11 @@ import { mapGetters } from 'vuex';
 
 export default {
 	components: {
-		Lodgings: () => import('@/components/lodgings/Lodging.vue'),
-		Payments: () => import('@/views/Payments'),
-		Place: () => import('@/views/Place.vue'),
-		Periods: () => import('@/views/Periods.vue'),
-		Persons: () => import('@/views/Persons'),
+		Lodgings: () => import('@/components/lodgings/Lodging'),
+		Payments: () => import('@/components/payments/Payments'),
+		Place: () => import('@/components/place/Place'),
+		Periods: () => import('@/components/periods/Periods'),
+		Persons: () => import('@/components/persons/Persons'),
 	},
 	data() {
 		return {
