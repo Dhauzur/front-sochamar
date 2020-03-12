@@ -2,10 +2,15 @@
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
 			<v-col v-if="!passwordRecover" cols="12" sm="8" md="4" lg="3">
-				<v-card outlined light>
-					<v-toolbar color="secondary" dark flat>
-						<v-toolbar-title>Ingresar a phlain</v-toolbar-title>
-					</v-toolbar>
+				<v-card outlined light style="position: relative">
+					<!-- reemplazar imagen del logo -->
+					<v-img
+						src="https://bccic.ca/wp-content/uploads/2016/12/example-logo-660x330.png"
+						height="170px"
+					></v-img>
+					<v-card-subtitle>
+						Ingresar
+					</v-card-subtitle>
 					<v-card-text>
 						<v-form>
 							<v-text-field
