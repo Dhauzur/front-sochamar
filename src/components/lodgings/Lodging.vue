@@ -666,7 +666,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .vis-selected {
 	background-color: #c06240 !important;
 	color: white !important;
