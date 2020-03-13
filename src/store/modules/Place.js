@@ -67,23 +67,22 @@ const actions = {
 	},
 	async fetchPlace({ commit }) {
 		commit('setPlaces', null);
-		return axios
-			.get(`${api}/place`)
-			.then(response => {
-				commit('setMessage', {
-					type: 'success',
-					text: 'Lugars descargadas',
-				});
-				commit('setPlaces', response.data.place);
-			})
-			.catch(e => {
-				commit('setPlaces', null);
-				commit('setMessage', {
-					type: 'error',
-					text: 'Error al descargar lugares',
-				});
-				if (e.message == 'Request failed with status code 401') router.push('/login');
+		try {
+			const response = await axios.get(`${api}/place`);
+			const { place } = response.data;
+			commit('setMessage', {
+				type: 'success',
+				text: 'Lugars descargadas',
 			});
+			commit('setPlaces', place);
+		} catch (e) {
+			commit('setPlaces', null);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al descargar lugares',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
 	},
 	async fetchOnePlace({ commit }, id) {
 		try {

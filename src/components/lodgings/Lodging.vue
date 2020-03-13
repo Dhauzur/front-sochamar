@@ -88,6 +88,7 @@
 									@rangechanged="rangechanged"
 								/>
 							</b-col>
+							<!--ProjectionTable-->
 							<b-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
 								<table class="table table-bordered ">
 									<thead>
@@ -225,6 +226,7 @@
 									</b-col>
 								</b-row>
 							</b-col>
+							<!--fin ProjectionTable-->
 						</b-row>
 					</b-col>
 					<transition name="fade">
@@ -283,6 +285,7 @@ export default {
 						repeat: 'daily',
 					},
 				],
+				//Esta funcion actualiza el service
 				onUpdate: (item, callback) => {
 					if (this.place) {
 						this.setModeEdit(true);
@@ -306,6 +309,7 @@ export default {
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//Esta funcion involucra la creacion de service
 				onAdd: (item, callback) => {
 					if (this.place) {
 						item.start = moment(item.start).hours(15);
@@ -316,6 +320,7 @@ export default {
 							this.setModeEdit(false);
 							var place = this.places.find(c => c.value == this.place).text;
 							item.content = place;
+							//Preguntar por esta parte, pero actualmente service siempre es seteado con 1
 							if (place != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
 							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
 							var timestamp = new Date().getTime().toString(16);
@@ -367,9 +372,11 @@ export default {
 			if (hola == this.mirrorLodging) return false;
 			else return true;
 		},
+		//Esta funcion involucra el calculo antiguo
 		finalyPrice() {
 			var prices = [];
 			var dayPrice = 0;
+			//Esta parte involucra el calculo antiguo
 			if (this.place)
 				this.proyectionTable.forEach(dailyService => {
 					dayPrice =
@@ -389,10 +396,13 @@ export default {
 				});
 			return prices;
 		},
+		//Esta funcion podria ser usada para reflejar los nuevos services
 		prices() {
 			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
 		},
+		//Esta funcion involucra el calculo antiguo
+		//ESta funcion es la que hace posible el renderizado de valores y servicios usados
 		proyectionTable() {
 			// eslint-disable-next-line no-unused-vars
 			var proyectionTable = [];
@@ -415,12 +425,14 @@ export default {
 							moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) &&
 							moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 						) {
+							//Preguntar sobre turismo
 							if (
 								!this.place &&
 								this.places.find(c => c.value == l.place).text == 'Turismo'
 							) {
 								var numberPassangerMax = this.periods.get(l.group)
 									.numberPassangerMax;
+								//Esta parte involucra el calculo antiguo
 								day.service = {
 									breakfast: day.service.breakfast
 										? numberPassangerMax + day.service.breakfast
@@ -437,6 +449,7 @@ export default {
 								};
 							} else {
 								var service = JSON.parse(l.service[0]);
+								//Esta parte involucra el calculo antiguo
 								day.service = {
 									breakfast: day.service.breakfast
 										? service[index][0] + day.service.breakfast
@@ -465,6 +478,7 @@ export default {
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
 								var service = JSON.parse(l.service[0]);
+								//Esta parte involucra el calculo antiguo
 								day.service = {
 									breakfast: day.service.breakfast
 										? service[index][0] + day.service.breakfast
@@ -487,6 +501,7 @@ export default {
 			});
 			return daysLodging;
 		},
+		//ESta funcion genera el rango de dias en proyectionTable
 		rangeDateTable() {
 			var dates = [];
 			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
@@ -561,12 +576,12 @@ export default {
 			});
 			return verificate;
 		},
-		/*parece que en esta funcion no esta el error*/
 		setPlace(payload) {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
 			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
+		//Esta funcion involucra updateService
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
 			var numberPassangerMax = this.periods.get(this.lodgingSelect.group).numberPassangerMax;

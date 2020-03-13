@@ -262,6 +262,7 @@ const mutations = {
 		state.lodgingSelect = tempLodging;
 		state.lodgings = tempLodgings;
 	},
+	//Esta funcion involucra el calculo antiguo
 	subOneService(state, serviceSelected) {
 		let tempLodging = state.lodgingSelect;
 		state.lodgingSelect = null;
@@ -289,6 +290,7 @@ const mutations = {
 		tempLodging.service[0] = JSON.stringify(service);
 		state.lodgingSelect = tempLodging;
 	},
+	//Esta funcion involucra el calculo antiguo
 	addOneService(state, serviceSelected) {
 		let tempLodging = state.lodgingSelect;
 		state.lodgingSelect = null;
@@ -389,6 +391,7 @@ const mutations = {
 		}
 		state.Places = Places;
 	},
+	//Esta funcion involucra el calculo antiguo
 	updateService(state, value) {
 		state.updatingService = null;
 		let idValue = value.id.split(',')[0];

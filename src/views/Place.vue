@@ -59,7 +59,6 @@
 									<tr>
 										<th>Nombre</th>
 										<th>RUT / ID</th>
-										<th>Precios</th>
 										<th>Servicios</th>
 										<th>Eliminar</th>
 									</tr>
@@ -72,32 +71,6 @@
 									>
 										<td>{{ c.name }}</td>
 										<td>{{ c.rut }}</td>
-										<td>
-											<table class="table ">
-												<thead>
-													<th>Tipo</th>
-													<th>Precio</th>
-												</thead>
-												<tbody>
-													<tr>
-														<td>Desayuno</td>
-														<td>{{ c.prices[0] }}</td>
-													</tr>
-													<tr>
-														<td>Almuerzo</td>
-														<td>{{ c.prices[1] }}</td>
-													</tr>
-													<tr>
-														<td>Cena</td>
-														<td>{{ c.prices[2] }}</td>
-													</tr>
-													<tr>
-														<td>Alojamiento</td>
-														<td>{{ c.prices[3] }}</td>
-													</tr>
-												</tbody>
-											</table>
-										</td>
 										<td class="p-2">
 											<v-btn
 												rounded
@@ -152,10 +125,6 @@ export default {
 			form: {
 				name: '',
 				rut: '',
-				breakfast: '',
-				lunch: '',
-				dinner: '',
-				lodging: '',
 			},
 			errors: '',
 			filterPlaceWord: '',
@@ -190,18 +159,6 @@ export default {
 			rut: {
 				required,
 			},
-			breakfast: {
-				required,
-			},
-			lunch: {
-				required,
-			},
-			dinner: {
-				required,
-			},
-			lodging: {
-				required,
-			},
 		},
 	},
 	methods: {
@@ -211,14 +168,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				let tempArray = [];
-				tempArray.push(
-					this.form.breakfast,
-					this.form.lunch,
-					this.form.dinner,
-					this.form.lodging
-				);
-				this.createPlace({ name: this.form.name, rut: this.form.rut, prices: tempArray });
+				this.createPlace(this.form);
 				this.clearInputs();
 				this.$v.$reset();
 			}
