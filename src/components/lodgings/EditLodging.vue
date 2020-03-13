@@ -1,43 +1,31 @@
 <template lang="html">
-	<b-row v-if="lodgingSelect">
-		<b-col class="borderModule p-3 m-3">
+	<v-row v-if="lodgingSelect">
+		<v-col class="borderModule p-3 m-3">
 			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
 			<transition name="fade">
-				<b-row v-if="!showPopover">
-					<b-col>
-						<b-form-group id="input-group-1" label="Fecha inicio" label-for="input-1">
-							<b-form-input
-								id="input-1"
-								v-model="dateStartLodging"
-								type="date"
-								:value="dateStartLodging"
-								class="col-xs-2 "
-								required
-								@change="
-									dateChange({ dateStartLodging, dateEndLodging, start: true })
-								"
-							/>
-						</b-form-group>
-					</b-col>
-					<b-col>
-						<b-form-group id="input-group-1" label="Fecha fin" label-for="input-1">
-							<b-form-input
-								id="input-1"
-								v-model="dateEndLodging"
-								type="date"
-								class="col-xs-2 "
-								required
-								@change="
-									dateChange({ dateStartLodging, dateEndLodging, start: false })
-								"
-							/>
-						</b-form-group>
-					</b-col>
-				</b-row>
+				<v-row v-if="!showPopover">
+					<v-col>
+						<v-text-field
+							v-model="dateStartLodging"
+							type="date"
+							:value="dateStartLodging"
+							required
+							@change="dateChange({ dateStartLodging, dateEndLodging, start: true })"
+						/>
+					</v-col>
+					<v-col>
+						<v-text-field
+							v-model="dateEndLodging"
+							type="date"
+							required
+							@change="dateChange({ dateStartLodging, dateEndLodging, start: false })"
+						/>
+					</v-col>
+				</v-row>
 			</transition>
-			<b-row>
+			<v-row>
 				<!-- aucomplete persons -->
-				<b-col cols="12">
+				<v-col cols="12">
 					<autocomplete
 						v-if="!showPopover"
 						:items="personFormatted"
@@ -45,17 +33,17 @@
 						placeholder="Agregar un pasajero"
 					/>
 
-					<b-button
+					<v-btn
 						v-if="!showPopover"
 						variant="danger"
 						@click="deleteLodging(lodgingSelect)"
 					>
 						Eliminar actividad
-					</b-button>
-				</b-col>
+					</v-btn>
+				</v-col>
 				<!-- badge person -->
-				<b-col v-if="!showPopover">
-					<b-badge
+				<v-col v-if="!showPopover">
+					<v-badge
 						v-for="(item, i) in lodgingPersons"
 						:id="`show${i}`"
 						:key="i"
@@ -66,9 +54,9 @@
 						<span class="text-danger ml-1 pointer" @click="removeLodgingPersons(i)"
 							>X</span
 						>
-					</b-badge>
-				</b-col>
-				<b-col v-show="showPopover">
+					</v-badge>
+				</v-col>
+				<v-col v-show="showPopover">
 					<LodgingsDate
 						label="Fecha inicio"
 						:start="true"
@@ -78,8 +66,8 @@
 						:is-person-date="true"
 						:error-date="errorDate"
 					/>
-				</b-col>
-				<b-col v-show="showPopover">
+				</v-col>
+				<v-col v-show="showPopover">
 					<LodgingsDate
 						label="Fecha fin"
 						:start="false"
@@ -89,27 +77,27 @@
 						:is-person-date="true"
 						:error-date="errorDate"
 					/>
-				</b-col>
-				<b-col class="mb-2 d-flex justify-content-start flex-wrap">
-					<b-button
+				</v-col>
+				<v-col class="mv-2 d-flex justify-content-start flex-wrap">
+					<v-btn
 						v-show="showPopover"
 						:disabled="datePersonsInvalid"
 						@click="setDatePerson"
 					>
 						Agregar
-					</b-button>
-					<b-button
+					</v-btn>
+					<v-btn
 						v-if="showPopover"
 						variant="danger"
 						class="btn-sm"
 						@click="cancelAddPerson"
 					>
 						Cancelar
-					</b-button>
-				</b-col>
-			</b-row>
-		</b-col>
-	</b-row>
+					</v-btn>
+				</v-col>
+			</v-row>
+		</v-col>
+	</v-row>
 </template>
 
 <script>

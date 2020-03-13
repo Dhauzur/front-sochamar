@@ -2,8 +2,8 @@
 	<div class="container">
 		<div class="position-relative">
 			<!-- list person -->
-			<b-row>
-				<b-col v-if="personsList.length > 0">
+			<v-row>
+				<v-col v-if="personsList.length > 0">
 					<h5>Listado de personas</h5>
 					<persons-list
 						:delete-one="deleteOne"
@@ -12,27 +12,27 @@
 						:persons="personsList"
 						:selected-person="selectedPerson"
 					/>
-				</b-col>
-			</b-row>
-			<b-dropdown-divider v-if="personsList.length > 0" />
-			<b-form>
-				<b-row>
+				</v-col>
+			</v-row>
+			<v-dropdown-divider v-if="personsList.length > 0" />
+			<v-form>
+				<v-row>
 					<!-- avatar -->
-					<b-col class="mt-3">
+					<v-col class="mt-3">
 						<h5>
 							{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
 						</h5>
 						<label for="upload">
-							<b-img
+							<v-img
 								class="pointer"
 								for
 								v-bind="mainProps"
 								rounded="circle"
 								alt="avatar"
 								:src="setAvatar"
-							></b-img>
+							></v-img>
 						</label>
-						<b-form-file
+						<v-file-input
 							id="upload"
 							ref="avatar"
 							class="d-none"
@@ -40,29 +40,32 @@
 							:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
 							drop-placeholder="Arrastrar aqui..."
 							@change="e => (person.avatar = e.target.files[0])"
-						></b-form-file>
-					</b-col>
-					<b-col cols="12">
+						></v-file-input>
+					</v-col>
+					<v-col cols="12">
 						<label for="upload" class="pointer">{{
 							typeof person.avatar === 'string' ? 'Cambiar avatar' : 'Subir avatar'
 						}}</label>
-					</b-col>
+					</v-col>
 					<!-- button for change view to new person -->
 					<div
 						v-if="editMode"
 						class="text-right position-absolute"
 						style="top: 0; right: 0;"
 					>
-						<b-button @click="clearInputs">Nuevo </b-button>
+						<v-btn @click="clearInputs">Nuevo </v-btn>
 					</div>
 					<!-- firstName -->
-					<b-col cols="6">
-						<b-row>
-							<b-col cols="12" class="text-left"
-								><label for="firstName" class="mb-0 mt-2">Nombre</label>
-							</b-col>
-							<b-col cols="12" class="text-right">
-								<b-input id="firstName" v-model.trim="$v.person.firstName.$model" />
+					<v-col cols="6">
+						<v-row>
+							<v-col cols="12" class="text-left"
+								><label for="firstName" class="mv-0 mt-2">Nombre</label>
+							</v-col>
+							<v-col cols="12" class="text-right">
+								<v-text-field
+									id="firstName"
+									v-model.trim="$v.person.firstName.$model"
+								/>
 								<div v-if="$v.person.firstName.$dirty">
 									<small v-if="!$v.person.firstName.required" class="text-danger">
 										Campo requerido
@@ -74,116 +77,105 @@
 										Minimo 3 Caracteres
 									</small>
 								</div>
-							</b-col>
-						</b-row>
-					</b-col>
+							</v-col>
+						</v-row>
+					</v-col>
 					<!-- lastName -->
-					<b-col cols="6">
-						<b-row>
-							<b-col cols="12" class="text-left "
-								><label for="lastName" class="mb-0 mt-2">Apellido</label>
-							</b-col>
-							<b-col cols="12" class="text-right">
-								<b-input id="lastName" v-model.trim="person.lastName"></b-input>
-							</b-col>
-						</b-row>
-					</b-col>
-				</b-row>
-				<b-row>
+					<v-col cols="6">
+						<v-row>
+							<v-col cols="12" class="text-left "
+								><label for="lastName" class="mv-0 mt-2">Apellido</label>
+							</v-col>
+							<v-col cols="12" class="text-right">
+								<v-text-field
+									id="lastName"
+									v-model.trim="person.lastName"
+								></v-text-field>
+							</v-col>
+						</v-row>
+					</v-col>
+				</v-row>
+				<v-row>
 					<!-- age -->
-					<b-col cols="6">
-						<b-row>
-							<b-col cols="12" class="text-left "
-								><label for="age" class="mb-0 mt-2">Edad</label>
-							</b-col>
-							<b-col cols="12" class="text-right">
-								<b-input
+					<v-col cols="6">
+						<v-row>
+							<v-col cols="12" class="text-left "
+								><label for="age" class="mv-0 mt-2">Edad</label>
+							</v-col>
+							<v-col cols="12" class="text-right">
+								<v-text-field
 									id="age"
 									v-model.number="person.age"
 									type="number"
-								></b-input>
-							</b-col>
-						</b-row>
-					</b-col>
+								></v-text-field>
+							</v-col>
+						</v-row>
+					</v-col>
 					<!-- state -->
-					<b-col cols="6">
-						<b-row>
-							<b-col cols="12" class="text-left "
-								><label for="state" class="mb-0 mt-2">Estado</label>
-							</b-col>
-							<b-col cols="12">
-								<b-form-select
-									id="state"
-									v-model="person.state"
-									:options="['soltero', 'casado']"
-								></b-form-select>
-							</b-col>
-						</b-row>
-					</b-col>
-				</b-row>
-				<b-row>
+					<v-col cols="6">
+						<v-select
+							v-model="person.state"
+							label="Estado"
+							:items="['soltero', 'casado']"
+						></v-select>
+					</v-col>
+				</v-row>
+				<v-row>
 					<!-- birthdate -->
-					<b-col cols="6">
-						<b-row>
-							<b-col cols="12" class="text-left "
-								><label for="birthdate" class="mb-0 mt-2">Fecha nacimiento</label>
-							</b-col>
-							<b-col cols="12">
-								<b-form-group id="birthdate" label-for="input-1" class="pb-0 mb-0">
-									<b-form-input
-										id="input-1"
-										v-model="person.birthdate"
-										type="date"
-									/>
-								</b-form-group>
-							</b-col>
-						</b-row>
-					</b-col>
+					<v-col cols="6">
+						<v-row>
+							<v-col cols="12" class="text-left "
+								><label for="birthdate" class="mv-0 mt-2">Fecha nacimiento</label>
+							</v-col>
+							<v-col cols="12">
+								<v-text-field id="input-1" v-model="person.birthdate" type="date" />
+							</v-col>
+						</v-row>
+					</v-col>
 					<!-- appointment -->
-					<b-col cols="6">
-						<b-row>
-							<b-col cols="12" class="text-left "
-								><label for="phone" class="mb-0 mt-2">Telefono</label>
-								<b-input id="phone" v-model="person.phone"></b-input>
-							</b-col>
-						</b-row>
-					</b-col>
-				</b-row>
+					<v-col cols="6">
+						<v-row>
+							<v-col cols="12" class="text-left "
+								><label for="phone" class="mv-0 mt-2">Telefono</label>
+								<v-text-field id="phone" v-model="person.phone"></v-text-field>
+							</v-col>
+						</v-row>
+					</v-col>
+				</v-row>
 				<!-- function -->
-				<b-row>
-					<b-col cols="6" class="text-left "
-						><label for="function" class="mb-0 mt-2">Función</label>
-						<b-input id="function" v-model="person.function"></b-input>
-					</b-col>
-					<b-col cols="6" class="text-left ">
-						<label for="appointment" class="mb-0 mt-2">Cargo</label>
-						<b-input id="appointment" v-model="person.appointment"></b-input>
-					</b-col>
-				</b-row>
+				<v-row>
+					<v-col cols="6" class="text-left "
+						><label for="function" class="mv-0 mt-2">Función</label>
+						<v-text-field id="function" v-model="person.function"></v-text-field>
+					</v-col>
+					<v-col cols="6" class="text-left ">
+						<label for="appointment" class="mv-0 mt-2">Cargo</label>
+						<v-text-field id="appointment" v-model="person.appointment"></v-text-field>
+					</v-col>
+				</v-row>
 				<!-- regions -->
-				<b-row>
-					<b-col cols="6" class="text-left ">
-						<label for="regions" class="mb-0 mt-2">Region</label>
-						<b-form-select
+				<v-row>
+					<v-col cols="6" class="text-left ">
+						<v-select
 							id="regions"
 							v-model="person.region"
-							:options="regiones"
+							label="Región"
+							:items="regiones"
 							@change="setComunas"
-						></b-form-select>
-					</b-col>
-					<b-col cols="6" class="text-left "
-						><label for="comuna" class="mb-0 mt-2">Comuna</label>
-						<b-form-select
-							id="comuna"
+						></v-select>
+					</v-col>
+					<v-col cols="6" class="text-left ">
+						<v-select
 							v-model="person.comuna"
-							:options="comunas"
+							label="Comuna"
+							:items="comunas"
 							:disabled="disableComunaInput"
-						></b-form-select>
-					</b-col>
-				</b-row>
+						></v-select>
+					</v-col>
+				</v-row>
 				<!-- documents -->
-				<b-row>
-					<b-col cols="12" class="mt-2">
+				<v-row>
+					<v-col cols="12" class="mt-2">
 						<small v-if="!person.documents && !person.documents[0] && editMode"
 							>Sin Documentos</small
 						>
@@ -194,7 +186,7 @@
 									person.documents.length
 							"
 						>
-							<b-badge
+							<v-badge
 								v-for="(item, index) in person.documents"
 								:key="index"
 								class="p-2"
@@ -202,13 +194,12 @@
 								:href="item.url"
 								target="_blank"
 								>{{ cutText(item.name) }}
-							</b-badge>
+							</v-badge>
 						</div>
-					</b-col>
-					<b-col cols="12" class="mt-2">
-						<b-form-file
+					</v-col>
+					<v-col cols="12" class="mt-2">
+						<v-file-input
 							ref="document"
-							multiple
 							:file-name-formatter="formatNames"
 							:placeholder="
 								editMode
@@ -216,23 +207,26 @@
 									: 'Agrega un Documento, maximo 5'
 							"
 							drop-placeholder="Arrastrar aqui..."
+							multiple
+							show-size
+							label="File input"
 							@change="setDocuments"
-						></b-form-file>
-					</b-col>
-				</b-row>
-				<b-row>
-					<b-col class="mt-4">
-						<b-button
+						></v-file-input>
+					</v-col>
+				</v-row>
+				<v-row>
+					<v-col class="mt-4">
+						<v-btn
 							:disabled="loading"
 							block
 							class="btn btn-primary d-block"
 							@click.prevent="submitForm"
 							>Guardar
-							<b-spinner v-if="loading" small type="grow"></b-spinner>
-						</b-button>
-					</b-col>
-				</b-row>
-			</b-form>
+							<v-spinner v-if="loading" small type="grow"></v-spinner>
+						</v-btn>
+					</v-col>
+				</v-row>
+			</v-form>
 		</div>
 	</div>
 </template>

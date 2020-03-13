@@ -39,9 +39,9 @@
 						</div>
 					</b-col>
 					<b-col cols="12" md="3" class="mt-2">
-						<b-button block class="col-12 mt-3" @click="onsubmit()">
+						<v-btn block class="col-12 mt-3" @click="onsubmit()">
 							Guardar
-						</b-button>
+						</v-btn>
 						<small v-if="errors" class="mt-2 d-block text-danger">
 							Debe llenar el formulario correctamente
 						</small>
@@ -73,7 +73,7 @@
 											{{ period.numberPassangerMax }}
 										</td>
 										<td class="p-0 align-middle">
-											<b-button
+											<v-btn
 												variant="danger"
 												@click="
 													deletePeriod({
@@ -83,7 +83,7 @@
 												"
 											>
 												X
-											</b-button>
+											</v-btn>
 										</td>
 									</tr>
 								</tbody>

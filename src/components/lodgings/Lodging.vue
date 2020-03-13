@@ -208,12 +208,12 @@
 										</b-form-group>
 									</v-col>
 									<v-col class="mt-4 flex-wrap">
-										<b-button @click="addOneService(serviceSelected)">
+										<v-btn @click="addOneService(serviceSelected)">
 											+1 {{ serviceSelected }}
-										</b-button>
-										<b-button @click="subOneService(serviceSelected)">
+										</v-btn>
+										<v-btn @click="subOneService(serviceSelected)">
 											-1 {{ serviceSelected }}
-										</b-button>
+										</v-btn>
 									</v-col>
 								</v-row>
 							</v-col>
