@@ -1,295 +1,247 @@
 <template>
-	<v-container fluid>
-		<v-row justify="center">
-			<v-col>
-				<template v-if="loading">
-					<!-- loading -->
-					<v-dialog :value="loading" persistent width="300" hide-overlay>
-						<v-card color="secondary" dark>
-							<v-card-text>
-								Cargando...
-								<v-progress-linear
-									indeterminate
-									color="white"
-									class="mb-0"
-								></v-progress-linear>
-							</v-card-text>
-						</v-card>
-					</v-dialog>
-				</template>
-				<template v-else>
-					<v-card>
-						<v-card-title>
-							<v-container>
-								<v-row justify="start">
-									<!-- select place  -->
-									<v-col cols="12" md="4">
-										<v-select
-											:value="place"
-											:items="places"
-											dense
-											label="Selecione lugar"
-											outlined
+	<div>
+		<template v-if="loading">
+			<!-- loading -->
+			<v-dialog :value="loading" persistent width="300" hide-overlay>
+				<v-card color="secondary" dark>
+					<v-card-text>
+						Cargando...
+						<v-progress-linear
+							indeterminate
+							color="white"
+							class="mb-0"
+						></v-progress-linear>
+					</v-card-text>
+				</v-card>
+			</v-dialog>
+		</template>
+		<template v-else>
+			<v-card>
+				<v-card-title>
+					<v-container>
+						<v-row justify="start">
+							<!-- select place  -->
+							<v-col cols="12" md="4">
+								<v-select
+									:value="place"
+									:items="places"
+									dense
+									label="Selecione lugar"
+									outlined
+									rounded
+									@change="setPlace"
+								>
+								</v-select>
+							</v-col>
+							<!-- activity button -->
+							<v-col v-if="periods.length > 0 && place" cols="6" md="2" class="mt-2">
+								<v-tooltip attach bottom min-width="180">
+									<template v-slot:activator="{ on }">
+										<v-btn
+											color="accent"
+											dark
+											block
+											small
 											rounded
-											@change="setPlace"
+											@click="createOneLodging()"
+											v-on="on"
 										>
-										</v-select>
-									</v-col>
-									<!-- activity button -->
-									<v-col
-										v-if="periods.length > 0 && place"
-										cols="6"
-										md="2"
-										class="mt-2"
-									>
-										<v-tooltip attach bottom min-width="180">
-											<template v-slot:activator="{ on }">
-												<v-btn
-													color="accent"
-													dark
-													block
-													small
-													rounded
-													@click="createOneLodging()"
-													v-on="on"
-												>
-													<v-icon>mdi-plus</v-icon><span>Actividad</span>
-												</v-btn>
-											</template>
-											<span>Añadir hospedaje</span>
-										</v-tooltip>
-									</v-col>
-									<!-- save button -->
-									<v-col
-										v-if="getMirrorLodging || editMode"
-										cols="6"
-										md="2"
-										class="mt-2"
-									>
-										<v-tooltip attach bottom>
-											<template v-slot:activator="{ on }">
-												<v-btn
-													color="success"
-													dark
-													block
-													small
-													rounded
-													@click="saveLodgings()"
-													v-on="on"
-												>
-													<v-icon>mdi-content-save</v-icon
-													><span>Guardar</span>
-												</v-btn>
-											</template>
-											<span>Guardar</span>
-										</v-tooltip>
-									</v-col>
-								</v-row>
-							</v-container>
-						</v-card-title>
-						<!-- time-line -->
-						<v-card-text>
-							<timeline
-								v-if="periods.length > 0 && lodgings.length > 0"
-								:events="['rangechanged', 'click']"
-								:groups="periods"
-								:items="lodgings"
-								:options="options"
-								class="p-2"
-								@click="enableEdit"
-								@rangechanged="rangechanged"
-							/>
-						</v-card-text>
-						<!-- service table -->
-						<v-card-text>
-							<v-row>
-								<v-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
-									<table class="table table-bordered">
-										<thead>
-											<tr>
-												<td>Actividad</td>
-												<td>Precios</td>
-												<td
-													v-for="(d, index) in rangeDateTable"
-													:key="index"
-												>
-													{{ d.numberDay }}
-													<br />
-													{{ d.nameDay }}
-												</td>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>ALOJAMIENTO</td>
-												<td v-if="place">
-													{{ prices.prices[3] }}
-												</td>
-												<td
-													v-for="(p, index) in proyectionTable"
-													:key="index"
-												>
-													<span v-if="!editMode">{{
-														p.service.accommodation
-													}}</span>
-													<input
-														v-if="
-															editMode &&
-																p.service.accommodation !==
-																	undefined
-														"
-														:id="p.id + ',' + p.date"
-														v-model="p.service.accommodation"
-														type="number"
-														class="inputService"
-														name="accommodation"
-														:placeholder="p.service.accommodation"
-														@change="detectInputChange"
-													/>
-												</td>
-											</tr>
-											<tr>
-												<td>DESAYUNO</td>
-												<td v-if="place">
-													{{ prices.prices[0] }}
-												</td>
-												<td
-													v-for="(p, index) in proyectionTable"
-													:key="index"
-												>
-													<span v-if="!editMode">{{
-														p.service.breakfast
-													}}</span>
-													<input
-														v-if="
-															editMode &&
-																p.service.breakfast !== undefined
-														"
-														:id="p.id + ',' + p.date"
-														v-model="p.service.breakfast"
-														type="number"
-														class="inputService"
-														name="breakfast"
-														:placeholder="p.service.breakfast"
-														@change="detectInputChange"
-													/>
-												</td>
-											</tr>
-											<tr>
-												<td>ALMUERZO</td>
-												<td v-if="place">
-													{{ prices.prices[1] }}
-												</td>
-												<td
-													v-for="(p, index) in proyectionTable"
-													:key="index"
-												>
-													<span v-if="!editMode">{{
-														p.service.lunch
-													}}</span>
-													<input
-														v-if="
-															editMode && p.service.lunch != undefined
-														"
-														:id="p.id + ',' + p.date"
-														v-model="p.service.lunch"
-														type="number"
-														class="inputService"
-														name="lunch"
-														:placeholder="p.service.lunch"
-														@change="detectInputChange"
-													/>
-												</td>
-											</tr>
-											<tr>
-												<td>CENA</td>
-												<td v-if="place">
-													{{ prices.prices[2] }}
-												</td>
-												<td
-													v-for="(p, index) in proyectionTable"
-													:key="index"
-												>
-													<span v-if="!editMode">{{
-														p.service.dinner
-													}}</span>
-													<input
-														v-if="
-															editMode &&
-																p.service.dinner !== undefined
-														"
-														:id="p.id + ',' + p.date"
-														v-model="p.service.dinner"
-														type="number"
-														class="inputService"
-														name="dinner"
-														:placeholder="p.service.dinner"
-														@change="detectInputChange"
-													/>
-												</td>
-											</tr>
-											<tr v-if="place" class="borderModule">
-												<td colspan="2">TOTAL</td>
-												<td
-													v-for="(p, index) in proyectionTable"
-													:key="index"
-												>
-													<span v-if="finalyPrice[index] != 0">{{
-														finalyPrice[index]
-													}}</span>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</v-col>
-							</v-row>
-						</v-card-text>
-						<v-card-text>
-							<v-row v-if="lodgingSelect">
-								<v-col cols="12" sm="4">
-									<v-select
-										id="services_select"
-										v-model="serviceSelected"
-										:items="services"
-										dense
-										label="Sericios"
-										outlined
-										rounded
-									>
-									</v-select>
-								</v-col>
-								<v-col cols="6" md="3" class="mt-1">
-									<v-btn
-										rounded
-										small
-										color="primary"
-										@click="addOneService(serviceSelected)"
-									>
-										+1 {{ serviceSelected }}
-									</v-btn>
-								</v-col>
-								<v-col cols="6" md="3" class="mt-1">
-									<v-btn
-										rounded
-										small
-										color="primary"
-										@click="subOneService(serviceSelected)"
-									>
-										-1 {{ serviceSelected }}
-									</v-btn>
-								</v-col>
-							</v-row>
-						</v-card-text>
-					</v-card>
-					<v-bottom-sheet v-model="sheet">
-						<v-sheet class="text-center" height="500px">
-							<EditLodging />
-						</v-sheet>
-					</v-bottom-sheet>
-				</template>
-			</v-col>
-		</v-row>
-	</v-container>
+											<v-icon>mdi-plus</v-icon><span>Actividad</span>
+										</v-btn>
+									</template>
+									<span>Añadir hospedaje</span>
+								</v-tooltip>
+							</v-col>
+							<!-- save button -->
+							<v-col v-if="getMirrorLodging || editMode" cols="6" md="2" class="mt-2">
+								<v-tooltip attach bottom>
+									<template v-slot:activator="{ on }">
+										<v-btn
+											color="success"
+											dark
+											block
+											small
+											rounded
+											@click="saveLodgings()"
+											v-on="on"
+										>
+											<v-icon>mdi-content-save</v-icon><span>Guardar</span>
+										</v-btn>
+									</template>
+									<span>Guardar</span>
+								</v-tooltip>
+							</v-col>
+						</v-row>
+					</v-container>
+				</v-card-title>
+				<!-- time-line -->
+				<v-card-text>
+					<timeline
+						v-if="periods.length > 0 && lodgings.length > 0"
+						:events="['rangechanged', 'click']"
+						:groups="periods"
+						:items="lodgings"
+						:options="options"
+						class="p-2"
+						@click="enableEdit"
+						@rangechanged="rangechanged"
+					/>
+				</v-card-text>
+				<!-- service table -->
+				<v-card-text>
+					<v-row>
+						<v-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<td>Actividad</td>
+										<td>Precios</td>
+										<td v-for="(d, index) in rangeDateTable" :key="index">
+											{{ d.numberDay }}
+											<br />
+											{{ d.nameDay }}
+										</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>ALOJAMIENTO</td>
+										<td v-if="place">
+											{{ prices.prices[3] }}
+										</td>
+										<td v-for="(p, index) in proyectionTable" :key="index">
+											<span v-if="!editMode">{{
+												p.service.accommodation
+											}}</span>
+											<input
+												v-if="
+													editMode &&
+														p.service.accommodation !== undefined
+												"
+												:id="p.id + ',' + p.date"
+												v-model="p.service.accommodation"
+												type="number"
+												class="inputService"
+												name="accommodation"
+												:placeholder="p.service.accommodation"
+												@change="detectInputChange"
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>DESAYUNO</td>
+										<td v-if="place">
+											{{ prices.prices[0] }}
+										</td>
+										<td v-for="(p, index) in proyectionTable" :key="index">
+											<span v-if="!editMode">{{ p.service.breakfast }}</span>
+											<input
+												v-if="editMode && p.service.breakfast !== undefined"
+												:id="p.id + ',' + p.date"
+												v-model="p.service.breakfast"
+												type="number"
+												class="inputService"
+												name="breakfast"
+												:placeholder="p.service.breakfast"
+												@change="detectInputChange"
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>ALMUERZO</td>
+										<td v-if="place">
+											{{ prices.prices[1] }}
+										</td>
+										<td v-for="(p, index) in proyectionTable" :key="index">
+											<span v-if="!editMode">{{ p.service.lunch }}</span>
+											<input
+												v-if="editMode && p.service.lunch != undefined"
+												:id="p.id + ',' + p.date"
+												v-model="p.service.lunch"
+												type="number"
+												class="inputService"
+												name="lunch"
+												:placeholder="p.service.lunch"
+												@change="detectInputChange"
+											/>
+										</td>
+									</tr>
+									<tr>
+										<td>CENA</td>
+										<td v-if="place">
+											{{ prices.prices[2] }}
+										</td>
+										<td v-for="(p, index) in proyectionTable" :key="index">
+											<span v-if="!editMode">{{ p.service.dinner }}</span>
+											<input
+												v-if="editMode && p.service.dinner !== undefined"
+												:id="p.id + ',' + p.date"
+												v-model="p.service.dinner"
+												type="number"
+												class="inputService"
+												name="dinner"
+												:placeholder="p.service.dinner"
+												@change="detectInputChange"
+											/>
+										</td>
+									</tr>
+									<tr v-if="place" class="borderModule">
+										<td colspan="2">TOTAL</td>
+										<td v-for="(p, index) in proyectionTable" :key="index">
+											<span v-if="finalyPrice[index] != 0">{{
+												finalyPrice[index]
+											}}</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</v-col>
+					</v-row>
+				</v-card-text>
+				<v-card-text>
+					<v-row v-if="lodgingSelect">
+						<v-col cols="12" sm="4">
+							<v-select
+								id="services_select"
+								v-model="serviceSelected"
+								:items="services"
+								dense
+								label="Sericios"
+								outlined
+								rounded
+							>
+							</v-select>
+						</v-col>
+						<v-col cols="6" md="3" class="mt-1">
+							<v-btn
+								rounded
+								small
+								color="primary"
+								@click="addOneService(serviceSelected)"
+							>
+								+1 {{ serviceSelected }}
+							</v-btn>
+						</v-col>
+						<v-col cols="6" md="3" class="mt-1">
+							<v-btn
+								rounded
+								small
+								color="primary"
+								@click="subOneService(serviceSelected)"
+							>
+								-1 {{ serviceSelected }}
+							</v-btn>
+						</v-col>
+					</v-row>
+				</v-card-text>
+			</v-card>
+			<v-bottom-sheet v-model="sheet">
+				<v-sheet class="text-center" height="500px">
+					<EditLodging />
+				</v-sheet>
+			</v-bottom-sheet>
+		</template>
+	</div>
 </template>
 
 <script>
@@ -667,7 +619,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .vis-selected {
 	background-color: #c06240 !important;
 	color: white !important;

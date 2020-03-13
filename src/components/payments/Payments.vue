@@ -1,15 +1,13 @@
 <template>
-	<v-container fluid>
-		<payments-wrapper
-			:lodgings="lodgingsPlace"
-			:place="place"
-			:items="payments"
-			:loading="loading"
-			:update-payments="fetchPayments"
-			:count="countLodgings"
-			:delete="deleteOnePayment"
-		/>
-	</v-container>
+	<payments-wrapper
+		:lodgings="lodgingsPlace"
+		:place="place"
+		:items="payments"
+		:loading="loading"
+		:update-payments="fetchPayments"
+		:count="countLodgings"
+		:delete="deleteOnePayment"
+	/>
 </template>
 
 <script>

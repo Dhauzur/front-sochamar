@@ -66,8 +66,8 @@ export default {
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	overflow-x: hidden;
-	background-color: #ebecee;
 	height: 100vh;
+	background-color: #f5f5f5;
 }
 
 .fade-enter-active,

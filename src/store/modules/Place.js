@@ -1,6 +1,7 @@
 import { api } from '@/config/index.js';
 import axios from 'axios';
 import router from '@/router/index.js';
+import { toastMessage } from '../../utils/toast/messages';
 
 const state = {
 	message: '',
@@ -62,6 +63,26 @@ const actions = {
 				type: 'error',
 				text: 'Error al crear lugar',
 			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
+	async createService({ commit, dispatch }, { service, placeId }) {
+		try {
+			await axios.post(`${api}/place/${placeId}/service`, service);
+			commit('setMessage', toastMessage('success', 'Servicio creado'));
+			dispatch('fetchPlace');
+		} catch (e) {
+			commit('setMessage', toastMessage('error', 'error al crear Servicio'));
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
+	async updateService({ commit, dispatch }, { service, serviceId, placeId }) {
+		try {
+			await axios.put(`${api}/place/${placeId}/service/${serviceId}`, service);
+			commit('setMessage', toastMessage('success', 'Servicio Actualizado'));
+			dispatch('fetchPlace');
+		} catch (e) {
+			commit('setMessage', toastMessage('error', 'error al actualizar Servicio'));
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},

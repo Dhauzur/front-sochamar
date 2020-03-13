@@ -12,8 +12,8 @@
 			app
 			mini-variant
 			mini-variant-width="62"
-			color="secondary"
 			mobile-break-point="768"
+			color="secondary"
 		>
 			<v-list>
 				<v-list-item class="px-2" link to="/">
@@ -22,30 +22,30 @@
 			</v-list>
 			<v-divider></v-divider>
 			<v-list nav dense>
-				<v-list-item link to="/">
+				<v-list-item active-class="info--text" link to="/">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="white" dark v-on="on">mdi-home</v-icon>
+							<v-icon dark v-on="on">mdi-home</v-icon>
 						</template>
-						<span class="white--text">Inicio</span>
+						<span>Inicio</span>
 					</v-tooltip>
 					<v-list-item-title>Inicio</v-list-item-title>
 				</v-list-item>
-				<v-list-item link to="/management">
+				<v-list-item active-class="info--text" link to="/management">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="white" dark v-on="on">mdi-widgets</v-icon>
+							<v-icon dark v-on="on">mdi-widgets</v-icon>
 						</template>
-						<span class="white--text">Administrar Hospedajes</span>
+						<span>Administrar Hospedajes</span>
 					</v-tooltip>
 					<v-list-item-title>Administrar</v-list-item-title>
 				</v-list-item>
-				<v-list-item link to="/reports">
+				<v-list-item active-class="info--text" link to="/reports">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon color="white" dark v-on="on">mdi-file-settings</v-icon>
+							<v-icon dark v-on="on">mdi-file-settings</v-icon>
 						</template>
-						<span class="white--text">Enviar informes</span>
+						<span>Enviar informes</span>
 					</v-tooltip>
 					<v-list-item-title>Enviar informes</v-list-item-title>
 				</v-list-item>
