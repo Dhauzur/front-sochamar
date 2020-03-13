@@ -1,97 +1,94 @@
 <template>
-	<div>
-		<v-form ref="form">
-			<v-row class="mb-3 text-left">
-				<!-- mount -->
-				<v-col cols="12" md="6" lg="3">
+	<v-row>
+		<!-- mount -->
+		<v-col cols="12" sm="6" md="3">
+			<v-text-field
+				id="total"
+				v-model="$v.mount.$model"
+				size="sm"
+				type="number"
+				placeholder="Ej: 10000"
+				label="Total"
+				outlined
+				rounded
+				dense
+				prepend-icon="mdi-cash-usd"
+				:error-messages="mountErrors"
+				@input="$v.mount.$touch()"
+				@blur="$v.mount.$touch()"
+			></v-text-field>
+		</v-col>
+		<!-- dates -->
+		<v-col cols="12" sm="6" md="3">
+			<v-menu
+				ref="menu"
+				v-model="menu"
+				:close-on-content-click="false"
+				:return-value.sync="dates"
+				transition="scale-transition"
+				offset-y
+				min-width="290px"
+			>
+				<template v-slot:activator="{ on }">
 					<v-text-field
-						id="total"
-						v-model="$v.mount.$model"
-						size="sm"
-						type="number"
-						placeholder="Ej: 10000"
-						label="Total"
-						outlined
-						rounded
-						dense
-						:error-messages="mountErrors"
-						@input="$v.mount.$touch()"
-						@blur="$v.mount.$touch()"
-					></v-text-field>
-				</v-col>
-				<!-- dates -->
-				<v-col cols="12" lg="4">
-					<v-menu
-						ref="menu"
-						v-model="menu"
-						:close-on-content-click="false"
-						:return-value.sync="dates"
-						transition="scale-transition"
-						offset-y
-						min-width="290px"
-					>
-						<template v-slot:activator="{ on }">
-							<v-text-field
-								v-model="dates"
-								dense
-								clearable
-								outlined
-								rounded
-								label="Fecha de ingreso y salida"
-								prepend-icon="mdi-event"
-								:error-messages="datesErrors"
-								@input="$v.dates.$touch()"
-								@blur="$v.dates.$touch()"
-								v-on="on"
-							></v-text-field>
-						</template>
-						<v-date-picker
-							v-model="dates"
-							outlined
-							rounded
-							range
-							:min="startDate"
-							:max="endDate"
-							no-title
-							scrollable
-						>
-							<v-spacer></v-spacer>
-							<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-							<v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
-						</v-date-picker>
-					</v-menu>
-				</v-col>
-				<!-- voucher -->
-				<v-col cols="12" md="6" lg="3">
-					<v-file-input
-						id="voucher"
-						ref="voucher"
-						v-model="voucher"
-						label="voucher"
+						v-model="dates"
 						dense
 						clearable
 						outlined
 						rounded
-						prepend-icon="mdi-paperclip"
-						:error-messages="voucherErrors"
-						@input="$v.voucher.$touch()"
-						@blur="$v.voucher.$touch()"
-					>
-						<template v-slot:selection="{ text }">
-							<v-chip small label color="secondary">
-								{{ text }}
-							</v-chip>
-						</template>
-					</v-file-input>
-				</v-col>
-				<v-col cols="12" md="12" lg="2">
-					<v-btn dark small rounded color="primary" block class="mt-2" @click="submit">
-						Guardar
-					</v-btn>
-				</v-col>
-			</v-row>
-		</v-form>
-	</div>
+						label="Fecha de ingreso y salida"
+						prepend-icon="mdi-calendar"
+						:error-messages="datesErrors"
+						@input="$v.dates.$touch()"
+						@blur="$v.dates.$touch()"
+						v-on="on"
+					></v-text-field>
+				</template>
+				<v-date-picker
+					v-model="dates"
+					outlined
+					rounded
+					range
+					:min="startDate"
+					:max="endDate"
+					no-title
+					scrollable
+				>
+					<v-spacer></v-spacer>
+					<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+					<v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
+				</v-date-picker>
+			</v-menu>
+		</v-col>
+		<!-- voucher -->
+		<v-col cols="12" sm="6" md="3">
+			<v-file-input
+				id="voucher"
+				ref="voucher"
+				v-model="voucher"
+				label="voucher"
+				dense
+				clearable
+				outlined
+				rounded
+				prepend-icon="mdi-paperclip"
+				:error-messages="voucherErrors"
+				@input="$v.voucher.$touch()"
+				@blur="$v.voucher.$touch()"
+			>
+				<template v-slot:selection="{ text }">
+					<v-chip small label color="secondary">
+						{{ text }}
+					</v-chip>
+				</template>
+			</v-file-input>
+		</v-col>
+		<v-col cols="12" sm="6" md="3">
+			<v-btn dark small rounded color="primary" block class="mt-2" @click="submit">
+				Guardar
+			</v-btn>
+		</v-col>
+	</v-row>
 </template>
 
 <script>

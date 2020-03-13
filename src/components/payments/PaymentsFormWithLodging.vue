@@ -7,13 +7,13 @@
 				</h6>
 			</v-col>
 		</v-row>
-		<v-row v-else class="text-left">
-			<v-col cols="12" md="6" lg="4">
+		<v-row v-else>
+			<v-col cols="12" sm="6" md="4" lg="3">
 				<v-select
 					id="date"
 					v-model="$v.lodgingSelected.$model"
 					dense
-					outlined
+					solo
 					rounded
 					:items="optionsLodgings"
 					label="Fecha"
@@ -23,7 +23,7 @@
 					@blur="$v.lodgingSelected.$touch()"
 				></v-select>
 			</v-col>
-			<v-col cols="12" md="6" lg="2">
+			<v-col cols="12" sm="6" md="4" lg="3">
 				<v-text-field
 					id="mount"
 					v-model="mount"
@@ -36,7 +36,7 @@
 					placeholder="Ej: 10000 CLP"
 				></v-text-field>
 			</v-col>
-			<v-col cols="12" md="9" lg="3" pt>
+			<v-col cols="12" sm="6" md="4" lg="3">
 				<v-file-input
 					id="voucher"
 					ref="voucher"
@@ -58,7 +58,7 @@
 					</template>
 				</v-file-input>
 			</v-col>
-			<v-col cols="12" md="3" class="mt-1">
+			<v-col cols="12" sm="6" md="3" lg="3">
 				<v-btn :loading="loading" block color="primary" rounded small @click="submit">
 					Agregar Pago
 				</v-btn>
