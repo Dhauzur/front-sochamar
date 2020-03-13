@@ -1,11 +1,17 @@
 <template lang="html">
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
-			<v-col cols="12" sm="8" md="4">
-				<v-card outlined>
-					<v-toolbar color="secondary" dark flat>
-						<v-toolbar-title>Registrate</v-toolbar-title>
-					</v-toolbar>
+			<v-col cols="12" sm="6" md="4" lg="3">
+				<v-card outlined light>
+					<!-- reemplazar imagen por el logo final -->
+					<v-img
+						src="@/assets/example.jpeg"
+						height="200px"
+						style="margin: 0 auto"
+					></v-img>
+					<v-card-subtitle>
+						Registrate
+					</v-card-subtitle>
 					<v-card-text>
 						<v-form>
 							<!-- name -->

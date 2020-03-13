@@ -1,10 +1,14 @@
 <template lang="html">
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
-			<v-col v-if="!passwordRecover" cols="12" sm="8" md="4">
-				<v-card outlined light style="position: relative">
+			<v-col v-if="!passwordRecover" cols="12" sm="6" md="4" lg="3">
+				<v-card outlined light>
 					<!-- reemplazar imagen por el logo final -->
-					<v-img src="@/assets/example.jpeg" height="190px"></v-img>
+					<v-img
+						src="@/assets/example.jpeg"
+						height="200px"
+						style="margin: 0 auto"
+					></v-img>
 					<v-card-subtitle>
 						Ingresar
 					</v-card-subtitle>
