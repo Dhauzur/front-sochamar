@@ -13,6 +13,7 @@
 			mini-variant
 			mini-variant-width="62"
 			mobile-break-point="768"
+			color="secondary"
 		>
 			<v-list>
 				<v-list-item class="px-2" link to="/">
@@ -33,7 +34,7 @@
 				<v-list-item link to="/management">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon v-on="on">mdi-widgets</v-icon>
+							<v-icon dark v-on="on">mdi-widgets</v-icon>
 						</template>
 						<span>Administrar Hospedajes</span>
 					</v-tooltip>
@@ -42,7 +43,7 @@
 				<v-list-item link to="/reports">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon v-on="on">mdi-file-settings</v-icon>
+							<v-icon dark v-on="on">mdi-file-settings</v-icon>
 						</template>
 						<span>Enviar informes</span>
 					</v-tooltip>
