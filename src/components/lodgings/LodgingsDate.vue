@@ -1,7 +1,7 @@
 <template>
 	<!-- date lodgings -->
 	<b-form-group id="input-group-1" :label="label" label-for="input-1">
-		<b-form-input id="input-1" type="date" required :value="date" @change="onchange" />
+		<v-text-field id="input-1" type="date" required :value="date" @change="onchange" />
 		<small class="text-danger">{{ error }}</small>
 	</b-form-group>
 </template>
