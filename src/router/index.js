@@ -5,7 +5,6 @@ Vue.use(VueRouter);
 const Home = () => import('@/views/Home.vue');
 const Management = () => import('@/views/Management.vue');
 const Login = () => import('@/views/Login');
-const Maintenance = () => import('@/views/Maintenance.vue');
 const PasswordReset = () => import('@/views/PasswordReset');
 const Register = () => import('@/views/Register');
 const Report = () => import('@/views/Report.vue');
@@ -23,12 +22,6 @@ const routes = [
 		path: '/management',
 		component: Management,
 		meta: { title: 'Administrar hospedajes', layout: 'layout' },
-	},
-	{
-		path: '/mantenimiento',
-		name: 'mantenimiento',
-		component: Maintenance,
-		meta: { title: 'Mantenimiento', layout: 'layout' },
 	},
 	{
 		path: '/reports',
