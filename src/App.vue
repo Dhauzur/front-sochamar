@@ -66,7 +66,6 @@ export default {
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	overflow-x: hidden;
-	background-color: #ebecee;
 	height: 100vh;
 }
 

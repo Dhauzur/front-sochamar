@@ -85,14 +85,8 @@ export default {
 };
 </script>
 <style lang="css">
-.list-passanger-select {
-	background-color: black !important;
-	color: white;
-}
 .modal-content {
-	background-image: linear-gradient(80deg, #676b76, #676b76de, #676b76);
 	font-family: 'Poppins', sans-serif;
-	color: black;
 }
 .list-group {
 	margin-bottom: 5px !important;
@@ -100,17 +94,9 @@ export default {
 .list-passangers {
 	border: none;
 	border-radius: 0px 35px 0px 35px !important;
-	background-color: #c1c5d1;
 }
 .list {
 	max-height: 200px;
 	overflow-y: scroll;
-}
-label,
-h4,
-h5,
-h6,
-h3 {
-	color: white !important;
 }
 </style>

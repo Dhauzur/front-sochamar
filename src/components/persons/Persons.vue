@@ -18,24 +18,19 @@
 			<v-form>
 				<v-row>
 					<!-- avatar -->
-					<v-col class="mt-3">
+					<v-col class="p-auto">
 						<h5>
 							{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
 						</h5>
-						<label for="upload">
-							<v-img
-								class="pointer"
-								for
-								v-bind="mainProps"
-								rounded="circle"
-								alt="avatar"
-								:src="setAvatar"
-							></v-img>
-						</label>
+						<v-img
+							for
+							v-bind="mainProps"
+							rounded="circle"
+							alt="avatar"
+							:src="setAvatar"
+						></v-img>
 						<v-file-input
-							id="upload"
 							ref="avatar"
-							class="d-none"
 							accept="image/jpeg, image/png, image/gif, image/jpg"
 							:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
 							drop-placeholder="Arrastrar aqui..."
@@ -58,13 +53,10 @@
 					<!-- firstName -->
 					<v-col cols="6">
 						<v-row>
-							<v-col cols="12" class="text-left"
-								><label for="firstName" class="mv-0 mt-2">Nombre</label>
-							</v-col>
 							<v-col cols="12" class="text-right">
 								<v-text-field
-									id="firstName"
 									v-model.trim="$v.person.firstName.$model"
+									label="Nombre"
 								/>
 								<div v-if="$v.person.firstName.$dirty">
 									<small v-if="!$v.person.firstName.required" class="text-danger">
@@ -83,13 +75,10 @@
 					<!-- lastName -->
 					<v-col cols="6">
 						<v-row>
-							<v-col cols="12" class="text-left "
-								><label for="lastName" class="mv-0 mt-2">Apellido</label>
-							</v-col>
 							<v-col cols="12" class="text-right">
 								<v-text-field
-									id="lastName"
 									v-model.trim="person.lastName"
+									label="Apellido"
 								></v-text-field>
 							</v-col>
 						</v-row>
@@ -99,13 +88,10 @@
 					<!-- age -->
 					<v-col cols="6">
 						<v-row>
-							<v-col cols="12" class="text-left "
-								><label for="age" class="mv-0 mt-2">Edad</label>
-							</v-col>
 							<v-col cols="12" class="text-right">
 								<v-text-field
-									id="age"
 									v-model.number="person.age"
+									label="Edad"
 									type="number"
 								></v-text-field>
 							</v-col>
@@ -121,50 +107,48 @@
 					</v-col>
 				</v-row>
 				<v-row>
-					<!-- birthdate -->
 					<v-col cols="6">
 						<v-row>
-							<v-col cols="12" class="text-left "
-								><label for="birthdate" class="mv-0 mt-2">Fecha nacimiento</label>
-							</v-col>
 							<v-col cols="12">
-								<v-text-field id="input-1" v-model="person.birthdate" type="date" />
+								<v-text-field
+									v-model="person.birthdate"
+									label="Fecha nacimiento"
+									type="date"
+								/>
 							</v-col>
 						</v-row>
 					</v-col>
-					<!-- appointment -->
 					<v-col cols="6">
 						<v-row>
-							<v-col cols="12" class="text-left "
-								><label for="phone" class="mv-0 mt-2">Telefono</label>
-								<v-text-field id="phone" v-model="person.phone"></v-text-field>
+							<v-col cols="12">
+								<v-text-field
+									v-model="person.phone"
+									label="Teléfono"
+								></v-text-field>
 							</v-col>
 						</v-row>
 					</v-col>
 				</v-row>
 				<!-- function -->
 				<v-row>
-					<v-col cols="6" class="text-left "
-						><label for="function" class="mv-0 mt-2">Función</label>
-						<v-text-field id="function" v-model="person.function"></v-text-field>
+					<v-col cols="6">
+						<v-text-field v-model="person.function" label="Función"></v-text-field>
 					</v-col>
-					<v-col cols="6" class="text-left ">
-						<label for="appointment" class="mv-0 mt-2">Cargo</label>
-						<v-text-field id="appointment" v-model="person.appointment"></v-text-field>
+					<v-col cols="6">
+						<v-text-field v-model="person.appointment" label="Cargo"></v-text-field>
 					</v-col>
 				</v-row>
 				<!-- regions -->
 				<v-row>
-					<v-col cols="6" class="text-left ">
+					<v-col cols="6">
 						<v-select
-							id="regions"
 							v-model="person.region"
 							label="Región"
 							:items="regiones"
 							@change="setComunas"
 						></v-select>
 					</v-col>
-					<v-col cols="6" class="text-left ">
+					<v-col cols="6">
 						<v-select
 							v-model="person.comuna"
 							label="Comuna"
