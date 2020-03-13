@@ -84,7 +84,7 @@ export default {
 	},
 };
 </script>
-<style lang="css">
+<style lang="css" scoped>
 .modal-content {
 	font-family: 'Poppins', sans-serif;
 }
