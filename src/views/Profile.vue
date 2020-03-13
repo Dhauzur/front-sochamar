@@ -1,14 +1,14 @@
 <template>
-	<b-container>
-		<b-row id="nav" class="justify-content-center">
-			<b-col md="8" lg="6" class="background-module pb-3 px-4">
+	<v-container>
+		<v-row id="nav" class="justify-content-center">
+			<v-col md="8" lg="6" class="background-module pb-3 px-4">
 				<h3 class="my-4">Mi perfil</h3>
 				<!-- Analyst -->
 				<h6 v-if="profile.analyst">Analista</h6>
 				<b-form @submit.prevent="submitForm">
-					<b-row>
+					<v-row>
 						<!-- avatar -->
-						<b-col>
+						<v-col>
 							<label v-if="profile.img" for="upload">
 								<b-img
 									class="pointer"
@@ -29,16 +29,16 @@
 								:disabled="loading"
 								@change="e => onFileUpload(e)"
 							></b-form-file>
-						</b-col>
-						<b-col cols="12">
+						</v-col>
+						<v-col cols="12">
 							<label
 								for="upload"
 								class="pointer text-secondary"
 								v-text="avatarMessage"
 							></label>
-						</b-col>
+						</v-col>
 						<!-- name -->
-						<b-col cols="6">
+						<v-col cols="6">
 							<b-form-group id="input-group-1" label="Nombre:" label-for="name-input">
 								<b-form-input id="firstName" v-model.trim="profileData.name" />
 								<div v-if="$v.profileData.name.$dirty">
@@ -56,9 +56,9 @@
 									</small>
 								</div>
 							</b-form-group>
-						</b-col>
+						</v-col>
 						<!-- lastName -->
-						<b-col cols="6">
+						<v-col cols="6">
 							<b-form-group
 								id="input-group-2"
 								label="Apellido:"
@@ -80,22 +80,22 @@
 									</small>
 								</div>
 							</b-form-group>
-						</b-col>
-					</b-row>
+						</v-col>
+					</v-row>
 					<!--Submit-->
-					<b-col>
+					<v-col>
 						<b-button :disabled="loading" type="submit" variant="primary"
 							>Actualizar
 						</b-button>
 						<small v-if="profileErrors" class="mt-2 d-block text-danger">
 							Debe rellenar el formulario correctamente
 						</small>
-					</b-col>
+					</v-col>
 				</b-form>
-			</b-col>
-		</b-row>
-		<b-row class="justify-content-center">
-			<b-col md="8" lg="6" class="background-module pb-3 px-4">
+			</v-col>
+		</v-row>
+		<v-row class="justify-content-center">
+			<v-col md="8" lg="6" class="background-module pb-3 px-4">
 				<h3 class="my-4">Seguridad</h3>
 				<b-form @submit.prevent="submitNewPassword">
 					<b-form-group
@@ -128,18 +128,18 @@
 					</b-form-group>
 
 					<!--Submit-->
-					<b-col>
+					<v-col>
 						<b-button :disabled="loading" type="submit" variant="primary"
 							>Actualizar contraseña
 						</b-button>
 						<small v-if="securityErrors" class="mt-2 d-block text-danger">
 							Debe rellenar el formulario correctamente
 						</small>
-					</b-col>
+					</v-col>
 				</b-form>
-			</b-col>
-		</b-row>
-	</b-container>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
