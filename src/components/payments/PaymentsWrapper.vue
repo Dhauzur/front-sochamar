@@ -1,154 +1,125 @@
 <template>
-	<div>
-		<b-container>
-			<!-- skeleton loader -->
-			<b-row v-if="loading" class="justify-content-center pt-5">
-				<b-col>
-					<div class="ph-item background-module border-0 pb-3 px-4">
-						<div class="ph-col-12">
-							<div class="ph-row">
-								<div class="ph-col-4 empty big"></div>
-								<div class="ph-col-4 big rounded"></div>
-								<div class="ph-col-4 empty big"></div>
-								<div class="mt-5 ph-col-12 big rounded"></div>
-								<div class="ph-col-12 big rounded"></div>
-								<div class="ph-col-12 big rounded"></div>
-								<div class="ph-col-12 big rounded"></div>
+	<v-container fluid>
+		<v-row justify="center">
+			<v-col>
+				<v-card outlined>
+					<!-- header -->
+					<v-list-item one-line>
+						<v-list-item-content>
+							<div class="headline">
+								Gestión pagos de
+								<span class="secondary--text">{{ place.name }}</span>
 							</div>
-						</div>
-					</div>
-				</b-col>
-			</b-row>
-			<b-row v-else id="nav" class="justify-content-center">
-				<b-col md="12" lg="12" class="background-module pb-3 px-4">
-					<h3 class="my-4">
-						Gestión pagos de <span style="color: orange">{{ place.name }}</span>
-					</h3>
-					<b-row>
-						<b-col cols="12" class="mb-3 text-left"><h6>Agregar nuevo</h6></b-col>
-						<b-col cols="4">
-							<b-form-select
-								id="state"
-								v-model="inputSelectLodgingOrNew"
-								size="sm"
-								:options="[
-									{ value: null, text: 'Seleccione', disabled: true },
-									{ value: 0, text: 'Agregar pago por alojamiento' },
-									{ value: 1, text: 'Agregar pago por fecha' },
-								]"
-								@change="areaExpanded"
-							></b-form-select>
-						</b-col>
-					</b-row>
-					<b-row class="mb-5">
-						<b-col>
-							<b-collapse
-								v-if="lodgings"
-								id="collapse-1"
-								v-model="visibleLodgingForm"
-								class="mt-2"
-							>
-								<payments-form-lodging
-									:payments="items"
-									:lodgings="lodgings"
-									:place="place"
-								/>
-							</b-collapse>
-							<h6 v-if="!lodgings && visibleLodgingForm" class="text-left mt-1 ml-1">
-								No hay hospedajes
-							</h6>
-						</b-col>
-						<b-col cols="12"
-							><b-collapse id="collapse-4" v-model="visible" class="mt-2">
-								<payments-form :count="count" /> </b-collapse
-						></b-col>
-					</b-row>
-					<b-row
-						style="max-height: 150px; overflow-y: auto;"
-						class="background-into-module mr-2 mb-3"
-					>
-						<b-col v-if="itemFiltered.length > 0" cols="12">
-							<b-table
-								ref="selectableTable"
-								striped
-								hover
-								:fields="fields"
-								:items="itemFiltered"
-								selectable
-								class="table table-hover"
-								select-mode="single"
-								responsive="sm"
-								@row-selected="onRowSelected"
-							>
-								<template v-slot:cell(voucher)="row">
-									<b-link
-										v-if="row.item.voucher"
-										:href="row.item.voucher.url"
-										target="_blank"
-										>{{ cutText(row.item.voucher.name) }}</b-link
-									>
-
-									<h6 v-else>Vacio</h6>
-								</template>
-								<template v-slot:cell(comments)="row">
-									<h6>
-										{{ row.item.comments }}
+						</v-list-item-content>
+					</v-list-item>
+					<!-- forms -->
+					<v-card-text>
+						<v-card-title class="text-secondary">
+							Agregar nuevo
+						</v-card-title>
+						<v-container fluid>
+							<v-row>
+								<v-col cols="12" sm="6" md="4" lg="3">
+									<v-select
+										id="state"
+										v-model="inputSelectLodgingOrNew"
+										dense
+										solo
+										rounded
+										:items="[
+											{ value: null, text: 'Seleccione', disabled: true },
+											{ value: 0, text: 'Agregar pago por alojamiento' },
+											{ value: 1, text: 'Agregar pago por fecha' },
+										]"
+										@change="areaExpanded"
+									></v-select>
+								</v-col>
+								<v-col v-if="lodgings" cols="12">
+									<b-collapse id="collapse-1" v-model="visibleLodgingForm">
+										<payments-form-lodging
+											:payments="items"
+											:lodgings="lodgings"
+											:place="place"
+										/>
+									</b-collapse>
+								</v-col>
+								<v-col v-if="!lodgings && visibleLodgingForm" cols="12">
+									<h6 class="text-left mt-1 ml-1">
+										No hay hospedajes
 									</h6>
-								</template>
-								<template v-slot:cell(delete)="row">
-									<b-button
-										size="sm"
-										variant="outline-danger"
-										@click.stop="deletePayment(row.item._id)"
-										>X</b-button
-									>
-								</template>
-							</b-table>
-						</b-col>
-						<b-modal
-							ref="edit-modal"
-							size="xl"
-							centered
-							hide-footer
-							no-close-on-backdrop
+								</v-col>
+								<v-col cols="12">
+									<b-collapse id="collapse-4" v-model="visible">
+										<payments-form :count="count" />
+									</b-collapse>
+								</v-col>
+							</v-row>
+						</v-container>
+					</v-card-text>
+					<!-- table -->
+					<v-card-title>
+						Lista de Pagos
+						<v-spacer />
+						<v-spacer />
+						<v-spacer />
+						<v-text-field
+							v-model="wordForFilter"
+							dense
+							solo
+							rounded
+							append-icon="mdi-magnify"
+							label="Filtrar"
+							hide-details
+						></v-text-field>
+					</v-card-title>
+					<v-card-text>
+						<v-data-table
+							:search="wordForFilter"
+							:headers="fields"
+							:items="itemFiltered"
+							:items-per-page="5"
 						>
-							<template v-slot:modal-header="{ close }">
-								<h5>Editar Pago</h5>
-								<b-button
-									size="sm"
-									variant="outline-danger"
-									@click.stop="onClose(close)"
+							<template v-slot:item.voucher="props">
+								<v-btn text :href="props.item.voucher.url" small>
+									{{ props.item.voucher.name }}
+								</v-btn>
+							</template>
+							<template v-slot:item.comments="props">
+								<v-edit-dialog
+									:return-value.sync="props.item.comments"
+									@save="saveComment(props.item)"
 								>
-									X
-								</b-button>
+									{{ props.item.comments }}
+									<template v-slot:input>
+										<v-text-field
+											v-model="props.item.comments"
+											label="Comentario"
+											single-line
+											counter
+										></v-text-field>
+									</template>
+								</v-edit-dialog>
 							</template>
-							<template v-slot:default="{ hide }">
-								<payments-form :item="selected" :on-close="onClose" :hide="hide" />
+							<template v-slot:item.actions="{ item }">
+								<v-icon color="error" small @click="deleteItem(item._id)">
+									mdi-close
+								</v-icon>
 							</template>
-						</b-modal>
-					</b-row>
-					<b-row v-if="!items.length > 0"
-						><b-col class="text-center">
+						</v-data-table>
+					</v-card-text>
+					<v-card-text v-if="!items.length > 0"
+						><v-col class="text-center">
 							<h6>No hay pagos registrados</h6>
-						</b-col>
-					</b-row>
-					<b-row align-h="end">
-						<b-col md="4" class="m-2 ">
-							<b-form-input
-								v-model="wordForFilter"
-								size="sm"
-								placeholder="Filtrar por monto o fecha"
-								@input="onChange"
-							></b-form-input>
-						</b-col>
-					</b-row>
-				</b-col>
-			</b-row>
-		</b-container>
-	</div>
+						</v-col>
+					</v-card-text>
+				</v-card>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import PaymentsForm from '@/components/payments/PaymentsForm';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
 
@@ -170,10 +141,6 @@ export default {
 			type: Array,
 			required: false,
 			default: () => [],
-		},
-		edit: {
-			type: Function,
-			required: false,
 		},
 		delete: {
 			type: Function,
@@ -200,14 +167,15 @@ export default {
 	},
 	data() {
 		return {
+			showModal: false,
 			idPlace: this.$route.params.place,
 			fields: [
-				{ key: 'startDate', label: 'Inicio' },
-				{ key: 'endDate', label: 'Fin' },
-				{ key: 'mount', label: 'Monto' },
-				{ key: 'voucher', label: 'Voucher' },
-				{ key: 'comments', label: 'Comentarios' },
-				{ key: 'delete', label: '' },
+				{ value: 'startDate', text: 'Inicio' },
+				{ value: 'endDate', text: 'Fin' },
+				{ value: 'mount', text: 'Monto' },
+				{ value: 'voucher', text: 'Voucher' },
+				{ value: 'comments', text: 'Comentarios' },
+				{ text: 'Acción', value: 'actions' },
 			],
 			selected: {},
 			index: '',
@@ -219,12 +187,6 @@ export default {
 		};
 	},
 	watch: {
-		/**
-		 * listener if a row is selected
-		 */
-		selected(value) {
-			if (value) this.$refs['edit-modal'].toggle('#toggle-btn');
-		},
 		items() {
 			if (this.wordForFilter === '') {
 				this.itemFiltered = this.items;
@@ -232,8 +194,8 @@ export default {
 		},
 	},
 	methods: {
-		async deletePayment(id) {
-			await this.delete(id);
+		async deleteItem(id) {
+			confirm('Are you sure you want to delete this item?') && (await this.delete(id));
 			this.updatePayments(this.idPlace);
 		},
 		onRowSelected(items) {
@@ -242,15 +204,6 @@ export default {
 		onClose(close) {
 			close();
 			this.$refs.selectableTable.clearSelected();
-		},
-		onChange() {
-			this.itemFiltered = this.items.filter(item => {
-				return (
-					item.mount.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1 ||
-					item.startDate.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1 ||
-					item.endDate.toLowerCase().indexOf(this.wordForFilter.toLowerCase()) > -1
-				);
-			});
 		},
 		cutText(text) {
 			const extencion = text.split('.').pop();
@@ -271,6 +224,14 @@ export default {
 				this.visibleLodgingForm = false;
 			}
 		},
+		saveComment(item) {
+			let form = new FormData();
+			form.set('comments', item.comments);
+			this.edit({ payload: form, id: item._id });
+		},
+		...mapActions({
+			edit: 'Payments/editPayment',
+		}),
 	},
 };
 </script>

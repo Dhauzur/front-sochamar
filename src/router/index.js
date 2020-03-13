@@ -2,20 +2,15 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
-const Place = () => import('@/views/Place.vue');
 const Home = () => import('@/views/Home.vue');
-const Lodgings = () => import('@/components/lodgings/Lodging.vue');
 const Management = () => import('@/views/Management.vue');
 const Login = () => import('@/views/Login');
 const Maintenance = () => import('@/views/Maintenance.vue');
 const PasswordReset = () => import('@/views/PasswordReset');
-const Payments = () => import('@/views/Payments');
 const Register = () => import('@/views/Register');
 const Report = () => import('@/views/Report.vue');
-const Periods = () => import('@/views/Periods.vue');
 const Profile = () => import('@/views/Profile');
-const Persons = () => import('@/views/Persons');
-const PlaceServices = () => import('@/views/PlaceServices');
+
 const routes = [
 	{
 		path: '/home',
@@ -27,48 +22,7 @@ const routes = [
 	{
 		path: '/management',
 		component: Management,
-		children: [
-			{
-				path: 'lodgings',
-				name: 'lodgings',
-				component: Lodgings,
-				meta: { title: 'Administrar', subtitle: 'Hospedajes', layout: 'layout' },
-			},
-			{
-				path: 'places',
-				name: 'places',
-				component: Place,
-				meta: { title: 'Administrar', subtitle: 'Lugares', layout: 'layout' },
-			},
-			{
-				path: 'periods/:placeId',
-				name: 'periods',
-				component: Periods,
-				meta: { title: 'Administrar', subtitle: 'Turnos' },
-			},
-			{
-				path: 'payments/:place',
-				name: 'payments',
-				component: Payments,
-				meta: { title: 'Administrar', subtitle: 'Pagos', layout: 'layout' },
-			},
-			{
-				path: 'persons',
-				name: 'persons',
-				component: Persons,
-				meta: { title: 'Administrar', subtitle: 'Personas', layout: 'layout' },
-			},
-		],
-	},
-	{
-		path: '/placeServices/:placeId',
-		name: 'placeServices',
-		component: PlaceServices,
-		meta: {
-			title: 'Administrar servicios',
-			subtitle: 'Servicios',
-			layout: 'layout',
-		},
+		meta: { title: 'Administrar hospedajes', layout: 'layout' },
 	},
 	{
 		path: '/mantenimiento',
@@ -83,16 +37,6 @@ const routes = [
 		meta: { title: 'Informes', layout: 'layout' },
 	},
 	{
-		path: '/login',
-		name: 'login',
-		component: Login,
-	},
-	{
-		path: '/register',
-		name: 'register',
-		component: Register,
-	},
-	{
 		path: '/passwordReset',
 		name: 'passwordReset',
 		component: PasswordReset,
@@ -103,6 +47,16 @@ const routes = [
 		name: 'profile',
 		component: Profile,
 		meta: { title: 'Perfil', layout: 'layout' },
+	},
+	{
+		path: '/login',
+		name: 'login',
+		component: Login,
+	},
+	{
+		path: '/register',
+		name: 'register',
+		component: Register,
 	},
 	{
 		path: '*',

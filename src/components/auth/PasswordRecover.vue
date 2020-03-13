@@ -1,36 +1,31 @@
 <template>
 	<div>
-		<h3 class="my-4">Recuperar Contraseña</h3>
-		<b-form @submit.prevent="handleSubmit">
-			<!--EMAIL-->
-			<b-form-group
-				id="password-recover"
-				label="Correo electronico:"
-				label-for="password-email"
-			>
-				<b-form-input
-					id="password-email"
-					v-model.trim="email"
-					type="email"
-					required
-					placeholder="Ingrese el correo"
-				></b-form-input>
-			</b-form-group>
-			<!--SUBMIT-->
-			<!--Aca esta el problema de espaciado con los botones-->
-			<b-form-row>
-				<b-col md="2">
-					<b-button variant="secondary" @click="disablePasswordRecover(false)">
-						Cancelar</b-button
-					>
-				</b-col>
-				<b-col md="6">
-					<b-button v-if="!loading" type="submit" variant="primary">
-						Enviar Recuperación</b-button
-					>
-				</b-col>
-			</b-form-row>
-		</b-form>
+		<v-card outlined>
+			<v-toolbar color="secondary" dark flat>
+				<v-toolbar-title>Recuperar contraseña</v-toolbar-title>
+			</v-toolbar>
+			<v-card-text>
+				<v-form>
+					<v-text-field
+						id="password-email"
+						v-model.trim="email"
+						label="Correo Electronico"
+						type="email"
+						prepend-icon="mdi-account"
+						required
+					/>
+				</v-form>
+			</v-card-text>
+			<v-card-actions>
+				<v-btn text color="primary" @click="disablePasswordRecover(false)">
+					Cancelar
+				</v-btn>
+				<v-spacer />
+				<v-btn :loading="loading" color="primary" rounded @click="handleSubmit">
+					Enviar Recuperación
+				</v-btn>
+			</v-card-actions>
+		</v-card>
 	</div>
 </template>
 

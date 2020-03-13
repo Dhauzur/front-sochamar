@@ -1,263 +1,311 @@
 <template>
-	<b-row id="nav">
-		<b-col>
-			<Loading v-if="loading" :msj="loading" />
-			<template v-else>
-				<b-row>
-					<b-col>
-						<b-row>
-							<b-col md="6" lg="3" class="my-2">
-								<label>Selecione lugar </label>
-								<b-form-select
-									v-model="selectPlace"
-									:options="places"
-									@change="setPlace"
-								/>
-							</b-col>
-						</b-row>
-						<b-row>
-							<b-col class="mb-2 d-flex justify-content-start flex-wrap">
-								<b-button
-									id="empresas-btn"
-									@click="$router.push({ name: 'places' })"
-								>
-									Lugares
-									<b-tooltip target="empresas-btn" placement="bottom">
-										Gestión de lugares
-									</b-tooltip>
-								</b-button>
-								<b-button
-									v-if="place"
-									id="habitaciones-btn"
-									@click="$router.push(`/periods/${place}`)"
-								>
-									Turno
-									<b-tooltip target="habitaciones-btn" placement="bottom">
-										Gestión de turnos
-									</b-tooltip>
-								</b-button>
-								<b-button
-									v-if="periods.length > 0 && selectPlace"
-									id="hospedaje-btn"
-									@click="createOneLodging()"
-								>
-									+ Actividad
-									<b-tooltip target="hospedaje-btn" placement="bottom">
-										Agregar una actividad (Haga doble click en la linea de
-										tiempo)
-									</b-tooltip>
-								</b-button>
-								<b-button
-									v-if="place"
-									id="pagos-btn"
-									@click="$router.push(`/payments/${place}`)"
-								>
-									Pagos
-									<b-tooltip target="pagos-btn" placement="bottom">
-										Gestión de pagos
-									</b-tooltip>
-								</b-button>
-								<persons-dialog />
-								<b-button
-									v-if="getMirrorLodging || editMode"
-									id="guardar-btn"
-									variant="success"
-									@click="saveLodgings()"
-								>
-									Guardar
-									<b-tooltip target="guardar-btn" placement="bottom">
-										Guardar cambios realizados
-									</b-tooltip>
-								</b-button>
-							</b-col>
-						</b-row>
-					</b-col>
-				</b-row>
-				<b-row>
-					<b-col lg="9">
-						<b-row>
-							<b-col cols="12">
-								<timeline
-									v-if="periods.length > 0 && lodgings.length > 0"
-									:events="['rangechanged', 'click']"
-									:groups="periods"
-									:items="lodgings"
-									:options="options"
-									class="p-2"
-									@click="enableEdit"
-									@rangechanged="rangechanged"
-								/>
-							</b-col>
-							<!--ProjectionTable-->
-							<b-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
-								<table class="table table-bordered ">
-									<thead>
-										<tr>
-											<td>Actividad</td>
-											<td>Precios</td>
-											<td v-for="(d, index) in rangeDateTable" :key="index">
-												{{ d.numberDay }}
-												<br />
-												{{ d.nameDay }}
-											</td>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td>ALOJAMIENTO</td>
-											<td v-if="place">
-												{{ prices.prices[3] }}
-											</td>
-											<td v-for="(p, index) in proyectionTable" :key="index">
-												<span v-if="!editMode">{{
-													p.service.accommodation
-												}}</span>
-												<input
-													v-if="
-														editMode &&
-															p.service.accommodation !== undefined
-													"
-													:id="p.id + ',' + p.date"
-													v-model="p.service.accommodation"
-													type="number"
-													class="inputService"
-													name="accommodation"
-													:placeholder="p.service.accommodation"
-													@change="detectInputChange"
-												/>
-											</td>
-										</tr>
-										<tr>
-											<td>DESAYUNO</td>
-											<td v-if="place">
-												{{ prices.prices[0] }}
-											</td>
-											<td v-for="(p, index) in proyectionTable" :key="index">
-												<span v-if="!editMode">{{
-													p.service.breakfast
-												}}</span>
-												<input
-													v-if="
-														editMode &&
-															p.service.breakfast !== undefined
-													"
-													:id="p.id + ',' + p.date"
-													v-model="p.service.breakfast"
-													type="number"
-													class="inputService"
-													name="breakfast"
-													:placeholder="p.service.breakfast"
-													@change="detectInputChange"
-												/>
-											</td>
-										</tr>
-										<tr>
-											<td>ALMUERZO</td>
-											<td v-if="place">
-												{{ prices.prices[1] }}
-											</td>
-											<td v-for="(p, index) in proyectionTable" :key="index">
-												<span v-if="!editMode">{{ p.service.lunch }}</span>
-												<input
-													v-if="editMode && p.service.lunch != undefined"
-													:id="p.id + ',' + p.date"
-													v-model="p.service.lunch"
-													type="number"
-													class="inputService"
-													name="lunch"
-													:placeholder="p.service.lunch"
-													@change="detectInputChange"
-												/>
-											</td>
-										</tr>
-										<tr>
-											<td>CENA</td>
-											<td v-if="place">
-												{{ prices.prices[2] }}
-											</td>
-											<td v-for="(p, index) in proyectionTable" :key="index">
-												<span v-if="!editMode">{{ p.service.dinner }}</span>
-												<input
-													v-if="
-														editMode && p.service.dinner !== undefined
-													"
-													:id="p.id + ',' + p.date"
-													v-model="p.service.dinner"
-													type="number"
-													class="inputService"
-													name="dinner"
-													:placeholder="p.service.dinner"
-													@change="detectInputChange"
-												/>
-											</td>
-										</tr>
-										<tr v-if="place" class="borderModule">
-											<td colspan="2">TOTAL</td>
-											<td v-for="(p, index) in proyectionTable" :key="index">
-												<span v-if="finalyPrice[index] != 0">{{
-													finalyPrice[index]
-												}}</span>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-								<b-row v-if="lodgingSelect">
-									<b-col>
-										<b-form-group
-											id="input-group-1"
-											label="Espacio de trabajo:"
-											label-for="input-1"
+	<v-container fluid>
+		<v-row justify="center">
+			<v-col>
+				<template v-if="loading">
+					<!-- loading -->
+					<v-dialog :value="loading" persistent width="300" hide-overlay>
+						<v-card color="secondary" dark>
+							<v-card-text>
+								Cargando...
+								<v-progress-linear
+									indeterminate
+									color="white"
+									class="mb-0"
+								></v-progress-linear>
+							</v-card-text>
+						</v-card>
+					</v-dialog>
+				</template>
+				<template v-else>
+					<v-card>
+						<v-card-title>
+							<v-container>
+								<v-row justify="start">
+									<!-- select place  -->
+									<v-col cols="12" md="4">
+										<v-select
+											:value="place"
+											:items="places"
+											dense
+											label="Selecione lugar"
+											outlined
+											rounded
+											@change="setPlace"
 										>
-											<b-form-select
-												id="input-1"
-												v-model="serviceSelected"
-												style="text-align: center; text-align-last:center;"
-												:options="services"
-											/>
-										</b-form-group>
-									</b-col>
-									<b-col class="mt-4 flex-wrap">
-										<b-button @click="addOneService(serviceSelected)">
-											+1 {{ serviceSelected }}
-										</b-button>
-										<b-button @click="subOneService(serviceSelected)">
-											-1 {{ serviceSelected }}
-										</b-button>
-									</b-col>
-								</b-row>
-							</b-col>
-							<!--fin ProjectionTable-->
-						</b-row>
-					</b-col>
-					<transition name="fade">
-						<b-col v-if="lodgingSelect" lg="3">
+										</v-select>
+									</v-col>
+									<!-- activity button -->
+									<v-col
+										v-if="periods.length > 0 && place"
+										cols="6"
+										md="2"
+										class="mt-2"
+									>
+										<v-tooltip attach bottom min-width="180">
+											<template v-slot:activator="{ on }">
+												<v-btn
+													color="accent"
+													dark
+													block
+													small
+													rounded
+													@click="createOneLodging()"
+													v-on="on"
+												>
+													<v-icon>mdi-plus</v-icon><span>Actividad</span>
+												</v-btn>
+											</template>
+											<span>Añadir hospedaje</span>
+										</v-tooltip>
+									</v-col>
+									<!-- save button -->
+									<v-col
+										v-if="getMirrorLodging || editMode"
+										cols="6"
+										md="2"
+										class="mt-2"
+									>
+										<v-tooltip attach bottom>
+											<template v-slot:activator="{ on }">
+												<v-btn
+													color="success"
+													dark
+													block
+													small
+													rounded
+													@click="saveLodgings()"
+													v-on="on"
+												>
+													<v-icon>mdi-content-save</v-icon
+													><span>Guardar</span>
+												</v-btn>
+											</template>
+											<span>Guardar</span>
+										</v-tooltip>
+									</v-col>
+								</v-row>
+							</v-container>
+						</v-card-title>
+						<!-- time-line -->
+						<v-card-text>
+							<timeline
+								v-if="periods.length > 0 && lodgings.length > 0"
+								:events="['rangechanged', 'click']"
+								:groups="periods"
+								:items="lodgings"
+								:options="options"
+								class="p-2"
+								@click="enableEdit"
+								@rangechanged="rangechanged"
+							/>
+						</v-card-text>
+						<!-- service table -->
+						<v-card-text>
+							<v-row>
+								<v-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
+									<table class="table table-bordered">
+										<thead>
+											<tr>
+												<td>Actividad</td>
+												<td>Precios</td>
+												<td
+													v-for="(d, index) in rangeDateTable"
+													:key="index"
+												>
+													{{ d.numberDay }}
+													<br />
+													{{ d.nameDay }}
+												</td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>ALOJAMIENTO</td>
+												<td v-if="place">
+													{{ prices.prices[3] }}
+												</td>
+												<td
+													v-for="(p, index) in proyectionTable"
+													:key="index"
+												>
+													<span v-if="!editMode">{{
+														p.service.accommodation
+													}}</span>
+													<input
+														v-if="
+															editMode &&
+																p.service.accommodation !==
+																	undefined
+														"
+														:id="p.id + ',' + p.date"
+														v-model="p.service.accommodation"
+														type="number"
+														class="inputService"
+														name="accommodation"
+														:placeholder="p.service.accommodation"
+														@change="detectInputChange"
+													/>
+												</td>
+											</tr>
+											<tr>
+												<td>DESAYUNO</td>
+												<td v-if="place">
+													{{ prices.prices[0] }}
+												</td>
+												<td
+													v-for="(p, index) in proyectionTable"
+													:key="index"
+												>
+													<span v-if="!editMode">{{
+														p.service.breakfast
+													}}</span>
+													<input
+														v-if="
+															editMode &&
+																p.service.breakfast !== undefined
+														"
+														:id="p.id + ',' + p.date"
+														v-model="p.service.breakfast"
+														type="number"
+														class="inputService"
+														name="breakfast"
+														:placeholder="p.service.breakfast"
+														@change="detectInputChange"
+													/>
+												</td>
+											</tr>
+											<tr>
+												<td>ALMUERZO</td>
+												<td v-if="place">
+													{{ prices.prices[1] }}
+												</td>
+												<td
+													v-for="(p, index) in proyectionTable"
+													:key="index"
+												>
+													<span v-if="!editMode">{{
+														p.service.lunch
+													}}</span>
+													<input
+														v-if="
+															editMode && p.service.lunch != undefined
+														"
+														:id="p.id + ',' + p.date"
+														v-model="p.service.lunch"
+														type="number"
+														class="inputService"
+														name="lunch"
+														:placeholder="p.service.lunch"
+														@change="detectInputChange"
+													/>
+												</td>
+											</tr>
+											<tr>
+												<td>CENA</td>
+												<td v-if="place">
+													{{ prices.prices[2] }}
+												</td>
+												<td
+													v-for="(p, index) in proyectionTable"
+													:key="index"
+												>
+													<span v-if="!editMode">{{
+														p.service.dinner
+													}}</span>
+													<input
+														v-if="
+															editMode &&
+																p.service.dinner !== undefined
+														"
+														:id="p.id + ',' + p.date"
+														v-model="p.service.dinner"
+														type="number"
+														class="inputService"
+														name="dinner"
+														:placeholder="p.service.dinner"
+														@change="detectInputChange"
+													/>
+												</td>
+											</tr>
+											<tr v-if="place" class="borderModule">
+												<td colspan="2">TOTAL</td>
+												<td
+													v-for="(p, index) in proyectionTable"
+													:key="index"
+												>
+													<span v-if="finalyPrice[index] != 0">{{
+														finalyPrice[index]
+													}}</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</v-col>
+							</v-row>
+						</v-card-text>
+						<v-card-text>
+							<v-row v-if="lodgingSelect">
+								<v-col cols="12" sm="4">
+									<v-select
+										id="services_select"
+										v-model="serviceSelected"
+										:items="services"
+										dense
+										label="Sericios"
+										outlined
+										rounded
+									>
+									</v-select>
+								</v-col>
+								<v-col cols="6" md="3" class="mt-1">
+									<v-btn
+										rounded
+										small
+										color="primary"
+										@click="addOneService(serviceSelected)"
+									>
+										+1 {{ serviceSelected }}
+									</v-btn>
+								</v-col>
+								<v-col cols="6" md="3" class="mt-1">
+									<v-btn
+										rounded
+										small
+										color="primary"
+										@click="subOneService(serviceSelected)"
+									>
+										-1 {{ serviceSelected }}
+									</v-btn>
+								</v-col>
+							</v-row>
+						</v-card-text>
+					</v-card>
+					<v-bottom-sheet v-model="sheet">
+						<v-sheet class="text-center" height="500px">
 							<EditLodging />
-						</b-col>
-					</transition>
-				</b-row>
-				<b-row> </b-row>
-			</template>
-		</b-col>
-	</b-row>
+						</v-sheet>
+					</v-bottom-sheet>
+				</template>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
 import EditLodging from '@/components/lodgings/EditLodging';
-import Loading from '@/components/Loading';
 import moment from 'moment';
-import PersonsDialog from '@/components/persons/PersonsDialog';
 
 export default {
 	components: {
 		EditLodging,
-		Loading,
-		PersonsDialog,
 		Timeline,
 	},
 	data() {
 		return {
+			sheet: false,
 			services: [
 				{ text: 'Todos los servicios', value: 'todos los servicios' },
 				{ text: 'Desayuno', value: 'desayuno' },
@@ -285,7 +333,6 @@ export default {
 						repeat: 'daily',
 					},
 				],
-				//Esta funcion actualiza el service
 				onUpdate: (item, callback) => {
 					if (this.place) {
 						this.setModeEdit(true);
@@ -309,7 +356,6 @@ export default {
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
-				//Esta funcion involucra la creacion de service
 				onAdd: (item, callback) => {
 					if (this.place) {
 						item.start = moment(item.start).hours(15);
@@ -320,7 +366,7 @@ export default {
 							this.setModeEdit(false);
 							var place = this.places.find(c => c.value == this.place).text;
 							item.content = place;
-							//Preguntar por esta parte, pero actualmente service siempre es seteado con 1
+							//Service es la cantidad de personas que usan este servicio
 							if (place != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
 							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
 							var timestamp = new Date().getTime().toString(16);
@@ -372,11 +418,9 @@ export default {
 			if (hola == this.mirrorLodging) return false;
 			else return true;
 		},
-		//Esta funcion involucra el calculo antiguo
 		finalyPrice() {
 			var prices = [];
 			var dayPrice = 0;
-			//Esta parte involucra el calculo antiguo
 			if (this.place)
 				this.proyectionTable.forEach(dailyService => {
 					dayPrice =
@@ -396,13 +440,10 @@ export default {
 				});
 			return prices;
 		},
-		//Esta funcion podria ser usada para reflejar los nuevos services
 		prices() {
 			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
 		},
-		//Esta funcion involucra el calculo antiguo
-		//ESta funcion es la que hace posible el renderizado de valores y servicios usados
 		proyectionTable() {
 			// eslint-disable-next-line no-unused-vars
 			var proyectionTable = [];
@@ -425,31 +466,28 @@ export default {
 							moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) &&
 							moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 						) {
-							//Preguntar sobre turismo
 							if (
 								!this.place &&
 								this.places.find(c => c.value == l.place).text == 'Turismo'
 							) {
-								var numberPassangerMax = this.periods.get(l.group)
-									.numberPassangerMax;
-								//Esta parte involucra el calculo antiguo
+								//El precio iba a estar segun la cantidad de personas en turismo
+								//OMITIR ESTO MIENTRAS
+								/*var numberPassangerMax = this.periods.get(l.group)
+									.numberPassangerMax;*/
 								day.service = {
-									breakfast: day.service.breakfast
-										? numberPassangerMax + day.service.breakfast
-										: numberPassangerMax,
-									lunch: day.service.lunch
-										? numberPassangerMax + day.service.lunch
-										: numberPassangerMax,
-									dinner: day.service.dinner
-										? numberPassangerMax + day.service.dinner
-										: numberPassangerMax,
-									accommodation: day.service.accommodation
-										? numberPassangerMax + day.service.accommodation
-										: numberPassangerMax,
+									breakfast: 1,
+									lunch: 1,
+									dinner: 1,
+									accommodation: 1,
 								};
 							} else {
 								var service = JSON.parse(l.service[0]);
-								//Esta parte involucra el calculo antiguo
+								day.service = {
+									breakfast: 1,
+									lunch: 1,
+									dinner: 1,
+									accommodation: 1,
+								};
 								day.service = {
 									breakfast: day.service.breakfast
 										? service[index][0] + day.service.breakfast
@@ -478,7 +516,6 @@ export default {
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
 								var service = JSON.parse(l.service[0]);
-								//Esta parte involucra el calculo antiguo
 								day.service = {
 									breakfast: day.service.breakfast
 										? service[index][0] + day.service.breakfast
@@ -501,7 +538,6 @@ export default {
 			});
 			return daysLodging;
 		},
-		//ESta funcion genera el rango de dias en proyectionTable
 		rangeDateTable() {
 			var dates = [];
 			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
@@ -576,12 +612,12 @@ export default {
 			});
 			return verificate;
 		},
+		/*parece que en esta funcion no esta el error*/
 		setPlace(payload) {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
 			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
-		//Esta funcion involucra updateService
 		detectInputChange(payload) {
 			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
 			var numberPassangerMax = this.periods.get(this.lodgingSelect.group).numberPassangerMax;
@@ -594,6 +630,7 @@ export default {
 		},
 		enableEdit(payload) {
 			if (this.place && payload.item) {
+				this.sheet = !this.sheete;
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
@@ -632,7 +669,7 @@ export default {
 
 <style lang="css">
 .vis-selected {
-	background-color: #ff591b !important;
+	background-color: #c06240 !important;
 	color: white !important;
 	transition: all ease-in-out 0.3s;
 	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
@@ -663,16 +700,15 @@ export default {
 .vis-item {
 	border: none !important;
 	border-radius: 0px 10px 0px 0px !important;
-	background-color: #ecb099;
+	background-color: #e0a15a;
 	color: white;
 	transition: all ease-in-out 0.3s;
 }
 td,
 th {
+	border: 1px solid gray;
 	padding: 2px !important;
 	padding-bottom: 10px !important;
-	color: white;
 	min-width: 60px;
-	border-color: transparent !important;
 }
 </style>

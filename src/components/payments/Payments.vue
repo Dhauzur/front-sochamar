@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<v-container fluid>
 		<payments-wrapper
 			:lodgings="lodgingsPlace"
 			:place="place"
@@ -9,7 +9,7 @@
 			:count="countLodgings"
 			:delete="deleteOnePayment"
 		/>
-	</div>
+	</v-container>
 </template>
 
 <script>
@@ -21,10 +21,11 @@ export default {
 	components: {
 		PaymentsWrapper,
 	},
-	data() {
-		return {
-			idPlace: this.$route.params.place,
-		};
+	props: {
+		idPlace: {
+			type: String,
+			required: true,
+		},
 	},
 	computed: {
 		...mapGetters({

@@ -61,6 +61,8 @@
 				</table>
 			</b-col>
 		</b-row>
+		<h1 class="secondary--text">Welcome</h1>
+		<h3 class="secondary--text">Home view</h3>
 	</b-container>
 </template>
 
