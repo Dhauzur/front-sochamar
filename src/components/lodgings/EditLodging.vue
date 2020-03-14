@@ -60,6 +60,7 @@
 													:items="personFormatted"
 													:filter="customFilter"
 													color="white"
+													item-value="data"
 													item-text="search"
 													label="Buscar persona"
 													clearable
@@ -92,6 +93,8 @@
 													:show-current="false"
 													scrollable
 													class="elevation-0 mb-2"
+													:max="dateEnd"
+													:min="dateStart"
 												>
 												</v-date-picker>
 												<v-btn
@@ -105,7 +108,13 @@
 												<v-btn text rounded small @click="stepper = 1">
 													Regresar
 												</v-btn>
-												<v-btn small text rounded color="primary">
+												<v-btn
+													small
+													text
+													rounded
+													color="primary"
+													@click="setDatePerson"
+												>
 													Guardar
 												</v-btn>
 											</v-stepper-content>
@@ -300,6 +309,24 @@ export default {
 				return this.dates[1];
 			}
 		},
+		setDateStartPerson() {
+			// set startdate from array dates
+			if (moment(this.datesPersons[0]).isBefore(moment(this.dates[1]))) {
+				return this.datesPersons[0];
+			} else {
+				moment(this.datesPersons[1]).isBefore(moment(this.dates[0]));
+				return this.datesPersons[1];
+			}
+		},
+		setDateEndPerson() {
+			// set enddate from array dates
+			if (moment(this.datesPersons[0]).isAfter(moment(this.dates[1]))) {
+				return this.datesPersons[0];
+			} else {
+				moment(this.datesPersons[1]).isAfter(moment(this.dates[0]));
+				return this.datesPersons[1];
+			}
+		},
 		async setDates() {
 			let verificate = true;
 			const start = this.setDateStart();
@@ -331,6 +358,7 @@ export default {
 			this.dateEndLodging = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
+			this.datesPersons = [this.dateStart, this.dateEnd];
 			this.dates = [this.dateStartLodging, this.dateEndLodging];
 		},
 		/**
@@ -343,24 +371,19 @@ export default {
 		 * set date person in the store
 		 */
 		setDatePerson() {
-			if (this.dateStartPersons === null) {
-				this.dateStartPersons = this.dateStart;
-			}
-			if (this.dateEndPersons === null) {
-				this.dateEndPersons = this.dateEnd;
-			}
+			const start = this.setDateStartPerson() ? this.setDateStartPerson() : this.dateStart;
+			const end = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
 
 			this.verifyOverlay() === 'OK'
 				? this.updateLodgingPersons({
-						id: this.personSelected.data._id,
-						search: this.personSelected.search,
-						dateStart: this.dateStartPersons,
-						dateEnd: this.dateEndPersons,
+						id: this.personSelected._id,
+						search: `${this.personSelected.firstName} ${this.personSelected.firstName}`,
+						dateStart: start,
+						dateEnd: end,
 				  })
 				: this.$toasted.show(`Ya existe un pasajero para el rango de fecha selecionado`, {
 						type: 'error',
 				  });
-
 			this.personSelected = null;
 			this.showPopover = false;
 		},
@@ -383,18 +406,20 @@ export default {
 		 * check if date of person ir already taken
 		 */
 		verifyOverlay() {
+			const start = this.setDateStartPerson();
+			const end = this.setDateEndPerson();
 			let verificate = null;
 			let temp = this.lodgingPersons.filter(person => {
-				return person.id === this.personSelected.data._id;
+				return person.id === this.personSelected._id;
 			});
 
 			if (temp.length > 0) {
 				temp.map(item => {
 					if (
-						(moment(this.dateStartPersons).isBefore(moment(item.dateStart)) &&
-							moment(this.dateEndPersons).isBefore(moment(item.dateStart))) ||
-						(moment(this.dateStartPersons).isAfter(moment(item.dateEnd)) &&
-							moment(this.dateEndPersons).isAfter(moment(item.dateEnd)))
+						(moment(start).isBefore(moment(item.dateStart)) &&
+							moment(end).isBefore(moment(item.dateStart))) ||
+						(moment(start).isAfter(moment(item.dateEnd)) &&
+							moment(end).isAfter(moment(item.dateEnd)))
 					) {
 						verificate = 'OK';
 					} else {
