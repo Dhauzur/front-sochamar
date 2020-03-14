@@ -16,7 +16,7 @@
 			</v-dialog>
 		</template>
 		<template v-else>
-			<v-card>
+			<v-card elevation="12">
 				<v-card-title>
 					<v-container>
 						<v-row justify="start">
@@ -236,8 +236,8 @@
 				</v-card-text>
 			</v-card>
 			<v-bottom-sheet v-model="sheet">
-				<v-sheet class="text-center" height="500px">
-					<EditLodging />
+				<v-sheet class="text-center" height="600px">
+					<edit-lodging />
 				</v-sheet>
 			</v-bottom-sheet>
 		</template>
@@ -247,12 +247,11 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
-import EditLodging from '@/components/lodgings/EditLodging';
 import moment from 'moment';
 
 export default {
 	components: {
-		EditLodging,
+		EditLodging: () => import('@/components/lodgings/EditLodging'),
 		Timeline,
 	},
 	data() {

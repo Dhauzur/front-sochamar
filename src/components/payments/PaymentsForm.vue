@@ -9,7 +9,6 @@
 				type="number"
 				placeholder="Ej: 10000"
 				label="Total"
-				outlined
 				rounded
 				dense
 				prepend-icon="mdi-cash-usd"
@@ -49,6 +48,8 @@
 					outlined
 					rounded
 					range
+					locale="es"
+					:first-day-of-week="1"
 					:min="startDate"
 					:max="endDate"
 					no-title
@@ -184,7 +185,7 @@ export default {
 				this.errors = true;
 			} else {
 				this.form.set('idPlace', this.idPlace);
-				this.form.set('startDate', moment(this.setEndStart).format('YYYY-MM-DD'));
+				this.form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
 				this.form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
 				this.form.set('mount', this.mount);
 				this.form.append('voucher', this.voucher);

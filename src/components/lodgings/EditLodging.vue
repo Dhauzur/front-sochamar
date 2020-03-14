@@ -1,119 +1,156 @@
-<template lang="html">
-	<v-row v-if="lodgingSelect">
-		<v-col class="borderModule p-3 m-3">
-			<h4>Edición de "{{ lodgingSelect.content }}"</h4>
-			<transition name="fade">
+<template>
+	<v-container fluid>
+		<v-row v-if="lodgingSelect">
+			<v-col>
+				<timeline />
 				<v-row v-if="!showPopover">
-					<v-col>
-						<v-text-field
-							v-model="dateStartLodging"
-							type="date"
-							:value="dateStartLodging"
-							required
-							@change="dateChange({ dateStartLodging, dateEndLodging, start: true })"
-						/>
+					<v-col cols="4">
+						<v-date-picker
+							v-model="dates"
+							width="250"
+							no-title
+							range
+							:first-day-of-week="1"
+							locale="es"
+							:show-current="false"
+							scrollable
+						>
+							<v-spacer></v-spacer>
+							<v-btn text color="primary" @click="setDates">Guardar</v-btn>
+						</v-date-picker>
 					</v-col>
-					<v-col>
-						<v-text-field
-							v-model="dateEndLodging"
-							type="date"
-							required
-							@change="dateChange({ dateStartLodging, dateEndLodging, start: false })"
+					<v-col cols="6">
+						<autocomplete
+							v-if="!showPopover"
+							:items="personFormatted"
+							:selected="addPersonToLodging"
+							placeholder="Agregar un pasajero"
 						/>
+						<v-btn
+							v-if="!showPopover"
+							color="error"
+							text
+							@click="deleteLodging(lodgingSelect)"
+						>
+							Eliminar actividad
+						</v-btn>
 					</v-col>
 				</v-row>
-			</transition>
-			<v-row>
-				<!-- aucomplete persons -->
-				<v-col cols="12">
-					<autocomplete
-						v-if="!showPopover"
-						:items="personFormatted"
-						:selected="addPersonToLodging"
-						placeholder="Agregar un pasajero"
-					/>
-
-					<v-btn
-						v-if="!showPopover"
-						variant="danger"
-						@click="deleteLodging(lodgingSelect)"
-					>
-						Eliminar actividad
-					</v-btn>
-				</v-col>
-				<!-- badge person -->
-				<v-col v-if="!showPopover">
-					<v-badge
-						v-for="(item, i) in lodgingPersons"
-						:id="`show${i}`"
-						:key="i"
-						pill
-						target="_blank"
-						class="ml-1 mr-1"
-						>{{ item.search }}: {{ item.dateStart }} - {{ item.dateEnd }}
-						<span class="text-danger ml-1 pointer" @click="removeLodgingPersons(i)"
-							>X</span
+				<v-row>
+					<!-- badge person -->
+					<v-col v-if="!showPopover">
+						<v-badge
+							v-for="(item, i) in lodgingPersons"
+							:id="`show${i}`"
+							:key="i"
+							pill
+							target="_blank"
+							class="ml-1 mr-1"
+							>{{ item.search }}: {{ item.dateStart }} - {{ item.dateEnd }}
+							<span class="text-danger ml-1 pointer" @click="removeLodgingPersons(i)"
+								>X</span
+							>
+						</v-badge>
+					</v-col>
+					<v-col v-show="showPopover">
+						<v-menu
+							ref="menu"
+							v-model="menu"
+							:close-on-content-click="false"
+							:return-value.sync="date"
+							transition="scale-transition"
+							offset-y
+							min-width="290px"
 						>
-					</v-badge>
-				</v-col>
-				<v-col v-show="showPopover">
-					<LodgingsDate
-						label="Fecha inicio"
-						:start="true"
-						:set-date="date => (dateStartPersons = date)"
-						:date-start="dateStart"
-						:date-end="dateEnd"
-						:is-person-date="true"
-						:error-date="errorDate"
-					/>
-				</v-col>
-				<v-col v-show="showPopover">
-					<LodgingsDate
-						label="Fecha fin"
-						:start="false"
-						:set-date="date => (dateEndPersons = date)"
-						:date-start="dateStart"
-						:date-end="dateEnd"
-						:is-person-date="true"
-						:error-date="errorDate"
-					/>
-				</v-col>
-				<v-col class="mv-2 d-flex justify-content-start flex-wrap">
-					<v-btn
-						v-show="showPopover"
-						:disabled="datePersonsInvalid"
-						@click="setDatePerson"
-					>
-						Agregar
-					</v-btn>
-					<v-btn
-						v-if="showPopover"
-						variant="danger"
-						class="btn-sm"
-						@click="cancelAddPerson"
-					>
-						Cancelar
-					</v-btn>
-				</v-col>
-			</v-row>
-		</v-col>
-	</v-row>
+							<template v-slot:activator="{ on }">
+								<v-text-field
+									v-model="date"
+									label="Picker in menu"
+									prepend-icon="event"
+									readonly
+									v-on="on"
+								></v-text-field>
+							</template>
+							<v-date-picker
+								v-model="datesPersons"
+								width="250"
+								no-title
+								range
+								:first-day-of-week="1"
+								locale="es"
+								:show-current="false"
+								scrollable
+							>
+								<v-spacer></v-spacer>
+								<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+								<v-btn text color="primary">OK</v-btn>
+							</v-date-picker>
+						</v-menu>
+					</v-col>
+					<!-- <v-col v-show="showPopover">
+						<LodgingsDate
+							label="Fecha inicio"
+							:start="true"
+							:set-date="date => (dateStartPersons = date)"
+							:date-start="dateStart"
+							:date-end="dateEnd"
+							:is-person-date="true"
+							:error-date="errorDate"
+						/>
+						<LodgingsDate
+							label="Fecha fin"
+							:start="false"
+							:set-date="date => (dateEndPersons = date)"
+							:date-start="dateStart"
+							:date-end="dateEnd"
+							:is-person-date="true"
+							:error-date="errorDate"
+						/>
+					</v-col> -->
+					<v-col>
+						<v-btn
+							v-show="showPopover"
+							color="primary"
+							rounded
+							small
+							:disabled="datePersonsInvalid"
+							@click="setDatePerson"
+						>
+							Agregar
+						</v-btn>
+						<v-btn
+							v-if="showPopover"
+							text
+							small
+							variant="danger"
+							@click="cancelAddPerson"
+						>
+							Cancelar
+						</v-btn>
+					</v-col>
+				</v-row>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
 import moment from 'moment';
 import Autocomplete from '@/components/ui/autocomplete/Autocomplete';
-import LodgingsDate from '@/components/lodgings/LodgingsDate';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
+import { Timeline } from 'vue2vis';
 
 export default {
 	name: 'EditLodgings',
 	components: {
 		Autocomplete,
-		LodgingsDate,
+		Timeline,
 	},
 	data() {
 		return {
+			menu: false,
+			dates: [],
+			datesPersons: [],
 			dateEnd: null,
 			dateEndLodging: null,
 			dateEndPersons: null,
@@ -158,33 +195,48 @@ export default {
 		this.setDateIntheState();
 	},
 	methods: {
-		dateChange(newDate) {
+		setDateStart() {
+			// set startdate from array dates
+			if (moment(this.dates[0]).isBefore(moment(this.dates[1]))) {
+				return this.dates[0];
+			} else {
+				moment(this.dates[1]).isBefore(moment(this.dates[0]));
+				return this.dates[1];
+			}
+		},
+		setDateEnd() {
+			// set enddate from array dates
+			if (moment(this.dates[0]).isAfter(moment(this.dates[1]))) {
+				return this.dates[0];
+			} else {
+				moment(this.dates[1]).isAfter(moment(this.dates[0]));
+				return this.dates[1];
+			}
+		},
+		async setDates() {
 			let verificate = true;
+			const start = this.setDateStart();
+			const end = this.setDateEnd();
 			this.lodgings.forEach(lod => {
-				//Verifica que se este usando la misma habitacion, y que el hospedaje selecionado sea distinto
-				//al comparado. Y luego verifica que la fecha este fuera de algun otro hospedaje
+				/*Verifica que se este usando la misma habitacion, y que el hospedaje selecionado sea distinto
+				 * al comparado. Y luego verifica que la fecha este fuera de algun otro hospedaje
+				 */
 				if (lod.group == this.lodgingSelect.group && this.lodgingSelect.id != lod.id) {
 					if (
-						moment(newDate.dateStartLodging).isBefore(
-							moment(lod.end).format('YYYY-MM-DD')
-						) &&
-						moment(newDate.dateEndLodging).isAfter(
-							moment(lod.start).format('YYYY-MM-DD')
-						)
+						moment(start).isBefore(moment(lod.end).format('YYYY-MM-DD')) &&
+						moment(end).isAfter(moment(lod.start).format('YYYY-MM-DD'))
 					)
 						verificate = false;
 				}
 			});
-			if (verificate)
+			if (verificate) {
 				this.sendDateChange({
-					dateStart: newDate.dateStartLodging,
-					dateEnd: newDate.dateEndLodging,
+					dateStart: start,
+					dateEnd: end,
 				});
-			else {
+				this.saveLodgings();
+			} else {
 				this.$toasted.show('Existe un alojamiento para esas fechas');
-				if (newDate.start)
-					setTimeout(() => (this.dateStartLodging = this.oldDateLodging), 1);
-				else setTimeout(() => (this.dateEndLodging = this.oldDateLodging), 1);
 			}
 		},
 		setDateIntheState() {
@@ -192,6 +244,7 @@ export default {
 			this.dateEndLodging = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
+			this.dates = [this.dateStartLodging, this.dateEndLodging];
 		},
 		/**
 		 * used for disabled button when person date is invalid
@@ -269,11 +322,13 @@ export default {
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
+			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
 			sendDateChange: 'Lodging/dateChange',
 			updateLodgingPersons: 'Lodging/updateLodgingPersons',
 			removeLodgingPersons: 'Lodging/removeLodgingPersons',
+			fetchRooms: 'Room/fetchRooms',
 		}),
 	},
 };
