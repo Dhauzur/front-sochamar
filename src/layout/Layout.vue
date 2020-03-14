@@ -1,10 +1,13 @@
 <template>
-	<div>
+	<div id="layout" :class="bgModeDark ? 'bg-dark' : 'bg-light'">
 		<!-- global appbar -->
-		<v-app-bar app dense clipped-right>
+		<v-app-bar app dense clipped-right :color="bgModeDark ? '#192734' : 'inherid'">
 			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
 			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
 			<v-spacer></v-spacer>
+			<v-btn icon @click="toggleTheme">
+				<v-icon>mdi-theme-light-dark</v-icon>
+			</v-btn>
 			<span class="hidden-sm-and-down">{{ fullName }}</span>
 		</v-app-bar>
 		<v-navigation-drawer
@@ -25,7 +28,7 @@
 				<v-list-item active-class="info--text" link to="/">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon dark v-on="on">mdi-home</v-icon>
+							<v-icon v-on="on">mdi-home</v-icon>
 						</template>
 						<span>Inicio</span>
 					</v-tooltip>
@@ -34,7 +37,7 @@
 				<v-list-item active-class="info--text" link to="/management">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon dark v-on="on">mdi-widgets</v-icon>
+							<v-icon v-on="on">mdi-widgets</v-icon>
 						</template>
 						<span>Administrar Hospedajes</span>
 					</v-tooltip>
@@ -43,7 +46,7 @@
 				<v-list-item active-class="info--text" link to="/reports">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
-							<v-icon dark v-on="on">mdi-file-settings</v-icon>
+							<v-icon v-on="on">mdi-file-settings</v-icon>
 						</template>
 						<span>Enviar informes</span>
 					</v-tooltip>
@@ -85,6 +88,7 @@ export default {
 	name: 'Layout',
 	data() {
 		return {
+			bgModeDark: false,
 			drawer: true,
 		};
 	},
@@ -99,9 +103,38 @@ export default {
 			profile: 'User/profile',
 		}),
 	},
+	created() {
+		const mode = localStorage.getItem('mode');
+		if (mode === 'dark') {
+			this.toggleTheme();
+		}
+	},
 	methods: {
+		toggleTheme() {
+			this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+			this.$vuetify.theme.themes.dark.$card = '#192734';
+			if (this.$vuetify.theme.isDark) {
+				localStorage.setItem('mode', 'dark');
+				this.bgModeDark = true;
+			} else {
+				localStorage.setItem('mode', 'light');
+				this.bgModeDark = false;
+			}
+		},
 		...mapMutations({ logout: 'Auth/logout' }),
 		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
 };
 </script>
+
+<style lang="scss">
+#layout {
+	height: 100vh;
+}
+.bg-light {
+	background-color: #f5f5f5;
+}
+.bg-dark {
+	background-color: #15202b;
+}
+</style>

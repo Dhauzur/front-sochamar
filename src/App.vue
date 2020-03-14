@@ -67,7 +67,6 @@ export default {
 	text-align: center;
 	overflow-x: hidden;
 	height: 100vh;
-	background-color: #f5f5f5;
 }
 
 .fade-enter-active,

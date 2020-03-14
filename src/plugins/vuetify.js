@@ -15,6 +15,11 @@ export default new Vuetify({
 				info: '#c06240',
 				success: '#4caf50',
 			},
+			dark: {
+				primary: '#ffb22b',
+				secondary: '#15202b',
+				info: '#c06240',
+			},
 		},
 	},
 });
