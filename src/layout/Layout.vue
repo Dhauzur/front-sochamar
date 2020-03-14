@@ -1,7 +1,7 @@
 <template>
-	<div id="layout" :class="bgModeDark ? 'bg-dark' : 'bg-light'">
+	<div>
 		<!-- global appbar -->
-		<v-app-bar app dense clipped-right :color="bgModeDark ? '#192734' : 'inherid'">
+		<v-app-bar :flat="flatAppbar" app dense clipped-right>
 			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
 			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
 			<v-spacer></v-spacer>
@@ -88,11 +88,13 @@ export default {
 	name: 'Layout',
 	data() {
 		return {
-			bgModeDark: false,
 			drawer: true,
 		};
 	},
 	computed: {
+		flatAppbar() {
+			return this.$route.name === 'management';
+		},
 		profileAvatar() {
 			return this.profile.img;
 		},
@@ -115,10 +117,8 @@ export default {
 			this.$vuetify.theme.themes.dark.$card = '#192734';
 			if (this.$vuetify.theme.isDark) {
 				localStorage.setItem('mode', 'dark');
-				this.bgModeDark = true;
 			} else {
 				localStorage.setItem('mode', 'light');
-				this.bgModeDark = false;
 			}
 		},
 		...mapMutations({ logout: 'Auth/logout' }),
@@ -126,15 +126,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="scss">
-#layout {
-	height: 100vh;
-}
-.bg-light {
-	background-color: #f5f5f5;
-}
-.bg-dark {
-	background-color: #15202b;
-}
-</style>

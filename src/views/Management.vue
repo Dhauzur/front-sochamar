@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-app-bar flat dense>
+		<v-app-bar dense>
 			<v-tabs v-model="tab" color="info">
 				<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
 			</v-tabs>
