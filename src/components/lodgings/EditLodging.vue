@@ -2,42 +2,122 @@
 	<v-container fluid>
 		<v-row v-if="lodgingSelect">
 			<v-col>
-				<timeline />
-				<v-row v-if="!showPopover">
-					<v-col cols="4">
-						<v-date-picker
-							v-model="dates"
-							width="250"
-							no-title
-							range
-							:first-day-of-week="1"
-							locale="es"
-							:show-current="false"
-							scrollable
-						>
-							<v-spacer></v-spacer>
-							<v-btn text color="primary" @click="setDates">Guardar</v-btn>
-						</v-date-picker>
+				<v-row>
+					<v-col cols="10">
+						<timeline />
 					</v-col>
-					<v-col cols="6">
-						<autocomplete
-							v-if="!showPopover"
-							:items="personFormatted"
-							:selected="addPersonToLodging"
-							placeholder="Agregar un pasajero"
-						/>
-						<v-btn
-							v-if="!showPopover"
-							color="error"
-							text
-							@click="deleteLodging(lodgingSelect)"
-						>
-							Eliminar actividad
-						</v-btn>
+					<v-col cols="2">
+						<v-row>
+							<v-col cols="12">
+								<v-dialog ref="dialog" v-model="dialogChangeDate" width="290px">
+									<template v-slot:activator="{ on }">
+										<v-btn small block rounded color="primary" v-on="on">
+											Cambiar fecha del hospedaje
+										</v-btn>
+									</template>
+									<v-date-picker
+										v-model="dates"
+										width="250"
+										no-title
+										range
+										:first-day-of-week="1"
+										locale="es"
+										:show-current="false"
+										scrollable
+									>
+										<v-spacer></v-spacer>
+										<v-btn small text @click="dialogChangeDate = false">
+											Cancel
+										</v-btn>
+										<v-btn small rounded text color="primary" @click="setDates">
+											Guardar
+										</v-btn>
+									</v-date-picker>
+								</v-dialog>
+							</v-col>
+							<v-col cols="12">
+								<v-dialog v-model="dialogAddPerson" max-width="330">
+									<template v-slot:activator="{ on }">
+										<v-btn small block rounded color="primary" v-on="on">
+											Agregar persona
+										</v-btn>
+									</template>
+									<v-stepper v-model="stepper" class="elevation-12">
+										<v-stepper-header>
+											<v-stepper-step :complete="stepper > 1" step="1">
+												persona
+											</v-stepper-step>
+											<v-divider></v-divider>
+											<v-stepper-step :complete="stepper > 2" step="2">
+												fecha
+											</v-stepper-step>
+										</v-stepper-header>
+										<v-stepper-items>
+											<v-stepper-content step="1">
+												<v-autocomplete
+													v-model="personSelected"
+													solo
+													:items="personFormatted"
+													:filter="customFilter"
+													color="white"
+													item-text="search"
+													label="Buscar persona"
+													clearable
+												></v-autocomplete>
+												<v-btn
+													small
+													text
+													rounded
+													color="primary"
+													@click="stepper = 2"
+												>
+													Continuar
+												</v-btn>
+												<v-btn
+													small
+													rounded
+													text
+													@click="dialogAddPerson = false"
+												>
+													Cancelar
+												</v-btn>
+											</v-stepper-content>
+											<v-stepper-content step="2">
+												<v-date-picker
+													v-model="datesPersons"
+													no-title
+													range
+													:first-day-of-week="1"
+													locale="es"
+													:show-current="false"
+													scrollable
+													class="elevation-0 mb-2"
+												>
+												</v-date-picker>
+												<v-btn
+													text
+													rounded
+													small
+													@click="dialogAddPerson = false"
+												>
+													Cancelar
+												</v-btn>
+												<v-btn text rounded small @click="stepper = 1">
+													Regresar
+												</v-btn>
+												<v-btn small text rounded color="primary">
+													Guardar
+												</v-btn>
+											</v-stepper-content>
+										</v-stepper-items>
+									</v-stepper>
+								</v-dialog>
+							</v-col>
+						</v-row>
 					</v-col>
 				</v-row>
-				<v-row>
-					<!-- badge person -->
+				<!-- <v-row>
+					 badge person
 					<v-col v-if="!showPopover">
 						<v-badge
 							v-for="(item, i) in lodgingPersons"
@@ -53,7 +133,7 @@
 						</v-badge>
 					</v-col>
 					<v-col v-show="showPopover">
-						<v-menu
+						 <v-menu
 							ref="menu"
 							v-model="menu"
 							:close-on-content-click="false"
@@ -85,9 +165,9 @@
 								<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
 								<v-btn text color="primary">OK</v-btn>
 							</v-date-picker>
-						</v-menu>
+						</v-menu> 
 					</v-col>
-					<!-- <v-col v-show="showPopover">
+					<v-col v-show="showPopover">
 						<LodgingsDate
 							label="Fecha inicio"
 							:start="true"
@@ -106,7 +186,7 @@
 							:is-person-date="true"
 							:error-date="errorDate"
 						/>
-					</v-col> -->
+					</v-col>
 					<v-col>
 						<v-btn
 							v-show="showPopover"
@@ -128,7 +208,7 @@
 							Cancelar
 						</v-btn>
 					</v-col>
-				</v-row>
+				</v-row> -->
 			</v-col>
 		</v-row>
 	</v-container>
@@ -136,18 +216,19 @@
 
 <script>
 import moment from 'moment';
-import Autocomplete from '@/components/ui/autocomplete/Autocomplete';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
 
 export default {
 	name: 'EditLodgings',
 	components: {
-		Autocomplete,
 		Timeline,
 	},
 	data() {
 		return {
+			stepper: 1,
+			dialogChangeDate: false,
+			dialogAddPerson: false,
 			menu: false,
 			dates: [],
 			datesPersons: [],
@@ -195,6 +276,12 @@ export default {
 		this.setDateIntheState();
 	},
 	methods: {
+		customFilter(item, queryText) {
+			const textOne = item.search.toLowerCase();
+			const searchText = queryText.toLowerCase();
+
+			return textOne.indexOf(searchText) > -1;
+		},
 		setDateStart() {
 			// set startdate from array dates
 			if (moment(this.dates[0]).isBefore(moment(this.dates[1]))) {
