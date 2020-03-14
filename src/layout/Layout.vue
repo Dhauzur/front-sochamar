@@ -88,6 +88,7 @@ export default {
 	name: 'Layout',
 	data() {
 		return {
+			oauthJWT: '',
 			drawer: true,
 		};
 	},
@@ -102,10 +103,23 @@ export default {
 			return this.profile.name + ' ' + this.profile.lastName;
 		},
 		...mapGetters({
+			isLogged: 'Auth/isLogged',
 			profile: 'User/profile',
 		}),
 	},
 	created() {
+		this.oauthJWT = this.$route.query.token;
+		if (this.oauthJWT) {
+			this.deleteQueryFromRoute();
+			this.setToken(this.oauthJWT);
+			this.fetchProfile();
+			this.oauthJWT = '';
+		} else {
+			if (this.isLogged) {
+				this.setToken(localStorage.getItem('token'));
+				this.fetchProfile();
+			}
+		}
 		const mode = localStorage.getItem('mode');
 		if (mode === 'dark') {
 			this.toggleTheme();
@@ -121,7 +135,10 @@ export default {
 				localStorage.setItem('mode', 'light');
 			}
 		},
-		...mapMutations({ logout: 'Auth/logout' }),
+		deleteQueryFromRoute() {
+			this.$router.replace({ query: null });
+		},
+		...mapMutations({ logout: 'Auth/logout', setToken: 'Auth/setToken' }),
 		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
 };
