@@ -89,18 +89,22 @@
 				</v-col>
 			</v-row>
 			<!-- time-line -->
-			<timeline
-				v-if="periods.length > 0 && lodgings.length > 0"
-				:events="['rangechanged', 'click']"
-				:groups="periods"
-				:items="lodgings"
-				:options="options"
-				class="p-2"
-				@click="enableEdit"
-				@rangechanged="rangechanged"
-			/>
 			<v-row>
-				<v-col v-if="prices && place" cols="12" class="px-4 overflow-auto">
+				<v-col>
+					<timeline
+						v-if="periods.length > 0 && lodgings.length > 0"
+						:events="['rangechanged', 'click']"
+						:groups="periods"
+						:items="lodgings"
+						:options="options"
+						@click="enableEdit"
+						@rangechanged="rangechanged"
+					/>
+				</v-col>
+			</v-row>
+
+			<v-row>
+				<v-col v-if="prices && place" class="overflow-auto">
 					<table class="table table-bordered">
 						<thead>
 							<tr>
@@ -637,6 +641,8 @@ export default {
 }
 .vis-timeline {
 	margin-bottom: 15px;
+	background-color: #80808014;
+	border: none !important;
 }
 .vis-item {
 	border: none !important;

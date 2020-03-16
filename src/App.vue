@@ -43,7 +43,7 @@ td {
 
 td:hover {
 	background-color: #80808047 !important;
-	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+	box-shadow: 0px 2px 3px -2px rgba(0, 0, 0, 0.75);
 	transition: all ease-in-out 0.3s;
 }
 table {
