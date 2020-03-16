@@ -75,16 +75,13 @@
 						</small>
 					</v-col>
 				</v-row>
-				<v-row>
-					<v-col cols="6" offset="6">
-						<v-text-field
-							v-model="filterPlaceWord"
-							size="sm"
-							placeholder="Filtrar lugar"
-							@keyup="filterPlace(filterPlaceWord)"
-						></v-text-field>
-					</v-col>
-				</v-row>
+				<!--PLACE TABLE-->
+				<v-text-field
+					v-model="filterPlaceWord"
+					size="sm"
+					placeholder="Filtrar lugar"
+					@keyup="filterPlace(filterPlaceWord)"
+				></v-text-field>
 				<div v-if="hasPlaces">
 					<v-row>
 						<v-col class="mv-5" cols="12">
@@ -94,7 +91,8 @@
 										<tr>
 											<th>Nombre</th>
 											<th>RUT / ID</th>
-											<th>Eliminar</th>
+											<th>Servicios</th>
+											<th>Acciones</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -105,10 +103,16 @@
 										>
 											<td>{{ c.name }}</td>
 											<td>{{ c.rut }}</td>
-											<td class="p-2">
-												<v-btn variant="danger" @click="deletePlace(c.id)">
-													X
+											<td>
+												<v-btn @click="manageServices(c)">
+													Administrar Servicios
+													<v-icon dark>mdi-wrench</v-icon>
 												</v-btn>
+											</td>
+											<td class="p-2">
+												<v-icon small @click="deletePlace(c.id)">
+													mdi-delete
+												</v-icon>
 											</td>
 										</tr>
 									</tbody>
@@ -122,6 +126,11 @@
 				</div>
 			</v-col>
 		</v-row>
+		<v-bottom-sheet v-model="servicesSheet">
+			<v-sheet class="text-center" height="500px">
+				<PlaceServicesCRUD :place="selectedPlace"></PlaceServicesCRUD>
+			</v-sheet>
+		</v-bottom-sheet>
 	</v-container>
 </template>
 
@@ -130,10 +139,11 @@ import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import PlaceServicesForm from './PlaceServicesForm';
+import PlaceServicesCRUD from './PlaceServicesCRUD';
 
 export default {
 	name: 'Place',
-	components: { PlaceServicesForm },
+	components: { PlaceServicesForm, PlaceServicesCRUD },
 	mixins: [validationMixin],
 	data() {
 		return {
@@ -142,6 +152,8 @@ export default {
 				rut: '',
 				services: [],
 			},
+			servicesSheet: false,
+			selectedPlace: {},
 			errors: '',
 			filterPlaceWord: '',
 		};
@@ -207,23 +219,27 @@ export default {
 				this.$toasted.error('No se permiten nombres duplicados');
 			}
 		},
+		removeService(targetService) {
+			this.form.services = this.form.services.filter(service => service !== targetService);
+		},
 		checkRepeatedServiceName(name) {
 			const found = this.form.services.find(service => service.name === name);
 			if (found) return true;
 			else return false;
 		},
-		removeService(targetService) {
-			this.form.services = this.form.services.filter(service => service !== targetService);
+		manageServices(place) {
+			this.servicesSheet = true;
+			this.selectedPlace = place;
 		},
 		...mapActions({
 			fetchPlace: 'Place/fetchPlace',
 			createPlace: 'Place/createPlace',
 			deletePlace: 'Place/deletePlace',
-			updateService: 'Place/updateService',
 		}),
 		...mapMutations({
 			selectPlace: 'Place/selectPlace',
 			filterPlace: 'Place/filterPlace',
+			setPlaceForServices: 'Place/setPlaceForServices',
 		}),
 	},
 };

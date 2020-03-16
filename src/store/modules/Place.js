@@ -9,6 +9,7 @@ const state = {
 	places: [],
 	filterPlaceWord: '',
 	place: {},
+	loading: false,
 };
 
 const getters = {
@@ -25,6 +26,7 @@ const getters = {
 			});
 		else return state.places;
 	},
+	loading: state => state.loading,
 };
 
 const actions = {
@@ -67,23 +69,44 @@ const actions = {
 		}
 	},
 	async createService({ commit, dispatch }, { service, placeId }) {
+		commit('setLoading', true);
+		delete service._id;
 		try {
 			await axios.post(`${api}/place/${placeId}/service`, service);
 			commit('setMessage', toastMessage('success', 'Servicio creado'));
 			dispatch('fetchPlace');
 		} catch (e) {
-			commit('setMessage', toastMessage('error', 'error al crear Servicio'));
+			commit('setMessage', toastMessage('error', 'no se permiten nombres repetidos'));
 			if (e.message == 'Request failed with status code 401') router.push('/login');
+		} finally {
+			commit('setLoading', false);
 		}
 	},
-	async updateService({ commit, dispatch }, { service, serviceId, placeId }) {
+	async updateService({ commit, dispatch }, { service, placeId }) {
+		commit('setLoading', true);
 		try {
+			const serviceId = service._id;
 			await axios.put(`${api}/place/${placeId}/service/${serviceId}`, service);
 			commit('setMessage', toastMessage('success', 'Servicio Actualizado'));
 			dispatch('fetchPlace');
 		} catch (e) {
-			commit('setMessage', toastMessage('error', 'error al actualizar Servicio'));
+			commit('setMessage', toastMessage('error', 'error al actulizar servicio'));
 			if (e.message == 'Request failed with status code 401') router.push('/login');
+		} finally {
+			commit('setLoading', false);
+		}
+	},
+	async deleteService({ commit, dispatch }, { serviceId, placeId }) {
+		commit('setLoading', true);
+		try {
+			await axios.delete(`${api}/place/${placeId}/service/${serviceId}`);
+			commit('setMessage', toastMessage('success', 'Servicio Borrado con exito'));
+			dispatch('fetchPlace');
+		} catch (e) {
+			commit('setMessage', toastMessage('error', 'error al borrar Servicio'));
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		} finally {
+			commit('setLoading', false);
 		}
 	},
 	async fetchPlace({ commit }) {
@@ -93,7 +116,7 @@ const actions = {
 			const { place } = response.data;
 			commit('setMessage', {
 				type: 'success',
-				text: 'Lugars descargadas',
+				text: 'Lugares descargados',
 			});
 			commit('setPlaces', place);
 		} catch (e) {
@@ -140,12 +163,13 @@ const mutations = {
 				places.push({
 					id: v._id,
 					name: v.name,
-					prices: v.prices,
+					services: v.services,
 					rut: v.rut,
 				});
 			});
 		state.places = places;
 	},
+	setLoading: (state, loading) => (state.loading = loading),
 };
 
 export default {
