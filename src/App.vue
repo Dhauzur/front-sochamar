@@ -20,14 +20,34 @@ export default {
 @import '../node_modules/vue2vis/dist/vue2vis.css';
 </style>
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Kanit|Poppins|Righteous&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
 #app {
-	font-family: 'Poppins', sans-serif;
+	font-family: 'Montserrat', sans-serif !important;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	overflow-x: hidden;
 	height: 100vh;
+	line-height: 1.2;
+}
+
+td {
+	border: none !important;
+	padding: 1px !important;
+	padding-right: 2px !important;
+	min-width: 60px;
+	border-radius: 5px;
+	background-color: #80808014;
+	transition: all ease-in-out 0.3s;
+}
+
+td:hover {
+	background-color: #80808047 !important;
+	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+	transition: all ease-in-out 0.3s;
+}
+table {
+	border-spacing: 5px !important;
 }
 
 .fade-enter-active,

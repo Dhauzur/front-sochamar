@@ -1,17 +1,14 @@
 <template>
 	<div>
 		<v-app-bar dense>
-			<v-tabs v-model="tab" color="info">
+			<v-tabs v-model="tab" color="accent">
 				<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
 			</v-tabs>
 		</v-app-bar>
-		<v-container>
+		<v-container dense>
 			<template v-if="tab === 0"><lodgings /></template>
 			<template v-if="tab === 1"><place /></template>
 			<template v-if="tab === 2"><persons /></template>
-			<template v-if="tab === 3"><periods :id-place="place"/></template>
-			<template v-if="tab === 4"><rooms :id-place="place"/></template>
-			<template v-if="tab === 5"><payments :id-place="place"/></template>
 		</v-container>
 	</div>
 </template>
@@ -22,11 +19,8 @@ import { mapGetters } from 'vuex';
 export default {
 	components: {
 		Lodgings: () => import('@/components/lodgings/Lodging'),
-		Payments: () => import('@/components/payments/Payments'),
 		Place: () => import('@/components/place/Place'),
-		Periods: () => import('@/components/periods/Periods'),
 		Persons: () => import('@/components/persons/Persons'),
-		Rooms: () => import('@/components/rooms/Rooms'),
 	},
 	data() {
 		return {
@@ -35,8 +29,7 @@ export default {
 	},
 	computed: {
 		items() {
-			const tabs = ['Hospedajes', 'Lugares', 'Personas'];
-			if (this.place) tabs.push('Turnos', 'Habitaciones', 'Pagos');
+			const tabs = ['Actividades', 'Lugares', 'Personas'];
 			return tabs;
 		},
 		...mapGetters({

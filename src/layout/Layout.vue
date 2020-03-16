@@ -25,7 +25,7 @@
 			</v-list>
 			<v-divider></v-divider>
 			<v-list nav dense>
-				<v-list-item active-class="info--text" link to="/">
+				<v-list-item active-class="accent--text" link to="/">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
 							<v-icon v-on="on">mdi-home</v-icon>
@@ -34,16 +34,16 @@
 					</v-tooltip>
 					<v-list-item-title>Inicio</v-list-item-title>
 				</v-list-item>
-				<v-list-item active-class="info--text" link to="/management">
+				<v-list-item active-class="accent--text" link to="/management">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
 							<v-icon v-on="on">mdi-widgets</v-icon>
 						</template>
-						<span>Administrar Hospedajes</span>
+						<span>Administrar actividades</span>
 					</v-tooltip>
 					<v-list-item-title>Administrar</v-list-item-title>
 				</v-list-item>
-				<v-list-item active-class="info--text" link to="/reports">
+				<v-list-item active-class="accent--text" link to="/reports">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
 							<v-icon v-on="on">mdi-file-settings</v-icon>
