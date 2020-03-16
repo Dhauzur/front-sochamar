@@ -18,11 +18,7 @@
 			mobile-break-point="768"
 			color="secondary"
 		>
-			<v-list>
-				<v-list-item class="px-2" link to="/">
-					Logo
-				</v-list-item>
-			</v-list>
+			<v-list> <Logo style="max-height: 80px;"/></v-list>
 			<v-divider></v-divider>
 			<v-list nav dense>
 				<v-list-item active-class="accent--text" link to="/">
@@ -83,9 +79,13 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import Logo from '../assets/logo';
 
 export default {
 	name: 'Layout',
+	components: {
+		Logo,
+	},
 	data() {
 		return {
 			oauthJWT: '',
