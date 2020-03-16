@@ -40,7 +40,29 @@
 				</v-row>
 				<v-row class="mv-3 text-left">
 					<v-col>
-						<h6>Servicios</h6>
+						<PlaceServicesForm :push-service="pushService"></PlaceServicesForm>
+						<v-simple-table>
+							<template v-slot:default>
+								<thead>
+									<tr>
+										<th class="text-left">Nombre</th>
+										<th class="text-left">Precio</th>
+										<th class="text-left">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="item in form.services" :key="item.name">
+										<td>{{ item.name }}</td>
+										<td>{{ item.price }}</td>
+										<td>
+											<v-icon small @click="removeService(item)">
+												mdi-delete
+											</v-icon>
+										</td>
+									</tr>
+								</tbody>
+							</template>
+						</v-simple-table>
 					</v-col>
 				</v-row>
 				<v-row class="mv-5 text-left">
@@ -53,42 +75,6 @@
 						</small>
 					</v-col>
 				</v-row>
-				<div v-if="hasPlaces">
-					<v-row
-						style="max-height: 150px; overflow-y: auto;"
-						class="background-into-module mr-2 mv-3"
-					>
-						<v-col>
-							<table class="table table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>Nombre</th>
-										<th>RUT / ID</th>
-										<th>Eliminar</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr
-										v-for="(c, index) in places"
-										:key="index"
-										@click="selectPlace(c.id)"
-									>
-										<td>{{ c.name }}</td>
-										<td>{{ c.rut }}</td>
-										<td class="p-2">
-											<v-btn variant="danger" @click="deletePlace(c.id)">
-												X
-											</v-btn>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</v-col>
-					</v-row>
-				</div>
-				<div v-else>
-					<h6 class="m-5">Vacio</h6>
-				</div>
 				<v-row>
 					<v-col cols="6" offset="6">
 						<v-text-field
@@ -99,6 +85,41 @@
 						></v-text-field>
 					</v-col>
 				</v-row>
+				<div v-if="hasPlaces">
+					<v-row>
+						<v-col class="mv-5" cols="12">
+							<v-simple-table>
+								<template v-slot:default>
+									<thead>
+										<tr>
+											<th>Nombre</th>
+											<th>RUT / ID</th>
+											<th>Eliminar</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr
+											v-for="(c, index) in places"
+											:key="index"
+											@click="selectPlace(c.id)"
+										>
+											<td>{{ c.name }}</td>
+											<td>{{ c.rut }}</td>
+											<td class="p-2">
+												<v-btn variant="danger" @click="deletePlace(c.id)">
+													X
+												</v-btn>
+											</td>
+										</tr>
+									</tbody>
+								</template>
+							</v-simple-table>
+						</v-col>
+					</v-row>
+				</div>
+				<div v-else>
+					<h6 class="m-5">Vacio</h6>
+				</div>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -108,15 +129,18 @@
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import PlaceServicesForm from './PlaceServicesForm';
 
 export default {
 	name: 'Place',
+	components: { PlaceServicesForm },
 	mixins: [validationMixin],
 	data() {
 		return {
 			form: {
 				name: '',
 				rut: '',
+				services: [],
 			},
 			errors: '',
 			filterPlaceWord: '',
@@ -160,14 +184,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				let tempArray = [];
-				tempArray.push(
-					this.form.breakfast,
-					this.form.lunch,
-					this.form.dinner,
-					this.form.lodging
-				);
-				this.createPlace({ name: this.form.name, rut: this.form.rut, prices: tempArray });
+				this.createPlace(this.form);
 				this.clearInputs();
 				this.$v.$reset();
 			}
@@ -182,10 +199,27 @@ export default {
 				lodging: '',
 			};
 		},
+		pushService(service) {
+			const nameExist = this.checkRepeatedServiceName(service.name);
+			if (!nameExist) {
+				this.form.services.push(service);
+			} else {
+				this.$toasted.error('No se permiten nombres duplicados');
+			}
+		},
+		checkRepeatedServiceName(name) {
+			const found = this.form.services.find(service => service.name === name);
+			if (found) return true;
+			else return false;
+		},
+		removeService(targetService) {
+			this.form.services = this.form.services.filter(service => service !== targetService);
+		},
 		...mapActions({
 			fetchPlace: 'Place/fetchPlace',
 			createPlace: 'Place/createPlace',
 			deletePlace: 'Place/deletePlace',
+			updateService: 'Place/updateService',
 		}),
 		...mapMutations({
 			selectPlace: 'Place/selectPlace',
