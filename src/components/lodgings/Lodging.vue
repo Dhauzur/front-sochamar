@@ -75,17 +75,32 @@
 						</template>
 						<span>Guardar</span>
 					</v-tooltip>
-
-					<v-dialog v-model="dialogPeriods">
-						<v-card>
-							<Periods :id-place="place" />
-						</v-card>
-					</v-dialog>
-					<v-dialog v-model="dialogPayments">
-						<v-card>
-							<Payments :id-place="place" />
-						</v-card>
-					</v-dialog>
+					<template v-if="Boolean(place) && dialogPeriods">
+						<v-dialog v-model="dialogPeriods" fullscreen>
+							<v-card>
+								<v-toolbar dark color="primary">
+									<v-btn icon dark @click="dialogPeriods = false">
+										<v-icon>mdi-close</v-icon>
+									</v-btn>
+									<v-toolbar-title>Gestion de Turnos</v-toolbar-title>
+								</v-toolbar>
+								<Periods :id-place="place" />
+							</v-card>
+						</v-dialog>
+					</template>
+					<template v-if="Boolean(place) && dialogPayments">
+						<v-dialog v-model="dialogPayments" fullscreen>
+							<v-card>
+								<v-toolbar dark color="primary">
+									<v-btn icon dark @click="dialogPayments = false">
+										<v-icon>mdi-close</v-icon>
+									</v-btn>
+									<v-toolbar-title>Gestion de Pagos</v-toolbar-title>
+								</v-toolbar>
+								<Payments :id-place="place" />
+							</v-card>
+						</v-dialog>
+					</template>
 				</v-col>
 			</v-row>
 			<!-- time-line -->
@@ -102,7 +117,6 @@
 					/>
 				</v-col>
 			</v-row>
-
 			<v-row>
 				<v-col v-if="prices && place" class="overflow-auto">
 					<table class="table table-bordered">

@@ -1,22 +1,14 @@
 <template>
 	<div>
-		<v-row v-if="optionsLodgings.length <= 1">
-			<v-col>
-				<h6 class="text-left mt-1 ml-1 accent--text">
-					Todos los hospedajes pagos
-				</h6>
-			</v-col>
-		</v-row>
-		<v-row v-else>
+		<v-row v-if="Array.isArray(optionsLodgings) && optionsLodgings.length">
 			<v-col cols="12" sm="6" md="4" lg="3">
 				<v-select
 					id="date"
 					v-model="$v.lodgingSelected.$model"
 					dense
-					solo
-					rounded
+					outlined
 					:items="optionsLodgings"
-					label="Fecha"
+					label="Seleccione"
 					:error-messages="lodgingSelectedErrors"
 					@change="setMount"
 					@input="$v.lodgingSelected.$touch()"
@@ -31,7 +23,6 @@
 					readonly
 					dense
 					outlined
-					rounded
 					label="Monto"
 					placeholder="Ej: 10000 CLP"
 				></v-text-field>
@@ -44,7 +35,6 @@
 					label="Voucher"
 					dense
 					outlined
-					rounded
 					clearable
 					prepend-icon="mdi-paperclip"
 					:error-messages="voucherErrors"
@@ -59,10 +49,17 @@
 				</v-file-input>
 			</v-col>
 			<v-col cols="12" sm="6" md="3" lg="3">
-				<v-btn :loading="loading" block color="primary" rounded small @click="submit">
+				<v-btn :loading="loading" block color="primary" class="mt-1" small @click="submit">
 					Agregar Pago
 				</v-btn>
 				<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
+			</v-col>
+		</v-row>
+		<v-row v-else>
+			<v-col>
+				<h6 class="text-left mt-1 ml-1 accent--text">
+					No tiene hospedajes por pagar
+				</h6>
 			</v-col>
 		</v-row>
 	</div>
@@ -74,6 +71,7 @@ import { required } from 'vuelidate/lib/validators';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
+	name: 'PaymentsWithLodging',
 	mixins: [validationMixin],
 	props: {
 		lodgings: {
@@ -117,8 +115,10 @@ export default {
 		},
 		optionsLodgings() {
 			let index = [];
-			let lod = [...this.lodgings];
-			const pay = [...this.payments];
+			let lod = [];
+			let pay = [];
+			if (this.lodgings) lod = [...this.lodgings];
+			if (this.payments) pay = [...this.payments];
 			const lodgingsPaid = pay.filter(
 				({ idLodging }) => !lod.every(({ _id }) => idLodging === _id)
 			);
@@ -138,7 +138,6 @@ export default {
 					value: item,
 				};
 			});
-			lodging.push({ value: null, text: 'Seleccione' });
 			return lodging;
 		},
 		...mapGetters({

@@ -1,71 +1,62 @@
 <template>
-	<div>
-		<v-card outlined>
-			<!-- header -->
-			<v-list-item one-line>
-				<v-list-item-content>
-					<div class="headline">
-						Gestión pagos de
-						<span class="secondary--text">{{ place.name }}</span>
-					</div>
-				</v-list-item-content>
-			</v-list-item>
-			<!-- forms -->
-			<v-card-text>
-				<v-card-title class="text-secondary">
-					Agregar nuevo
+	<v-container>
+		<v-row>
+			<v-col cols="12" md="9" class="mx-auto">
+				<v-row>
+					<v-col cols="12">
+						<v-card-title class="text-secondary">
+							Agregar nuevo
+						</v-card-title>
+					</v-col>
+					<v-col cols="12" sm="6" md="4" lg="3">
+						<v-select
+							id="state"
+							v-model="visible"
+							dense
+							label="seleccione"
+							outlined
+							:items="[
+								{ value: null, text: 'Seleccione', disabled: true },
+								{ value: 0, text: 'Agregar pago por alojamiento' },
+								{ value: 1, text: 'Agregar pago por fecha' },
+							]"
+						></v-select>
+					</v-col>
+					<v-col cols="12">
+						<v-window id="collapse-1" v-model="visible" vertical>
+							<v-window-item>
+								<payments-form-lodging
+									:payments="items"
+									:lodgings="lodgings"
+									:place="place"
+								/>
+							</v-window-item>
+							<v-window-item>
+								<payments-form :count="count" />
+							</v-window-item>
+						</v-window>
+					</v-col>
+				</v-row>
+			</v-col>
+		</v-row>
+		<v-divider />
+		<!-- table -->
+		<v-row>
+			<v-col cols="12" md="9" class="mx-auto">
+				<v-card-title>
+					Lista de Pagos
+					<v-spacer></v-spacer>
+					<v-text-field
+						v-model="wordForFilter"
+						dense
+						outlined
+						append-icon="mdi-magnify"
+						label="Filtrar"
+						hide-details
+					></v-text-field>
 				</v-card-title>
-				<v-container fluid>
-					<v-row>
-						<v-col cols="12" sm="6" md="4" lg="3">
-							<v-select
-								id="state"
-								v-model="visible"
-								dense
-								solo
-								rounded
-								:items="[
-									{ value: null, text: 'Seleccione', disabled: true },
-									{ value: 0, text: 'Agregar pago por alojamiento' },
-									{ value: 1, text: 'Agregar pago por fecha' },
-								]"
-							></v-select>
-						</v-col>
-						<v-col cols="12">
-							<v-window id="collapse-1" v-model="visible" vertical>
-								<v-window-item>
-									<payments-form-lodging
-										:payments="items"
-										:lodgings="lodgings"
-										:place="place"
-									/>
-								</v-window-item>
-								<v-window-item>
-									<payments-form :count="count" />
-								</v-window-item>
-							</v-window>
-						</v-col>
-					</v-row>
-				</v-container>
-			</v-card-text>
-			<!-- table -->
-			<v-card-title>
-				Lista de Pagos
-				<v-spacer />
-				<v-spacer />
-				<v-spacer />
-				<v-text-field
-					v-model="wordForFilter"
-					dense
-					solo
-					rounded
-					append-icon="mdi-magnify"
-					label="Filtrar"
-					hide-details
-				></v-text-field>
-			</v-card-title>
-			<v-card-text>
 				<v-data-table
+					v-if="itemFiltered.length"
 					:search="wordForFilter"
 					:headers="fields"
 					:items="itemFiltered"
@@ -93,19 +84,19 @@
 						</v-edit-dialog>
 					</template>
 					<template v-slot:item.actions="{ item }">
-						<v-icon color="error" small @click="deleteItem(item._id)">
-							mdi-close
-						</v-icon>
+						<v-btn fab small color="error" @click="deleteItem(item._id)">
+							<v-icon>mdi-delete</v-icon>
+						</v-btn>
 					</template>
 				</v-data-table>
-			</v-card-text>
-			<v-card-text v-if="!items.length > 0"
-				><v-col class="text-center">
-					<h6>No hay pagos registrados</h6>
-				</v-col>
-			</v-card-text>
-		</v-card>
-	</div>
+			</v-col>
+		</v-row>
+		<v-row v-if="!items.length > 0"
+			><v-col class="text-center">
+				<h6>No hay pagos registrados</h6>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
@@ -183,7 +174,7 @@ export default {
 	},
 	methods: {
 		async deleteItem(id) {
-			confirm('Are you sure you want to delete this item?') && (await this.delete(id));
+			await this.delete(id);
 			this.updatePayments(this.idPlace);
 		},
 		onRowSelected(items) {

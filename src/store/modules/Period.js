@@ -6,32 +6,25 @@ const state = {
 	message: '',
 	periodSelected: null,
 	periods: null,
-	filterPeriodWord: '',
 	idPlace: '',
+	loading: false,
 };
 
 const getters = {
+	loading: state => state.loading,
 	idPlace: state => state.idPlace,
 	message: state => state.message,
 	periodSelected: state => state.periodSelected,
-	periods: state => {
-		if (state.filterPeriodWord)
-			return state.periods.filter(
-				period =>
-					period.name.toLowerCase().indexOf(state.filterPeriodWord.toLowerCase()) > -1
-			);
-		else return state.periods;
-	},
+	periods: state => state.periods,
 };
 
 const actions = {
 	async deletePeriod({ commit, dispatch }, { id, placeId }) {
 		try {
-			const response = await axios.delete(`${api}/periods/one/${id}`, { data: { placeId } });
-			const { name } = response.data;
+			await axios.delete(`${api}/periods/one/${id}`, { data: { placeId } });
 			commit('setMessage', {
 				type: 'success',
-				text: `Turno ${name} eliminado`,
+				text: `Turno eliminado`,
 			});
 			dispatch('fetchPeriods', placeId);
 		} catch (e) {
@@ -61,14 +54,10 @@ const actions = {
 	},
 	async fetchPeriods({ commit }, placeId) {
 		try {
-			commit('setPeriods', null);
+			commit('setLoading', true);
 			const response = await axios.get(`${api}/periods/${placeId}`);
 			const { periods } = response.data;
 			commit('setPeriods', periods);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Turnos descargados',
-			});
 		} catch (e) {
 			commit('setPeriods', null);
 			commit('setMessage', {
@@ -77,18 +66,19 @@ const actions = {
 			});
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
+		commit('setLoading', false);
 	},
 };
 
 const mutations = {
+	setLoading(state, value) {
+		state.loading = value;
+	},
 	setIdPlacePeriod(state, value) {
 		state.idPlace = value;
 	},
 	setMessage(state, value) {
 		state.message = value;
-	},
-	filterPeriod(state, value) {
-		state.filterPeriodWord = value;
 	},
 	selectPeriod(state, value) {
 		state.periodSelected = state.periods.find(c => c.id == value);
