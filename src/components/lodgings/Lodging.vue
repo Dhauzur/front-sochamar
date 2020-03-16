@@ -67,6 +67,20 @@
 						</template>
 						<span>Gestionar pagos del lugar</span>
 					</v-tooltip>
+					<v-tooltip v-if="lodgingSelect" attach bottom min-width="180" class="mr-2">
+						<template v-slot:activator="{ on }">
+							<v-btn
+								color="accent"
+								dark
+								small
+								v-on="on"
+								@click.stop="sheet = !sheete"
+							>
+								<v-icon>mdi-pencil</v-icon><span>Editar</span>
+							</v-btn>
+						</template>
+						<span>Editar el hospedaje</span>
+					</v-tooltip>
 					<v-tooltip v-if="getMirrorLodging || editMode" attach bottom class="mr-2">
 						<template v-slot:activator="{ on }">
 							<v-btn color="success" dark small @click="saveLodgings()" v-on="on">
@@ -592,7 +606,6 @@ export default {
 		},
 		enableEdit(payload) {
 			if (this.place && payload.item) {
-				this.sheet = !this.sheete;
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
