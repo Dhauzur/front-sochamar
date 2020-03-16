@@ -30,8 +30,8 @@
 					</v-select>
 				</v-col>
 				<!-- activity button -->
-				<v-col v-if="periods.length > 0 && place" md="8" class="d-flex flex-row mt-2">
-					<v-tooltip attach bottom min-width="180" class="mr-2">
+				<v-col v-if="place" md="8" class="d-flex flex-row mt-2">
+					<v-tooltip v-if="periods.length > 0" attach bottom min-width="180" class="mr-2">
 						<template v-slot:activator="{ on }">
 							<v-btn color="accent" dark small @click="createOneLodging()" v-on="on">
 								<v-icon>mdi-plus</v-icon><span>Actividad</span>
