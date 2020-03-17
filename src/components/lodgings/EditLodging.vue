@@ -74,7 +74,7 @@
 										>
 											Continuar
 										</v-btn>
-										<v-btn small text @click="dialogAddPerson = false">
+										<v-btn small text @click="closeDialogPerson">
 											Cancelar
 										</v-btn>
 									</v-stepper-content>
@@ -102,7 +102,7 @@
 									<v-stepper-content step="3">
 										<v-select
 											v-model="select"
-											:items="rooms"
+											:items="selectRooms"
 											outlined
 											item-value="id"
 											item-text="name"
@@ -118,12 +118,7 @@
 								</v-stepper-items>
 							</v-stepper>
 						</v-dialog>
-						<timeline
-							v-if="Array.isArray(rooms) && rooms.length > 0"
-							:items="items"
-							:groups="groups"
-							:options="options"
-						/>
+						<timeline :items="items" :groups="groups" :options="options" />
 					</v-tab-item>
 					<!-- @todo services -->
 					<v-tab-item style="min-height: 300px">
@@ -163,7 +158,7 @@ export default {
 	data() {
 		return {
 			tab: 0,
-			select: 'Sin habitacion',
+			select: 'Sin habitación',
 			stepper: 1,
 			dialogChangeDate: false,
 			dialogAddPerson: false,
@@ -179,8 +174,13 @@ export default {
 		};
 	},
 	computed: {
+		selectRooms() {
+			let rooms = ['Sin habitación'];
+			rooms.push(this.rooms);
+			return rooms;
+		},
 		groups() {
-			let groups = [{ id: 'Sin habitacion' }];
+			let groups = [{ id: 'Sin habitación' }];
 			if (this.rooms) {
 				this.rooms.map(room => groups.push({ id: room.id, content: room.name }));
 				return groups;
@@ -242,7 +242,7 @@ export default {
 		closeDialogPerson() {
 			this.personSelected = null;
 			this.dialogAddPerson = false;
-			this.select = 'phlain';
+			this.select = 'Sin habitación';
 			this.stepper = 1;
 		},
 		customFilter(item, queryText) {
@@ -324,7 +324,9 @@ export default {
 		 */
 		setDatePerson() {
 			const id = this.personSelected._id;
-			const name = `${this.personSelected.firstName} ${this.personSelected.lastName}`;
+			const name = `${this.personSelected.firstName} ${
+				this.personSelected.lastName ? this.personSelected.lastName : ''
+			}`;
 			const dateStart = this.setDateStartPerson()
 				? this.setDateStartPerson()
 				: this.dateStart;

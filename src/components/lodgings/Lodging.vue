@@ -254,7 +254,7 @@
 				</v-col>
 			</v-row>
 			<v-bottom-sheet v-if="lodgingSelect" v-model="sheet">
-				<v-sheet>
+				<v-sheet min-height="800">
 					<edit-lodging :lodgings="lodgings" :id-place="place" />
 				</v-sheet>
 			</v-bottom-sheet>
