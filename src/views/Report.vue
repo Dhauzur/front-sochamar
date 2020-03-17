@@ -13,8 +13,7 @@
 								:items="members"
 								dense
 								label="Selecione lugar"
-								solo
-								rounded
+								outlined
 							>
 							</v-select>
 							<div>
@@ -24,13 +23,12 @@
 									placeholder="Escriba aqui su informe..."
 									rows="1"
 									max-rows="6"
+									outlined
 									required
 								></v-textarea>
 							</div>
-							<v-btn class="m-2" type="submit" rounded small color="primary"
-								>Enviar</v-btn
-							>
-							<v-btn class="m-2" type="reset" rounded small text>Borrar todo</v-btn>
+							<v-btn class="m-2" type="reset" small text>Borrar todo</v-btn>
+							<v-btn class="m-2" type="submit" small color="primary">Enviar</v-btn>
 						</v-form>
 					</v-card-text>
 					<v-card-text>
