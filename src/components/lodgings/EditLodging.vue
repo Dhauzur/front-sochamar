@@ -175,8 +175,11 @@ export default {
 	},
 	computed: {
 		selectRooms() {
-			let rooms = ['Sin habitación'];
-			rooms.push(this.rooms);
+			let rooms = [];
+			if (this.rooms) {
+				rooms = [...this.rooms];
+			}
+			rooms.unshift('Sin habitación');
 			return rooms;
 		},
 		groups() {
