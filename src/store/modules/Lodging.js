@@ -327,9 +327,19 @@ const mutations = {
 		if (!value) state.lodgingSelect = null;
 	},
 	createOneLodging(state) {
+		const generateServiceArray = place => {
+			const temporalArray = [];
+			let serviceArray;
+			place.services.forEach(() => {
+				temporalArray.push(1);
+			});
+			serviceArray = [temporalArray, temporalArray];
+			return JSON.stringify(serviceArray);
+		};
 		state.editMode = false;
 		let place = state.Places.find(c => c.value == state.place);
 		let verificate = true;
+		const generatedService = generateServiceArray(place);
 		state.lodgings.forEach(lod => {
 			if (
 				lod.group == state.periods.getIds()[0] &&
@@ -341,7 +351,7 @@ const mutations = {
 				verificate = false;
 		});
 		if (verificate) {
-			if (place.text == 'Turismo')
+			if (place.text === 'Turismo') {
 				state.lodgings.add({
 					group: state.periods.getIds()[0],
 					start: moment().hours(15),
@@ -349,10 +359,10 @@ const mutations = {
 						.hours(12)
 						.add(1, 'day'),
 					content: place.text,
-					service: ['[[0,0,0,0],[0,0,0,0]]'],
+					service: [generatedService],
 					place: state.place,
 				});
-			else
+			} else {
 				state.lodgings.add({
 					group: state.periods.getIds()[0],
 					start: moment().hours(15),
@@ -360,9 +370,10 @@ const mutations = {
 						.hours(12)
 						.add(1, 'day'),
 					content: place.text,
-					service: ['[[1,1,1,1],[1,1,1,1]]'],
+					service: [generatedService],
 					place: state.place,
 				});
+			}
 		} else {
 			state.message = {
 				type: 'default',
@@ -385,6 +396,7 @@ const mutations = {
 					value: v._id,
 					text: v.name,
 					prices: v.prices,
+					services: v.services,
 				};
 			});
 			Places.push(...mapValues);

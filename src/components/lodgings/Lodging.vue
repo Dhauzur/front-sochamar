@@ -337,9 +337,10 @@ export default {
 							.add(1, 'day');
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							var place = this.places.find(c => c.value == this.place).text;
+							var place = this.places.find(c => c.value === this.place).text;
 							item.content = place;
 							//Service es la cantidad de personas que usan este servicio
+							console.log(place);
 							if (place != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
 							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
 							var timestamp = new Date().getTime().toString(16);
