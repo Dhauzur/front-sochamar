@@ -4,12 +4,17 @@
 			<v-col>
 				<v-row>
 					<v-col cols="10">
-						<timeline :items="items" :groups="groups" :options="options" />
+						<timeline
+							v-if="Array.isArray(rooms) && rooms.length > 0"
+							:items="items"
+							:groups="groups"
+							:options="options"
+						/>
 					</v-col>
 					<v-col cols="2">
 						<v-row>
 							<v-col cols="12">
-								<v-dialog ref="dialog" v-model="dialogChangeDate" width="290px">
+								<v-dialog v-model="dialogChangeDate" width="290px">
 									<template v-slot:activator="{ on }">
 										<v-btn small block color="primary" v-on="on">
 											Cambiar fecha del hospedaje
@@ -157,33 +162,38 @@ export default {
 			dateStart: null,
 			dateStartLodging: null,
 			dateStartPersons: null,
-			isLoadingPerson: false,
 			oldDateLodging: null,
 			personSelected: null,
 			results: [],
 			showPopover: false,
-			groups: [
-				{
-					id: 0,
-					content: 'Group 1',
-				},
-			],
 		};
 	},
 	computed: {
+		groups() {
+			if (this.rooms) {
+				return this.rooms.map(room => ({ id: room.id, content: room.name }));
+			}
+			return [];
+		},
 		items() {
-			return [
-				{
-					id: 0,
-					group: 0,
-					start: new Date(),
-					content: 'Item 1',
-				},
-			];
+			if (this.lodgingSelect.persons) {
+				return this.lodgingSelect.persons.map(person => ({
+					id: person.id,
+					group: person.group,
+					start: person.dateStart,
+					end: person.dateEnd,
+					content: person.name,
+				}));
+			}
+			return [];
 		},
 		options() {
 			return {
+				start: moment(),
+				end: moment().add(14, 'day'),
 				editable: false,
+				zoomMin: 1000 * 60 * 60 * 24 * 7,
+				zoomMax: 1000 * 60 * 60 * 24 * 30,
 			};
 		},
 		personFormatted() {
@@ -314,7 +324,8 @@ export default {
 			this.verifyOverlay() === 'OK'
 				? this.updateLodgingPersons({
 						id,
-						search,
+						name: search,
+						group: 0,
 						dateStart: start,
 						dateEnd: end,
 				  })

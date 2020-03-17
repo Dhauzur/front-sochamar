@@ -140,6 +140,9 @@ export default {
 				type: newVal.type,
 			});
 		},
+		periods(newVal) {
+			this.setPeriods(newVal);
+		},
 	},
 	mounted() {
 		this.setIdPlacePeriod(this.idPlace);
@@ -184,6 +187,7 @@ export default {
 			deletePeriod: 'Period/deletePeriod',
 		}),
 		...mapMutations({
+			setPeriods: 'Lodging/setPeriods',
 			selectPeriod: 'Period/selectPeriod',
 			setIdPlacePeriod: 'Period/setIdPlacePeriod',
 		}),

@@ -41,7 +41,7 @@ const actions = {
 			await axios.post(api + '/periods', period);
 			commit('setMessage', {
 				type: 'success',
-				text: 'Empresa creada ',
+				text: 'Turno creado ',
 			});
 			dispatch('fetchPeriods', period.placeId);
 		} catch (e) {
@@ -79,6 +79,7 @@ const mutations = {
 	},
 	setMessage(state, value) {
 		state.message = value;
+		console.log('set perio period');
 	},
 	selectPeriod(state, value) {
 		state.periodSelected = state.periods.find(c => c.id == value);
