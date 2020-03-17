@@ -227,10 +227,10 @@ export default {
 			this.setDateIntheState();
 		},
 		//Si la modificacion al nuevo hpspedaje no es valida, el input date vuelve a su posicion original
-		dateStartLodging(newDate, oldDate) {
+		dateStart(newDate, oldDate) {
 			this.oldDateLodging = oldDate;
 		},
-		dateEndLodging(newDate, oldDate) {
+		dateEnd(newDate, oldDate) {
 			this.oldDateLodging = oldDate;
 		},
 	},
@@ -314,29 +314,29 @@ export default {
 			}
 		},
 		setDateIntheState() {
-			this.dateStartLodging = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
-			this.dateEndLodging = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 			this.datesPersons = [this.dateStart, this.dateEnd];
-			this.dates = [this.dateStartLodging, this.dateEndLodging];
+			this.dates = [this.dateStart, this.dateEnd];
 		},
 		/**
 		 * set date person in the store
 		 */
 		setDatePerson() {
 			const id = this.personSelected._id;
-			const search = `${this.personSelected.firstName} ${this.personSelected.firstName}`;
-			const start = this.setDateStartPerson() ? this.setDateStartPerson() : this.dateStart;
-			const end = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
+			const name = `${this.personSelected.firstName} ${this.personSelected.lastName}`;
+			const dateStart = this.setDateStartPerson()
+				? this.setDateStartPerson()
+				: this.dateStart;
+			const dateEnd = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
 			const group = this.select;
 			this.verifyOverlay() === 'OK'
 				? this.updateLodgingPersons({
 						id,
 						group,
-						name: search,
-						dateStart: start,
-						dateEnd: end,
+						name,
+						dateStart,
+						dateEnd,
 				  })
 				: this.$toasted.show(`Ya existe un pasajero para el rango de fecha selecionado`, {
 						type: 'error',
@@ -344,19 +344,6 @@ export default {
 			this.personSelected = null;
 			this.saveLodgings();
 			this.closeDialogPerson();
-		},
-		/**
-		 * cancel the adiction person when close the popover
-		 */
-		cancelAddPerson() {
-			this.personSelected = '';
-		},
-		/**
-		 * add a person to lodging from autocomplete
-		 * show popover for set date
-		 */
-		addPersonToLodging(selected) {
-			this.personSelected = selected;
 		},
 		/**
 		 * check if date of person is already taken
