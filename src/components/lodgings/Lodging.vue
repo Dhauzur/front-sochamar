@@ -233,15 +233,16 @@
 			</v-row>
 			<!--Tabla de precios y servicios V2-->
 			<p>
-				Nota importante: hasta los inputs y la proyection table esta funcionando en base a
-				servicios antiguos
+				Nota 1: la proyection table antigua funciona con 4 tr definidos, cada tr corresponde
+				a un servicio antiguo
 			</p>
-			<div>{{ proyectionTable[0] }}</div>
+			<p>
+				Nota 2: por cada services va ser necesario renderizar un tr
+			</p>
 			<v-row>
 				<v-col v-if="prices && place" cols="12" class="overflow-auto">
 					<v-simple-table>
 						<template v-slot:default>
-							<p>Por cada services de place tendremos que generar una fila</p>
 							<thead>
 								<tr>
 									<td>Actividad</td>
@@ -255,28 +256,21 @@
 							</thead>
 							<tbody>
 								<tr>
-									<td>place.services.name</td>
-									<td>place.services.price</td>
+									<td>services.name</td>
+									<td>services.price</td>
 									<td>
-										por cada item en la proyection table, aqui renderiza los
-										inputs
+										podria interactuar con el input de esta forma: v-model=
+										p.service[services.name]
 									</td>
-								</tr>
-								<tr>
-									<td>ALOJAMIENTO</td>
-									<td v-if="place">
-										{{ prices.prices[3] }}
-									</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
-										<span v-if="!editMode">{{ p.service.accommodation }}</span>
+									<td v-for="(p, index) in proyectionTablev2" :key="index">
 										<input
-											v-if="editMode && p.service.accommodation !== undefined"
+											v-if="p.service['comida'] !== undefined"
 											:id="p.id + ',' + p.date"
-											v-model="p.service.accommodation"
+											v-model="p.service['comida']"
 											type="number"
 											class="inputService"
 											name="accommodation"
-											:placeholder="p.service.accommodation"
+											:placeholder="p.service['comida']"
 											@change="detectInputChange"
 										/>
 									</td>
@@ -284,7 +278,7 @@
 								<!--TOTAL-->
 								<tr v-if="place" class="borderModule">
 									<td colspan="2">TOTAL</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
+									<td v-for="(p, index) in proyectionTablev2" :key="index">
 										<span v-if="finalyPrice[index] != 0">{{
 											finalyPrice[index]
 										}}</span>
@@ -459,9 +453,10 @@ export default {
 		};
 	},
 	computed: {
+		//funcion de mirrorLodginds
 		getMirrorLodging() {
 			var hola = JSON.stringify(this.lodgings);
-			if (hola == this.mirrorLodging) return false;
+			if (hola === this.mirrorLodging) return false;
 			else return true;
 		},
 		//Precio final de la proyection table, hace uso de los calculos antiguos
@@ -487,17 +482,18 @@ export default {
 				});
 			return prices;
 		},
+		//falta ver para que sirve
 		prices() {
 			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
 		},
+		//Esta funcion le da vida a la tabla de servicios y sus precios
 		proyectionTable() {
-			// eslint-disable-next-line no-unused-vars
-			var proyectionTable = [];
-			var daysLodging = [];
-			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
-			//aca son creado los lodging del dia, por cada dia en nuestra proyection table daylodging se encuentra presente para guardar los numeros de servicios utilizados
-			for (var i = 0; i <= numberDays; i++) {
+			let daysLodging = [];
+			let numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
+			//Aca son creado los lodging del dia, por cada dia en nuestra proyection table
+			//daylodging se encuentra presente para guardar los numeros de servicios utilizados.
+			for (let i = 0; i <= numberDays; i++) {
 				daysLodging.push({
 					date: moment(this.rangeDate.start)
 						.add(i, 'day')
@@ -511,6 +507,8 @@ export default {
 			this.lodgings.forEach(l => {
 				var index = 0;
 				//Solo service es añadido
+				//Hace trigger cuando se renderiza la proyection table
+				//Aca debemos trabajar primero
 				if (!this.editMode) {
 					daysLodging.forEach(day => {
 						if (
@@ -519,7 +517,7 @@ export default {
 						) {
 							if (
 								!this.place &&
-								this.places.find(c => c.value == l.place).text == 'Turismo'
+								this.places.find(c => c.value === l.place).text === 'Turismo'
 							) {
 								//El precio iba a estar segun la cantidad de personas en turismo
 								//OMITIR ESTO MIENTRAS
@@ -559,8 +557,9 @@ export default {
 					});
 				}
 				//Service y la id del lodging son añadidos
+				//Hace trigger cuando yo selecciono un lodging del timeline
 				if (this.lodgingSelect) {
-					if (this.editMode && this.lodgingSelect.id == l.id) {
+					if (this.editMode && this.lodgingSelect.id === l.id) {
 						daysLodging.forEach(day => {
 							if (
 								moment(day.date).isSameOrAfter(
@@ -591,6 +590,118 @@ export default {
 					}
 				}
 			});
+			return daysLodging;
+		},
+		//Nueva proyection table
+		proyectionTablev2() {
+			let daysLodging = [];
+			let numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
+			//Aca son creado los lodging del dia, por cada dia en nuestra proyection table
+			//daylodging se encuentra presente para guardar los numeros de servicios utilizados.
+			for (let i = 0; i <= numberDays; i++) {
+				daysLodging.push({
+					date: moment(this.rangeDate.start)
+						.add(i, 'day')
+						.format('YYYY-MM-DD'),
+					service: [],
+					id: null,
+				});
+			}
+			//En esta parte en base a los lodging existentes, daylodgings es recorrido y poblado con datos como services y la id del lodging
+			//La id del lodging solo se añade si if(this.lodgingSelect) es valido
+			this.lodgings.forEach(l => {
+				var index = 0;
+				const place = this.places.find(c => c.value === l.place);
+				//Solo service es añadido
+				if (!this.editMode) {
+					daysLodging.forEach(day => {
+						if (
+							moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) &&
+							moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
+						) {
+							if (
+								!this.place &&
+								this.places.find(c => c.value === l.place).text === 'Turismo'
+							) {
+								//El precio iba a estar segun la cantidad de personas en turismo
+								//OMITIR ESTO MIENTRAS
+								/*var numberPassangerMax = this.periods.get(l.group)
+									.numberPassangerMax;*/
+								day.service = {
+									breakfast: 0,
+									lunch: 0,
+									dinner: 0,
+									accommodation: 0,
+								};
+							} else {
+								/*var service = JSON.parse(l.service[0]);*/
+								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
+								const reduceServices = (acc, service) => {
+									return Object.assign(acc, {
+										[service.name]: 1,
+									});
+								};
+								const objectBasedOnServices = place.services.reduce(
+									reduceServices,
+									{}
+								);
+								//Aca podriamos definir las variables en base a nombreServicio: 1;
+								day.service = objectBasedOnServices;
+								//Aca esta evaluando si existio ingreso de servicios por parte de los inputs
+								/*day.service = {
+									breakfast: day.service.breakfast
+										? service[index][0] + day.service.breakfast
+										: service[index][0],
+									lunch: day.service.lunch
+										? service[index][1] + day.service.lunch
+										: service[index][1],
+									dinner: day.service.dinner
+										? service[index][2] + day.service.dinner
+										: service[index][2],
+									accommodation: day.service.accommodation
+										? service[index][3] + day.service.accommodation
+										: service[index][3],
+								};*/
+							}
+							index++;
+						}
+					});
+				}
+				//Service y la id del lodging son añadidos
+				if (this.lodgingSelect) {
+					if (this.editMode && this.lodgingSelect.id === l.id) {
+						daysLodging.forEach(day => {
+							if (
+								moment(day.date).isSameOrAfter(
+									moment(l.start).format('YYYY-MM-DD')
+								) &&
+								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
+							) {
+								var service = JSON.parse(l.service[0]);
+								//aca distribuye la cantidad de servicios usados, hace uso del servicio antiguo
+								//esta parte debe funcionar en base  a los nuevos services
+								day.service = {
+									breakfast: day.service.breakfast
+										? service[index][0] + day.service.breakfast
+										: service[index][0],
+									lunch: day.service.lunch
+										? service[index][1] + day.service.lunch
+										: service[index][1],
+									dinner: day.service.dinner
+										? service[index][2] + day.service.dinner
+										: service[index][2],
+									accommodation: day.service.accommodation
+										? service[index][3] + day.service.accommodation
+										: service[index][3],
+								};
+								day.id = l.id;
+								index++;
+							}
+						});
+					}
+				}
+			});
+			console.log(daysLodging);
 			return daysLodging;
 		},
 		//Complemento de la proyectionTable, esta función se encarga de crear y renderizar las columnas de dias
