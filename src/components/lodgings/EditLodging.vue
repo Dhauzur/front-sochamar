@@ -41,7 +41,7 @@
 								</v-dialog>
 							</v-col>
 							<v-col cols="12">
-								<v-dialog v-model="dialogAddPerson" max-width="330">
+								<v-dialog v-model="dialogAddPerson" max-width="440">
 									<template v-slot:activator="{ on }">
 										<v-btn small block color="primary" v-on="on">
 											Agregar persona
@@ -50,11 +50,14 @@
 									<v-stepper v-model="stepper" class="elevation-12">
 										<v-stepper-header>
 											<v-stepper-step :complete="stepper > 1" step="1">
-												persona
+												Persona
 											</v-stepper-step>
 											<v-divider></v-divider>
 											<v-stepper-step :complete="stepper > 2" step="2">
-												fecha
+												Fecha
+											</v-stepper-step>
+											<v-stepper-step :complete="stepper > 3" step="3">
+												Habitación
 											</v-stepper-step>
 										</v-stepper-header>
 										<v-stepper-items>
@@ -97,6 +100,33 @@
 													:min="dateStart"
 												>
 												</v-date-picker>
+												<v-btn
+													small
+													text
+													rounded
+													color="primary"
+													@click="stepper = 3"
+												>
+													Continuar
+												</v-btn>
+												<v-btn
+													text
+													rounded
+													small
+													@click="closeDialogPerson"
+												>
+													Cancelar
+												</v-btn>
+											</v-stepper-content>
+											<v-stepper-content step="3">
+												<v-select
+													v-model="select"
+													:items="rooms"
+													outlined
+													item-value="id"
+													item-text="name"
+													dense
+												></v-select>
 												<v-btn
 													text
 													rounded
@@ -149,6 +179,7 @@ export default {
 	},
 	data() {
 		return {
+			select: 'phlain',
 			stepper: 1,
 			dialogChangeDate: false,
 			dialogAddPerson: false,
@@ -170,10 +201,12 @@ export default {
 	},
 	computed: {
 		groups() {
+			let groups = [{ id: 'phlain', content: 'phlain' }];
 			if (this.rooms) {
-				return this.rooms.map(room => ({ id: room.id, content: room.name }));
+				this.rooms.map(room => groups.push({ id: room.id, content: room.name }));
+				return groups;
 			}
-			return [];
+			return groups;
 		},
 		items() {
 			if (this.lodgingSelect.persons) {
@@ -229,6 +262,7 @@ export default {
 		closeDialogPerson() {
 			this.personSelected = null;
 			this.dialogAddPerson = false;
+			this.select = 'phlain';
 			this.stepper = 1;
 		},
 		customFilter(item, queryText) {
@@ -321,11 +355,12 @@ export default {
 			const search = `${this.personSelected.firstName} ${this.personSelected.firstName}`;
 			const start = this.setDateStartPerson() ? this.setDateStartPerson() : this.dateStart;
 			const end = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
+			const group = this.select;
 			this.verifyOverlay() === 'OK'
 				? this.updateLodgingPersons({
 						id,
+						group,
 						name: search,
-						group: 0,
 						dateStart: start,
 						dateEnd: end,
 				  })
@@ -334,6 +369,7 @@ export default {
 				  });
 			this.personSelected = null;
 			this.showPopover = false;
+			this.saveLodgings();
 			this.closeDialogPerson();
 		},
 		/**
