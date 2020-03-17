@@ -126,7 +126,7 @@
 						/>
 					</v-tab-item>
 					<!-- @todo services -->
-					<v-tab-item>
+					<v-tab-item style="min-height: 300px">
 						servicios generales
 					</v-tab-item>
 					<v-tab-item>
