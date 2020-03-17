@@ -2,12 +2,6 @@
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
 			<v-col v-if="!passwordRecover" cols="12" sm="6" md="4" lg="3" class="pb-5">
-				<!-- reemplazar imagen por el logo final -->
-				<!-- <v-img
-						src="@/assets/example.jpeg"
-						height="200px"
-						style="margin: 0 auto"
-					></v-img> -->
 				<Logo style="max-height: 30vh;" />
 				<v-form>
 					<v-text-field
@@ -32,7 +26,7 @@
 						@click:append="showPassword = !showPassword"
 					/>
 				</v-form>
-				<v-btn :loading="loading" block small color="primary" rounded @click="onSubmit">
+				<v-btn :loading="loading" block small color="primary" @click="onSubmit">
 					Ingresar
 				</v-btn>
 				<v-spacer /><GoogleButton class="my-3"></GoogleButton><v-spacer />
@@ -56,7 +50,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import PasswordRecover from '../components/auth/PasswordRecover';
 import GoogleButton from '../components/auth/GoogleButton';
-import Logo from '../assets/logo';
+import Logo from '@/assets/logo';
 
 export default {
 	components: {
