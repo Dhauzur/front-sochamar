@@ -1,102 +1,98 @@
 <template lang="html">
-	<v-row justify="center">
-		<v-col cols="12" sm="10" md="8">
-			<v-card class="mx-auto" outlined :loading="loading">
-				<v-list-item three-line>
-					<v-list-item-content>
-						<div class="headline mb-4">
-							Gestión de <span class="secondary--text">Habitaciones</span>
-						</div>
-						<v-list-item-title class="overline mb-1">Agregar nueva</v-list-item-title>
-					</v-list-item-content>
-				</v-list-item>
-				<v-card-actions>
-					<v-container>
-						<v-row>
-							<v-col cols="12" md="4">
-								<v-text-field
-									v-model="$v.form.name.$model"
-									label="Nombre de la Habitación"
-									placeholder="N-1"
-									outlined
-									dense
-									rounded
-									:error-messages="nameErrors"
-									@input="$v.form.name.$touch()"
-									@blur="$v.form.name.$touch()"
-								></v-text-field>
-							</v-col>
-							<v-col cols="12" md="4">
-								<v-text-field
-									v-model="$v.form.numberPassangerMax.$model"
-									label="Cant. máxima de personas"
-									outlined
-									dense
-									rounded
-									type="number"
-									placeholder="4"
-									:error-messages="maxPersonsErrors"
-									@input="$v.form.numberPassangerMax.$touch()"
-									@blur="$v.form.numberPassangerMax.$touch()"
-								></v-text-field>
-							</v-col>
-							<v-col cols="12" md="4" class="mt-2">
-								<v-btn
+	<v-card class="mx-auto" outlined :loading="loading">
+		<v-list-item three-line>
+			<v-list-item-content>
+				<div class="headline mb-4">
+					Gestión de Habitaciones
+				</div>
+				<v-list-item-title class="overline mb-1">Agregar nueva</v-list-item-title>
+			</v-list-item-content>
+		</v-list-item>
+		<v-card-actions>
+			<v-container>
+				<v-row>
+					<v-col cols="12" md="4">
+						<v-text-field
+							v-model="$v.form.name.$model"
+							label="Nombre de la Habitación"
+							placeholder="N-1"
+							outlined
+							dense
+							rounded
+							:error-messages="nameErrors"
+							@input="$v.form.name.$touch()"
+							@blur="$v.form.name.$touch()"
+						></v-text-field>
+					</v-col>
+					<v-col cols="12" md="4">
+						<v-text-field
+							v-model="$v.form.numberPassangerMax.$model"
+							label="Cant. máxima de personas"
+							outlined
+							dense
+							rounded
+							type="number"
+							placeholder="4"
+							:error-messages="maxPersonsErrors"
+							@input="$v.form.numberPassangerMax.$touch()"
+							@blur="$v.form.numberPassangerMax.$touch()"
+						></v-text-field>
+					</v-col>
+					<v-col cols="12" md="4" class="mt-2">
+						<v-btn
+							small
+							rounded
+							block
+							color="primary"
+							:loading="loading"
+							@click="onsubmit()"
+						>
+							Guardar
+						</v-btn>
+					</v-col>
+				</v-row>
+				<v-row v-if="Boolean(rooms)">
+					<v-col cols="12" md="8" class="mt-5 text-left">
+						Lista de Habitaciones
+					</v-col>
+					<v-col cols="12" md="4">
+						<v-text-field
+							v-model="filterRoomWord"
+							dense
+							outlined
+							rounded
+							append-icon="mdi-magnify"
+							label="Filtrar"
+							hide-details
+						></v-text-field>
+					</v-col>
+					<v-col>
+						<v-data-table
+							:search="filterRoomWord"
+							:headers="fields"
+							:items="rooms"
+							:items-per-page="5"
+						>
+							<template v-slot:item.actions="{ item }">
+								<v-icon
+									color="error"
 									small
-									rounded
-									block
-									color="primary"
-									:loading="loading"
-									@click="onsubmit()"
+									@click="
+										deleteRoom({
+											id: item.id,
+											placeId: idPlace,
+										})
+									"
 								>
-									Guardar
-								</v-btn>
-							</v-col>
-						</v-row>
-						<v-row v-if="Boolean(rooms)">
-							<v-col cols="12" md="8" class="mt-5 text-left">
-								Lista de Habitaciones
-							</v-col>
-							<v-col cols="12" md="4">
-								<v-text-field
-									v-model="filterRoomWord"
-									dense
-									outlined
-									rounded
-									append-icon="mdi-magnify"
-									label="Filtrar"
-									hide-details
-								></v-text-field>
-							</v-col>
-							<v-col>
-								<v-data-table
-									:search="filterRoomWord"
-									:headers="fields"
-									:items="rooms"
-									:items-per-page="5"
-								>
-									<template v-slot:item.actions="{ item }">
-										<v-icon
-											color="error"
-											small
-											@click="
-												deleteRoom({
-													id: item.id,
-													placeId: idPlace,
-												})
-											"
-										>
-											mdi-delete
-										</v-icon>
-									</template>
-								</v-data-table>
-							</v-col>
-						</v-row>
-					</v-container>
-				</v-card-actions>
-			</v-card>
-		</v-col>
-	</v-row>
+									mdi-delete
+								</v-icon>
+							</template>
+						</v-data-table>
+					</v-col>
+				</v-row>
+			</v-container>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>
