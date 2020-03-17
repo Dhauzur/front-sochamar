@@ -287,7 +287,7 @@ export default {
 				return this.datesPersons[1];
 			}
 		},
-		async setDates() {
+		setDates() {
 			let verificate = true;
 			const start = this.setDateStart();
 			const end = this.setDateEnd();
