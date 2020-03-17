@@ -36,7 +36,7 @@
 					¿Olvidaste tu contraseña?
 				</v-btn>
 			</v-col>
-			<v-col v-else cols="12" sm="8" md="4">
+			<v-col v-else cols="12" sm="8" md="4" lg="3">
 				<PasswordRecover
 					:disable-password-recover="controlPasswordRecover"
 				></PasswordRecover>

@@ -1,5 +1,5 @@
 <template>
-	<v-card flat width="400px">
+	<v-card flat>
 		<Logo style="max-height: 30vh;" />
 		<v-card-subtitle>
 			Recuperar contraseña
