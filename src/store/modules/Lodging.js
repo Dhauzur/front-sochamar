@@ -426,6 +426,7 @@ const mutations = {
 			});
 	},
 	setPeriods(state, values) {
+		state.periods = new DataSet([]);
 		const dataSet = new DataSet([]);
 		const mappedValues = values.map(period => {
 			return {
@@ -435,7 +436,7 @@ const mutations = {
 			};
 		});
 		dataSet.add(mappedValues);
-		state.periods = dataSet;
+		setTimeout(() => (state.periods = dataSet), 1);
 	},
 	setRangeDate(state, value) {
 		state.rangeDate = value;
