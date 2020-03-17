@@ -1,7 +1,7 @@
 <template>
-	<b-container id="nav">
-		<b-row class="justify-content-center overflow-auto">
-			<b-col md="6">
+	<v-container id="nav">
+		<v-row class="justify-content-center overflow-auto">
+			<v-col md="6">
 				<b-form v-if="show" @submit="onSubmit" @reset="onReset">
 					<b-form-group
 						id="input-group-1"
@@ -124,9 +124,9 @@
 						q
 					}}</pre>
 				</b-card>
-			</b-col>
-		</b-row>
-	</b-container>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>

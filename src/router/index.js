@@ -20,8 +20,9 @@ const routes = [
 	},
 	{
 		path: '/management',
+		name: 'management',
 		component: Management,
-		meta: { title: 'Administrar hospedajes', layout: 'layout' },
+		meta: { title: 'Administración', layout: 'layout' },
 	},
 	{
 		path: '/reports',

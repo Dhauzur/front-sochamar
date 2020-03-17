@@ -7,50 +7,11 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
-
 export default {
-	data() {
-		return {
-			oauthJWT: '',
-			drawer: true,
-		};
-	},
 	computed: {
-		profileAvatar() {
-			return this.profile.img;
-		},
-		fullName() {
-			return `${this.profile.name} ${this.profile.lastName}`;
-		},
 		layout() {
 			return this.$route.meta.layout || 'default';
 		},
-		...mapGetters({
-			isLogged: 'Auth/isLogged',
-			profile: 'User/profile',
-		}),
-	},
-	created() {
-		this.oauthJWT = this.$route.query.token;
-		if (this.oauthJWT) {
-			this.deleteQueryFromRoute();
-			this.setToken(this.oauthJWT);
-			this.fetchProfile();
-			this.oauthJWT = '';
-		} else {
-			if (this.isLogged) {
-				this.setToken(localStorage.getItem('token'));
-				this.fetchProfile();
-			}
-		}
-	},
-	methods: {
-		deleteQueryFromRoute() {
-			this.$router.replace({ query: null });
-		},
-		...mapMutations({ setToken: 'Auth/setToken', logout: 'Auth/logout' }),
-		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
 };
 </script>
@@ -59,15 +20,34 @@ export default {
 @import '../node_modules/vue2vis/dist/vue2vis.css';
 </style>
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css?family=Kanit|Poppins|Righteous&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
 #app {
-	font-family: 'Poppins', sans-serif;
+	font-family: 'Montserrat', sans-serif !important;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	overflow-x: hidden;
 	height: 100vh;
-	background-color: #f5f5f5;
+	line-height: 1.2;
+}
+
+td {
+	border: none !important;
+	padding: 1px !important;
+	padding-right: 2px !important;
+	min-width: 60px;
+	border-radius: 5px;
+	background-color: #80808014;
+	transition: all ease-in-out 0.3s;
+}
+
+td:hover {
+	background-color: #80808047 !important;
+	box-shadow: 0px 2px 3px -2px rgba(0, 0, 0, 0.75);
+	transition: all ease-in-out 0.3s;
+}
+table {
+	border-spacing: 5px !important;
 }
 
 .fade-enter-active,

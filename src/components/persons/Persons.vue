@@ -14,7 +14,7 @@
 					/>
 				</v-col>
 			</v-row>
-			<v-dropdown-divider v-if="personsList.length > 0" />
+			<v-divider v-if="personsList.length > 0" />
 			<v-form>
 				<v-row>
 					<!-- avatar -->

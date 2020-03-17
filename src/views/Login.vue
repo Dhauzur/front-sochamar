@@ -1,71 +1,53 @@
 <template lang="html">
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
-			<v-col v-if="!passwordRecover" cols="12" sm="6" md="4" lg="3">
-				<v-card outlined light>
-					<!-- reemplazar imagen por el logo final -->
-					<v-img
+			<v-col v-if="!passwordRecover" cols="12" sm="6" md="4" lg="3" class="pb-5">
+				<!-- reemplazar imagen por el logo final -->
+				<!-- <v-img
 						src="@/assets/example.jpeg"
 						height="200px"
 						style="margin: 0 auto"
-					></v-img>
-					<v-card-subtitle>
-						Ingresar
-					</v-card-subtitle>
-					<v-card-text>
-						<v-form>
-							<v-text-field
-								id="email-input"
-								v-model.trim="loginData.email"
-								label="Correo electronico"
-								name="login"
-								prepend-icon="mdi-account"
-								type="text"
-								required
-							/>
+					></v-img> -->
+				<Logo style="max-height: 30vh;" />
+				<v-form>
+					<v-text-field
+						id="email-input"
+						v-model.trim="loginData.email"
+						label="Correo electronico"
+						name="login"
+						prepend-icon="mdi-account"
+						type="text"
+						required
+					/>
 
-							<v-text-field
-								id="password-input"
-								v-model.trim="loginData.password"
-								:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-								label="Contraseña"
-								name="password"
-								prepend-icon="mdi-lock"
-								:type="showPassword ? 'text' : 'password'"
-								required
-								@click:append="showPassword = !showPassword"
-							/>
-						</v-form>
-					</v-card-text>
-					<v-card-actions>
-						<v-btn
-							:loading="loading"
-							block
-							small
-							color="primary"
-							rounded
-							@click="onSubmit"
-						>
-							Ingresar
-						</v-btn>
-					</v-card-actions>
-					<v-card-actions>
-						<v-spacer /><GoogleButton></GoogleButton><v-spacer />
-					</v-card-actions>
-					<v-card-text>
-						¿No tienes una cuenta?
-						<v-btn text small to="/register" color="primary">registrate</v-btn>
-						<v-btn text small color="primary" @click="controlPasswordRecover(true)">
-							¿Olvidaste tu contraseña?
-						</v-btn>
-					</v-card-text>
-				</v-card>
+					<v-text-field
+						id="password-input"
+						v-model.trim="loginData.password"
+						:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+						label="Contraseña"
+						name="password"
+						prepend-icon="mdi-lock"
+						:type="showPassword ? 'text' : 'password'"
+						required
+						@click:append="showPassword = !showPassword"
+					/>
+				</v-form>
+				<v-btn :loading="loading" block small color="primary" rounded @click="onSubmit">
+					Ingresar
+				</v-btn>
+				<v-spacer /><GoogleButton class="my-3"></GoogleButton><v-spacer />
+				¿No tienes una cuenta?
+				<v-btn text small to="/register" color="primary">registrate</v-btn>
+				<v-btn text small color="primary" @click="controlPasswordRecover(true)">
+					¿Olvidaste tu contraseña?
+				</v-btn>
 			</v-col>
 			<v-col v-else cols="12" sm="8" md="4">
 				<PasswordRecover
 					:disable-password-recover="controlPasswordRecover"
 				></PasswordRecover>
 			</v-col>
+			<v-col cols="12" style="min-height: 10vh;"></v-col>
 		</v-row>
 	</v-container>
 </template>
@@ -74,11 +56,13 @@
 import { mapGetters, mapActions } from 'vuex';
 import PasswordRecover from '../components/auth/PasswordRecover';
 import GoogleButton from '../components/auth/GoogleButton';
+import Logo from '../assets/logo';
 
 export default {
 	components: {
 		PasswordRecover,
 		GoogleButton,
+		Logo,
 	},
 	data() {
 		return {

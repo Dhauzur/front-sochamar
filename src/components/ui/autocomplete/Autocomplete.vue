@@ -1,6 +1,6 @@
 <template>
 	<div class="autocomplete">
-		<b-input
+		<v-text-field
 			v-model="search"
 			type="text"
 			:placeholder="placeholder"
