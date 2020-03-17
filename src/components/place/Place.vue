@@ -104,15 +104,21 @@
 											<td>{{ c.name }}</td>
 											<td>{{ c.rut }}</td>
 											<td>
-												<v-btn @click="manageServices(c)">
-													Administrar Servicios
-													<v-icon dark>mdi-wrench</v-icon>
+												<v-btn
+													small
+													dark
+													color="cyan"
+													@click="manageServices(c)"
+												>
+													<v-icon>mdi-pencil</v-icon>
 												</v-btn>
 											</td>
 											<td class="p-2">
-												<v-icon small @click="deletePlace(c.id)">
-													mdi-delete
-												</v-icon>
+												<v-btn small dark @click="deletePlace(c.id)">
+													<v-icon>
+														mdi-delete
+													</v-icon>
+												</v-btn>
 											</td>
 										</tr>
 									</tbody>
@@ -128,7 +134,7 @@
 		</v-row>
 		<v-bottom-sheet v-model="servicesSheet">
 			<v-sheet class="text-center" height="500px">
-				<PlaceServicesCRUD :place="selectedPlace"></PlaceServicesCRUD>
+				<PlaceServicesCRUD></PlaceServicesCRUD>
 			</v-sheet>
 		</v-bottom-sheet>
 	</v-container>
@@ -229,7 +235,7 @@ export default {
 		},
 		manageServices(place) {
 			this.servicesSheet = true;
-			this.selectedPlace = place;
+			this.setPlaceForServices(place);
 		},
 		...mapActions({
 			fetchPlace: 'Place/fetchPlace',

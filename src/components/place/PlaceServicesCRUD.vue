@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<v-data-table :headers="headers" :items="place.services">
+		<v-data-table :headers="headers" :items="placeForService.services" :items-per-page="5">
 			<template v-slot:top>
 				<v-toolbar flat color="white">
 					<v-toolbar-title v-text="tableTitle"></v-toolbar-title>
@@ -118,9 +118,11 @@
 				</v-edit-dialog>
 			</template>
 			<template v-slot:item.actions="{ item }">
-				<v-icon small :loading="loading" @click="deleteItem(item)">
-					mdi-delete
-				</v-icon>
+				<v-btn small dark :loading="loading" @click="deleteItem(item)">
+					<v-icon>
+						mdi-delete
+					</v-icon>
+				</v-btn>
 			</template>
 		</v-data-table>
 	</v-container>
@@ -134,9 +136,6 @@ import { minLength, maxLength, required } from 'vuelidate/lib/validators';
 export default {
 	name: 'PlaceServicesCRUD',
 	mixins: [validationMixin],
-	props: {
-		place: { type: Object, required: true },
-	},
 	data() {
 		return {
 			formData: { name: '', price: '' },
@@ -152,7 +151,7 @@ export default {
 					sortable: true,
 					value: 'price',
 				},
-				{ text: 'Actions', value: 'actions', sortable: false },
+				{ text: 'Acciones', value: 'actions', sortable: false },
 			],
 			errors: false,
 			dialog: false,
@@ -160,19 +159,12 @@ export default {
 	},
 	computed: {
 		tableTitle() {
-			return `Servicios de ${this.place.name}`;
+			return `Servicios de ${this.placeForService.name}`;
 		},
 		...mapGetters({
-			message: 'PlaceServices/message',
-			loading: 'PlaceServices/loading',
+			loading: 'Place/loading',
+			placeForService: 'Place/placeForService',
 		}),
-	},
-	watch: {
-		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
-		},
 	},
 	validations: {
 		formData: {
@@ -196,7 +188,10 @@ export default {
 				if (this.$v.$invalid) {
 					this.errors = true;
 				} else {
-					this.createService({ service: this.formData, placeId: this.place.id });
+					this.createService({
+						payload: this.formData,
+						placeId: this.placeForService.id,
+					});
 					this.resetFormData();
 					this.manageModal(false);
 					this.$v.$reset();
@@ -207,17 +202,19 @@ export default {
 			}
 		},
 		resetFormData() {
-			this.formData = { _id: '', name: '', price: '' };
+			this.formData = { name: '', price: '' };
 		},
 		editItem(item) {
-			this.updateService({ service: item, placeId: this.place.id });
+			this.updateService({ payload: item, placeId: this.placeForService.id });
 		},
 		deleteItem(item) {
-			this.deleteService({ serviceId: item._id, placeId: this.place.id });
-			this.place.services = this.place.services.filter(service => service !== item);
+			this.deleteService({ serviceId: item._id, placeId: this.placeForService.id });
+			this.placeForService.services = this.placeForService.services.filter(
+				service => service !== item
+			);
 		},
 		checkRepeatedServiceName(name) {
-			const found = this.place.services.find(service => service.name === name);
+			const found = this.placeForService.services.find(service => service.name === name);
 			if (found) return true;
 			else return false;
 		},

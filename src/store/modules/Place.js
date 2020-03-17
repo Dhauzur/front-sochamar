@@ -10,6 +10,7 @@ const state = {
 	filterPlaceWord: '',
 	place: {},
 	loading: false,
+	placeForService: {},
 };
 
 const getters = {
@@ -27,6 +28,7 @@ const getters = {
 		else return state.places;
 	},
 	loading: state => state.loading,
+	placeForService: state => state.placeForService,
 };
 
 const actions = {
@@ -68,25 +70,27 @@ const actions = {
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
-	async createService({ commit, dispatch }, { service, placeId }) {
+	async createService({ commit, dispatch }, { payload, placeId }) {
 		commit('setLoading', true);
-		delete service._id;
 		try {
-			await axios.post(`${api}/place/${placeId}/service`, service);
+			const response = await axios.post(`${api}/place/${placeId}/service`, payload);
+			const { service } = response.data;
 			commit('setMessage', toastMessage('success', 'Servicio creado'));
+			commit('addServiceToPlaceForService', service);
 			dispatch('fetchPlace');
 		} catch (e) {
+			console.log(e);
 			commit('setMessage', toastMessage('error', 'no se permiten nombres repetidos'));
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		} finally {
 			commit('setLoading', false);
 		}
 	},
-	async updateService({ commit, dispatch }, { service, placeId }) {
+	async updateService({ commit, dispatch }, { payload, placeId }) {
 		commit('setLoading', true);
 		try {
-			const serviceId = service._id;
-			await axios.put(`${api}/place/${placeId}/service/${serviceId}`, service);
+			const serviceId = payload._id;
+			await axios.put(`${api}/place/${placeId}/service/${serviceId}`, payload);
 			commit('setMessage', toastMessage('success', 'Servicio Actualizado'));
 			dispatch('fetchPlace');
 		} catch (e) {
@@ -147,6 +151,7 @@ const mutations = {
 	setMessage(state, value) {
 		state.message = value;
 	},
+	addServiceToPlaceForService: (state, value) => state.placeForService.services.push(value),
 	filterPlace(state, value) {
 		state.filterPlaceWord = value;
 	},
@@ -155,6 +160,9 @@ const mutations = {
 	},
 	setPlace(state, value) {
 		state.place = value;
+	},
+	setPlaceForServices(state, value) {
+		state.placeForService = value;
 	},
 	setPlaces(state, value) {
 		var places = [];
