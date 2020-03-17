@@ -49,7 +49,6 @@
 					rounded
 					range
 					locale="es"
-					:first-day-of-week="1"
 					:min="startDate"
 					:max="endDate"
 					no-title

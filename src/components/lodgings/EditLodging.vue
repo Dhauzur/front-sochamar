@@ -22,10 +22,8 @@
 									</template>
 									<v-date-picker
 										v-model="dates"
-										width="250"
 										no-title
 										range
-										:first-day-of-week="1"
 										locale="es"
 										:show-current="false"
 										scrollable
@@ -34,7 +32,7 @@
 										<v-btn small text @click="dialogChangeDate = false">
 											Cancel
 										</v-btn>
-										<v-btn small rounded text color="primary" @click="setDates">
+										<v-btn small text color="primary" @click="setDates">
 											Guardar
 										</v-btn>
 									</v-date-picker>
@@ -103,18 +101,12 @@
 												<v-btn
 													small
 													text
-													rounded
 													color="primary"
 													@click="stepper = 3"
 												>
 													Continuar
 												</v-btn>
-												<v-btn
-													text
-													rounded
-													small
-													@click="closeDialogPerson"
-												>
+												<v-btn text small @click="closeDialogPerson">
 													Cancelar
 												</v-btn>
 											</v-stepper-content>
@@ -127,18 +119,12 @@
 													item-text="name"
 													dense
 												></v-select>
-												<v-btn
-													text
-													rounded
-													small
-													@click="closeDialogPerson"
-												>
+												<v-btn text small @click="closeDialogPerson">
 													Cancelar
 												</v-btn>
 												<v-btn
 													small
 													text
-													rounded
 													color="primary"
 													@click="setDatePerson"
 												>
@@ -183,20 +169,14 @@ export default {
 			stepper: 1,
 			dialogChangeDate: false,
 			dialogAddPerson: false,
-			menu: false,
 			dates: [],
 			datesPersons: [],
+			dateStart: null,
 			dateEnd: null,
 			dateEndLodging: null,
-			dateEndPersons: null,
-			datePersonsInvalid: false,
-			dateStart: null,
 			dateStartLodging: null,
-			dateStartPersons: null,
 			oldDateLodging: null,
 			personSelected: null,
-			results: [],
-			showPopover: false,
 		};
 	},
 	computed: {
@@ -342,12 +322,6 @@ export default {
 			this.dates = [this.dateStartLodging, this.dateEndLodging];
 		},
 		/**
-		 * used for disabled button when person date is invalid
-		 */
-		errorDate(boolean) {
-			this.datePersonsInvalid = boolean;
-		},
-		/**
 		 * set date person in the store
 		 */
 		setDatePerson() {
@@ -368,7 +342,6 @@ export default {
 						type: 'error',
 				  });
 			this.personSelected = null;
-			this.showPopover = false;
 			this.saveLodgings();
 			this.closeDialogPerson();
 		},
@@ -376,7 +349,6 @@ export default {
 		 * cancel the adiction person when close the popover
 		 */
 		cancelAddPerson() {
-			this.showPopover = false;
 			this.personSelected = '';
 		},
 		/**
@@ -384,7 +356,6 @@ export default {
 		 * show popover for set date
 		 */
 		addPersonToLodging(selected) {
-			this.showPopover = true;
 			this.personSelected = selected;
 		},
 		/**
