@@ -69,13 +69,7 @@
 					</v-tooltip>
 					<v-tooltip v-if="lodgingSelect" attach bottom min-width="180" class="mr-2">
 						<template v-slot:activator="{ on }">
-							<v-btn
-								color="accent"
-								dark
-								small
-								v-on="on"
-								@click.stop="sheet = !sheete"
-							>
+							<v-btn color="accent" dark small v-on="on" @click.stop="sheet = !sheet">
 								<v-icon>mdi-pencil</v-icon><span>Editar</span>
 							</v-btn>
 						</template>
@@ -260,8 +254,8 @@
 				</v-col>
 			</v-row>
 			<v-bottom-sheet v-model="sheet">
-				<v-sheet class="text-center" height="600px">
-					<edit-lodging />
+				<v-sheet class="text-center">
+					<edit-lodging :lodgings="lodgings" :id-place="place" />
 				</v-sheet>
 			</v-bottom-sheet>
 		</template>

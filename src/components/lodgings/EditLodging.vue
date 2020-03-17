@@ -4,14 +4,14 @@
 			<v-col>
 				<v-row>
 					<v-col cols="10">
-						<timeline />
+						<timeline :items="items" :groups="groups" :options="options" />
 					</v-col>
 					<v-col cols="2">
 						<v-row>
 							<v-col cols="12">
 								<v-dialog ref="dialog" v-model="dialogChangeDate" width="290px">
 									<template v-slot:activator="{ on }">
-										<v-btn small block rounded color="primary" v-on="on">
+										<v-btn small block color="primary" v-on="on">
 											Cambiar fecha del hospedaje
 										</v-btn>
 									</template>
@@ -38,7 +38,7 @@
 							<v-col cols="12">
 								<v-dialog v-model="dialogAddPerson" max-width="330">
 									<template v-slot:activator="{ on }">
-										<v-btn small block rounded color="primary" v-on="on">
+										<v-btn small block color="primary" v-on="on">
 											Agregar persona
 										</v-btn>
 									</template>
@@ -66,20 +66,15 @@
 													clearable
 												></v-autocomplete>
 												<v-btn
+													:disabled="Boolean(!personSelected)"
 													small
 													text
-													rounded
 													color="primary"
 													@click="stepper = 2"
 												>
 													Continuar
 												</v-btn>
-												<v-btn
-													small
-													rounded
-													text
-													@click="dialogAddPerson = false"
-												>
+												<v-btn small text @click="dialogAddPerson = false">
 													Cancelar
 												</v-btn>
 											</v-stepper-content>
@@ -101,12 +96,9 @@
 													text
 													rounded
 													small
-													@click="dialogAddPerson = false"
+													@click="closeDialogPerson"
 												>
 													Cancelar
-												</v-btn>
-												<v-btn text rounded small @click="stepper = 1">
-													Regresar
 												</v-btn>
 												<v-btn
 													small
@@ -125,99 +117,6 @@
 						</v-row>
 					</v-col>
 				</v-row>
-				<!-- <v-row>
-					 badge person
-					<v-col v-if="!showPopover">
-						<v-badge
-							v-for="(item, i) in lodgingPersons"
-							:id="`show${i}`"
-							:key="i"
-							pill
-							target="_blank"
-							class="ml-1 mr-1"
-							>{{ item.search }}: {{ item.dateStart }} - {{ item.dateEnd }}
-							<span class="text-danger ml-1 pointer" @click="removeLodgingPersons(i)"
-								>X</span
-							>
-						</v-badge>
-					</v-col>
-					<v-col v-show="showPopover">
-						 <v-menu
-							ref="menu"
-							v-model="menu"
-							:close-on-content-click="false"
-							:return-value.sync="date"
-							transition="scale-transition"
-							offset-y
-							min-width="290px"
-						>
-							<template v-slot:activator="{ on }">
-								<v-text-field
-									v-model="date"
-									label="Picker in menu"
-									prepend-icon="event"
-									readonly
-									v-on="on"
-								></v-text-field>
-							</template>
-							<v-date-picker
-								v-model="datesPersons"
-								width="250"
-								no-title
-								range
-								:first-day-of-week="1"
-								locale="es"
-								:show-current="false"
-								scrollable
-							>
-								<v-spacer></v-spacer>
-								<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-								<v-btn text color="primary">OK</v-btn>
-							</v-date-picker>
-						</v-menu> 
-					</v-col>
-					<v-col v-show="showPopover">
-						<LodgingsDate
-							label="Fecha inicio"
-							:start="true"
-							:set-date="date => (dateStartPersons = date)"
-							:date-start="dateStart"
-							:date-end="dateEnd"
-							:is-person-date="true"
-							:error-date="errorDate"
-						/>
-						<LodgingsDate
-							label="Fecha fin"
-							:start="false"
-							:set-date="date => (dateEndPersons = date)"
-							:date-start="dateStart"
-							:date-end="dateEnd"
-							:is-person-date="true"
-							:error-date="errorDate"
-						/>
-					</v-col>
-					<v-col>
-						<v-btn
-							v-show="showPopover"
-							color="primary"
-							rounded
-							small
-							:disabled="datePersonsInvalid"
-							@click="setDatePerson"
-						>
-							Agregar
-						</v-btn>
-						<v-btn
-							v-if="showPopover"
-							text
-							small
-							variant="danger"
-							@click="cancelAddPerson"
-						>
-							Cancelar
-						</v-btn>
-					</v-col>
-				</v-row> -->
 			</v-col>
 		</v-row>
 	</v-container>
@@ -232,6 +131,16 @@ export default {
 	name: 'EditLodgings',
 	components: {
 		Timeline,
+	},
+	props: {
+		lodgings: {
+			type: Object,
+			required: true,
+		},
+		idPlace: {
+			type: String,
+			required: true,
+		},
 	},
 	data() {
 		return {
@@ -253,9 +162,30 @@ export default {
 			personSelected: null,
 			results: [],
 			showPopover: false,
+			groups: [
+				{
+					id: 0,
+					content: 'Group 1',
+				},
+			],
 		};
 	},
 	computed: {
+		items() {
+			return [
+				{
+					id: 0,
+					group: 0,
+					start: new Date(),
+					content: 'Item 1',
+				},
+			];
+		},
+		options() {
+			return {
+				editable: false,
+			};
+		},
 		personFormatted() {
 			return this.persons.map(item => ({
 				search: `${item.firstName} ${item.lastName ? item.lastName : ''}`,
@@ -263,8 +193,8 @@ export default {
 			}));
 		},
 		...mapGetters({
+			rooms: 'Room/rooms',
 			lodgingPersons: 'Lodging/lodgingPersons',
-			lodgings: 'Lodging/lodgings',
 			lodgingSelect: 'Lodging/lodgingSelect',
 			persons: 'Persons/persons',
 		}),
@@ -283,8 +213,14 @@ export default {
 	},
 	mounted() {
 		this.setDateIntheState();
+		this.fetchRooms(this.idPlace);
 	},
 	methods: {
+		closeDialogPerson() {
+			this.personSelected = null;
+			this.dialogAddPerson = false;
+			this.stepper = 1;
+		},
 		customFilter(item, queryText) {
 			const textOne = item.search.toLowerCase();
 			const searchText = queryText.toLowerCase();
@@ -371,13 +307,14 @@ export default {
 		 * set date person in the store
 		 */
 		setDatePerson() {
+			const id = this.personSelected._id;
+			const search = `${this.personSelected.firstName} ${this.personSelected.firstName}`;
 			const start = this.setDateStartPerson() ? this.setDateStartPerson() : this.dateStart;
 			const end = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
-
 			this.verifyOverlay() === 'OK'
 				? this.updateLodgingPersons({
-						id: this.personSelected._id,
-						search: `${this.personSelected.firstName} ${this.personSelected.firstName}`,
+						id,
+						search,
 						dateStart: start,
 						dateEnd: end,
 				  })
@@ -386,6 +323,7 @@ export default {
 				  });
 			this.personSelected = null;
 			this.showPopover = false;
+			this.closeDialogPerson();
 		},
 		/**
 		 * cancel the adiction person when close the popover
@@ -403,14 +341,15 @@ export default {
 			this.personSelected = selected;
 		},
 		/**
-		 * check if date of person ir already taken
+		 * check if date of person is already taken
 		 */
 		verifyOverlay() {
+			const id = this.personSelected._id;
 			const start = this.setDateStartPerson();
 			const end = this.setDateEndPerson();
 			let verificate = null;
 			let temp = this.lodgingPersons.filter(person => {
-				return person.id === this.personSelected._id;
+				return person.id === id;
 			});
 
 			if (temp.length > 0) {
@@ -433,6 +372,7 @@ export default {
 			return verificate;
 		},
 		...mapActions({
+			fetchRooms: 'Room/fetchRooms',
 			deleteLodging: 'Lodging/deleteLodging',
 			saveLodgings: 'Lodging/saveLodgings',
 		}),
@@ -440,7 +380,6 @@ export default {
 			sendDateChange: 'Lodging/dateChange',
 			updateLodgingPersons: 'Lodging/updateLodgingPersons',
 			removeLodgingPersons: 'Lodging/removeLodgingPersons',
-			fetchRooms: 'Room/fetchRooms',
 		}),
 	},
 };

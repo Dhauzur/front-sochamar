@@ -22,8 +22,6 @@ const getters = {
 const actions = {
 	async deleteRoom({ commit, dispatch }, { id, placeId }) {
 		try {
-			console.log(id, placeId);
-
 			const response = await axios.delete(`${api}/rooms/one/${id}`, { data: { placeId } });
 			const { name } = response.data;
 			commit('setMessage', {
