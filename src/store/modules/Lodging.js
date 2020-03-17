@@ -3,6 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { DataSet } from 'vue2vis';
 import router from '@/router/index.js';
+import { generateServiceArray } from '../../utils/lodging/serviceArray';
 
 const state = {
 	message: '',
@@ -327,17 +328,8 @@ const mutations = {
 		if (!value) state.lodgingSelect = null;
 	},
 	createOneLodging(state) {
-		const generateServiceArray = place => {
-			const temporalArray = [];
-			let serviceArray;
-			place.services.forEach(() => {
-				temporalArray.push(1);
-			});
-			serviceArray = [temporalArray, temporalArray];
-			return JSON.stringify(serviceArray);
-		};
 		state.editMode = false;
-		let place = state.Places.find(c => c.value == state.place);
+		let place = state.Places.find(c => c.value === state.place);
 		let verificate = true;
 		const generatedService = generateServiceArray(place);
 		state.lodgings.forEach(lod => {

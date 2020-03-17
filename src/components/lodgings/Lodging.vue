@@ -125,6 +125,7 @@
 					/>
 				</v-col>
 			</v-row>
+			<!--Tabla de precios y servicios-->
 			<v-row>
 				<v-col v-if="prices && place" cols="12" class="overflow-auto">
 					<v-simple-table>
@@ -230,6 +231,70 @@
 					</v-simple-table>
 				</v-col>
 			</v-row>
+			<!--Tabla de precios y servicios V2-->
+			<p>
+				Nota importante: hasta los inputs y la proyection table esta funcionando en base a
+				servicios antiguos
+			</p>
+			<div>{{ proyectionTable[0] }}</div>
+			<v-row>
+				<v-col v-if="prices && place" cols="12" class="overflow-auto">
+					<v-simple-table>
+						<template v-slot:default>
+							<p>Por cada services de place tendremos que generar una fila</p>
+							<thead>
+								<tr>
+									<td>Actividad</td>
+									<td>Precios</td>
+									<td v-for="(d, index) in rangeDateTable" :key="index">
+										{{ d.numberDay }}
+										<br />
+										{{ d.nameDay }}
+									</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>place.services.name</td>
+									<td>place.services.price</td>
+									<td>
+										por cada item en la proyection table, aqui renderiza los
+										inputs
+									</td>
+								</tr>
+								<tr>
+									<td>ALOJAMIENTO</td>
+									<td v-if="place">
+										{{ prices.prices[3] }}
+									</td>
+									<td v-for="(p, index) in proyectionTable" :key="index">
+										<span v-if="!editMode">{{ p.service.accommodation }}</span>
+										<input
+											v-if="editMode && p.service.accommodation !== undefined"
+											:id="p.id + ',' + p.date"
+											v-model="p.service.accommodation"
+											type="number"
+											class="inputService"
+											name="accommodation"
+											:placeholder="p.service.accommodation"
+											@change="detectInputChange"
+										/>
+									</td>
+								</tr>
+								<!--TOTAL-->
+								<tr v-if="place" class="borderModule">
+									<td colspan="2">TOTAL</td>
+									<td v-for="(p, index) in proyectionTable" :key="index">
+										<span v-if="finalyPrice[index] != 0">{{
+											finalyPrice[index]
+										}}</span>
+									</td>
+								</tr>
+							</tbody>
+						</template>
+					</v-simple-table>
+				</v-col>
+			</v-row>
 			<v-row v-if="lodgingSelect">
 				<v-col cols="12" sm="4">
 					<v-select
@@ -266,6 +331,7 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
 import moment from 'moment';
+import { generateServiceArray } from '../../utils/lodging/serviceArray';
 
 export default {
 	components: {
@@ -279,13 +345,15 @@ export default {
 			dialogPeriods: false,
 			dialogPayments: false,
 			sheet: false,
+			//Este arreglo va en la comboBox de services
 			services: [
 				{ text: 'Todos los servicios', value: 'todos los servicios' },
-				{ text: 'Desayuno', value: 'desayuno' },
-				{ text: 'Almuerzo', value: 'almuerzo' },
-				{ text: 'Cena', value: 'cena' },
-				{ text: 'Alojamiento', value: 'alojamiento' },
+				{ text: 'Desayunoasfdasfas', value: 'desayuno' },
+				{ text: 'Almuerzogvmand', value: 'almuerzo' },
+				{ text: 'Cenakaslk', value: 'cena' },
+				{ text: 'Alojamientovnndna', value: 'alojamiento' },
 			],
+			//Este string interactua con la comboBox de services
 			serviceSelected: 'todos los servicios',
 			selectPlace: null,
 			options: {
@@ -315,6 +383,7 @@ export default {
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//Esta funcion hace trigger cuando estamos moviendo el lodging, nos sirve para verificar el overlay
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
 					if (this.place) {
@@ -322,6 +391,7 @@ export default {
 						else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//Esta funcion hace trigger cuando removemos un lodging de la timeline
 				onRemove: (item, callback) => {
 					if (this.lodgings.length > 1 && this.place) {
 						this.setModeEdit(false);
@@ -329,6 +399,8 @@ export default {
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//No tenemos que modificar nada mas de onAdd
+				//Cuando clickeo una parte del timeline esta función hace trigger
 				onAdd: (item, callback) => {
 					if (this.place) {
 						item.start = moment(item.start).hours(15);
@@ -337,12 +409,11 @@ export default {
 							.add(1, 'day');
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							var place = this.places.find(c => c.value === this.place).text;
-							item.content = place;
-							//Service es la cantidad de personas que usan este servicio
-							console.log(place);
-							if (place != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
-							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
+							var place = this.places.find(c => c.value === this.place);
+							const generatedService = generateServiceArray(place);
+							item.content = place.text;
+							if (place != 'Turismo') item.service = [generatedService];
+							else item.service = [generatedService];
 							var timestamp = new Date().getTime().toString(16);
 							timestamp +
 								'xxxxxxxxxxxxxxxx'
@@ -356,6 +427,7 @@ export default {
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//Cuando agrando o muevo un lodging esta función hace trigger
 				onMove: (item, callback) => {
 					if (this.place) {
 						var service = [];
@@ -392,6 +464,7 @@ export default {
 			if (hola == this.mirrorLodging) return false;
 			else return true;
 		},
+		//Precio final de la proyection table, hace uso de los calculos antiguos
 		finalyPrice() {
 			var prices = [];
 			var dayPrice = 0;
@@ -423,7 +496,8 @@ export default {
 			var proyectionTable = [];
 			var daysLodging = [];
 			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
-			for (var i = 0; i <= numberDays; i++)
+			//aca son creado los lodging del dia, por cada dia en nuestra proyection table daylodging se encuentra presente para guardar los numeros de servicios utilizados
+			for (var i = 0; i <= numberDays; i++) {
 				daysLodging.push({
 					date: moment(this.rangeDate.start)
 						.add(i, 'day')
@@ -431,10 +505,13 @@ export default {
 					service: [],
 					id: null,
 				});
-
+			}
+			//En esta parte en base a los lodging existentes, daylodgings es recorrido y poblado con datos como services y la id del lodging
+			//La id del lodging solo se añade si if(this.lodgingSelect) es valido
 			this.lodgings.forEach(l => {
 				var index = 0;
-				if (!this.editMode)
+				//Solo service es añadido
+				if (!this.editMode) {
 					daysLodging.forEach(day => {
 						if (
 							moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) &&
@@ -449,10 +526,10 @@ export default {
 								/*var numberPassangerMax = this.periods.get(l.group)
 									.numberPassangerMax;*/
 								day.service = {
-									breakfast: 1,
-									lunch: 1,
-									dinner: 1,
-									accommodation: 1,
+									breakfast: 0,
+									lunch: 0,
+									dinner: 0,
+									accommodation: 0,
 								};
 							} else {
 								var service = JSON.parse(l.service[0]);
@@ -480,7 +557,9 @@ export default {
 							index++;
 						}
 					});
-				if (this.lodgingSelect)
+				}
+				//Service y la id del lodging son añadidos
+				if (this.lodgingSelect) {
 					if (this.editMode && this.lodgingSelect.id == l.id) {
 						daysLodging.forEach(day => {
 							if (
@@ -490,6 +569,7 @@ export default {
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
 								var service = JSON.parse(l.service[0]);
+								//aca distribuye la cantidad de servicios usados, hace uso del servicio antiguo
 								day.service = {
 									breakfast: day.service.breakfast
 										? service[index][0] + day.service.breakfast
@@ -509,9 +589,11 @@ export default {
 							}
 						});
 					}
+				}
 			});
 			return daysLodging;
 		},
+		//Complemento de la proyectionTable, esta función se encarga de crear y renderizar las columnas de dias
 		rangeDateTable() {
 			var dates = [];
 			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
