@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-row justify="center">
-			<v-col cols="12" md="10" lg="7">
+			<v-col cols="12" md="10" lg="8">
 				<v-card>
 					<v-card-title primary-title>
 						<h4>Informes</h4>
@@ -85,7 +85,10 @@ export default {
 	},
 	methods: {
 		formatTime(d) {
-			return moment(d).format('L');
+			moment.locale('es');
+			return moment(d)
+				.startOf('hour')
+				.fromNow();
 		},
 		fetchReports() {
 			axios
