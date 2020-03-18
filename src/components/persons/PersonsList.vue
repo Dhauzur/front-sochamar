@@ -1,47 +1,51 @@
 <template>
-	<div class="list ">
-		<v-list-group v-for="(item, index) in persons" :key="index" class="list-passanger">
-			<v-list-group-item
-				class="list-passangers "
-				:class="{ 'list-passanger-select': item._id == person._id }"
+	<v-container>
+		<v-row justify="center">
+			<v-col
+				v-for="(item, index) in persons"
+				:key="index"
+				cols="12"
+				sm="6"
+				md="4"
+				xl="3"
 				@click="selectedPerson(item)"
 			>
-				<v-row>
-					<v-col cols="10" class="text-left">
-						<div v-if="item.avatar" class="d-inline-block">
-							<v-link :href="setAvatarlist(item.avatar)" target="_blank">
-								<v-img
-									v-bind="mainProps"
-									rounded="circle"
-									style="border: 1px solid #6bb2a0"
-									alt="Circle image"
-									:src="setAvatarlist(item.avatar)"
-								></v-img>
-							</v-link>
-						</div>
-						<div class="d-inline-block ml-1">
-							<span>{{ item.firstName }} {{ item.lastName }}</span>
-							<span v-if="item.appointment || item.function">
-								- {{ item.appointment }}
-								<span v-if="item.appointment && item.function">
-									/
-								</span>
-								{{ item.function }}
-							</span>
-						</div>
-					</v-col>
-					<v-col cols="2">
-						<v-button variant="danger" @click="deleteOne(item._id)">
-							X
-						</v-button>
-					</v-col>
-				</v-row>
-			</v-list-group-item>
-		</v-list-group>
-	</div>
+				<v-alert
+					color="accent"
+					border="bottom"
+					elevation="4"
+					colored-border
+					class="pa-0 ma-0 pointer"
+				>
+					<v-list two-line>
+						<template>
+							<v-list-item :key="item.title" active-class="pink--text" selectable>
+								<v-list-item-avatar>
+									<v-img :src="setAvatarlist(item.avatar)"></v-img>
+								</v-list-item-avatar>
+
+								<v-list-item-content>
+									<v-list-item-title>
+										{{ name(item.firstName, item.lastName) }}
+									</v-list-item-title>
+								</v-list-item-content>
+								<v-list-item-action>
+									<v-btn icon @click="deleteOne(item._id)">
+										<v-icon color="error">mdi-delete</v-icon>
+									</v-btn>
+								</v-list-item-action>
+							</v-list-item>
+						</template>
+					</v-list>
+				</v-alert>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
+import avatarDefault from '@/assets/default.png';
+
 export default {
 	props: {
 		deleteOne: {
@@ -67,36 +71,21 @@ export default {
 	},
 	data() {
 		return {
-			mainProps: {
-				blank: false,
-				blankColor: '#777',
-				class: 'm1',
-				height: 30,
-				width: 30,
-			},
+			selected: null,
 		};
 	},
 	methods: {
+		name(name, lastname) {
+			const text = `${name} ${lastname ? lastname : ''}`;
+			if (text.length > 14) {
+				return `${text.substr(0, 14)}..`;
+			}
+			return text;
+		},
 		setAvatarlist(element) {
 			if (typeof element === 'string') return element;
-			return URL.createObjectURL(element);
+			else return avatarDefault;
 		},
 	},
 };
 </script>
-<style lang="css" scoped>
-.modal-content {
-	font-family: 'Poppins', sans-serif;
-}
-.list-group {
-	margin-bottom: 5px !important;
-}
-.list-passangers {
-	border: none;
-	border-radius: 0px 35px 0px 35px !important;
-}
-.list {
-	max-height: 200px;
-	overflow-y: scroll;
-}
-</style>

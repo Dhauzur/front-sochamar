@@ -1,61 +1,68 @@
 <template>
-	<div class="container">
-		<div class="position-relative">
-			<!-- list person -->
-			<v-row>
-				<v-col v-if="personsList.length > 0">
-					<h5>Listado de personas</h5>
-					<persons-list
-						:delete-one="deleteOne"
-						:get-all-persons="getAllPersons"
-						:person="person"
-						:persons="personsList"
-						:selected-person="selectedPerson"
-					/>
-				</v-col>
-			</v-row>
-			<v-divider v-if="personsList.length > 0" />
-			<v-form>
-				<v-row>
-					<!-- avatar -->
-					<v-col class="p-auto">
-						<h5>
-							{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
-						</h5>
-						<v-img
-							for
-							v-bind="mainProps"
-							rounded="circle"
-							alt="avatar"
-							:src="setAvatar"
-						></v-img>
-						<v-file-input
-							ref="avatar"
-							accept="image/jpeg, image/png, image/gif, image/jpg"
-							:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
-							drop-placeholder="Arrastrar aqui..."
-							@change="e => (person.avatar = e.target.files[0])"
-						></v-file-input>
-					</v-col>
-					<v-col cols="12">
-						<label for="upload" class="pointer">{{
-							typeof person.avatar === 'string' ? 'Cambiar avatar' : 'Subir avatar'
-						}}</label>
-					</v-col>
-					<!-- button for change view to new person -->
-					<div
-						v-if="editMode"
-						class="text-right position-absolute"
-						style="top: 0; right: 0;"
-					>
-						<v-btn @click="clearInputs">Nuevo </v-btn>
-					</div>
-					<!-- firstName -->
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12" class="text-right">
+	<v-container style="height: 75vh; position: relative">
+		<!-- list person -->
+		<v-row>
+			<v-col v-if="personsList.length > 0" cols="12">
+				<h5>Listado de personas</h5>
+				<persons-list
+					:delete-one="deleteOne"
+					:get-all-persons="getAllPersons"
+					:person="person"
+					:persons="personsList"
+					:selected-person="selectedPerson"
+				/>
+			</v-col>
+		</v-row>
+		<!-- dialog -->
+		<v-dialog v-model="dialog" persistent max-width="800px">
+			<template v-slot:activator="{ on }">
+				<v-btn absolute fab bottom right color="accent" v-on="on">
+					<v-icon>mdi-plus</v-icon>
+				</v-btn>
+			</template>
+			<v-card>
+				<v-card-title>
+					<span class="headline">Nueva Persona</span>
+				</v-card-title>
+				<v-card-text>
+					<v-container>
+						<v-row justify="center">
+							<!-- avatar -->
+							<v-col cols="12">
+								<div class="d-flex justify-center">
+									<v-img
+										v-bind="mainProps"
+										rounded="circle"
+										alt="avatar"
+										class="pointer borderRadius"
+										max-width="130px"
+										:src="setAvatar"
+										><div class="  textAvatar secondary">
+											{{
+												typeof person.avatar === 'string'
+													? 'Cambiar avatar'
+													: 'Subir avatar'
+											}}
+										</div>
+										<input
+											ref="avatar"
+											type="file"
+											class=" pointer inputAvatar"
+											accept="image/jpeg, image/png, image/gif, image/jpg"
+											:placeholder="
+												editMode ? 'Actualizar imagen' : 'Agrega una imagen'
+											"
+											drop-placeholder="Arrastrar aqui..."
+											@change="e => (person.avatar = e.target.files)"
+									/></v-img>
+								</div>
+							</v-col>
+							<!-- firstName -->
+							<v-col cols="3">
 								<v-text-field
 									v-model.trim="$v.person.firstName.$model"
+									outlined
+									dense
 									label="Nombre"
 								/>
 								<div v-if="$v.person.firstName.$dirty">
@@ -70,155 +77,177 @@
 									</small>
 								</div>
 							</v-col>
-						</v-row>
-					</v-col>
-					<!-- lastName -->
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12" class="text-right">
+							<!-- lastName -->
+							<v-col cols="3">
 								<v-text-field
 									v-model.trim="person.lastName"
+									outlined
+									dense
 									label="Apellido"
 								></v-text-field>
 							</v-col>
-						</v-row>
-					</v-col>
-				</v-row>
-				<v-row>
-					<!-- age -->
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12" class="text-right">
+							<!-- age -->
+							<v-col cols="2">
 								<v-text-field
 									v-model.number="person.age"
+									outlined
+									dense
 									label="Edad"
 									type="number"
 								></v-text-field>
 							</v-col>
-						</v-row>
-					</v-col>
-					<!-- state -->
-					<v-col cols="6">
-						<v-select
-							v-model="person.state"
-							label="Estado"
-							:items="['soltero', 'casado']"
-						></v-select>
-					</v-col>
-				</v-row>
-				<v-row>
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12">
-								<v-text-field
-									v-model="person.birthdate"
-									label="Fecha nacimiento"
-									type="date"
-								/>
+							<!-- state -->
+							<v-col cols="4">
+								<v-select
+									v-model="person.state"
+									outlined
+									dense
+									label="Estado"
+									:items="['soltero', 'casado']"
+								></v-select>
 							</v-col>
-						</v-row>
-					</v-col>
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12">
+							<!-- birthdate -->
+							<v-col cols="3">
+								<v-menu
+									ref="menu"
+									v-model="menu"
+									:close-on-content-click="false"
+									:return-value.sync="person.birthdate"
+									transition="scale-transition"
+									offset-y
+									min-width="290px"
+								>
+									<template v-slot:activator="{ on }">
+										<v-text-field
+											v-model="person.birthdate"
+											label="Fecha de nacimiento"
+											readonly
+											outlined
+											dense
+											v-on="on"
+										></v-text-field>
+									</template>
+									<v-date-picker
+										v-model="person.birthdate"
+										no-title
+										scrollable
+										locale="es"
+										:show-current="false"
+									>
+										<v-spacer></v-spacer>
+										<v-btn text color="primary" @click="menu = false"
+											>Cerrar</v-btn
+										>
+										<v-btn
+											text
+											color="primary"
+											@click="$refs.menu.save(person.birthdate)"
+											>ok</v-btn
+										>
+									</v-date-picker>
+								</v-menu>
+							</v-col>
+							<v-col cols="3">
 								<v-text-field
 									v-model="person.phone"
+									outlined
+									dense
 									label="Teléfono"
 								></v-text-field>
 							</v-col>
+							<v-col cols="3">
+								<v-text-field
+									v-model="person.function"
+									outlined
+									dense
+									label="Función"
+								></v-text-field>
+							</v-col>
+							<v-col cols="3">
+								<v-text-field
+									v-model="person.appointment"
+									outlined
+									dense
+									label="Cargo"
+								></v-text-field>
+							</v-col>
+							<v-col cols="3">
+								<v-select
+									v-model="person.region"
+									label="Región"
+									:items="regiones"
+									outlined
+									dense
+									@change="setComunas"
+								></v-select>
+							</v-col>
+							<v-col cols="3">
+								<v-select
+									v-model="person.comuna"
+									label="Comuna"
+									:items="comunas"
+									outlined
+									dense
+									:disabled="disableComunaInput"
+								></v-select>
+							</v-col>
+							<v-col cols="6">
+								<v-file-input
+									ref="document"
+									:file-name-formatter="formatNames"
+									:label="
+										editMode
+											? 'Cambiar todos los documentos'
+											: 'Agrega un Documento, max. 5'
+									"
+									clearable
+									multiple
+									outlined
+									dense
+									@change="setDocuments"
+								></v-file-input>
+							</v-col>
+							<v-col cols="12">
+								<small v-if="!person.documents && !person.documents[0] && editMode"
+									>Sin Documentos</small
+								>
+								<div
+									v-if="
+										editMode &&
+											Array.isArray(person.documents) &&
+											person.documents.length
+									"
+								>
+									<v-badge
+										v-for="(item, index) in person.documents"
+										:key="index"
+										class="p-2"
+										pill
+										:href="item.url"
+										target="_blank"
+										>{{ cutText(item.name) }}
+									</v-badge>
+								</div>
+							</v-col>
 						</v-row>
-					</v-col>
-				</v-row>
-				<!-- function -->
-				<v-row>
-					<v-col cols="6">
-						<v-text-field v-model="person.function" label="Función"></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-text-field v-model="person.appointment" label="Cargo"></v-text-field>
-					</v-col>
-				</v-row>
-				<!-- regions -->
-				<v-row>
-					<v-col cols="6">
-						<v-select
-							v-model="person.region"
-							label="Región"
-							:items="regiones"
-							@change="setComunas"
-						></v-select>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							v-model="person.comuna"
-							label="Comuna"
-							:items="comunas"
-							:disabled="disableComunaInput"
-						></v-select>
-					</v-col>
-				</v-row>
-				<!-- documents -->
-				<v-row>
-					<v-col cols="12" class="mt-2">
-						<small v-if="!person.documents && !person.documents[0] && editMode"
-							>Sin Documentos</small
-						>
-						<div
-							v-if="
-								editMode &&
-									Array.isArray(person.documents) &&
-									person.documents.length
-							"
-						>
-							<v-badge
-								v-for="(item, index) in person.documents"
-								:key="index"
-								class="p-2"
-								pill
-								:href="item.url"
-								target="_blank"
-								>{{ cutText(item.name) }}
-							</v-badge>
-						</div>
-					</v-col>
-					<v-col cols="12" class="mt-2">
-						<v-file-input
-							ref="document"
-							:file-name-formatter="formatNames"
-							:placeholder="
-								editMode
-									? 'Cambiar todos los documentos'
-									: 'Agrega un Documento, maximo 5'
-							"
-							drop-placeholder="Arrastrar aqui..."
-							multiple
-							show-size
-							label="File input"
-							@change="setDocuments"
-						></v-file-input>
-					</v-col>
-				</v-row>
-				<v-row>
-					<v-col class="mt-4">
-						<v-btn
-							:disabled="loading"
-							block
-							class="btn btn-primary d-block"
-							@click.prevent="submitForm"
-							>Guardar
-							<v-spinner v-if="loading" small type="grow"></v-spinner>
-						</v-btn>
-					</v-col>
-				</v-row>
-			</v-form>
-		</div>
-	</div>
+					</v-container>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn text @click="dialog = false">Cerrar</v-btn>
+					<v-btn :loading="loading" color="primary" text @click.prevent="submitForm"
+						>Guardar</v-btn
+					>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+	</v-container>
 </template>
 
 <script>
 import PersonsList from '@/components/persons/PersonsList';
 import axios from 'axios';
-import avatarDefault from '@/assets/user-icon.png';
+import avatarDefault from '@/assets/default.png';
 import { validationMixin } from 'vuelidate';
 import { required, minLength } from 'vuelidate/lib/validators';
 import { mapActions, mapGetters } from 'vuex';
@@ -229,6 +258,8 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
+			menu: false,
+			dialog: false,
 			comunas: [],
 			comunasRegiones: [],
 			disableComunaInput: true,
@@ -329,6 +360,7 @@ export default {
 					this.getAllPersons();
 				} else {
 					await this.savePerson(this.form);
+					this.dialog = false;
 					this.getAllPersons();
 					this.clearInputs();
 				}
@@ -406,3 +438,21 @@ export default {
 	},
 };
 </script>
+
+<style>
+.borderRadius {
+	border-radius: 10px !important;
+}
+
+.inputAvatar {
+	height: 150px;
+	width: 150px;
+	margin-left: -75px;
+	top: -25px;
+	opacity: 0;
+	position: absolute;
+}
+.textAvatar {
+	margin-top: 50px;
+}
+</style>
