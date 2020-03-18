@@ -42,6 +42,7 @@ const getters = {
 	periods: state => state.periods,
 	places: state => state.Places,
 	place: state => state.place,
+	selectedPlace: state => state.Places.find(place => place.value === state.place),
 };
 
 const actions = {
@@ -397,24 +398,34 @@ const mutations = {
 	},
 	//Esta funcion involucra el calculo antiguo
 	updateService(state, value) {
+		console.log('estamos en updateService');
 		state.updatingService = null;
 		let idValue = value.id.split(',')[0];
 		let dateValue = value.id.split(',')[1];
 		let newService = [];
-		if (value)
+		//Si el value existe, se inicia el proceso de actualizar service
+		if (value) {
 			state.lodgings.forEach(l => {
-				if (idValue == l.id) {
+				//Si la id de value coincide con un lodging, se continua el proceso de actualizar service
+				if (idValue === l.id) {
 					let numberDays = moment(l.end).diff(
 						moment(l.start).format('YYYY-MM-DD'),
 						'days'
 					);
+					//generalmente numberDay siempre va ser 1
 					for (let i = 0; i <= numberDays; i++) {
+						//si la fecha de value es igual a la fecha del lodging
 						if (
 							moment(l.start)
 								.add(i, 'day')
-								.format('YYYY-MM-DD') == dateValue
+								.format('YYYY-MM-DD') === dateValue
 						) {
+							//se obtiene el arreglo de service
 							let service = JSON.parse(l.service[0]);
+							console.log(
+								'este es el nombre del servicio que estamos actualizando: ' +
+									value.name
+							);
 							if (value.name == 'dinner') service[i][2] = parseInt(value.value);
 							if (value.name == 'lunch') service[i][1] = parseInt(value.value);
 							if (value.name == 'accommodation')
@@ -431,6 +442,7 @@ const mutations = {
 					}
 				}
 			});
+		}
 	},
 	setPeriods(state, values) {
 		state.periods = new DataSet([]);
