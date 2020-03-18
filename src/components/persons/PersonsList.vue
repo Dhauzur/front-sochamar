@@ -17,7 +17,7 @@
 					colored-border
 					class="pa-0 ma-0 pointer"
 				>
-					<v-list two-line>
+					<v-list three-line>
 						<template>
 							<v-list-item :key="item.title" active-class="pink--text" selectable>
 								<v-list-item-avatar>
@@ -28,6 +28,13 @@
 									<v-list-item-title>
 										{{ name(item.firstName, item.lastName) }}
 									</v-list-item-title>
+									<v-list-item-subtitle>
+										<template v-for="(doc, i) in item.documents">
+											<v-chip :key="i" class="ma-2" x-small :href="doc.url">
+												{{ doc.name }}
+											</v-chip>
+										</template>
+									</v-list-item-subtitle>
 								</v-list-item-content>
 								<v-list-item-action>
 									<v-btn icon @click="deleteOne(item._id)">

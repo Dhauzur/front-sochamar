@@ -192,20 +192,20 @@
 							<v-col cols="6">
 								<v-file-input
 									ref="document"
+									v-model="person.documents"
+									clearable
+									multiple
+									outlined
+									dense
 									:file-name-formatter="formatNames"
 									:label="
 										editMode
 											? 'Cambiar todos los documentos'
 											: 'Agrega un Documento, max. 5'
 									"
-									clearable
-									multiple
-									outlined
-									dense
-									@change="setDocuments"
 								></v-file-input>
 							</v-col>
-							<v-col cols="12">
+							<!-- <v-col cols="12">
 								<small v-if="!person.documents && !person.documents[0] && editMode"
 									>Sin Documentos</small
 								>
@@ -226,7 +226,7 @@
 										>{{ cutText(item.name) }}
 									</v-badge>
 								</div>
-							</v-col>
+							</v-col> -->
 						</v-row>
 					</v-container>
 				</v-card-text>
@@ -243,26 +243,26 @@
 </template>
 
 <script>
-import PersonsList from '@/components/persons/PersonsList';
-import axios from 'axios';
-import avatarDefault from '@/assets/default.png';
-import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
-import { mapActions, mapGetters } from 'vuex';
 import { api_absolute } from '@/config/index.js';
+import { mapActions, mapGetters } from 'vuex';
+import { required, minLength } from 'vuelidate/lib/validators';
+import { validationMixin } from 'vuelidate';
+import avatarDefault from '@/assets/default.png';
+import axios from 'axios';
+import PersonsList from '@/components/persons/PersonsList';
 
 export default {
 	components: { PersonsList },
 	mixins: [validationMixin],
 	data() {
 		return {
-			menu: false,
-			dialog: false,
 			comunas: [],
 			comunasRegiones: [],
+			dialog: false,
 			disableComunaInput: true,
 			editMode: false,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
+			menu: false,
 			regiones: [],
 			selected: {},
 			success: '',
@@ -270,13 +270,13 @@ export default {
 				_id: null,
 				age: '',
 				appointment: '',
+				avatar: null,
 				birthdate: '',
 				comuna: '',
 				documents: [],
 				firstName: '',
 				function: '',
 				lastName: '',
-				avatar: null,
 				phone: '',
 				region: '',
 				state: '',
@@ -295,8 +295,8 @@ export default {
 		},
 		...mapGetters({
 			loading: 'Persons/loading',
-			personsList: 'Persons/persons',
 			message: 'Persons/message',
+			personsList: 'Persons/persons',
 		}),
 	},
 	validations: {
@@ -357,16 +357,6 @@ export default {
 				}
 			}
 		},
-		setDocuments(e) {
-			this.person.documents = [];
-			let files = e.target.files;
-			if (!files.length) {
-				return false;
-			}
-			for (let index = 0; index < files.length; index++) {
-				this.person.documents.push(files[index]);
-			}
-		},
 		selectedPerson(person) {
 			this.editMode = true;
 			this.person = person;
@@ -384,7 +374,7 @@ export default {
 			this.person = {
 				_id: null,
 				avatar: null,
-				documents: [],
+				documents: null,
 				age: '',
 				appointment: '',
 				birthdate: '',
