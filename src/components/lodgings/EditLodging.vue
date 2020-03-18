@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid>
+	<v-container fluid style="height: 70vh; overflow: auto">
 		<v-row>
 			<v-col cols="12">
 				<v-tabs v-model="tab">

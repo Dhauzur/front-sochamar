@@ -253,11 +253,15 @@
 					</v-btn>
 				</v-col>
 			</v-row>
-			<v-bottom-sheet v-if="lodgingSelect" v-model="sheet">
-				<v-sheet min-height="800">
-					<edit-lodging :lodgings="lodgings" :id-place="place" />
-				</v-sheet>
-			</v-bottom-sheet>
+			<v-row justify="center">
+				<v-col>
+					<v-bottom-sheet v-if="lodgingSelect" v-model="sheet" inset>
+						<v-sheet style="height: 75vh">
+							<edit-lodging :lodgings="lodgings" :id-place="place" />
+						</v-sheet>
+					</v-bottom-sheet>
+				</v-col>
+			</v-row>
 		</template>
 	</div>
 </template>
