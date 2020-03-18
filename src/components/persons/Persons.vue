@@ -16,7 +16,7 @@
 		<!-- dialog -->
 		<v-dialog v-model="dialog" persistent max-width="800px">
 			<template v-slot:activator="{ on }">
-				<v-btn absolute fab bottom right color="accent" v-on="on">
+				<v-btn absolute fab bottom right color="primary" v-on="on">
 					<v-icon>mdi-plus</v-icon>
 				</v-btn>
 			</template>
@@ -29,8 +29,9 @@
 						<v-row justify="center">
 							<!-- avatar -->
 							<v-col cols="12">
-								<div class="d-flex justify-center">
+								<label for="avatar" class="d-flex justify-center">
 									<v-img
+										:clearable="true"
 										v-bind="mainProps"
 										rounded="circle"
 										alt="avatar"
@@ -44,18 +45,15 @@
 													: 'Subir avatar'
 											}}
 										</div>
-										<input
-											ref="avatar"
-											type="file"
-											class=" pointer inputAvatar"
-											accept="image/jpeg, image/png, image/gif, image/jpg"
-											:placeholder="
-												editMode ? 'Actualizar imagen' : 'Agrega una imagen'
-											"
-											drop-placeholder="Arrastrar aqui..."
-											@change="e => (person.avatar = e.target.files)"
-									/></v-img>
-								</div>
+									</v-img>
+								</label>
+								<v-file-input
+									id="avatar"
+									ref="avatar"
+									v-model="person.avatar"
+									class="pointer d-none"
+									accept="image/jpeg, image/png, image/gif, image/jpg"
+								/>
 							</v-col>
 							<!-- firstName -->
 							<v-col cols="3">
@@ -234,7 +232,7 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
-					<v-btn text @click="dialog = false">Cerrar</v-btn>
+					<v-btn text @click="closeDialog">Cerrar</v-btn>
 					<v-btn :loading="loading" color="primary" text @click.prevent="submitForm"
 						>Guardar</v-btn
 					>
@@ -264,15 +262,10 @@ export default {
 			comunasRegiones: [],
 			disableComunaInput: true,
 			editMode: false,
-			empty: true,
-			errors: false,
-			form: new FormData(),
-			formTouched: false,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 			regiones: [],
 			selected: {},
 			success: '',
-			uiState: 'submit not clicked',
 			person: {
 				_id: null,
 				age: '',
@@ -331,38 +324,36 @@ export default {
 			this.regiones = this.comunasRegiones.map(item => item.region);
 		},
 		async submitForm() {
+			let form = new FormData();
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
 				for (let index = 0; index < this.person.documents.length; index++) {
-					this.form.append('documents', this.person.documents[index]);
+					form.append('documents', this.person.documents[index]);
 				}
-				this.form.set('firstName', this.person.firstName.toLowerCase());
-				if (this.person.avatar) this.form.append('avatar', this.person.avatar);
-				if (this.person.lastName)
-					this.form.set('lastName', this.person.lastName.toLowerCase());
-				if (this.person.age) this.form.set('age', this.person.age.toString());
+				form.set('firstName', this.person.firstName.toLowerCase());
+				if (this.person.avatar) form.append('avatar', this.person.avatar);
+				if (this.person.lastName) form.set('lastName', this.person.lastName.toLowerCase());
+				if (this.person.age) form.set('age', this.person.age.toString());
 				if (this.person.birthdate)
-					this.form.set('birthdate', this.person.birthdate.toLowerCase());
+					form.set('birthdate', this.person.birthdate.toLowerCase());
 				if (this.person.appointment)
-					this.form.set('appointment', this.person.appointment.toLowerCase());
-				if (this.person.function)
-					this.form.set('function', this.person.function.toLowerCase());
-				if (this.person.state) this.form.set('state', this.person.state.toLowerCase());
-				if (this.person.phone) this.form.set('phone', this.person.phone.toLowerCase());
-				if (this.person.region) this.form.set('region', this.person.region);
-				if (this.person.comuna) this.form.set('comuna', this.person.comuna);
+					form.set('appointment', this.person.appointment.toLowerCase());
+				if (this.person.function) form.set('function', this.person.function.toLowerCase());
+				if (this.person.state) form.set('state', this.person.state.toLowerCase());
+				if (this.person.phone) form.set('phone', this.person.phone.toLowerCase());
+				if (this.person.region) form.set('region', this.person.region);
+				if (this.person.comuna) form.set('comuna', this.person.comuna);
 				if (this.editMode) {
 					await this.editPerson({
-						payload: this.form,
+						payload: form,
 						id: this.person._id,
 					});
 					this.getAllPersons();
 				} else {
-					await this.savePerson(this.form);
-					this.dialog = false;
+					await this.savePerson(form);
 					this.getAllPersons();
-					this.clearInputs();
+					this.closeDialog();
 				}
 			}
 		},
@@ -377,8 +368,6 @@ export default {
 			}
 		},
 		selectedPerson(person) {
-			this.$refs['document'].reset();
-			this.$refs['avatar'].reset();
 			this.editMode = true;
 			this.person = person;
 			if (this.person.region === undefined) {
@@ -387,20 +376,22 @@ export default {
 				this.setComunas();
 			}
 		},
+		closeDialog() {
+			this.clearInputs();
+			this.dialog = false;
+		},
 		clearInputs() {
-			this.$refs['document'].reset();
-			this.$refs['avatar'].reset();
 			this.person = {
 				_id: null,
+				avatar: null,
+				documents: [],
 				age: '',
 				appointment: '',
 				birthdate: '',
 				comuna: '',
-				documents: [],
 				firstName: '',
 				function: '',
 				lastName: '',
-				person: null,
 				region: '',
 				state: '',
 			};
