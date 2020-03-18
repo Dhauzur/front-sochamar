@@ -24,6 +24,7 @@ const state = {
 		start: null,
 		end: null,
 	},
+	selectedPlace: {},
 };
 
 const getters = {
@@ -42,7 +43,7 @@ const getters = {
 	periods: state => state.periods,
 	places: state => state.Places,
 	place: state => state.place,
-	selectedPlace: state => state.Places.find(place => place.value === state.place),
+	selectedPlace: state => state.selectedPlace,
 };
 
 const actions = {
@@ -274,9 +275,12 @@ const mutations = {
 			'days'
 		);
 		for (let i = 0; i <= numberDays; i++) {
+			//ver si esto afecta o es recorrido
 			for (let u = 0; u <= 3; u++) {
+				console.log('trigger del for con u');
 				if (service[i][u] == null) service[i][u] = 0;
 			}
+			//Aca se esta basando en servicesSelected
 			if (serviceSelected == 'desayuno' || serviceSelected == 'todos los servicios')
 				service[i][0] = service[i][0] - 1;
 			if (serviceSelected == 'almuerzo' || serviceSelected == 'todos los servicios')
@@ -285,7 +289,9 @@ const mutations = {
 				service[i][2] = service[i][2] - 1;
 			if (serviceSelected == 'alojamiento' || serviceSelected == 'todos los servicios')
 				service[i][3] = service[i][3] - 1;
+			//pareciera estar haciendo lo mismo que el for con U
 			for (let k = 0; k <= 3; k++) {
+				console.log('trigger del for con K');
 				if (service[i][k] < 0) service[i][k] = 0;
 			}
 		}
@@ -398,7 +404,6 @@ const mutations = {
 	},
 	//Esta funcion involucra el calculo antiguo
 	updateService(state, value) {
-		console.log('estamos en updateService');
 		state.updatingService = null;
 		let idValue = value.id.split(',')[0];
 		let dateValue = value.id.split(',')[1];
@@ -422,17 +427,22 @@ const mutations = {
 						) {
 							//se obtiene el arreglo de service
 							let service = JSON.parse(l.service[0]);
-							console.log(
-								'este es el nombre del servicio que estamos actualizando: ' +
-									value.name
-							);
-							if (value.name == 'dinner') service[i][2] = parseInt(value.value);
-							if (value.name == 'lunch') service[i][1] = parseInt(value.value);
-							if (value.name == 'accommodation')
-								service[i][3] = parseInt(value.value);
-							if (value.name == 'breakfast') service[i][0] = parseInt(value.value);
+							//service[i] nos indica que va tocar el service de un dia
+							//la segunda posicion de service[i][] corresponde al servicio a modificar
+
+							//la cantidad de service y placeServices son iguales, si encontramos el index de placeServices
+							//sabremos que posicion de service modificar
+							const findServiceIndexByName = name => {
+								return state.selectedPlace.services.findIndex(
+									service => service.name === name
+								);
+							};
+							const foundIndex = findServiceIndexByName(value.name);
+							//En base al index encontrado y el dia, procedemos a actualizar el valor
+							service[i][foundIndex] = parseInt(value.value);
 							newService.push(JSON.stringify(service));
 							state.editMode = false;
+							//El lodging es modificado y el nuevo servicio queda registado
 							state.lodgings.update({
 								id: l.id,
 								service: newService,
@@ -522,6 +532,9 @@ const mutations = {
 			state.lodgings = tempLodging;
 			state.mirrorLodging = JSON.stringify(tempLodging);
 		} else state.lodgings = new DataSet([]);
+	},
+	setSelectedPlace(state) {
+		state.selectedPlace = state.Places.find(place => place.value === state.place);
 	},
 };
 

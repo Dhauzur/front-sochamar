@@ -632,21 +632,32 @@ export default {
 									{}
 								);
 							} else {
-								/*var service = JSON.parse(l.service[0]);*/
 								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
 								const reduceServices = (acc, service) => {
 									return Object.assign(acc, {
 										[service.name]: 1,
 									});
 								};
-								//Aca podriamos definir las variables en base a nombreServicio: 1;
 								day.service = this.selectedPlace.services.reduce(
 									reduceServices,
 									{}
 								);
 								/*const service = JSON.parse(l.service[0]);*/
-								//Aca esta evaluando si existio ingreso de servicios por parte de los inputs
-								//1- evaluamos si el service tiene
+								//Algoritmo antiguo
+								//1- evaluamos si el service tiene valor o no
+								//2- si tiene el valor va ser service[index][indexService] + day.service.nombreServicio
+								//3- si no tiene valorr, el valor va ser service[index][indexService]
+
+								//Algoritmo nuevo
+								//Nota 1: vamos a tener que iterar day.service(buscar como iterar objetos)
+								//Nota 2: de la misma manera que solucionamos updateService, podemos aplicar una logica similar aca
+
+								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
+								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
+								//3- por cada iteracion, usamos el index de la iteracion para consultar service de esta forma: service[index][placeServicesIndex];
+								//4- aplicamos el punto 2 y 3 del algoritmo antiguo.
+								//5- si todo sale bien, deberiamos poder ver los valores correctos de service.
+
 								/*day.service = {
 									breakfast: day.service.breakfast
 										? service[index][0] + day.service.breakfast
@@ -662,6 +673,7 @@ export default {
 										: service[index][3],
 								};*/
 							}
+							//index indica la cantidad de dias, nos ayuda a recorrer service
 							index++;
 						}
 					});
@@ -777,6 +789,7 @@ export default {
 		setPlace(payload) {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
+			this.setSelectedPlace();
 			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
 		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
@@ -831,6 +844,7 @@ export default {
 			setPlaceLodging: 'Lodging/setPlaceLodging',
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
+			setSelectedPlace: 'Lodging/setSelectedPlace',
 		}),
 	},
 };
