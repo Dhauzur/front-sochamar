@@ -604,8 +604,7 @@ export default {
 			//En esta parte en base a los lodging existentes, daylodgings es recorrido y poblado con datos como services y la id del lodging
 			//La id del lodging solo se añade si if(this.lodgingSelect) es valido
 			this.lodgings.forEach(l => {
-				// eslint-disable-next-line no-unused-vars
-				let index = 0;
+				let dayIndex = 0;
 				//Solo service es añadido
 				if (!this.editMode) {
 					daysLodging.forEach(day => {
@@ -642,22 +641,25 @@ export default {
 									reduceServices,
 									{}
 								);
-								/*const service = JSON.parse(l.service[0]);*/
+								const service = JSON.parse(l.service[0]);
 								//Algoritmo antiguo
 								//1- evaluamos si el service tiene valor o no
 								//2- si tiene el valor va ser service[index][indexService] + day.service.nombreServicio
-								//3- si no tiene valorr, el valor va ser service[index][indexService]
+								//3- si no tiene valor, el valor va ser service[index][indexService]
 
 								//Algoritmo nuevo
 								//Nota 1: vamos a tener que iterar day.service(buscar como iterar objetos)
 								//Nota 2: de la misma manera que solucionamos updateService, podemos aplicar una logica similar aca
-
 								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
 								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
 								//3- por cada iteracion, usamos el index de la iteracion para consultar service de esta forma: service[index][placeServicesIndex];
 								//4- aplicamos el punto 2 y 3 del algoritmo antiguo.
 								//5- si todo sale bien, deberiamos poder ver los valores correctos de service.
-
+								Object.keys(day.service).forEach((key, serviceIndex) => {
+									day.service[key] = day.service[key]
+										? service[dayIndex][serviceIndex] + day.service[key]
+										: service[dayIndex][serviceIndex];
+								});
 								/*day.service = {
 									breakfast: day.service.breakfast
 										? service[index][0] + day.service.breakfast
@@ -674,7 +676,7 @@ export default {
 								};*/
 							}
 							//index indica la cantidad de dias, nos ayuda a recorrer service
-							index++;
+							dayIndex++;
 						}
 					});
 				}
@@ -701,7 +703,7 @@ export default {
 									{}
 								);
 								day.id = l.id;
-								index++;
+								dayIndex++;
 							}
 						});
 					}
