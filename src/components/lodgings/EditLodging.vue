@@ -33,6 +33,7 @@
 								</v-btn>
 							</v-date-picker>
 						</v-dialog>
+						<!-- steppers -->
 						<v-dialog v-model="dialogAddPerson" max-width="440">
 							<template v-slot:activator="{ on }">
 								<v-btn small color="accent" class="ma-2" v-on="on">
