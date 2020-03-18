@@ -65,9 +65,10 @@
 					:items-per-page="5"
 				>
 					<template v-slot:item.actions="{ item }">
-						<v-icon
+						<v-btn
+							fab
+							x-small
 							color="error"
-							small
 							@click="
 								deleteRoom({
 									id: item.id,
@@ -75,8 +76,8 @@
 								})
 							"
 						>
-							mdi-delete
-						</v-icon>
+							<v-icon>mdi-delete</v-icon>
+						</v-btn>
 					</template>
 				</v-data-table>
 			</v-col>
