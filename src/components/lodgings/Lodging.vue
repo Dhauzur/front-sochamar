@@ -126,7 +126,7 @@
 				</v-col>
 			</v-row>
 			<!--Tabla de precios y servicios-->
-			<v-row>
+			<!--<v-row>
 				<v-col v-if="prices && place" cols="12" class="overflow-auto">
 					<v-simple-table>
 						<template v-slot:default>
@@ -231,7 +231,7 @@
 						</template>
 					</v-simple-table>
 				</v-col>
-			</v-row>
+			</v-row>-->
 			<!--Tabla de precios y servicios V2-->
 			<v-row>
 				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
@@ -634,7 +634,8 @@ export default {
 								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
 								const reduceServices = (acc, service) => {
 									return Object.assign(acc, {
-										[service.name]: 1,
+										//el problema de las sumas si este valor estaba en 1, ahora en este push deje seteado el valor en 0
+										[service.name]: 0,
 									});
 								};
 								day.service = this.selectedPlace.services.reduce(
@@ -802,7 +803,6 @@ export default {
 			//busca el numero de pasajeros en el lodging seleccionado
 			const numberPassangerMax = this.periods.get(this.lodgingSelect.group)
 				.numberPassangerMax;
-			console.log('numero de pasajeros: ' + numberPassangerMax);
 			//si el valor excede el numero de pasaejeros, se setea el numero de pasajeros como valor y se levanta una notificacion toast
 			if (payload.target.value > numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
@@ -811,6 +811,8 @@ export default {
 			//si el valor es menor a 0, se setea el numero de pasajeros como valor
 			if (payload.target.value < 0) payload.target.value = numberPassangerMax;
 			//se pasa el valor a updateService, esta funcion se encarga de actualizar el valor en pantalla
+			console.log('numero maximo de pasajeros: ' + numberPassangerMax);
+			console.log(payload.target.value);
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
