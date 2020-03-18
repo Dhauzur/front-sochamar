@@ -16,9 +16,9 @@
 			</v-dialog>
 		</template>
 		<template v-else>
-			<v-row justify="start">
+			<v-row>
 				<!-- select place  -->
-				<v-col md="4">
+				<v-col cols="12" md="3">
 					<v-select
 						:value="place"
 						:items="places"
@@ -30,20 +30,23 @@
 					</v-select>
 				</v-col>
 				<!-- activity button -->
-				<v-col v-if="place" md="8" class="d-flex flex-row mt-2">
-					<v-tooltip v-if="periods.length > 0" attach bottom min-width="180" class="mr-2">
+				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+					<v-tooltip v-if="periods.length > 0" attach bottom>
 						<template v-slot:activator="{ on }">
-							<v-btn color="accent" dark small @click="createOneLodging()" v-on="on">
+							<v-btn color="accent" block small @click="createOneLodging()" v-on="on">
 								<v-icon>mdi-plus</v-icon><span>Actividad</span>
 							</v-btn>
 						</template>
 						<span>Añadir hospedaje</span>
 					</v-tooltip>
-					<v-tooltip attach bottom min-width="180" class="mr-2">
+				</v-col>
+				<!-- periods buttons -->
+				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
+								block
 								color="accent"
-								dark
 								small
 								v-on="on"
 								@click.stop="dialogPeriods = true"
@@ -53,11 +56,14 @@
 						</template>
 						<span>Gestionar turnos del lugar</span>
 					</v-tooltip>
-					<v-tooltip attach bottom min-width="180" class="mr-2">
+				</v-col>
+				<!-- payments buttons -->
+				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
+								block
 								color="accent"
-								dark
 								small
 								v-on="on"
 								@click.stop="dialogPayments = true"
@@ -67,51 +73,65 @@
 						</template>
 						<span>Gestionar pagos del lugar</span>
 					</v-tooltip>
-					<v-tooltip v-if="lodgingSelect" attach bottom min-width="180" class="mr-2">
+				</v-col>
+				<!-- edit buttons -->
+				<v-col v-if="lodgingSelect" cols="12" sm="2" md="auto" class="mt-2">
+					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
-							<v-btn color="accent" dark small v-on="on" @click.stop="sheet = !sheet">
+							<v-btn
+								block
+								color="accent"
+								small
+								v-on="on"
+								@click.stop="sheet = !sheet"
+							>
 								<v-icon>mdi-pencil</v-icon><span>Editar</span>
 							</v-btn>
 						</template>
 						<span>Editar el hospedaje</span>
 					</v-tooltip>
-					<v-tooltip v-if="getMirrorLodging || editMode" attach bottom class="mr-2">
+				</v-col>
+				<!-- save buttons -->
+				<v-col v-if="getMirrorLodging || editMode" cols="12" sm="2" md="auto" class="mt-2">
+					<v-tooltip attach bottom class="mr-2">
 						<template v-slot:activator="{ on }">
-							<v-btn color="success" dark small @click="saveLodgings()" v-on="on">
+							<v-btn color="success" small @click="saveLodgings()" v-on="on">
 								<v-icon>mdi-content-save</v-icon><span>Guardar</span>
 							</v-btn>
 						</template>
 						<span>Guardar</span>
 					</v-tooltip>
-					<template v-if="Boolean(place) && dialogPeriods">
-						<v-dialog v-model="dialogPeriods" fullscreen>
-							<v-card>
-								<v-toolbar dark color="primary">
-									<v-btn icon dark @click="dialogPeriods = false">
-										<v-icon>mdi-close</v-icon>
-									</v-btn>
-									<v-toolbar-title>Gestion de Turnos</v-toolbar-title>
-								</v-toolbar>
-								<Periods :id-place="place" />
-							</v-card>
-						</v-dialog>
-					</template>
-					<template v-if="Boolean(place) && dialogPayments">
-						<v-dialog v-model="dialogPayments" fullscreen>
-							<v-card>
-								<v-toolbar dark color="primary">
-									<v-btn icon dark @click="dialogPayments = false">
-										<v-icon>mdi-close</v-icon>
-									</v-btn>
-									<v-toolbar-title>Gestion de Pagos</v-toolbar-title>
-								</v-toolbar>
-								<Payments :id-place="place" />
-							</v-card>
-						</v-dialog>
-					</template>
 				</v-col>
+				<!-- periods dialog -->
+				<template v-if="Boolean(place) && dialogPeriods">
+					<v-dialog v-model="dialogPeriods" fullscreen>
+						<v-card>
+							<v-toolbar dark color="primary">
+								<v-btn icon dark @click="dialogPeriods = false">
+									<v-icon>mdi-close</v-icon>
+								</v-btn>
+								<v-toolbar-title>Gestion de Turnos</v-toolbar-title>
+							</v-toolbar>
+							<Periods :id-place="place" />
+						</v-card>
+					</v-dialog>
+				</template>
+				<!-- payments dialog -->
+				<template v-if="Boolean(place) && dialogPayments">
+					<v-dialog v-model="dialogPayments" fullscreen>
+						<v-card>
+							<v-toolbar dark color="primary">
+								<v-btn icon dark @click="dialogPayments = false">
+									<v-icon>mdi-close</v-icon>
+								</v-btn>
+								<v-toolbar-title>Gestion de Pagos</v-toolbar-title>
+							</v-toolbar>
+							<Payments :id-place="place" />
+						</v-card>
+					</v-dialog>
+				</template>
 			</v-row>
-			<!-- time-line -->
+			<!-- timeline -->
 			<v-row>
 				<v-col cols="12">
 					<timeline
