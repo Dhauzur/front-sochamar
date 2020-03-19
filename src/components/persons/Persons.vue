@@ -49,6 +49,7 @@
 								<v-file-input
 									id="avatar"
 									ref="avatar"
+									v-model="person.avatar"
 									class="pointer d-none"
 									accept="image/jpeg, image/png, image/gif, image/jpg"
 									@change="setAvatar"
@@ -194,12 +195,7 @@
 									multiple
 									outlined
 									dense
-									:file-name-formatter="formatNames"
-									:label="
-										editMode
-											? 'Cambiar todos los documentos'
-											: 'Agrega un Documento, max. 5'
-									"
+									label="Agrega Documentos, max. 5"
 								>
 								</v-file-input>
 							</v-col>
@@ -309,15 +305,13 @@ export default {
 			this.regiones = this.comunasRegiones.map(item => item.region);
 		},
 		async submitForm() {
+			console.log(this.person);
+
 			let form = new FormData();
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				for (let index = 0; index < this.person.documents.length; index++) {
-					form.append('documents', this.person.documents[index]);
-				}
 				form.set('firstName', this.person.firstName.toLowerCase());
-				if (this.person.avatar) form.append('avatar', this.person.avatar);
 				if (this.person.lastName) form.set('lastName', this.person.lastName.toLowerCase());
 				if (this.person.age) form.set('age', this.person.age.toString());
 				if (this.person.birthdate)
@@ -329,6 +323,12 @@ export default {
 				if (this.person.phone) form.set('phone', this.person.phone.toLowerCase());
 				if (this.person.region) form.set('region', this.person.region);
 				if (this.person.comuna) form.set('comuna', this.person.comuna);
+				if (this.person.avatar) form.append('avatar', this.person.avatar);
+				if (this.person.documents) {
+					for (let index = 0; index < this.person.documents.length; index++) {
+						form.append('documents', this.person.documents[index]);
+					}
+				}
 				if (this.editMode) {
 					await this.editPerson({
 						payload: form,
@@ -376,13 +376,6 @@ export default {
 		},
 		deleteOne(id) {
 			this.deleteOnePerson(id).then(() => this.getAllPersons());
-		},
-		formatNames(files) {
-			if (files.length === 1) {
-				return files[0].name;
-			} else {
-				return `${files.length} files selected`;
-			}
 		},
 		cutText(text) {
 			const extencion = text.split('.').pop();

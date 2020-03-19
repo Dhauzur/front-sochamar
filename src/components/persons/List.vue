@@ -37,7 +37,7 @@
 									</v-list-item-subtitle>
 								</v-list-item-content>
 								<v-list-item-action>
-									<v-btn icon @click="deleteOne(item._id)">
+									<v-btn icon @click.stop="deleteOne(item._id)">
 										<v-icon color="error">mdi-delete</v-icon>
 									</v-btn>
 								</v-list-item-action>
