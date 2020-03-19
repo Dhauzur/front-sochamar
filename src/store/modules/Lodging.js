@@ -246,6 +246,7 @@ const mutations = {
 			'days'
 		);
 		let oldService = JSON.parse(state.lodgingSelect.service[0]);
+		console.log('trigger de detectChange,esta funcion es similar a onMove');
 		for (let i = 0; i <= numberDays; i++)
 			service.push([
 				oldService[i] ? oldService[i][0] : 1,
@@ -325,7 +326,9 @@ const mutations = {
 		state.lodgingSelect = tempLodging;
 	},
 	setLodgingSelect(state, value) {
-		if (state.lodgings.get(value)) state.lodgingSelect = state.lodgings.get(value);
+		if (state.lodgings.get(value)) {
+			state.lodgingSelect = state.lodgings.get(value);
+		}
 	},
 	setLoading(state, value) {
 		state.loading = value;

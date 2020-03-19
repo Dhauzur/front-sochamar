@@ -267,7 +267,6 @@
 											:placeholder="p.service[service.name]"
 											@change="detectInputChange"
 										/>
-										{{ p.service[service.name] }}
 									</td>
 								</tr>
 								<!--TOTAL-->
@@ -398,7 +397,7 @@ export default {
 							.add(1, 'day');
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							var place = this.places.find(c => c.value === this.place);
+							const place = this.places.find(c => c.value === this.place);
 							const generatedService = generateServiceArray(place);
 							item.content = place.text;
 							if (place != 'Turismo') item.service = [generatedService];
@@ -425,14 +424,33 @@ export default {
 							'days'
 						);
 						var oldService = JSON.parse(item.service[0]);
-						for (var i = 0; i <= numberDays; i++)
-							service.push([
-								oldService[i] ? oldService[i][0] : 1,
-								oldService[i] ? oldService[i][1] : 1,
-								oldService[i] ? oldService[i][2] : 1,
-								oldService[i] ? oldService[i][3] : 1,
-							]);
-						var itemService = [];
+						const servicesIndex = this.selectedPlace.services.length;
+						//Algoritmo
+						//1- el contador i se esta contando la nueva cantidad de dias, recorrer el primer acceso service[i].
+						//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
+						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1
+						const generateNewServices = oldServices => {
+							if (oldServices) {
+								return oldServices.map(service => {
+									return service ? service : 1;
+								});
+							} else {
+								let defaultServices;
+								let temporalArray = [];
+								for (let i = 0; i < servicesIndex; i++) {
+									temporalArray.push(1);
+								}
+								defaultServices = temporalArray;
+								return defaultServices;
+							}
+						};
+
+						for (let i = 0; i <= numberDays; i++) {
+							const newServices = generateNewServices(oldService[i]);
+							service.push(newServices);
+						}
+
+						let itemService = [];
 						itemService.push(JSON.stringify(service));
 						item.service = itemService;
 						item.start = moment(item.start).hours(15);
@@ -644,38 +662,17 @@ export default {
 									{}
 								);
 								const service = JSON.parse(l.service[0]);
-								//Algoritmo antiguo
-								//1- evaluamos si el service tiene valor o no
-								//2- si tiene el valor va ser service[index][indexService] + day.service.nombreServicio
-								//3- si no tiene valor, el valor va ser service[index][indexService]
-
 								//Algoritmo nuevo
-								//Nota 1: vamos a tener que iterar day.service(buscar como iterar objetos)
-								//Nota 2: de la misma manera que solucionamos updateService, podemos aplicar una logica similar aca
 								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
 								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
 								//3- por cada iteracion, usamos el index de la iteracion para consultar service de esta forma: service[index][placeServicesIndex];
-								//4- aplicamos el punto 2 y 3 del algoritmo antiguo.
-								//5- si todo sale bien, deberiamos poder ver los valores correctos de service.
+								//4- si tiene el valor va ser service[index][indexService] + day.service.nombreServicio
+								//5- si no tiene valor, el valor va ser service[index][indexService]
 								Object.keys(day.service).forEach((key, serviceIndex) => {
 									day.service[key] = day.service[key]
 										? service[dayIndex][serviceIndex] + day.service[key]
 										: service[dayIndex][serviceIndex];
 								});
-								/*day.service = {
-									breakfast: day.service.breakfast
-										? service[index][0] + day.service.breakfast
-										: service[index][0],
-									lunch: day.service.lunch
-										? service[index][1] + day.service.lunch
-										: service[index][1],
-									dinner: day.service.dinner
-										? service[index][2] + day.service.dinner
-										: service[index][2],
-									accommodation: day.service.accommodation
-										? service[index][3] + day.service.accommodation
-										: service[index][3],
-								};*/
 							}
 							//index indica la cantidad de dias, nos ayuda a recorrer service
 							dayIndex++;
@@ -693,6 +690,7 @@ export default {
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
 								const service = JSON.parse(l.service[0]);
+								console.log(service);
 								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
 								const reduceServices = (acc, service) => {
 									return Object.assign(acc, {
@@ -815,7 +813,9 @@ export default {
 				payload.target.value = numberPassangerMax;
 			}
 			//si el valor es menor a 0, se setea el numero de pasajeros como valor
-			if (payload.target.value < 0) payload.target.value = numberPassangerMax;
+			if (payload.target.value < 0) {
+				payload.target.value = numberPassangerMax;
+			}
 			//se pasa el valor a updateService, esta funcion se encarga de actualizar el valor en pantalla
 			this.updateService(payload.target);
 		},
