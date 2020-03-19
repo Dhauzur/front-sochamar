@@ -60,19 +60,11 @@
 									v-model.trim="$v.person.firstName.$model"
 									outlined
 									dense
-									label="Nombre"
+									label="Nombre*"
+									:error-messages="nameErrors"
+									@input="$v.person.firstName.$touch()"
+									@blur="$v.person.firstName.$touch()"
 								/>
-								<div v-if="$v.person.firstName.$dirty">
-									<small v-if="!$v.person.firstName.required" class="text-danger">
-										Campo requerido
-									</small>
-									<small
-										v-if="!$v.person.firstName.minLength"
-										class="text-danger"
-									>
-										Minimo 3 Caracteres
-									</small>
-								</div>
 							</v-col>
 							<!-- lastName -->
 							<v-col cols="3">
@@ -208,39 +200,19 @@
 											? 'Cambiar todos los documentos'
 											: 'Agrega un Documento, max. 5'
 									"
-								></v-file-input>
+								>
+								</v-file-input>
 							</v-col>
-							<!-- <v-col cols="12">
-								<small v-if="!person.documents && !person.documents[0] && editMode"
-									>Sin Documentos</small
-								>
-								<div
-									v-if="
-										editMode &&
-											Array.isArray(person.documents) &&
-											person.documents.length
-									"
-								>
-									<v-badge
-										v-for="(item, index) in person.documents"
-										:key="index"
-										class="p-2"
-										pill
-										:href="item.url"
-										target="_blank"
-										>{{ cutText(item.name) }}
-									</v-badge>
-								</div>
-							</v-col> -->
 						</v-row>
 					</v-container>
+					<small>*Campo requerido</small>
 				</v-card-text>
 				<v-card-actions>
 					<v-spacer></v-spacer>
 					<v-btn text @click="closeDialog">Cerrar</v-btn>
-					<v-btn :loading="loading" color="primary" text @click.prevent="submitForm"
-						>Guardar</v-btn
-					>
+					<v-btn :loading="loading" color="primary" text @click.prevent="submitForm">
+						Guardar
+					</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
@@ -269,7 +241,6 @@ export default {
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
 			menu: false,
 			regiones: [],
-			selected: {},
 			success: '',
 			person: {
 				_id: null,
@@ -303,6 +274,12 @@ export default {
 			message: 'Persons/message',
 			personsList: 'Persons/persons',
 		}),
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.person.firstName.$dirty) return errors;
+			!this.$v.person.firstName.required && errors.push('El nombre es querido');
+			return errors;
+		},
 	},
 	validations: {
 		person: {
