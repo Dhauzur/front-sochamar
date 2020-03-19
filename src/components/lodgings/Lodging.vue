@@ -83,7 +83,7 @@
 								color="accent"
 								small
 								v-on="on"
-								@click.stop="sheet = !sheet"
+								@click.stop="setBottomSheet({ action: true, lodging: null })"
 							>
 								<v-icon>mdi-pencil</v-icon><span>Editar</span>
 							</v-btn>
@@ -136,118 +136,117 @@
 				<v-col cols="12">
 					<timeline
 						v-if="periods.length > 0 && lodgings.length > 0"
-						:events="['rangechanged', 'click']"
+						:events="['rangechanged', 'click', 'doubleClick']"
 						:groups="periods"
 						:items="lodgings"
 						:options="options"
 						@click="enableEdit"
 						@rangechanged="rangechanged"
+						@double-click="setBottomSheet({ action: true, lodging: null })"
 					/>
 				</v-col>
 			</v-row>
 			<v-row>
 				<v-col v-if="prices && place" cols="12" class="overflow-auto">
-					<v-simple-table>
-						<template v-slot:default>
-							<thead>
-								<tr>
-									<td>Actividad</td>
-									<td>Precios</td>
-									<td v-for="(d, index) in rangeDateTable" :key="index">
-										{{ d.numberDay }}
-										<br />
-										{{ d.nameDay }}
-									</td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									<td>ALOJAMIENTO</td>
-									<td v-if="place">
-										{{ prices.prices[3] }}
-									</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
-										<span v-if="!editMode">{{ p.service.accommodation }}</span>
-										<input
-											v-if="editMode && p.service.accommodation !== undefined"
-											:id="p.id + ',' + p.date"
-											v-model="p.service.accommodation"
-											type="number"
-											class="inputService"
-											name="accommodation"
-											:placeholder="p.service.accommodation"
-											@change="detectInputChange"
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>DESAYUNO</td>
-									<td v-if="place">
-										{{ prices.prices[0] }}
-									</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
-										<span v-if="!editMode">{{ p.service.breakfast }}</span>
-										<input
-											v-if="editMode && p.service.breakfast !== undefined"
-											:id="p.id + ',' + p.date"
-											v-model="p.service.breakfast"
-											type="number"
-											class="inputService"
-											name="breakfast"
-											:placeholder="p.service.breakfast"
-											@change="detectInputChange"
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>ALMUERZO</td>
-									<td v-if="place">
-										{{ prices.prices[1] }}
-									</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
-										<span v-if="!editMode">{{ p.service.lunch }}</span>
-										<input
-											v-if="editMode && p.service.lunch != undefined"
-											:id="p.id + ',' + p.date"
-											v-model="p.service.lunch"
-											type="number"
-											class="inputService"
-											name="lunch"
-											:placeholder="p.service.lunch"
-											@change="detectInputChange"
-										/>
-									</td>
-								</tr>
-								<tr>
-									<td>CENA</td>
-									<td v-if="place">
-										{{ prices.prices[2] }}
-									</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
-										<span v-if="!editMode">{{ p.service.dinner }}</span>
-										<input
-											v-if="editMode && p.service.dinner !== undefined"
-											:id="p.id + ',' + p.date"
-											v-model="p.service.dinner"
-											type="number"
-											class="inputService"
-											name="dinner"
-											:placeholder="p.service.dinner"
-											@change="detectInputChange"
-										/>
-									</td>
-								</tr>
-								<tr v-if="place" class="borderModule">
-									<td colspan="2">TOTAL</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
-										<span v-if="finalyPrice[index] != 0">{{
-											finalyPrice[index]
-										}}</span>
-									</td>
-								</tr>
-							</tbody>
-						</template>
-					</v-simple-table>
+					<table>
+						<thead>
+							<tr>
+								<td>Actividad</td>
+								<td>Precios</td>
+								<td v-for="(d, index) in rangeDateTable" :key="index">
+									{{ d.numberDay }}
+									<br />
+									{{ d.nameDay }}
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>ALOJAMIENTO</td>
+								<td v-if="place">
+									{{ prices.prices[3] }}
+								</td>
+								<td v-for="(p, index) in proyectionTable" :key="index">
+									<span v-if="!editMode">{{ p.service.accommodation }}</span>
+									<input
+										v-if="editMode && p.service.accommodation !== undefined"
+										:id="p.id + ',' + p.date"
+										v-model="p.service.accommodation"
+										type="number"
+										class="inputService"
+										name="accommodation"
+										:placeholder="p.service.accommodation"
+										@change="detectInputChange"
+									/>
+								</td>
+							</tr>
+							<tr>
+								<td>DESAYUNO</td>
+								<td v-if="place">
+									{{ prices.prices[0] }}
+								</td>
+								<td v-for="(p, index) in proyectionTable" :key="index">
+									<span v-if="!editMode">{{ p.service.breakfast }}</span>
+									<input
+										v-if="editMode && p.service.breakfast !== undefined"
+										:id="p.id + ',' + p.date"
+										v-model="p.service.breakfast"
+										type="number"
+										class="inputService"
+										name="breakfast"
+										:placeholder="p.service.breakfast"
+										@change="detectInputChange"
+									/>
+								</td>
+							</tr>
+							<tr>
+								<td>ALMUERZO</td>
+								<td v-if="place">
+									{{ prices.prices[1] }}
+								</td>
+								<td v-for="(p, index) in proyectionTable" :key="index">
+									<span v-if="!editMode">{{ p.service.lunch }}</span>
+									<input
+										v-if="editMode && p.service.lunch != undefined"
+										:id="p.id + ',' + p.date"
+										v-model="p.service.lunch"
+										type="number"
+										class="inputService"
+										name="lunch"
+										:placeholder="p.service.lunch"
+										@change="detectInputChange"
+									/>
+								</td>
+							</tr>
+							<tr>
+								<td>CENA</td>
+								<td v-if="place">
+									{{ prices.prices[2] }}
+								</td>
+								<td v-for="(p, index) in proyectionTable" :key="index">
+									<span v-if="!editMode">{{ p.service.dinner }}</span>
+									<input
+										v-if="editMode && p.service.dinner !== undefined"
+										:id="p.id + ',' + p.date"
+										v-model="p.service.dinner"
+										type="number"
+										class="inputService"
+										name="dinner"
+										:placeholder="p.service.dinner"
+										@change="detectInputChange"
+									/>
+								</td>
+							</tr>
+							<tr v-if="place" class="borderModule">
+								<td colspan="2">TOTAL</td>
+								<td v-for="(p, index) in proyectionTable" :key="index">
+									<span v-if="finalyPrice[index] != 0">{{
+										finalyPrice[index]
+									}}</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</v-col>
 			</v-row>
 			<v-row v-if="lodgingSelect">
@@ -275,7 +274,12 @@
 			</v-row>
 			<v-row justify="center">
 				<v-col>
-					<v-bottom-sheet v-if="lodgingSelect" v-model="sheet" inset>
+					<v-bottom-sheet
+						v-if="lodgingSelect"
+						v-model="bottomSheet"
+						inset
+						@click:outside="setBottomSheet(false)"
+					>
 						<v-sheet style="height: 75vh">
 							<edit-lodging :lodgings="lodgings" :id-place="place" />
 						</v-sheet>
@@ -302,7 +306,6 @@ export default {
 		return {
 			dialogPeriods: false,
 			dialogPayments: false,
-			sheet: false,
 			services: [
 				{ text: 'Todos los servicios', value: 'todos los servicios' },
 				{ text: 'Desayuno', value: 'desayuno' },
@@ -550,6 +553,7 @@ export default {
 			return dates;
 		},
 		...mapGetters({
+			bottomSheet: 'Lodging/bottomSheet',
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',
 			lodgings: 'Lodging/lodgings',
@@ -647,6 +651,7 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
+			setBottomSheet: 'Lodging/setBottomSheet',
 			addOneService: 'Lodging/addOneService',
 			subOneService: 'Lodging/subOneService',
 			createOneLodging: 'Lodging/createOneLodging',

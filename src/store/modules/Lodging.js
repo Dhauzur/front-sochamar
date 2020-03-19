@@ -23,9 +23,11 @@ const state = {
 		start: null,
 		end: null,
 	},
+	bottomSheet: false,
 };
 
 const getters = {
+	bottomSheet: state => state.bottomSheet,
 	message: state => state.message,
 	lodgingPersons: state => state.lodgingPersons,
 	updatingService: state => state.updatingService,
@@ -49,7 +51,6 @@ const actions = {
 	 */
 	async deleteLodging({ commit }, value) {
 		try {
-			commit('setLoading', 'Eliminando hospedaje...');
 			await axios.delete(`${api}/lodging/delete/place/${value.id}`);
 			commit('setLoading', '');
 			commit('setDeletLodging', value);
@@ -189,6 +190,16 @@ const actions = {
 };
 
 const mutations = {
+	setBottomSheet(state, value) {
+		if (value.action && state.place && value.lodging) {
+			setTimeout(() => {
+				state.lodgingSelect = state.lodgings.get(value.lodging);
+				state.bottomSheet = true;
+				console.log('OKs');
+			}, 1000);
+		} else state.bottomSheet = true;
+		if (!value.action) state.bottomSheet = false;
+	},
 	setMessage(state, value) {
 		state.message = value;
 	},

@@ -119,7 +119,12 @@
 								</v-stepper-items>
 							</v-stepper>
 						</v-dialog>
-						<timeline :items="items" :groups="groups" :options="options" />
+						<timeline
+							id="timelinePeople"
+							:items="items"
+							:groups="groups"
+							:options="options"
+						/>
 					</v-tab-item>
 					<!-- @todo services -->
 					<v-tab-item style="min-height: 300px">
@@ -327,6 +332,7 @@ export default {
 		 * set date person in the store
 		 */
 		setDatePerson() {
+			const oldIdLodgingSelect = this.lodgingSelect.id;
 			const id = this.personSelected._id;
 			const name = `${this.personSelected.firstName} ${
 				this.personSelected.lastName ? this.personSelected.lastName : ''
@@ -350,6 +356,8 @@ export default {
 			this.personSelected = null;
 			this.saveLodgings();
 			this.closeDialogPerson();
+			this.setBottomSheet({ action: false, lodging: null });
+			this.setBottomSheet({ action: true, lodging: oldIdLodgingSelect });
 		},
 		/**
 		 * check if date of person is already taken
@@ -388,6 +396,8 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
+			setLodgingSelect: 'Lodging/setLodgingSelect',
+			setBottomSheet: 'Lodging/setBottomSheet',
 			sendDateChange: 'Lodging/dateChange',
 			updateLodgingPersons: 'Lodging/updateLodgingPersons',
 			removeLodgingPersons: 'Lodging/removeLodgingPersons',
@@ -395,3 +405,24 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+// #timelinePeople > .vis-left {
+// 	min-height: 250px !important;
+// }
+
+// #timelinePeople > .vis-label {
+// 	background-color: red !important;
+// 	min-height: 220px !important;
+// }
+//
+// #timelinePeople > .vis-group {
+// 	background-color: red !important;
+//
+// 	min-height: 220px !important;
+// }
+
+.vis-horizontal {
+	min-height: 150px !important;
+}
+</style>
