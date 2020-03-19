@@ -5,7 +5,7 @@
 				<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
 			</v-tabs>
 		</v-app-bar>
-		<v-container dense>
+		<v-container>
 			<template v-if="tab === 0"><lodgings /></template>
 			<template v-if="tab === 1"><place /></template>
 			<template v-if="tab === 2"><persons /></template>

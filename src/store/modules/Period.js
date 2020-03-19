@@ -79,7 +79,6 @@ const mutations = {
 	},
 	setMessage(state, value) {
 		state.message = value;
-		console.log('set perio period');
 	},
 	selectPeriod(state, value) {
 		state.periodSelected = state.periods.find(c => c.id == value);
