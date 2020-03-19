@@ -247,13 +247,33 @@ const mutations = {
 		);
 		let oldService = JSON.parse(state.lodgingSelect.service[0]);
 		console.log('trigger de detectChange,esta funcion es similar a onMove');
-		for (let i = 0; i <= numberDays; i++)
-			service.push([
-				oldService[i] ? oldService[i][0] : 1,
-				oldService[i] ? oldService[i][1] : 1,
-				oldService[i] ? oldService[i][2] : 1,
-				oldService[i] ? oldService[i][3] : 1,
-			]);
+		//Algoritmo
+		//1- el contador i se esta contando la nueva cantidad de dias, recorrer el primer acceso service[i].
+		//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
+		//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
+		//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
+		const servicesIndex = this.selectedPlace.services.length;
+		const generateNewServices = oldServices => {
+			if (oldServices) {
+				return oldServices.map(service => {
+					return service ? service : 1;
+				});
+			} else {
+				let defaultServices;
+				let temporalArray = [];
+				for (let i = 0; i < servicesIndex; i++) {
+					temporalArray.push(1);
+				}
+				defaultServices = temporalArray;
+				return defaultServices;
+			}
+		};
+
+		for (let i = 0; i <= numberDays; i++) {
+			const newServices = generateNewServices(oldService[i]);
+			service.push(newServices);
+		}
+
 		let itemService = [];
 		itemService.push(JSON.stringify(service));
 		tempLodgings.update({
@@ -275,13 +295,18 @@ const mutations = {
 			moment(tempLodging.start).format('YYYY-MM-DD'),
 			'days'
 		);
+		//el primer for nos indica que por cada dia modificara una posicion de service;
 		for (let i = 0; i <= numberDays; i++) {
-			//ver si esto afecta o es recorrido
+			//este for se encarga de recorrer todos los valores actuales de ese dia
+			//de ser null, el valor de ese service queda en 0;
+			//vamos a cambiar esta evaluacion por forEach
 			for (let u = 0; u <= 3; u++) {
-				console.log('trigger del for con u');
 				if (service[i][u] == null) service[i][u] = 0;
 			}
-			//Aca se esta basando en servicesSelected
+			//algoritmo
+			//1- si seleccionamos un servicio, buscar el index de este y con esto tendriamos la posicion de service para alterar su valor
+			//2- si el valor es 'todos los servicios' o un valor numerico que represente esta accion, hacer un foreach de service[i]
+			// y con esto podriamos alterar todos los valores
 			if (serviceSelected == 'desayuno' || serviceSelected == 'todos los servicios')
 				service[i][0] = service[i][0] - 1;
 			if (serviceSelected == 'almuerzo' || serviceSelected == 'todos los servicios')
@@ -290,9 +315,10 @@ const mutations = {
 				service[i][2] = service[i][2] - 1;
 			if (serviceSelected == 'alojamiento' || serviceSelected == 'todos los servicios')
 				service[i][3] = service[i][3] - 1;
-			//pareciera estar haciendo lo mismo que el for con U
+
+			//si el service fuera 0 y entra en esta funcion, este for essta evitando que registre valores negativos
+			//vamos a cambiar esta evaluacion por forEach
 			for (let k = 0; k <= 3; k++) {
-				console.log('trigger del for con K');
 				if (service[i][k] < 0) service[i][k] = 0;
 			}
 		}
