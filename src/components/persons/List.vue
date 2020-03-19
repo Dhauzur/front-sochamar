@@ -67,10 +67,6 @@ export default {
 			type: Array,
 			required: false,
 		},
-		person: {
-			type: Object,
-			required: false,
-		},
 		selectedPerson: {
 			type: Function,
 			required: false,

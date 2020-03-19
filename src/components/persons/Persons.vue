@@ -7,7 +7,6 @@
 				<persons-list
 					:delete-one="deleteOne"
 					:get-all-persons="getAllPersons"
-					:person="person"
 					:persons="personsList"
 					:selected-person="selectedPerson"
 				/>
@@ -37,7 +36,7 @@
 										alt="avatar"
 										class="pointer borderRadius"
 										max-width="130px"
-										:src="setAvatar"
+										:src="getAvatar"
 										><div class="  textAvatar secondary">
 											{{
 												typeof person.avatar === 'string'
@@ -50,9 +49,9 @@
 								<v-file-input
 									id="avatar"
 									ref="avatar"
-									v-model="person.avatar"
 									class="pointer d-none"
 									accept="image/jpeg, image/png, image/gif, image/jpg"
+									@change="setAvatar"
 								/>
 							</v-col>
 							<!-- firstName -->
@@ -145,6 +144,7 @@
 									</v-date-picker>
 								</v-menu>
 							</v-col>
+							<!-- phone -->
 							<v-col cols="3">
 								<v-text-field
 									v-model="person.phone"
@@ -153,6 +153,7 @@
 									label="Teléfono"
 								></v-text-field>
 							</v-col>
+							<!-- function -->
 							<v-col cols="3">
 								<v-text-field
 									v-model="person.function"
@@ -161,6 +162,7 @@
 									label="Función"
 								></v-text-field>
 							</v-col>
+							<!-- appointment -->
 							<v-col cols="3">
 								<v-text-field
 									v-model="person.appointment"
@@ -169,6 +171,7 @@
 									label="Cargo"
 								></v-text-field>
 							</v-col>
+							<!-- region -->
 							<v-col cols="3">
 								<v-select
 									v-model="person.region"
@@ -179,6 +182,7 @@
 									@change="setComunas"
 								></v-select>
 							</v-col>
+							<!-- comuna -->
 							<v-col cols="3">
 								<v-select
 									v-model="person.comuna"
@@ -189,6 +193,7 @@
 									:disabled="disableComunaInput"
 								></v-select>
 							</v-col>
+							<!-- documents -->
 							<v-col cols="6">
 								<v-file-input
 									ref="document"
@@ -243,13 +248,13 @@
 </template>
 
 <script>
+import avatarDefault from '@/assets/default.png';
+import axios from 'axios';
+import PersonsList from '@/components/persons/List';
 import { api_absolute } from '@/config/index.js';
 import { mapActions, mapGetters } from 'vuex';
 import { required, minLength } from 'vuelidate/lib/validators';
 import { validationMixin } from 'vuelidate';
-import avatarDefault from '@/assets/default.png';
-import axios from 'axios';
-import PersonsList from '@/components/persons/PersonsList';
 
 export default {
 	components: { PersonsList },
@@ -284,7 +289,7 @@ export default {
 		};
 	},
 	computed: {
-		setAvatar() {
+		getAvatar() {
 			if (typeof this.person.avatar === 'string') {
 				return this.person.avatar;
 			} else if (this.person.avatar) {
@@ -318,6 +323,9 @@ export default {
 		this.fetchRegions();
 	},
 	methods: {
+		setAvatar(e) {
+			this.person.avatar = e;
+		},
 		async fetchRegions() {
 			const response = await axios.get(`${api_absolute}/comunas-regiones.json`);
 			this.comunasRegiones = response.data;
@@ -360,6 +368,7 @@ export default {
 		selectedPerson(person) {
 			this.editMode = true;
 			this.person = person;
+			this.dialog = true;
 			if (this.person.region === undefined) {
 				this.disableComunaInput = true;
 			} else {
