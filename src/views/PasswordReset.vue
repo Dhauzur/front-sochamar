@@ -1,7 +1,7 @@
 <template lang="html">
-	<b-container>
-		<b-row id="nav" class="justify-content-center">
-			<b-col md="8" lg="6" class="background-module pb-3 px-4">
+	<v-container>
+		<v-row id="nav" class="justify-content-center">
+			<v-col md="8" lg="6" class="background-module pb-3 px-4">
 				<h3 class="my-4">Restaurar contraseña</h3>
 				<b-form @submit.prevent="sendNewPassword">
 					<!--NUEVA CONTRASEÑA-->
@@ -57,9 +57,9 @@
 						Debe rellenar el formulario correctamente
 					</small>
 				</b-form>
-			</b-col>
-		</b-row>
-	</b-container>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
@@ -130,5 +130,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="css" scoped></style>

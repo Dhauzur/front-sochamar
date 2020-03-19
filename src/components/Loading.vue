@@ -12,5 +12,3 @@ export default {
 	props: { msj: { type: String } },
 };
 </script>
-
-<style lang="css" scoped></style>

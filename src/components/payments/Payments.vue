@@ -1,15 +1,13 @@
 <template>
-	<div>
-		<payments-wrapper
-			:lodgings="lodgingsPlace"
-			:place="place"
-			:items="payments"
-			:loading="loading"
-			:update-payments="fetchPayments"
-			:count="countLodgings"
-			:delete="deleteOnePayment"
-		/>
-	</div>
+	<payments-wrapper
+		:lodgings="lodgingsPlace"
+		:place="place"
+		:items="payments"
+		:loading="loading"
+		:update-payments="fetchPayments"
+		:count="countLodgings"
+		:delete="deleteOnePayment"
+	/>
 </template>
 
 <script>
@@ -21,10 +19,11 @@ export default {
 	components: {
 		PaymentsWrapper,
 	},
-	data() {
-		return {
-			idPlace: this.$route.params.place,
-		};
+	props: {
+		idPlace: {
+			type: String,
+			required: true,
+		},
 	},
 	computed: {
 		...mapGetters({

@@ -3,30 +3,32 @@ import axios from 'axios';
 import router from '@/router/index.js';
 
 const state = {
-	message: '',
-	periodSelected: null,
-	periods: null,
+	filterRoomWord: '',
 	idPlace: '',
 	loading: false,
+	message: '',
+	rooms: null,
+	roomSelected: null,
 };
 
 const getters = {
-	loading: state => state.loading,
 	idPlace: state => state.idPlace,
+	loading: state => state.loading,
 	message: state => state.message,
-	periodSelected: state => state.periodSelected,
-	periods: state => state.periods,
+	roomSelected: state => state.roomSelected,
+	rooms: state => state.rooms,
 };
 
 const actions = {
-	async deletePeriod({ commit, dispatch }, { id, placeId }) {
+	async deleteRoom({ commit, dispatch }, { id, placeId }) {
 		try {
-			await axios.delete(`${api}/periods/one/${id}`, { data: { placeId } });
+			const response = await axios.delete(`${api}/rooms/one/${id}`, { data: { placeId } });
+			const { name } = response.data;
 			commit('setMessage', {
 				type: 'success',
-				text: `Turno eliminado`,
+				text: `Turno ${name} eliminado`,
 			});
-			dispatch('fetchPeriods', placeId);
+			dispatch('fetchRooms', placeId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -35,15 +37,16 @@ const actions = {
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
-	async createPeriod({ commit, dispatch }, period) {
+	async createRoom({ commit, dispatch }, room) {
 		try {
-			period.placeId = state.idPlace;
-			await axios.post(api + '/periods', period);
+			commit('setLoading', true);
+			room.placeId = state.idPlace;
+			await axios.post(api + '/rooms', room);
 			commit('setMessage', {
 				type: 'success',
-				text: 'Turno creado ',
+				text: 'Habitacion creada ',
 			});
-			dispatch('fetchPeriods', period.placeId);
+			dispatch('fetchRooms', room.placeId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
@@ -51,15 +54,17 @@ const actions = {
 			});
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
+		commit('setLoading', false);
 	},
-	async fetchPeriods({ commit }, placeId) {
+	async fetchRooms({ commit }, placeId) {
 		try {
 			commit('setLoading', true);
-			const response = await axios.get(`${api}/periods/${placeId}`);
-			const { periods } = response.data;
-			commit('setPeriods', periods);
+			commit('setRooms', null);
+			const response = await axios.get(`${api}/rooms/${placeId}`);
+			const { rooms } = response.data;
+			commit('setRooms', rooms);
 		} catch (e) {
-			commit('setPeriods', null);
+			commit('setRooms', null);
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al descargar turnos',
@@ -74,26 +79,26 @@ const mutations = {
 	setLoading(state, value) {
 		state.loading = value;
 	},
-	setIdPlacePeriod(state, value) {
+	setIdPlaceRoom(state, value) {
 		state.idPlace = value;
 	},
 	setMessage(state, value) {
 		state.message = value;
 	},
-	selectPeriod(state, value) {
-		state.periodSelected = state.periods.find(c => c.id == value);
+	selectRoom(state, value) {
+		state.roomSelected = state.rooms.find(c => c.id == value);
 	},
-	setPeriods(state, value) {
-		var periods = [];
+	setRooms(state, value) {
+		var rooms = [];
 		if (value)
 			value.forEach(v => {
-				periods.push({
+				rooms.push({
 					id: v._id,
 					name: v.name,
 					numberPassangerMax: v.numberPassangerMax,
 				});
 			});
-		state.periods = periods;
+		state.rooms = rooms;
 	},
 };
 

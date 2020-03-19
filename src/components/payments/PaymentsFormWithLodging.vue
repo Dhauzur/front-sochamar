@@ -1,55 +1,67 @@
 <template>
 	<div>
-		<b-row v-if="optionsLodgings.length <= 1">
-			<b-col>
-				<h6 class="text-left mt-1 ml-1">
-					Todos los hospedajes pagos
-				</h6>
-			</b-col>
-		</b-row>
-		<b-row v-else class="text-left">
-			<b-col cols="12" md="6" lg="4">
-				<label for="date" class="mb-0 mt-2"><small>Fecha</small></label>
-				<b-form-select
+		<v-row v-if="Array.isArray(optionsLodgings) && optionsLodgings.length">
+			<v-col cols="12" sm="6" md="4" lg="3">
+				<v-select
 					id="date"
 					v-model="$v.lodgingSelected.$model"
-					size="sm"
-					:options="optionsLodgings"
+					dense
+					outlined
+					:items="optionsLodgings"
+					label="Seleccione"
+					:error-messages="lodgingSelectedErrors"
 					@change="setMount"
-				></b-form-select>
-			</b-col>
-			<b-col cols="12" md="6" lg="2">
-				<label for="mount" class="mb-0 mt-2"><small>Monto</small></label>
-				<b-form-input
+					@input="$v.lodgingSelected.$touch()"
+					@blur="$v.lodgingSelected.$touch()"
+				></v-select>
+			</v-col>
+			<v-col cols="12" sm="6" md="4" lg="3">
+				<v-text-field
 					id="mount"
-					v-model="$v.mount.$model"
-					:disabled="true"
-					size="sm"
+					v-model="mount"
 					type="number"
+					readonly
+					dense
+					outlined
+					label="Monto"
 					placeholder="Ej: 10000 CLP"
-				></b-form-input>
-			</b-col>
-			<b-col cols="12" md="9" lg="3">
-				<label for="voucher" class="mb-0 mt-2"><small>Voucher</small></label>
-				<b-form-file
+				></v-text-field>
+			</v-col>
+			<v-col cols="12" sm="6" md="4" lg="3">
+				<v-file-input
 					id="voucher"
 					ref="voucher"
 					v-model="$v.voucher.$model"
-					size="sm"
-					class="text-left"
-					placeholder="Subir vaucher"
-					drop-placeholder="Arrastrar aqui..."
-					@change="e => (voucher = e.target.files[0])"
-				></b-form-file>
-			</b-col>
-			<b-col cols="12" md="3" class="mt-4">
-				<b-button :disabled="loading" block class="btn-sm mt-2" @click="submit">
+					label="Voucher"
+					dense
+					outlined
+					clearable
+					prepend-icon="mdi-paperclip"
+					:error-messages="voucherErrors"
+					@input="$v.voucher.$touch()"
+					@blur="$v.voucher.$touch()"
+				>
+					<template v-slot:selection="{ text }">
+						<v-chip small label color="secondary">
+							{{ text }}
+						</v-chip>
+					</template>
+				</v-file-input>
+			</v-col>
+			<v-col cols="12" sm="6" md="3" lg="3">
+				<v-btn :loading="loading" block color="primary" class="mt-1" small @click="submit">
 					Agregar Pago
-					<b-spinner v-if="loading" small type="grow"></b-spinner>
-				</b-button>
+				</v-btn>
 				<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
-			</b-col>
-		</b-row>
+			</v-col>
+		</v-row>
+		<v-row v-else>
+			<v-col>
+				<h6 class="text-left mt-1 ml-1 accent--text">
+					No tiene hospedajes por pagar
+				</h6>
+			</v-col>
+		</v-row>
 	</div>
 </template>
 
@@ -59,6 +71,7 @@ import { required } from 'vuelidate/lib/validators';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
+	name: 'PaymentsWithLodging',
 	mixins: [validationMixin],
 	props: {
 		lodgings: {
@@ -88,10 +101,24 @@ export default {
 		};
 	},
 	computed: {
+		voucherErrors() {
+			const errors = [];
+			if (!this.$v.voucher.$dirty) return errors;
+			!this.$v.voucher.required && errors.push('campo requerido');
+			return errors;
+		},
+		lodgingSelectedErrors() {
+			const errors = [];
+			if (!this.$v.lodgingSelected.$dirty) return errors;
+			!this.$v.lodgingSelected.required && errors.push('campo requerido');
+			return errors;
+		},
 		optionsLodgings() {
 			let index = [];
-			let lod = [...this.lodgings];
-			const pay = [...this.payments];
+			let lod = [];
+			let pay = [];
+			if (this.lodgings) lod = [...this.lodgings];
+			if (this.payments) pay = [...this.payments];
 			const lodgingsPaid = pay.filter(
 				({ idLodging }) => !lod.every(({ _id }) => idLodging === _id)
 			);
@@ -111,7 +138,6 @@ export default {
 					value: item,
 				};
 			});
-			lodging.push({ value: null, text: 'Seleccione' });
 			return lodging;
 		},
 		...mapGetters({

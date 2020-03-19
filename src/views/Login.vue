@@ -1,67 +1,66 @@
 <template lang="html">
-	<b-container>
-		<b-row id="nav" class="justify-content-center">
-			<b-col v-if="!passwordRecover" md="8" lg="6" class="background-module pb-3 px-4">
-				<h3 class="my-4">Ingresa a Sochamar</h3>
-				<b-form @submit.prevent="login(loginData)">
-					<!--EMAIL-->
-					<b-form-group
-						id="input-group-1"
-						label="Correo electronico:"
-						label-for="email-input"
-					>
-						<b-form-input
-							id="email-input"
-							v-model.trim="loginData.email"
-							type="email"
-							required
-							placeholder="Ingresa el correo"
-						></b-form-input>
-					</b-form-group>
-					<!--PASSWORD-->
-					<b-form-group id="input-group-2" label="Contraseña:" label-for="password-input">
-						<b-form-input
-							id="password-input"
-							v-model.trim="loginData.password"
-							type="password"
-							required
-							placeholder="Ingresa la contraseña"
-						></b-form-input>
-					</b-form-group>
-					<!--SUBMIT-->
-					<b-button :disabled="loading" class="mt-2" type="submit" variant="primary">
-						Ingresar
-						<b-spinner v-if="loading" small type="grow"></b-spinner>
-					</b-button>
-				</b-form>
-				<GoogleButton></GoogleButton>
-				<p>
-					¿No tienes una cuenta?
-					<router-link to="/register">registrate</router-link>
-				</p>
-				<a href="#" @click="controlPasswordRecover(true)">¿Olvidaste tu contraseña?</a>
-			</b-col>
-			<b-col v-else md="8" lg="6" class="background-module pb-3 px-4">
+	<v-container class="fill-height" fluid>
+		<v-row align="center" justify="center">
+			<v-col v-if="!passwordRecover" cols="12" sm="6" md="4" lg="3" class="pb-5">
+				<Logo style="max-height: 30vh;" />
+				<v-form>
+					<v-text-field
+						id="email-input"
+						v-model.trim="loginData.email"
+						label="Correo electronico"
+						name="login"
+						prepend-icon="mdi-account"
+						type="text"
+						required
+					/>
+
+					<v-text-field
+						id="password-input"
+						v-model.trim="loginData.password"
+						:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+						label="Contraseña"
+						name="password"
+						prepend-icon="mdi-lock"
+						:type="showPassword ? 'text' : 'password'"
+						required
+						@click:append="showPassword = !showPassword"
+					/>
+				</v-form>
+				<v-btn :loading="loading" block small color="primary" @click="onSubmit">
+					Ingresar
+				</v-btn>
+				<v-spacer /><GoogleButton class="my-3"></GoogleButton><v-spacer />
+				¿No tienes una cuenta?
+				<v-btn text small to="/register" color="primary">registrate</v-btn>
+				<v-btn text small color="primary" @click="controlPasswordRecover(true)">
+					¿Olvidaste tu contraseña?
+				</v-btn>
+			</v-col>
+			<v-col v-else cols="12" sm="8" md="4" lg="3">
 				<PasswordRecover
 					:disable-password-recover="controlPasswordRecover"
 				></PasswordRecover>
-			</b-col>
-		</b-row>
-	</b-container>
+			</v-col>
+			<v-col cols="12" style="min-height: 10vh;"></v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import PasswordRecover from '../components/auth/PasswordRecover';
 import GoogleButton from '../components/auth/GoogleButton';
+import Logo from '@/assets/logo';
 
 export default {
 	components: {
 		PasswordRecover,
 		GoogleButton,
+		Logo,
 	},
 	data() {
 		return {
+			showPassword: false,
 			loginData: {
 				email: '',
 				password: '',
@@ -81,6 +80,9 @@ export default {
 		},
 	},
 	methods: {
+		onSubmit() {
+			this.login(this.loginData);
+		},
 		toastedMessage(newVal) {
 			this.$toasted.show(newVal.text, {
 				type: newVal.type,
@@ -95,12 +97,3 @@ export default {
 	},
 };
 </script>
-
-<style lang="css" scoped>
-.test {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-</style>

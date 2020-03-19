@@ -1,99 +1,94 @@
 <template>
-	<div>
-		<b-row class="mb-3 text-left">
-			<b-col cols="12" md="6" lg="3">
-				<label for="Total" class="mb-0 mt-2"><small>Total</small></label>
-				<b-form-input
-					id="total"
-					v-model="$v.mount.$model"
-					:disabled="Boolean(item)"
-					size="sm"
-					type="number"
-					placeholder="Ej: 10000"
-				></b-form-input>
-				<div v-if="$v.mount.$dirty" class="text-right">
-					<small v-if="!$v.mount.required" class="text-danger">
-						Campo requerido
-					</small>
-				</div>
-			</b-col>
-			<b-col cols="12" md="6" lg="2">
-				<label for="in" class="mb-0 mt-2"><small>Ingreso</small></label>
-				<b-form-group id="in" label-for="input-1" class="pb-0 mb-0">
-					<b-form-input
-						id="in"
-						v-model="$v.startDate.$model"
-						size="sm"
-						type="date"
-						:disabled="Boolean(item) || count === 0"
-					/>
-				</b-form-group>
-				<div v-if="$v.startDate.$dirty" class="text-right">
-					<small v-if="!$v.startDate.required" class="text-danger">
-						Campo requerido
-					</small>
-				</div>
-			</b-col>
-			<b-col cols="12" md="6" lg="2">
-				<label for="out" class="mb-0 mt-2"><small>Salida</small></label>
-				<b-form-group id="out" label-for="input-1" class="pb-0 mb-0">
-					<b-form-input
-						id="out"
-						v-model="$v.endDate.$model"
-						size="sm"
-						type="date"
-						:disabled="Boolean(item) || count === 0"
-					/>
-				</b-form-group>
-				<div v-if="$v.endDate.$dirty" class="text-right">
-					<small v-if="!$v.endDate.required" class="text-danger">
-						Campo requerido
-					</small>
-				</div>
-			</b-col>
-			<b-col cols="12" md="6" lg="3">
-				<label for="voucher" class="mb-0 mt-2"><small>Voucher</small></label>
-				<div v-if="editVoucher || item">
-					<span
-						v-if="typeof editVoucher === 'string'"
-						class="pointer"
-						:href="editVoucher"
-					>
-						{{ cutText(voucherName) }}
-					</span>
-				</div>
-				<div v-else>
-					<b-form-file
-						id="voucher"
-						ref="voucher"
-						size="sm"
-						class="text-left"
-						placeholder="Subir vaucher"
-						type="file"
-						@change="e => (voucher = e.target.files[0])"
-					/>
-				</div>
-			</b-col>
-			<b-col cols="12" md="12" lg="2" class="mt-4">
-				<b-button block class="btn-sm mt-2" @click="submit">{{
-					item ? 'Actualizar' : 'Agregar Pago'
-				}}</b-button>
-			</b-col>
-		</b-row>
-		<b-row
-			><b-col v-if="item" cols="12"
-				><b-form-textarea
-					id="textarea"
-					v-model="comments"
-					placeholder="Escriba un comentario..."
-					rows="1"
-					size="sm"
-					max-rows="1"
-					no-resize
-				></b-form-textarea
-			></b-col>
-		</b-row>
-	</div>
+	<v-row>
+		<!-- mount -->
+		<v-col cols="12" sm="6" md="3">
+			<v-text-field
+				id="total"
+				v-model="$v.mount.$model"
+				size="sm"
+				type="number"
+				placeholder="Ej: 10000"
+				label="Total"
+				rounded
+				dense
+				prepend-icon="mdi-cash-usd"
+				:error-messages="mountErrors"
+				@input="$v.mount.$touch()"
+				@blur="$v.mount.$touch()"
+			></v-text-field>
+		</v-col>
+		<!-- dates -->
+		<v-col cols="12" sm="6" md="3">
+			<v-menu
+				ref="menu"
+				v-model="menu"
+				:close-on-content-click="false"
+				:return-value.sync="dates"
+				transition="scale-transition"
+				offset-y
+				min-width="290px"
+			>
+				<template v-slot:activator="{ on }">
+					<v-text-field
+						v-model="dates"
+						dense
+						clearable
+						outlined
+						rounded
+						label="Fecha de ingreso y salida"
+						prepend-icon="mdi-calendar"
+						:error-messages="datesErrors"
+						@input="$v.dates.$touch()"
+						@blur="$v.dates.$touch()"
+						v-on="on"
+					></v-text-field>
+				</template>
+				<v-date-picker
+					v-model="dates"
+					outlined
+					rounded
+					range
+					locale="es"
+					:min="startDate"
+					:max="endDate"
+					no-title
+					scrollable
+				>
+					<v-spacer></v-spacer>
+					<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+					<v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
+				</v-date-picker>
+			</v-menu>
+		</v-col>
+		<!-- voucher -->
+		<v-col cols="12" sm="6" md="3">
+			<v-file-input
+				id="voucher"
+				ref="voucher"
+				v-model="voucher"
+				label="voucher"
+				dense
+				clearable
+				outlined
+				rounded
+				prepend-icon="mdi-paperclip"
+				:error-messages="voucherErrors"
+				@input="$v.voucher.$touch()"
+				@blur="$v.voucher.$touch()"
+			>
+				<template v-slot:selection="{ text }">
+					<v-chip small label color="secondary">
+						{{ text }}
+					</v-chip>
+				</template>
+			</v-file-input>
+		</v-col>
+		<v-col cols="12" sm="6" md="3">
+			<v-btn dark small rounded color="primary" block class="mt-2" @click="submit">
+				Guardar
+			</v-btn>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
@@ -105,25 +100,10 @@ import moment from 'moment';
 export default {
 	name: 'PaymentsForm',
 	mixins: [validationMixin],
-	props: {
-		item: {
-			type: Object,
-			required: false,
-			default: () => {},
-		},
-		onClose: {
-			type: Function,
-			required: false,
-		},
-		hide: {
-			type: Function,
-		},
-		count: {
-			type: Number,
-		},
-	},
 	data() {
 		return {
+			dates: [],
+			menu: null,
 			text: '',
 			idPlace: this.$route.params.place,
 			form: new FormData(),
@@ -131,24 +111,58 @@ export default {
 			endDate: '',
 			mount: '',
 			voucher: null,
-			editVoucher: null,
 			voucherName: null,
-			voucherList: null,
 			comments: '',
 			errors: '',
 		};
 	},
 	computed: {
+		mountErrors() {
+			const errors = [];
+			if (!this.$v.mount.$dirty) return errors;
+			!this.$v.mount.required && errors.push('El monto es querido');
+			return errors;
+		},
+		datesErrors() {
+			const errors = [];
+			if (!this.$v.dates.$dirty) return errors;
+			!this.$v.dates.required && errors.push('campo requerido');
+			return errors;
+		},
+		voucherErrors() {
+			const errors = [];
+			if (!this.$v.voucher.$dirty) return errors;
+			!this.$v.voucher.required && errors.push('campo requerido');
+			return errors;
+		},
+		setDateStart() {
+			// set startdate from array dates
+			if (moment(this.dates[0]).isBefore(moment(this.dates[1]))) {
+				return this.dates[0];
+			} else {
+				moment(this.dates[1]).isBefore(moment(this.dates[0]));
+				return this.dates[1];
+			}
+		},
+		setDateEnd() {
+			// set enddate from array dates
+			if (moment(this.dates[0]).isAfter(moment(this.dates[1]))) {
+				return this.dates[0];
+			} else {
+				moment(this.dates[1]).isAfter(moment(this.dates[0]));
+				return this.dates[1];
+			}
+		},
 		...mapGetters({ range: 'Lodging/rangeDatePayments' }),
 	},
 	validations: {
 		mount: {
 			required,
 		},
-		startDate: {
+		dates: {
 			required,
 		},
-		endDate: {
+		voucher: {
 			required,
 		},
 	},
@@ -156,22 +170,6 @@ export default {
 		range() {
 			this.startDate = this.range.startDate;
 			this.endDate = this.range.endDate;
-		},
-		item: {
-			handler: function(value) {
-				if (value) {
-					if (value.voucher) {
-						this.editVoucher = value.voucher.url;
-						this.voucherName = value.voucher.name;
-					}
-					this.startDate = value.startDate;
-					this.endDate = value.endDate;
-					this.mount = value.mount;
-					this.comments = value.comments;
-				}
-			},
-			immediate: true,
-			deep: true,
 		},
 	},
 	methods: {
@@ -186,20 +184,12 @@ export default {
 				this.errors = true;
 			} else {
 				this.form.set('idPlace', this.idPlace);
-				this.form.set('startDate', moment(this.startDate).format('YYYY-MM-DD'));
-				this.form.set('endDate', moment(this.endDate).format('YYYY-MM-DD'));
+				this.form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
+				this.form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
 				this.form.set('mount', this.mount);
-				if (this.item) {
-					this.form.set('voucher', this.editVoucher);
-					this.form.set('comments', this.comments);
-					await this.edit({ payload: this.form, id: this.item._id });
-					this.updatePayments(this.idPlace);
-					this.onClose(this.hide);
-				} else {
-					this.form.append('voucher', this.voucher);
-					await this.save(this.form);
-					this.updatePayments(this.idPlace);
-				}
+				this.form.append('voucher', this.voucher);
+				await this.save(this.form);
+				this.updatePayments(this.idPlace);
 			}
 		},
 		cutText(text) {
@@ -211,11 +201,8 @@ export default {
 		},
 		...mapActions({
 			save: 'Payments/savePayment',
-			edit: 'Payments/editPayment',
 			updatePayments: 'Payments/fetchPaymentsOfThePlace',
 		}),
 	},
 };
 </script>
-
-<style lang="scss" scoped></style>
