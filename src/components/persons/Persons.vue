@@ -11,11 +11,20 @@
 			<v-col cols="8">
 				<h5>Listado de personas</h5>
 			</v-col>
+			<v-col cols="2">
+				<v-text-field
+					v-model="filteredWord"
+					outlined
+					dense
+					label="Filtrar"
+					@input="filter"
+				/>
+			</v-col>
 			<v-col v-if="personsList.length > 0" cols="12" style="height: 75vh; overflow: auto">
 				<persons-list
 					:delete-one="deleteOne"
 					:get-all-persons="getAllPersons"
-					:persons="personsList"
+					:persons="resultFilter"
 					:selected-person="selectedPerson"
 				/>
 			</v-col>
@@ -232,6 +241,8 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
+			filteredWord: '',
+			list: [],
 			comunas: [],
 			comunasRegiones: [],
 			dialog: false,
@@ -259,6 +270,13 @@ export default {
 		};
 	},
 	computed: {
+		resultFilter() {
+			if (this.filteredWord === '') {
+				return this.personsList;
+			} else {
+				return this.list;
+			}
+		},
 		getAvatar() {
 			if (typeof this.person.avatar === 'string') {
 				return this.person.avatar;
@@ -294,11 +312,21 @@ export default {
 				type: newVal.type,
 			});
 		},
+		personsList() {
+			if (this.filteredWord === '') {
+				this.list = this.personsList;
+			}
+		},
 	},
 	mounted() {
 		this.fetchRegions();
 	},
 	methods: {
+		filter() {
+			this.list = this.personsList.filter(person => {
+				return person.firstName.toLowerCase().indexOf(this.filteredWord.toLowerCase()) > -1;
+			});
+		},
 		setAvatar(e) {
 			this.person.avatar = e;
 		},
