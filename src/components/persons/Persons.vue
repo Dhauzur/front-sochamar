@@ -1,9 +1,17 @@
 <template>
-	<v-container style="height: 75vh; position: relative">
+	<v-container>
 		<!-- list person -->
 		<v-row>
-			<v-col v-if="personsList.length > 0" cols="12">
+			<v-col cols="2">
+				<v-btn small color="accent" @click="dialog = !dialog">
+					<v-icon>mdi-plus</v-icon>
+					Agregar
+				</v-btn>
+			</v-col>
+			<v-col cols="8">
 				<h5>Listado de personas</h5>
+			</v-col>
+			<v-col v-if="personsList.length > 0" cols="12" style="height: 75vh; overflow: auto">
 				<persons-list
 					:delete-one="deleteOne"
 					:get-all-persons="getAllPersons"
@@ -14,11 +22,6 @@
 		</v-row>
 		<!-- dialog -->
 		<v-dialog v-model="dialog" persistent max-width="800px">
-			<template v-slot:activator="{ on }">
-				<v-btn absolute fab bottom right color="primary" v-on="on">
-					<v-icon>mdi-plus</v-icon>
-				</v-btn>
-			</template>
 			<v-card>
 				<v-card-title>
 					<span class="headline">Nueva Persona</span>
@@ -195,7 +198,7 @@
 									multiple
 									outlined
 									dense
-									label="Agrega Documentos, max. 5"
+									label="Agrega documentos, max. 5"
 								>
 								</v-file-input>
 							</v-col>
