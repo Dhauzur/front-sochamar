@@ -103,19 +103,25 @@
 					</v-tooltip>
 				</v-col>
 				<!-- periods dialog -->
-				<template v-if="Boolean(place) && dialogPeriods">
-					<v-dialog v-model="dialogPeriods" fullscreen>
-						<v-card>
-							<v-toolbar dark color="primary">
-								<v-btn icon dark @click="dialogPeriods = false">
-									<v-icon>mdi-close</v-icon>
-								</v-btn>
-								<v-toolbar-title>Gestion de Turnos</v-toolbar-title>
-							</v-toolbar>
-							<Periods :id-place="place" />
-						</v-card>
-					</v-dialog>
-				</template>
+				<v-bottom-sheet
+					v-if="lodgingSelect"
+					v-model="bottomSheet"
+					inset
+					@click:outside="setBottomSheet(false)"
+				>
+					<v-sheet style="height: 75vh">
+						<edit-lodging :lodgings="lodgings" :id-place="place" />
+					</v-sheet>
+				</v-bottom-sheet>
+				<v-bottom-sheet
+					v-model="dialogPeriods"
+					inset
+					@click:outside="dialogPeriods = false"
+				>
+					<v-sheet style="height: 75vh">
+						<Periods :id-place="place" />
+					</v-sheet>
+				</v-bottom-sheet>
 				<!-- payments dialog -->
 				<template v-if="Boolean(place) && dialogPayments">
 					<v-dialog v-model="dialogPayments" fullscreen>

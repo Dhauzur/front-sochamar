@@ -4,7 +4,6 @@
 			<v-col cols="12">
 				<v-tabs v-model="tab">
 					<v-tab>Detalles</v-tab>
-					<v-tab>Servicios generales</v-tab>
 					<v-tab>Habitaciones</v-tab>
 				</v-tabs>
 				<v-tabs-items v-model="tab">
@@ -125,10 +124,6 @@
 							:groups="groups"
 							:options="options"
 						/>
-					</v-tab-item>
-					<!-- @todo services -->
-					<v-tab-item style="min-height: 300px">
-						servicios generales
 					</v-tab-item>
 					<v-tab-item>
 						<rooms :id-place="idPlace" />
