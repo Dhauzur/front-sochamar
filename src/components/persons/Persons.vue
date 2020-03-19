@@ -42,7 +42,6 @@
 							<v-col cols="12">
 								<label for="avatar" class="d-flex justify-center">
 									<v-img
-										:clearable="true"
 										v-bind="mainProps"
 										rounded="circle"
 										alt="avatar"
@@ -64,7 +63,6 @@
 									v-model="person.avatar"
 									class="pointer d-none"
 									accept="image/jpeg, image/png, image/gif, image/jpg"
-									@change="setAvatar"
 								/>
 							</v-col>
 							<!-- firstName -->
@@ -327,17 +325,12 @@ export default {
 				return person.firstName.toLowerCase().indexOf(this.filteredWord.toLowerCase()) > -1;
 			});
 		},
-		setAvatar(e) {
-			this.person.avatar = e;
-		},
 		async fetchRegions() {
 			const response = await axios.get(`${api_absolute}/comunas-regiones.json`);
 			this.comunasRegiones = response.data;
 			this.regiones = this.comunasRegiones.map(item => item.region);
 		},
 		async submitForm() {
-			console.log(this.person);
-
 			let form = new FormData();
 			// validations
 			this.$v.$touch();

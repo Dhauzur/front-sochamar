@@ -29,17 +29,40 @@
 										{{ name(item.firstName, item.lastName) }}
 									</v-list-item-title>
 									<v-list-item-subtitle>
-										<template v-for="(doc, i) in item.documents">
+										<!-- <template >
 											<v-chip :key="i" class="ma-2" x-small :href="doc.url">
-												{{ doc.name }}
+												{{ i + 1 }}
 											</v-chip>
-										</template>
+										</template> -->
 									</v-list-item-subtitle>
 								</v-list-item-content>
 								<v-list-item-action>
 									<v-btn icon @click.stop="deleteOne(item._id)">
 										<v-icon color="error">mdi-delete</v-icon>
 									</v-btn>
+									<v-menu v-if="item.documents.length" offset-y open-on-hover>
+										<template v-slot:activator="{ on }">
+											<v-btn icon large>
+												<v-icon color="primary" large v-on.stop="on">
+													mdi-folder-download
+												</v-icon>
+											</v-btn>
+										</template>
+										<v-list>
+											<v-list-item
+												v-for="(doc, i) in item.documents"
+												:key="i"
+												:href="doc.url"
+											>
+												<v-list-item-title>
+													{{ doc.name }}
+												</v-list-item-title>
+											</v-list-item>
+										</v-list>
+									</v-menu>
+									<v-icon v-else color="primary" large style="cursor: auto">
+										mdi-folder-outline
+									</v-icon>
 								</v-list-item-action>
 							</v-list-item>
 						</template>
