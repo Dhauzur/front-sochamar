@@ -267,6 +267,7 @@
 											:placeholder="p.service[service.name]"
 											@change="detectInputChange"
 										/>
+										{{ p.service[service.name] }}
 									</td>
 								</tr>
 								<!--TOTAL-->
@@ -691,11 +692,11 @@ export default {
 								) &&
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
-								/*const service = JSON.parse(l.service[0]);*/
+								const service = JSON.parse(l.service[0]);
 								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
 								const reduceServices = (acc, service) => {
 									return Object.assign(acc, {
-										[service.name]: 1,
+										[service.name]: 0,
 									});
 								};
 								//Aca podriamos definir las variables en base a nombreServicio: 1;
@@ -703,6 +704,11 @@ export default {
 									reduceServices,
 									{}
 								);
+								Object.keys(day.service).forEach((key, serviceIndex) => {
+									day.service[key] = day.service[key]
+										? service[dayIndex][serviceIndex] + day.service[key]
+										: service[dayIndex][serviceIndex];
+								});
 								day.id = l.id;
 								dayIndex++;
 							}
@@ -811,8 +817,6 @@ export default {
 			//si el valor es menor a 0, se setea el numero de pasajeros como valor
 			if (payload.target.value < 0) payload.target.value = numberPassangerMax;
 			//se pasa el valor a updateService, esta funcion se encarga de actualizar el valor en pantalla
-			console.log('numero maximo de pasajeros: ' + numberPassangerMax);
-			console.log(payload.target.value);
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
