@@ -28,6 +28,13 @@
 					:selected-person="selectedPerson"
 				/>
 			</v-col>
+			<v-col v-else cols="12">
+				<v-card color="secondary" flat>
+					<v-card-text>
+						No hay personas agregadas...
+					</v-card-text>
+				</v-card>
+			</v-col>
 		</v-row>
 		<!-- dialog -->
 		<v-dialog v-model="dialog" persistent max-width="800px">
