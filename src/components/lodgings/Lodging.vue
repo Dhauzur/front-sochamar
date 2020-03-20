@@ -184,7 +184,7 @@
 						v-model="serviceSelected"
 						:items="services"
 						dense
-						label="Sericios"
+						label="Servicios"
 						outlined
 					>
 					</v-select>
@@ -230,8 +230,8 @@ export default {
 			//Este arreglo va en la comboBox de services
 			services: [
 				{ text: 'Todos los servicios', value: 'todos los servicios' },
-				{ text: 'Desayunoasfdasfas', value: 'desayuno' },
-				{ text: 'Almuerzogvmand', value: 'almuerzo' },
+				{ text: 'oncev8', value: 'oncev8' },
+				{ text: 'almuerzov8', value: 'almuerzov8' },
 				{ text: 'Cenakaslk', value: 'cena' },
 				{ text: 'Alojamientovnndna', value: 'alojamiento' },
 			],
@@ -325,6 +325,10 @@ export default {
 						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
 						//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
 						const servicesIndex = this.selectedPlace.services.length;
+						console.log(
+							'esta es la cantidad de servicios con la que opera onMove: ' +
+								servicesIndex
+						);
 						const generateNewServices = oldServices => {
 							if (oldServices) {
 								return oldServices.map(service => {
@@ -463,6 +467,7 @@ export default {
 									{}
 								);
 								const service = JSON.parse(l.service[0]);
+								console.log(service);
 								//Algoritmo nuevo
 								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
 								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
@@ -491,6 +496,7 @@ export default {
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
 								const service = JSON.parse(l.service[0]);
+								console.log(service);
 								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
 								const reduceServices = (acc, service) => {
 									return Object.assign(acc, {
