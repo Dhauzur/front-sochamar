@@ -26,6 +26,7 @@ const state = {
 		end: null,
 	},
 	selectedPlace: {},
+	servicesComboBox: [],
 };
 
 const getters = {
@@ -45,6 +46,7 @@ const getters = {
 	places: state => state.Places,
 	place: state => state.place,
 	selectedPlace: state => state.selectedPlace,
+	servicesComboBox: state => state.servicesComboBox,
 };
 
 const actions = {
@@ -571,6 +573,29 @@ const mutations = {
 	},
 	setSelectedPlace(state) {
 		state.selectedPlace = state.Places.find(place => place.value === state.place);
+	},
+	setServicesComboBox(state) {
+		const allServicesObject = {
+			text: 'todos los servicios',
+			value: 'todos los servicios',
+		};
+		const comboBoxArray = [];
+		comboBoxArray.push(allServicesObject);
+		//Si services existe significa que un place fue seleccionado, entonces procedemos a generar el arreglo de comboBoxServices
+		//si services no existe significa que se selecciono 'Todas las empresas'  entonces servicesComboBox va ser un arreglo vacio,
+		//ya qua no vamos a añadir o disminuir servicios en esa parte
+		if (state.selectedPlace.services) {
+			const comboBoxServices = state.selectedPlace.services.map(service => {
+				return {
+					text: service.name,
+					value: service.name,
+				};
+			});
+			comboBoxArray.push(...comboBoxServices);
+			state.servicesComboBox = comboBoxArray;
+		} else {
+			state.servicesComboBox = [];
+		}
 	},
 };
 

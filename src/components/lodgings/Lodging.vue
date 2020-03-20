@@ -126,7 +126,6 @@
 				</v-col>
 			</v-row>
 			<!--Tabla de precios y servicios V2-->
-			<div v-if="servicesV2">{{ servicesV2 }}</div>
 			<v-row>
 				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
 					<v-simple-table>
@@ -177,12 +176,12 @@
 					</v-simple-table>
 				</v-col>
 			</v-row>
-			<v-row v-if="lodgingSelect">
+			<v-row v-if="lodgingSelect && selectedPlace">
 				<v-col cols="12" sm="4">
 					<v-select
 						id="services_select"
 						v-model="serviceSelected"
-						:items="services"
+						:items="servicesComboBox"
 						dense
 						label="Servicios"
 						outlined
@@ -227,14 +226,6 @@ export default {
 			dialogPeriods: false,
 			dialogPayments: false,
 			sheet: false,
-			//Este arreglo va en la comboBox de services
-			services: [
-				{ text: 'Todos los servicios', value: 'todos los servicios' },
-				{ text: 'oncev8', value: 'oncev8' },
-				{ text: 'almuerzov8', value: 'almuerzov8' },
-				{ text: 'Cenakaslk', value: 'cena' },
-				{ text: 'Alojamientovnndna', value: 'alojamiento' },
-			],
 			//Este string interactua con la comboBox de services
 			serviceSelected: 'todos los servicios',
 			selectPlace: null,
@@ -325,10 +316,7 @@ export default {
 						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
 						//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
 						const servicesIndex = this.selectedPlace.services.length;
-						console.log(
-							'esta es la cantidad de servicios con la que opera onMove: ' +
-								servicesIndex
-						);
+
 						const generateNewServices = oldServices => {
 							if (oldServices) {
 								return oldServices.map(service => {
@@ -539,11 +527,6 @@ export default {
 			return dates;
 		},
 		// eslint-disable-next-line vue/return-in-computed-property
-		servicesV2() {
-			if (this.selectedPlace.services) {
-				return this.selectedPlace.services.map(service => service);
-			}
-		},
 		...mapGetters({
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',
@@ -557,6 +540,7 @@ export default {
 			rangeDate: 'Lodging/rangeDate',
 			updatingService: 'Lodging/updatingService',
 			selectedPlace: 'Lodging/selectedPlace',
+			servicesComboBox: 'Lodging/servicesComboBox',
 		}),
 	},
 	watch: {
@@ -609,6 +593,7 @@ export default {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
 			this.setSelectedPlace();
+			this.setServicesComboBox();
 			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
 		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
@@ -665,6 +650,7 @@ export default {
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
 			setSelectedPlace: 'Lodging/setSelectedPlace',
+			setServicesComboBox: 'Lodging/setServicesComboBox',
 		}),
 	},
 };
