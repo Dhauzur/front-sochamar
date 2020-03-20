@@ -1,142 +1,97 @@
 <template>
-	<v-container>
-		<v-row id="nav" class="justify-content-center">
-			<v-col md="8" lg="6" class="background-module pb-3 px-4">
-				<h3 class="my-4">Mi perfil</h3>
-				<!-- Analyst -->
-				<h6 v-if="profile.analyst">Analista</h6>
-				<b-form @submit.prevent="submitForm">
-					<v-row>
-						<!-- avatar -->
-						<v-col>
-							<label v-if="profile.img" for="upload">
-								<b-img
-									class="pointer"
-									for
-									v-bind="mainProps"
-									rounded="circle"
-									alt="avatar"
-									:src="profile.img"
-								></b-img>
-							</label>
-							<b-form-file
-								id="upload"
-								ref="avatar"
-								class="d-none"
-								accept="image/jpeg, image/png, image/gif, image/jpg"
-								:placeholder="'Agrega una imagen'"
-								drop-placeholder="Arrastrar aqui..."
-								:disabled="loading"
-								@change="e => onFileUpload(e)"
-							></b-form-file>
-						</v-col>
-						<v-col cols="12">
-							<label
-								for="upload"
-								class="pointer text-secondary"
-								v-text="avatarMessage"
-							></label>
-						</v-col>
-						<!-- name -->
-						<v-col cols="6">
-							<b-form-group id="input-group-1" label="Nombre:" label-for="name-input">
-								<b-form-input id="firstName" v-model.trim="profileData.name" />
-								<div v-if="$v.profileData.name.$dirty">
-									<small
-										v-if="!$v.profileData.name.minLength"
-										class="text-danger"
-									>
-										Minimo 5 Caracteres
-									</small>
-									<small
-										v-if="!$v.profileData.name.maxLength"
-										class="text-danger"
-									>
-										Maximo 100 Caracteres
-									</small>
-								</div>
-							</b-form-group>
-						</v-col>
-						<!-- lastName -->
-						<v-col cols="6">
-							<b-form-group
-								id="input-group-2"
-								label="Apellido:"
-								label-for="lastName-input"
-							>
-								<b-form-input id="lastName" v-model.trim="profileData.lastName" />
-								<div v-if="$v.profileData.lastName.$dirty">
-									<small
-										v-if="!$v.profileData.lastName.minLength"
-										class="text-danger"
-									>
-										Minimo 3 Caracteres
-									</small>
-									<small
-										v-if="!$v.profileData.lastName.maxLength"
-										class="text-danger"
-									>
-										Maximo 100 Caracteres
-									</small>
-								</div>
-							</b-form-group>
-						</v-col>
-					</v-row>
-					<!--Submit-->
-					<v-col>
-						<b-button :disabled="loading" type="submit" variant="primary"
-							>Actualizar
-						</b-button>
-						<small v-if="profileErrors" class="mt-2 d-block text-danger">
-							Debe rellenar el formulario correctamente
-						</small>
-					</v-col>
-				</b-form>
+	<v-container fluid>
+		<v-row justify="center">
+			<v-col cols="12">
+				<v-card class="mx-auto" max-width="600">
+					<v-card-title>
+						<v-tooltip bottom>
+							<template v-slot:activator="{ on }">
+								<label for="upload" class="pointer" v-on="on">
+									<avatar
+										:name="profile.name"
+										:last-name="profile.lastName"
+										:url="profile.img"
+										:loading="loadingUpload"
+									/>
+								</label>
+								<v-file-input
+									id="upload"
+									ref="avatar"
+									v-model="avatar"
+									class="d-none"
+									dense
+									accept="image/jpeg, image/png, image/gif, image/jpg"
+									placeholder="Agrega una imagen"
+									drop-placeholder="Arrastrar aqui..."
+									@change="onFileUpload"
+								></v-file-input>
+							</template>
+							<span>Sube o cambia la imagen</span>
+						</v-tooltip>
+						<v-card-title primary-title>
+							{{ `${profile.name} ${profile.lastName && profile.lastName}` }}
+						</v-card-title>
+					</v-card-title>
+					<v-card-text v-if="profile.analyst" class="text-left pt-0 mt-0">
+						Analista
+					</v-card-text>
+					<v-card-text class="pb-0 mb-0">
+						<form>
+							<v-text-field
+								id="firstname"
+								v-model.trim="profileData.name"
+								dense
+								outlined
+								label="Nombre"
+								:error-messages="nameErrors"
+								@input="$v.profileData.name.$touch()"
+								@blur="$v.profileData.name.$touch()"
+							></v-text-field>
+							<v-text-field
+								id="lastname"
+								v-model.trim="profileData.lastName"
+								dense
+								outlined
+								label="Apellido"
+								:error-messages="lastnameErrors"
+								@input="$v.profileData.lastName.$touch()"
+								@blur="$v.profileData.lastName.$touch()"
+							></v-text-field>
+						</form>
+					</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn :loading="loading" text color="primary" @click="submitForm">
+							Actualizar
+						</v-btn>
+					</v-card-actions>
+				</v-card>
 			</v-col>
-		</v-row>
-		<v-row class="justify-content-center">
-			<v-col md="8" lg="6" class="background-module pb-3 px-4">
-				<h3 class="my-4">Seguridad</h3>
-				<b-form @submit.prevent="submitNewPassword">
-					<b-form-group
-						id="new-password-group"
-						label="Nueva contraseña:"
-						label-for="newPassword-input"
-					>
-						<b-form-input
+			<v-col cols="12">
+				<v-card class="mx-auto" max-width="600">
+					<v-card-title class="text-left">
+						Seguridad
+					</v-card-title>
+					<v-card-text class="pb-0 mb-0">
+						<v-text-field
 							id="new-password"
 							v-model.trim="securityData.newPassword"
 							type="password"
-						/>
-						<div v-if="$v.securityData.newPassword.$dirty">
-							<small v-if="!$v.securityData.newPassword.required" class="text-danger">
-								Campo Requerido
-							</small>
-							<small
-								v-if="!$v.securityData.newPassword.minLength"
-								class="text-danger"
-							>
-								Minimo 5 Caracteres
-							</small>
-							<small
-								v-if="!$v.securityData.newPassword.maxLength"
-								class="text-danger"
-							>
-								Maximo 100 Caracteres
-							</small>
-						</div>
-					</b-form-group>
-
-					<!--Submit-->
-					<v-col>
-						<b-button :disabled="loading" type="submit" variant="primary"
+							dense
+							outlined
+							label="Nueva contraseña"
+							:error-messages="lastnameErrors"
+							@input="$v.securityData.newPassword.$touch()"
+							@blur="$v.securityData.newPassword.$touch()"
+						></v-text-field>
+					</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn :disabled="loading" text color="primary" @click="submitNewPassword"
 							>Actualizar contraseña
-						</b-button>
-						<small v-if="securityErrors" class="mt-2 d-block text-danger">
-							Debe rellenar el formulario correctamente
-						</small>
-					</v-col>
-				</b-form>
+						</v-btn>
+					</v-card-actions>
+				</v-card>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -145,12 +100,18 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { validationMixin } from 'vuelidate';
+import Avatar from '@/components/ui/Avatar';
 import { minLength, maxLength, required } from 'vuelidate/lib/validators';
 
 export default {
+	components: {
+		Avatar,
+	},
 	mixins: [validationMixin],
 	data() {
 		return {
+			avatar: null,
+			loadingUpload: false,
 			profileData: {
 				name: '',
 				lastName: '',
@@ -166,6 +127,20 @@ export default {
 		};
 	},
 	computed: {
+		lastnameErrors() {
+			const errors = [];
+			if (!this.$v.profileData.lastName.$dirty) return errors;
+			!this.$v.profileData.lastName.minLength && errors.push('Minimo 3 Caracteres');
+			!this.$v.profileData.lastName.maxLength && errors.push('Maximo 100 Caracteres');
+			return errors;
+		},
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.profileData.name.$dirty) return errors;
+			!this.$v.profileData.name.minLength && errors.push('Minimo 5 Caracteres');
+			!this.$v.profileData.name.maxLength && errors.push('Maximo 100 Caracteres');
+			return errors;
+		},
 		avatarMessage() {
 			return this.profileData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
 		},
@@ -214,7 +189,8 @@ export default {
 			return avatar;
 		},
 		clearUpload() {
-			this.$refs['avatar'].reset();
+			this.avatar = null;
+			this.loadingUpload = false;
 		},
 		submitForm() {
 			this.$v.profileData.$touch();
@@ -234,8 +210,9 @@ export default {
 				this.updatePassword(this.securityData.newPassword);
 			}
 		},
-		onFileUpload(e) {
-			const avatar = this.setAvatarObject(e.target.files[0]);
+		onFileUpload() {
+			this.loadingUpload = true;
+			const avatar = this.setAvatarObject(this.avatar);
 			this.updateAvatar(avatar).then(this.clearUpload);
 		},
 		...mapActions({

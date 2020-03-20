@@ -54,9 +54,14 @@
 					<v-list-item class="px-2">
 						<v-menu bottom left>
 							<template v-slot:activator="{ on }">
-								<v-list-item-avatar icon v-on="on">
-									<v-img :src="profileAvatar"></v-img>
-								</v-list-item-avatar>
+								<div v-on="on">
+									<avatar
+										icon
+										:name="profile.name"
+										:last-name="profile.lastName"
+										:url="profile.img"
+									/>
+								</div>
 							</template>
 							<v-list>
 								<v-list-item link to="/profile">
@@ -80,27 +85,27 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Logo from '../assets/logo';
-
+import Avatar from '@/components/ui/Avatar';
 export default {
 	name: 'Layout',
 	components: {
 		Logo,
+		Avatar,
 	},
 	data() {
 		return {
 			oauthJWT: '',
 			drawer: true,
+			showAvatar: false,
 		};
 	},
 	computed: {
 		flatAppbar() {
 			return this.$route.name === 'management';
 		},
-		profileAvatar() {
-			return this.profile.img;
-		},
 		fullName() {
-			return this.profile.name + ' ' + this.profile.lastName;
+			if (this.profile.name) return this.profile.name + ' ' + this.profile.lastName;
+			return '';
 		},
 		...mapGetters({
 			isLogged: 'Auth/isLogged',
