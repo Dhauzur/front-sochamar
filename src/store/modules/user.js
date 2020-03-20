@@ -34,15 +34,13 @@ const actions = {
 			commit('setProfile', profile);
 			const message = { type: 'success', text: 'Perfil modificado con exito' };
 			commit('setMessage', message);
-			commit('setLoading', false);
 		} catch (e) {
 			const message = { type: 'error', text: 'Parametros invalidos' };
 			commit('setMessage', message);
-			commit('setLoading', false);
 		}
+		commit('setLoading', false);
 	},
 	async updateAvatar({ commit }, avatar) {
-		commit('setLoading', true);
 		const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 		try {
 			const response = await axios.patch(api + '/user/avatar', avatar, config);
@@ -50,11 +48,9 @@ const actions = {
 			commit('setAvatar', img);
 			const message = { type: 'success', text: 'Avatar actualizado con exito' };
 			commit('setMessage', message);
-			commit('setLoading', false);
 		} catch (e) {
 			const message = { type: 'error', text: 'Imagen invalida' };
 			commit('setMessage', message);
-			commit('setLoading', false);
 		}
 	},
 	async updatePassword({ commit }, password) {
@@ -63,12 +59,11 @@ const actions = {
 			await axios.patch(api + '/user/password', { password });
 			const message = { type: 'success', text: 'Contraseña actualizada con exito' };
 			commit('setMessage', message);
-			commit('setLoading', false);
 		} catch (e) {
 			const message = { type: 'error', text: 'No puede ser la misma contraseña' };
 			commit('setMessage', message);
-			commit('setLoading', false);
 		}
+		commit('setLoading', false);
 	},
 };
 
