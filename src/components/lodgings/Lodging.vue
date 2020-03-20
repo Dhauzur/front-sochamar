@@ -360,7 +360,6 @@ export default {
 			if (hola === this.mirrorLodging) return false;
 			else return true;
 		},
-		//Precio final de la proyection table, hace uso de los calculos antiguos
 		finalyPrice() {
 			//el fin de esta funcion, es generar un arreglo de precios totales por cada dia de nuestra proyection table
 			let prices = [];
@@ -455,7 +454,6 @@ export default {
 									{}
 								);
 								const service = JSON.parse(l.service[0]);
-								console.log(service);
 								//Algoritmo nuevo
 								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
 								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
@@ -484,7 +482,6 @@ export default {
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
 								const service = JSON.parse(l.service[0]);
-								console.log(service);
 								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
 								const reduceServices = (acc, service) => {
 									return Object.assign(acc, {

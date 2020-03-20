@@ -249,15 +249,12 @@ const mutations = {
 			'days'
 		);
 		let oldService = JSON.parse(state.lodgingSelect.service[0]);
-		console.log(
-			'trigger de detectChange,esta funcion funciona cuando editamos un hospedaje y cambiamos su fecha'
-		);
 		//Algoritmo
 		//1- el contador i esta contando la nueva cantidad de dias, recorre el primer acceso service[i].
 		//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
 		//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
 		//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
-		const servicesIndex = this.selectedPlace.services.length;
+		const servicesIndex = state.selectedPlace.services.length;
 		const generateNewServices = oldServices => {
 			if (oldServices) {
 				return oldServices.map(service => {
@@ -332,17 +329,17 @@ const mutations = {
 	},
 	addOneService(state, serviceSelected) {
 		let tempLodging = state.lodgingSelect;
+		const numberPassangerMax = state.periods.get(state.lodgingSelect.group).numberPassangerMax;
 		state.lodgingSelect = null;
 		let service = JSON.parse(tempLodging.service[0]);
 		let numberDays = moment(tempLodging.end).diff(
 			moment(tempLodging.start).format('YYYY-MM-DD'),
 			'days'
 		);
-
 		for (let i = 0; i <= numberDays; i++) {
 			service[i].forEach((singleService, index) => {
 				if (singleService == null) service[i][index] = 0;
-				if (singleService >= 20) service[i][index] = 0;
+				if (singleService >= numberPassangerMax) service[i][index] = 0;
 			});
 			//Algoritmo
 			//1- si el servicio seleccionado es 'todos los servicios', entonces procedemos a actualizar el valor de todos los servicios
@@ -442,7 +439,6 @@ const mutations = {
 		}
 		state.Places = Places;
 	},
-	//Esta funcion involucra el calculo antiguo
 	updateService(state, value) {
 		state.updatingService = null;
 		let idValue = value.id.split(',')[0];

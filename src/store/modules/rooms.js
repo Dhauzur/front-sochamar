@@ -22,7 +22,7 @@ const getters = {
 const actions = {
 	async deleteRoom({ commit, dispatch }, { id, placeId }) {
 		try {
-			const response = await axios.delete(`${api}/rooms/one/${id}`, { data: { placeId } });
+			const response = await axios.delete(`${api}/periods/one/${id}`, { data: { placeId } });
 			const { name } = response.data;
 			commit('setMessage', {
 				type: 'success',
@@ -41,7 +41,7 @@ const actions = {
 		try {
 			commit('setLoading', true);
 			room.placeId = state.idPlace;
-			await axios.post(api + '/rooms', room);
+			await axios.post(api + '/periods', room);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Habitacion creada ',
@@ -60,7 +60,7 @@ const actions = {
 		try {
 			commit('setLoading', true);
 			commit('setRooms', null);
-			const response = await axios.get(`${api}/rooms/${placeId}`);
+			const response = await axios.get(`${api}/periods/${placeId}`);
 			const { rooms } = response.data;
 			commit('setRooms', rooms);
 		} catch (e) {
