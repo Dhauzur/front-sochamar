@@ -84,7 +84,7 @@
 						</v-edit-dialog>
 					</template>
 					<template v-slot:item.actions="{ item }">
-						<v-btn fab small color="error" @click="deleteItem(item._id)">
+						<v-btn fab x-small color="error" @click="deleteItem(item._id)">
 							<v-icon>mdi-delete</v-icon>
 						</v-btn>
 					</template>

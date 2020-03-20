@@ -1,258 +1,273 @@
 <template>
-	<div class="container">
-		<div class="position-relative">
-			<!-- list person -->
-			<v-row>
-				<v-col v-if="personsList.length > 0">
-					<h5>Listado de personas</h5>
-					<persons-list
-						:delete-one="deleteOne"
-						:get-all-persons="getAllPersons"
-						:person="person"
-						:persons="personsList"
-						:selected-person="selectedPerson"
-					/>
-				</v-col>
-			</v-row>
-			<v-divider v-if="personsList.length > 0" />
-			<v-form>
-				<v-row>
-					<!-- avatar -->
-					<v-col class="p-auto">
-						<h5>
-							{{ editMode ? 'Editar persona' : 'Crear nueva persona' }}
-						</h5>
-						<v-img
-							for
-							v-bind="mainProps"
-							rounded="circle"
-							alt="avatar"
-							:src="setAvatar"
-						></v-img>
-						<v-file-input
-							ref="avatar"
-							accept="image/jpeg, image/png, image/gif, image/jpg"
-							:placeholder="editMode ? 'Actualizar imagen' : 'Agrega una imagen'"
-							drop-placeholder="Arrastrar aqui..."
-							@change="e => (person.avatar = e.target.files[0])"
-						></v-file-input>
-					</v-col>
-					<v-col cols="12">
-						<label for="upload" class="pointer">{{
-							typeof person.avatar === 'string' ? 'Cambiar avatar' : 'Subir avatar'
-						}}</label>
-					</v-col>
-					<!-- button for change view to new person -->
-					<div
-						v-if="editMode"
-						class="text-right position-absolute"
-						style="top: 0; right: 0;"
-					>
-						<v-btn @click="clearInputs">Nuevo </v-btn>
-					</div>
-					<!-- firstName -->
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12" class="text-right">
+	<v-container>
+		<!-- list person -->
+		<v-row>
+			<v-col cols="2">
+				<v-btn small color="accent" @click="dialog = !dialog">
+					<v-icon>mdi-plus</v-icon>
+					Agregar
+				</v-btn>
+			</v-col>
+			<v-col cols="8">
+				<h5>Listado de personas</h5>
+			</v-col>
+			<v-col cols="2">
+				<v-text-field
+					v-model="filteredWord"
+					outlined
+					dense
+					label="Filtrar"
+					@input="filter"
+				/>
+			</v-col>
+			<v-col v-if="personsList.length > 0" cols="12" style="height: 75vh; overflow: auto">
+				<persons-list
+					:delete-one="deleteOne"
+					:get-all-persons="getAllPersons"
+					:persons="resultFilter"
+					:selected-person="selectedPerson"
+				/>
+			</v-col>
+			<v-col v-else cols="12">
+				<v-card color="secondary" flat>
+					<v-card-text>
+						No hay personas agregadas...
+					</v-card-text>
+				</v-card>
+			</v-col>
+		</v-row>
+		<!-- dialog -->
+		<v-dialog v-model="dialog" persistent max-width="800px">
+			<v-card>
+				<v-card-title>
+					<span class="headline">Nueva Persona</span>
+				</v-card-title>
+				<v-card-text>
+					<v-container>
+						<v-row justify="center">
+							<!-- avatar -->
+							<v-col cols="12">
+								<label for="avatar" class="d-flex justify-center">
+									<v-img
+										v-bind="mainProps"
+										rounded="circle"
+										alt="avatar"
+										class="pointer borderRadius"
+										max-width="130px"
+										:src="getAvatar"
+										><div class="  textAvatar secondary">
+											{{
+												typeof person.avatar === 'string'
+													? 'Cambiar avatar'
+													: 'Subir avatar'
+											}}
+										</div>
+									</v-img>
+								</label>
+								<v-file-input
+									id="avatar"
+									ref="avatar"
+									v-model="person.avatar"
+									class="pointer d-none"
+									accept="image/jpeg, image/png, image/gif, image/jpg"
+								/>
+							</v-col>
+							<!-- firstName -->
+							<v-col cols="3">
 								<v-text-field
 									v-model.trim="$v.person.firstName.$model"
-									label="Nombre"
+									outlined
+									dense
+									label="Nombre*"
+									:error-messages="nameErrors"
+									@input="$v.person.firstName.$touch()"
+									@blur="$v.person.firstName.$touch()"
 								/>
-								<div v-if="$v.person.firstName.$dirty">
-									<small v-if="!$v.person.firstName.required" class="text-danger">
-										Campo requerido
-									</small>
-									<small
-										v-if="!$v.person.firstName.minLength"
-										class="text-danger"
-									>
-										Minimo 3 Caracteres
-									</small>
-								</div>
 							</v-col>
-						</v-row>
-					</v-col>
-					<!-- lastName -->
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12" class="text-right">
+							<!-- lastName -->
+							<v-col cols="3">
 								<v-text-field
 									v-model.trim="person.lastName"
+									outlined
+									dense
 									label="Apellido"
 								></v-text-field>
 							</v-col>
-						</v-row>
-					</v-col>
-				</v-row>
-				<v-row>
-					<!-- age -->
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12" class="text-right">
+							<!-- age -->
+							<v-col cols="2">
 								<v-text-field
 									v-model.number="person.age"
+									outlined
+									dense
 									label="Edad"
 									type="number"
 								></v-text-field>
 							</v-col>
-						</v-row>
-					</v-col>
-					<!-- state -->
-					<v-col cols="6">
-						<v-select
-							v-model="person.state"
-							label="Estado"
-							:items="['soltero', 'casado']"
-						></v-select>
-					</v-col>
-				</v-row>
-				<v-row>
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12">
-								<v-text-field
-									v-model="person.birthdate"
-									label="Fecha nacimiento"
-									type="date"
-								/>
+							<!-- state -->
+							<v-col cols="4">
+								<v-select
+									v-model="person.state"
+									outlined
+									dense
+									label="Estado"
+									:items="['soltero', 'casado']"
+								></v-select>
 							</v-col>
-						</v-row>
-					</v-col>
-					<v-col cols="6">
-						<v-row>
-							<v-col cols="12">
+							<!-- birthdate -->
+							<v-col cols="3">
+								<v-menu
+									ref="menu"
+									v-model="menu"
+									:close-on-content-click="false"
+									:return-value.sync="person.birthdate"
+									transition="scale-transition"
+									offset-y
+									min-width="290px"
+								>
+									<template v-slot:activator="{ on }">
+										<v-text-field
+											v-model="person.birthdate"
+											label="Fecha de nacimiento"
+											readonly
+											outlined
+											dense
+											v-on="on"
+										></v-text-field>
+									</template>
+									<v-date-picker
+										v-model="person.birthdate"
+										no-title
+										scrollable
+										locale="es"
+										:show-current="false"
+									>
+										<v-spacer></v-spacer>
+										<v-btn text color="primary" @click="menu = false"
+											>Cerrar</v-btn
+										>
+										<v-btn
+											text
+											color="primary"
+											@click="$refs.menu.save(person.birthdate)"
+											>ok</v-btn
+										>
+									</v-date-picker>
+								</v-menu>
+							</v-col>
+							<!-- phone -->
+							<v-col cols="3">
 								<v-text-field
 									v-model="person.phone"
+									outlined
+									dense
 									label="Teléfono"
 								></v-text-field>
 							</v-col>
+							<!-- function -->
+							<v-col cols="3">
+								<v-text-field
+									v-model="person.function"
+									outlined
+									dense
+									label="Función"
+								></v-text-field>
+							</v-col>
+							<!-- appointment -->
+							<v-col cols="3">
+								<v-text-field
+									v-model="person.appointment"
+									outlined
+									dense
+									label="Cargo"
+								></v-text-field>
+							</v-col>
+							<!-- region -->
+							<v-col cols="3">
+								<v-select
+									v-model="person.region"
+									label="Región"
+									:items="regiones"
+									outlined
+									dense
+									@change="setComunas"
+								></v-select>
+							</v-col>
+							<!-- comuna -->
+							<v-col cols="3">
+								<v-select
+									v-model="person.comuna"
+									label="Comuna"
+									:items="comunas"
+									outlined
+									dense
+									:disabled="disableComunaInput"
+								></v-select>
+							</v-col>
+							<!-- documents -->
+							<v-col cols="6">
+								<v-file-input
+									ref="document"
+									v-model="person.documents"
+									clearable
+									multiple
+									outlined
+									dense
+									label="Agrega documentos, max. 5"
+								>
+								</v-file-input>
+							</v-col>
 						</v-row>
-					</v-col>
-				</v-row>
-				<!-- function -->
-				<v-row>
-					<v-col cols="6">
-						<v-text-field v-model="person.function" label="Función"></v-text-field>
-					</v-col>
-					<v-col cols="6">
-						<v-text-field v-model="person.appointment" label="Cargo"></v-text-field>
-					</v-col>
-				</v-row>
-				<!-- regions -->
-				<v-row>
-					<v-col cols="6">
-						<v-select
-							v-model="person.region"
-							label="Región"
-							:items="regiones"
-							@change="setComunas"
-						></v-select>
-					</v-col>
-					<v-col cols="6">
-						<v-select
-							v-model="person.comuna"
-							label="Comuna"
-							:items="comunas"
-							:disabled="disableComunaInput"
-						></v-select>
-					</v-col>
-				</v-row>
-				<!-- documents -->
-				<v-row>
-					<v-col cols="12" class="mt-2">
-						<small v-if="!person.documents && !person.documents[0] && editMode"
-							>Sin Documentos</small
-						>
-						<div
-							v-if="
-								editMode &&
-									Array.isArray(person.documents) &&
-									person.documents.length
-							"
-						>
-							<v-badge
-								v-for="(item, index) in person.documents"
-								:key="index"
-								class="p-2"
-								pill
-								:href="item.url"
-								target="_blank"
-								>{{ cutText(item.name) }}
-							</v-badge>
-						</div>
-					</v-col>
-					<v-col cols="12" class="mt-2">
-						<v-file-input
-							ref="document"
-							:file-name-formatter="formatNames"
-							:placeholder="
-								editMode
-									? 'Cambiar todos los documentos'
-									: 'Agrega un Documento, maximo 5'
-							"
-							drop-placeholder="Arrastrar aqui..."
-							multiple
-							show-size
-							label="File input"
-							@change="setDocuments"
-						></v-file-input>
-					</v-col>
-				</v-row>
-				<v-row>
-					<v-col class="mt-4">
-						<v-btn
-							:disabled="loading"
-							block
-							class="btn btn-primary d-block"
-							@click.prevent="submitForm"
-							>Guardar
-							<v-spinner v-if="loading" small type="grow"></v-spinner>
-						</v-btn>
-					</v-col>
-				</v-row>
-			</v-form>
-		</div>
-	</div>
+					</v-container>
+					<small>*Campo requerido</small>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn text @click="closeDialog">Cerrar</v-btn>
+					<v-btn :loading="loading" color="primary" text @click.prevent="submitForm">
+						Guardar
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+	</v-container>
 </template>
 
 <script>
-import PersonsList from '@/components/persons/PersonsList';
+import avatarDefault from '@/assets/default.png';
 import axios from 'axios';
-import avatarDefault from '@/assets/user-icon.png';
-import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
-import { mapActions, mapGetters } from 'vuex';
+import PersonsList from '@/components/persons/List';
 import { api_absolute } from '@/config/index.js';
+import { mapActions, mapGetters } from 'vuex';
+import { required, minLength } from 'vuelidate/lib/validators';
+import { validationMixin } from 'vuelidate';
 
 export default {
 	components: { PersonsList },
 	mixins: [validationMixin],
 	data() {
 		return {
+			filteredWord: '',
+			list: [],
 			comunas: [],
 			comunasRegiones: [],
+			dialog: false,
 			disableComunaInput: true,
 			editMode: false,
-			empty: true,
-			errors: false,
-			form: new FormData(),
-			formTouched: false,
 			mainProps: { blank: false, blankColor: '#777', width: 75, height: 75, class: 'm1' },
+			menu: false,
 			regiones: [],
-			selected: {},
 			success: '',
-			uiState: 'submit not clicked',
 			person: {
 				_id: null,
 				age: '',
 				appointment: '',
+				avatar: null,
 				birthdate: '',
 				comuna: '',
 				documents: [],
 				firstName: '',
 				function: '',
 				lastName: '',
-				avatar: null,
 				phone: '',
 				region: '',
 				state: '',
@@ -260,7 +275,14 @@ export default {
 		};
 	},
 	computed: {
-		setAvatar() {
+		resultFilter() {
+			if (this.filteredWord === '') {
+				return this.personsList;
+			} else {
+				return this.list;
+			}
+		},
+		getAvatar() {
 			if (typeof this.person.avatar === 'string') {
 				return this.person.avatar;
 			} else if (this.person.avatar) {
@@ -271,9 +293,15 @@ export default {
 		},
 		...mapGetters({
 			loading: 'Persons/loading',
-			personsList: 'Persons/persons',
 			message: 'Persons/message',
+			personsList: 'Persons/persons',
 		}),
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.person.firstName.$dirty) return errors;
+			!this.$v.person.firstName.required && errors.push('El nombre es querido');
+			return errors;
+		},
 	},
 	validations: {
 		person: {
@@ -289,86 +317,88 @@ export default {
 				type: newVal.type,
 			});
 		},
+		personsList() {
+			if (this.filteredWord === '') {
+				this.list = this.personsList;
+			}
+		},
 	},
 	mounted() {
 		this.fetchRegions();
 	},
 	methods: {
+		filter() {
+			this.list = this.personsList.filter(person => {
+				return person.firstName.toLowerCase().indexOf(this.filteredWord.toLowerCase()) > -1;
+			});
+		},
 		async fetchRegions() {
 			const response = await axios.get(`${api_absolute}/comunas-regiones.json`);
 			this.comunasRegiones = response.data;
 			this.regiones = this.comunasRegiones.map(item => item.region);
 		},
 		async submitForm() {
+			let form = new FormData();
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				for (let index = 0; index < this.person.documents.length; index++) {
-					this.form.append('documents', this.person.documents[index]);
-				}
-				this.form.set('firstName', this.person.firstName.toLowerCase());
-				if (this.person.avatar) this.form.append('avatar', this.person.avatar);
-				if (this.person.lastName)
-					this.form.set('lastName', this.person.lastName.toLowerCase());
-				if (this.person.age) this.form.set('age', this.person.age.toString());
+				form.set('firstName', this.person.firstName.toLowerCase());
+				if (this.person.lastName) form.set('lastName', this.person.lastName.toLowerCase());
+				if (this.person.age) form.set('age', this.person.age.toString());
 				if (this.person.birthdate)
-					this.form.set('birthdate', this.person.birthdate.toLowerCase());
+					form.set('birthdate', this.person.birthdate.toLowerCase());
 				if (this.person.appointment)
-					this.form.set('appointment', this.person.appointment.toLowerCase());
-				if (this.person.function)
-					this.form.set('function', this.person.function.toLowerCase());
-				if (this.person.state) this.form.set('state', this.person.state.toLowerCase());
-				if (this.person.phone) this.form.set('phone', this.person.phone.toLowerCase());
-				if (this.person.region) this.form.set('region', this.person.region);
-				if (this.person.comuna) this.form.set('comuna', this.person.comuna);
+					form.set('appointment', this.person.appointment.toLowerCase());
+				if (this.person.function) form.set('function', this.person.function.toLowerCase());
+				if (this.person.state) form.set('state', this.person.state.toLowerCase());
+				if (this.person.phone) form.set('phone', this.person.phone.toLowerCase());
+				if (this.person.region) form.set('region', this.person.region);
+				if (this.person.comuna) form.set('comuna', this.person.comuna);
+				if (this.person.avatar) form.append('avatar', this.person.avatar);
+				if (this.person.documents) {
+					for (let index = 0; index < this.person.documents.length; index++) {
+						form.append('documents', this.person.documents[index]);
+					}
+				}
 				if (this.editMode) {
 					await this.editPerson({
-						payload: this.form,
+						payload: form,
 						id: this.person._id,
 					});
 					this.getAllPersons();
 				} else {
-					await this.savePerson(this.form);
+					await this.savePerson(form);
 					this.getAllPersons();
-					this.clearInputs();
+					this.closeDialog();
 				}
 			}
 		},
-		setDocuments(e) {
-			this.person.documents = [];
-			let files = e.target.files;
-			if (!files.length) {
-				return false;
-			}
-			for (let index = 0; index < files.length; index++) {
-				this.person.documents.push(files[index]);
-			}
-		},
 		selectedPerson(person) {
-			this.$refs['document'].reset();
-			this.$refs['avatar'].reset();
 			this.editMode = true;
 			this.person = person;
+			this.dialog = true;
 			if (this.person.region === undefined) {
 				this.disableComunaInput = true;
 			} else {
 				this.setComunas();
 			}
 		},
+		closeDialog() {
+			this.clearInputs();
+			this.dialog = false;
+		},
 		clearInputs() {
-			this.$refs['document'].reset();
-			this.$refs['avatar'].reset();
 			this.person = {
 				_id: null,
+				avatar: null,
+				documents: null,
 				age: '',
 				appointment: '',
 				birthdate: '',
 				comuna: '',
-				documents: [],
 				firstName: '',
 				function: '',
 				lastName: '',
-				person: null,
 				region: '',
 				state: '',
 			};
@@ -377,13 +407,6 @@ export default {
 		},
 		deleteOne(id) {
 			this.deleteOnePerson(id).then(() => this.getAllPersons());
-		},
-		formatNames(files) {
-			if (files.length === 1) {
-				return files[0].name;
-			} else {
-				return `${files.length} files selected`;
-			}
 		},
 		cutText(text) {
 			const extencion = text.split('.').pop();
@@ -406,3 +429,21 @@ export default {
 	},
 };
 </script>
+
+<style>
+.borderRadius {
+	border-radius: 10px !important;
+}
+
+.inputAvatar {
+	height: 150px;
+	width: 150px;
+	margin-left: -75px;
+	top: -25px;
+	opacity: 0;
+	position: absolute;
+}
+.textAvatar {
+	margin-top: 50px;
+}
+</style>

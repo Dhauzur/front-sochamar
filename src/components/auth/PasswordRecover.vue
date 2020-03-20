@@ -1,11 +1,6 @@
 <template>
-	<v-card outlined width="400px">
-		<v-img
-			src="@/assets/example.jpeg"
-			max-height="220px"
-			width="400"
-			style="margin: 0 auto"
-		></v-img>
+	<v-card flat>
+		<Logo style="max-height: 30vh;" />
 		<v-card-subtitle>
 			Recuperar contraseña
 		</v-card-subtitle>
@@ -26,7 +21,7 @@
 				Cancelar
 			</v-btn>
 			<v-spacer />
-			<v-btn :loading="loading" small color="primary" rounded @click="handleSubmit">
+			<v-btn :loading="loading" small color="primary" @click="handleSubmit">
 				Enviar Recuperación
 			</v-btn>
 		</v-card-actions>
@@ -35,7 +30,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Logo from '@/assets/logo';
+
 export default {
+	components: {
+		Logo,
+	},
 	props: {
 		disablePasswordRecover: {
 			type: Function,

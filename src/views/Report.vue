@@ -1,7 +1,7 @@
 <template>
 	<v-container>
 		<v-row justify="center">
-			<v-col cols="12" md="7" lg="5">
+			<v-col cols="12" md="10" lg="8">
 				<v-card>
 					<v-card-title primary-title>
 						<h4>Informes</h4>
@@ -12,9 +12,8 @@
 								v-model="form.member"
 								:items="members"
 								dense
-								label="Selecione lugar"
-								solo
-								rounded
+								label="Selecione su nombre"
+								outlined
 							>
 							</v-select>
 							<div>
@@ -24,13 +23,12 @@
 									placeholder="Escriba aqui su informe..."
 									rows="1"
 									max-rows="6"
+									outlined
 									required
 								></v-textarea>
 							</div>
-							<v-btn class="m-2" type="submit" rounded small color="primary"
-								>Enviar</v-btn
-							>
-							<v-btn class="m-2" type="reset" rounded small text>Borrar todo</v-btn>
+							<v-btn class="m-2" type="reset" small text>Borrar todo</v-btn>
+							<v-btn class="m-2" type="submit" small color="accent">Enviar</v-btn>
 						</v-form>
 					</v-card-text>
 					<v-card-text>
@@ -87,7 +85,10 @@ export default {
 	},
 	methods: {
 		formatTime(d) {
-			return moment(d).format('L');
+			moment.locale('es');
+			return moment(d)
+				.startOf('hour')
+				.fromNow();
 		},
 		fetchReports() {
 			axios

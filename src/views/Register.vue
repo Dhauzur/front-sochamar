@@ -2,13 +2,8 @@
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
 			<v-col cols="12" sm="6" md="4" lg="3">
-				<v-card outlined light>
-					<!-- reemplazar imagen por el logo final -->
-					<v-img
-						src="@/assets/example.jpeg"
-						height="200px"
-						style="margin: 0 auto"
-					></v-img>
+				<v-card flat>
+					<Logo style="max-height: 30vh;" />
 					<v-card-subtitle>
 						Registrate
 					</v-card-subtitle>
@@ -85,14 +80,7 @@
 						</v-form>
 					</v-card-text>
 					<v-card-actions>
-						<v-btn
-							:loading="loading"
-							block
-							color="primary"
-							rounded
-							small
-							@click="submitForm"
-						>
+						<v-btn :loading="loading" block color="primary" small @click="submitForm">
 							Finalizar Registro
 						</v-btn>
 					</v-card-actions>
@@ -115,8 +103,12 @@
 import { mapGetters, mapActions } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength, email } from 'vuelidate/lib/validators';
+import Logo from '@/assets/logo';
 
 export default {
+	components: {
+		Logo,
+	},
 	mixins: [validationMixin],
 	data() {
 		return {

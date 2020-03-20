@@ -1,127 +1,134 @@
 <template>
-	<v-container fluid>
-		<v-row v-if="lodgingSelect">
-			<v-col>
-				<v-row>
-					<v-col cols="10">
+	<v-container fluid style="height: 70vh; overflow: auto">
+		<v-row>
+			<v-col cols="12">
+				<v-tabs v-model="tab">
+					<v-tab>Detalles</v-tab>
+					<v-tab>Habitaciones</v-tab>
+				</v-tabs>
+				<v-tabs-items v-model="tab">
+					<v-tab-item>
+						<!-- @todo remove dialog changeDate -->
+						<v-dialog v-model="dialogChangeDate" width="290px">
+							<template v-slot:activator="{ on }">
+								<v-btn small color="accent" class="ma-2 d-none" v-on="on">
+									Cambiar fecha del hospedaje
+								</v-btn>
+							</template>
+							<v-date-picker
+								v-model="dates"
+								no-title
+								range
+								locale="es"
+								:show-current="false"
+								scrollable
+							>
+								<v-spacer></v-spacer>
+								<v-btn small text @click="dialogChangeDate = false">
+									Cancel
+								</v-btn>
+								<v-btn small text color="primary" @click="setDates">
+									Guardar
+								</v-btn>
+							</v-date-picker>
+						</v-dialog>
+						<!-- steppers -->
+						<v-dialog v-model="dialogAddPerson" max-width="440">
+							<template v-slot:activator="{ on }">
+								<v-btn small color="accent" class="ma-2" v-on="on">
+									Agregar persona
+								</v-btn>
+							</template>
+							<v-stepper v-model="stepper" class="elevation-12">
+								<v-stepper-header>
+									<v-stepper-step :complete="stepper > 1" step="1">
+										Persona
+									</v-stepper-step>
+									<v-divider></v-divider>
+									<v-stepper-step :complete="stepper > 2" step="2">
+										Fecha
+									</v-stepper-step>
+									<v-stepper-step :complete="stepper > 3" step="3">
+										Habitación
+									</v-stepper-step>
+								</v-stepper-header>
+								<v-stepper-items>
+									<v-stepper-content step="1">
+										<v-autocomplete
+											v-model="personSelected"
+											solo
+											:items="personFormatted"
+											:filter="customFilter"
+											color="white"
+											item-value="data"
+											item-text="search"
+											label="Buscar persona"
+											clearable
+										></v-autocomplete>
+										<v-btn
+											:disabled="Boolean(!personSelected)"
+											small
+											text
+											color="primary"
+											@click="stepper = 2"
+										>
+											Continuar
+										</v-btn>
+										<v-btn small text @click="closeDialogPerson">
+											Cancelar
+										</v-btn>
+									</v-stepper-content>
+									<v-stepper-content step="2">
+										<v-date-picker
+											v-model="datesPersons"
+											no-title
+											range
+											:first-day-of-week="1"
+											locale="es"
+											:show-current="false"
+											scrollable
+											class="elevation-0 mb-2"
+											:max="dateEnd"
+											:min="dateStart"
+										>
+										</v-date-picker>
+										<v-btn small text color="primary" @click="stepper = 3">
+											Continuar
+										</v-btn>
+										<v-btn text small @click="closeDialogPerson">
+											Cancelar
+										</v-btn>
+									</v-stepper-content>
+									<v-stepper-content step="3">
+										<v-select
+											v-model="select"
+											:items="selectRooms"
+											outlined
+											item-value="id"
+											item-text="name"
+											dense
+										></v-select>
+										<v-btn text small @click="closeDialogPerson">
+											Cancelar
+										</v-btn>
+										<v-btn small text color="primary" @click="setDatePerson">
+											Guardar
+										</v-btn>
+									</v-stepper-content>
+								</v-stepper-items>
+							</v-stepper>
+						</v-dialog>
 						<timeline
-							v-if="Array.isArray(rooms) && rooms.length > 0"
+							id="timelinePeople"
 							:items="items"
 							:groups="groups"
 							:options="options"
 						/>
-					</v-col>
-					<v-col cols="2">
-						<v-row>
-							<v-col cols="12">
-								<v-dialog v-model="dialogChangeDate" width="290px">
-									<template v-slot:activator="{ on }">
-										<v-btn small block color="primary" v-on="on">
-											Cambiar fecha del hospedaje
-										</v-btn>
-									</template>
-									<v-date-picker
-										v-model="dates"
-										width="250"
-										no-title
-										range
-										:first-day-of-week="1"
-										locale="es"
-										:show-current="false"
-										scrollable
-									>
-										<v-spacer></v-spacer>
-										<v-btn small text @click="dialogChangeDate = false">
-											Cancel
-										</v-btn>
-										<v-btn small rounded text color="primary" @click="setDates">
-											Guardar
-										</v-btn>
-									</v-date-picker>
-								</v-dialog>
-							</v-col>
-							<v-col cols="12">
-								<v-dialog v-model="dialogAddPerson" max-width="330">
-									<template v-slot:activator="{ on }">
-										<v-btn small block color="primary" v-on="on">
-											Agregar persona
-										</v-btn>
-									</template>
-									<v-stepper v-model="stepper" class="elevation-12">
-										<v-stepper-header>
-											<v-stepper-step :complete="stepper > 1" step="1">
-												persona
-											</v-stepper-step>
-											<v-divider></v-divider>
-											<v-stepper-step :complete="stepper > 2" step="2">
-												fecha
-											</v-stepper-step>
-										</v-stepper-header>
-										<v-stepper-items>
-											<v-stepper-content step="1">
-												<v-autocomplete
-													v-model="personSelected"
-													solo
-													:items="personFormatted"
-													:filter="customFilter"
-													color="white"
-													item-value="data"
-													item-text="search"
-													label="Buscar persona"
-													clearable
-												></v-autocomplete>
-												<v-btn
-													:disabled="Boolean(!personSelected)"
-													small
-													text
-													color="primary"
-													@click="stepper = 2"
-												>
-													Continuar
-												</v-btn>
-												<v-btn small text @click="dialogAddPerson = false">
-													Cancelar
-												</v-btn>
-											</v-stepper-content>
-											<v-stepper-content step="2">
-												<v-date-picker
-													v-model="datesPersons"
-													no-title
-													range
-													:first-day-of-week="1"
-													locale="es"
-													:show-current="false"
-													scrollable
-													class="elevation-0 mb-2"
-													:max="dateEnd"
-													:min="dateStart"
-												>
-												</v-date-picker>
-												<v-btn
-													text
-													rounded
-													small
-													@click="closeDialogPerson"
-												>
-													Cancelar
-												</v-btn>
-												<v-btn
-													small
-													text
-													rounded
-													color="primary"
-													@click="setDatePerson"
-												>
-													Guardar
-												</v-btn>
-											</v-stepper-content>
-										</v-stepper-items>
-									</v-stepper>
-								</v-dialog>
-							</v-col>
-						</v-row>
-					</v-col>
-				</v-row>
+					</v-tab-item>
+					<v-tab-item>
+						<rooms :id-place="idPlace" />
+					</v-tab-item>
+				</v-tabs-items>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -129,6 +136,7 @@
 
 <script>
 import moment from 'moment';
+import Rooms from '@/components/rooms/Rooms';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
 
@@ -136,6 +144,7 @@ export default {
 	name: 'EditLodgings',
 	components: {
 		Timeline,
+		Rooms,
 	},
 	props: {
 		lodgings: {
@@ -149,31 +158,38 @@ export default {
 	},
 	data() {
 		return {
+			tab: 0,
+			select: 'Sin habitación',
 			stepper: 1,
 			dialogChangeDate: false,
 			dialogAddPerson: false,
-			menu: false,
+			dialogTableRooms: false,
 			dates: [],
 			datesPersons: [],
+			dateStart: null,
 			dateEnd: null,
 			dateEndLodging: null,
-			dateEndPersons: null,
-			datePersonsInvalid: false,
-			dateStart: null,
 			dateStartLodging: null,
-			dateStartPersons: null,
 			oldDateLodging: null,
 			personSelected: null,
-			results: [],
-			showPopover: false,
 		};
 	},
 	computed: {
-		groups() {
+		selectRooms() {
+			let rooms = [];
 			if (this.rooms) {
-				return this.rooms.map(room => ({ id: room.id, content: room.name }));
+				rooms = [...this.rooms];
 			}
-			return [];
+			rooms.unshift('Sin habitación');
+			return rooms;
+		},
+		groups() {
+			let groups = [{ id: 'Sin habitación' }];
+			if (this.rooms) {
+				this.rooms.map(room => groups.push({ id: room.id, content: room.name }));
+				return groups;
+			}
+			return groups;
 		},
 		items() {
 			if (this.lodgingSelect.persons) {
@@ -207,6 +223,7 @@ export default {
 			lodgingPersons: 'Lodging/lodgingPersons',
 			lodgingSelect: 'Lodging/lodgingSelect',
 			persons: 'Persons/persons',
+			loadingRooms: 'Room/loading',
 		}),
 	},
 	watch: {
@@ -214,10 +231,10 @@ export default {
 			this.setDateIntheState();
 		},
 		//Si la modificacion al nuevo hpspedaje no es valida, el input date vuelve a su posicion original
-		dateStartLodging(newDate, oldDate) {
+		dateStart(newDate, oldDate) {
 			this.oldDateLodging = oldDate;
 		},
-		dateEndLodging(newDate, oldDate) {
+		dateEnd(newDate, oldDate) {
 			this.oldDateLodging = oldDate;
 		},
 	},
@@ -229,6 +246,7 @@ export default {
 		closeDialogPerson() {
 			this.personSelected = null;
 			this.dialogAddPerson = false;
+			this.select = 'Sin habitación';
 			this.stepper = 1;
 		},
 		customFilter(item, queryText) {
@@ -273,7 +291,7 @@ export default {
 				return this.datesPersons[1];
 			}
 		},
-		async setDates() {
+		setDates() {
 			let verificate = true;
 			const start = this.setDateStart();
 			const end = this.setDateEnd();
@@ -300,56 +318,41 @@ export default {
 			}
 		},
 		setDateIntheState() {
-			this.dateStartLodging = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
-			this.dateEndLodging = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 			this.dateStart = moment(this.lodgingSelect.start).format('YYYY-MM-DD');
 			this.dateEnd = moment(this.lodgingSelect.end).format('YYYY-MM-DD');
 			this.datesPersons = [this.dateStart, this.dateEnd];
-			this.dates = [this.dateStartLodging, this.dateEndLodging];
-		},
-		/**
-		 * used for disabled button when person date is invalid
-		 */
-		errorDate(boolean) {
-			this.datePersonsInvalid = boolean;
+			this.dates = [this.dateStart, this.dateEnd];
 		},
 		/**
 		 * set date person in the store
 		 */
 		setDatePerson() {
+			const oldIdLodgingSelect = this.lodgingSelect.id;
 			const id = this.personSelected._id;
-			const search = `${this.personSelected.firstName} ${this.personSelected.firstName}`;
-			const start = this.setDateStartPerson() ? this.setDateStartPerson() : this.dateStart;
-			const end = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
+			const name = `${this.personSelected.firstName} ${
+				this.personSelected.lastName ? this.personSelected.lastName : ''
+			}`;
+			const dateStart = this.setDateStartPerson()
+				? this.setDateStartPerson()
+				: this.dateStart;
+			const dateEnd = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
+			const group = this.select;
 			this.verifyOverlay() === 'OK'
 				? this.updateLodgingPersons({
 						id,
-						name: search,
-						group: 0,
-						dateStart: start,
-						dateEnd: end,
+						group,
+						name,
+						dateStart,
+						dateEnd,
 				  })
 				: this.$toasted.show(`Ya existe un pasajero para el rango de fecha selecionado`, {
 						type: 'error',
 				  });
 			this.personSelected = null;
-			this.showPopover = false;
+			this.saveLodgings();
 			this.closeDialogPerson();
-		},
-		/**
-		 * cancel the adiction person when close the popover
-		 */
-		cancelAddPerson() {
-			this.showPopover = false;
-			this.personSelected = '';
-		},
-		/**
-		 * add a person to lodging from autocomplete
-		 * show popover for set date
-		 */
-		addPersonToLodging(selected) {
-			this.showPopover = true;
-			this.personSelected = selected;
+			this.setBottomSheet({ action: false, lodging: null });
+			this.setBottomSheet({ action: true, lodging: oldIdLodgingSelect });
 		},
 		/**
 		 * check if date of person is already taken
@@ -388,6 +391,8 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
+			setLodgingSelect: 'Lodging/setLodgingSelect',
+			setBottomSheet: 'Lodging/setBottomSheet',
 			sendDateChange: 'Lodging/dateChange',
 			updateLodgingPersons: 'Lodging/updateLodgingPersons',
 			removeLodgingPersons: 'Lodging/removeLodgingPersons',
@@ -395,3 +400,24 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss">
+// #timelinePeople > .vis-left {
+// 	min-height: 250px !important;
+// }
+
+// #timelinePeople > .vis-label {
+// 	background-color: red !important;
+// 	min-height: 220px !important;
+// }
+//
+// #timelinePeople > .vis-group {
+// 	background-color: red !important;
+//
+// 	min-height: 220px !important;
+// }
+
+.vis-horizontal {
+	min-height: 150px !important;
+}
+</style>

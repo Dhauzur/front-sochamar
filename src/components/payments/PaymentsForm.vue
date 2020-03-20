@@ -5,12 +5,11 @@
 			<v-text-field
 				id="total"
 				v-model="$v.mount.$model"
-				size="sm"
 				type="number"
 				placeholder="Ej: 10000"
 				label="Total"
-				rounded
 				dense
+				outlined
 				prepend-icon="mdi-cash-usd"
 				:error-messages="mountErrors"
 				@input="$v.mount.$touch()"
@@ -34,7 +33,6 @@
 						dense
 						clearable
 						outlined
-						rounded
 						label="Fecha de ingreso y salida"
 						prepend-icon="mdi-calendar"
 						:error-messages="datesErrors"
@@ -46,10 +44,8 @@
 				<v-date-picker
 					v-model="dates"
 					outlined
-					rounded
 					range
 					locale="es"
-					:first-day-of-week="1"
 					:min="startDate"
 					:max="endDate"
 					no-title
@@ -71,7 +67,6 @@
 				dense
 				clearable
 				outlined
-				rounded
 				prepend-icon="mdi-paperclip"
 				:error-messages="voucherErrors"
 				@input="$v.voucher.$touch()"
@@ -85,7 +80,7 @@
 			</v-file-input>
 		</v-col>
 		<v-col cols="12" sm="6" md="3">
-			<v-btn dark small rounded color="primary" block class="mt-2" @click="submit">
+			<v-btn dark small color="primary" block class="mt-2" @click="submit">
 				Guardar
 			</v-btn>
 		</v-col>
