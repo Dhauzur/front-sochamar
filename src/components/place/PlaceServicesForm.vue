@@ -2,7 +2,7 @@
 	<v-row>
 		<v-col cols="12" sm="6" md="4" lg="3">
 			<v-text-field
-				id="name"
+				id="placeName"
 				v-model.trim="formData.name"
 				dense
 				outlined
@@ -88,7 +88,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				this.pushService(Object.assign({}, this.formData));
+				this.pushService(...this.formData);
 				this.resetForm();
 				this.$v.$reset();
 			}

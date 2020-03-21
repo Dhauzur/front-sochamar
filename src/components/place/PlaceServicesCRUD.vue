@@ -69,12 +69,8 @@
 							>
 							<v-card-actions>
 								<v-spacer></v-spacer>
-								<v-btn color="blue darken-1" text @click="manageModal(false)"
-									>Cancelar</v-btn
-								>
-								<v-btn color="blue darken-1" text :loading="loading" @click="submit"
-									>Guardar</v-btn
-								>
+								<v-btn text @click="manageModal(false)">Cancelar</v-btn>
+								<v-btn text :loading="loading" @click="submit">Guardar</v-btn>
 							</v-card-actions>
 						</v-card>
 					</v-dialog>

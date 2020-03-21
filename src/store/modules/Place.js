@@ -1,7 +1,7 @@
 import { api } from '@/config/index.js';
 import axios from 'axios';
 import router from '@/router/index.js';
-import { toastMessage } from '../../utils/toast/messages';
+import { toastMessage } from '@/utils/toast/messages';
 
 const state = {
 	message: '',

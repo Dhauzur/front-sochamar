@@ -3,8 +3,8 @@ import axios from 'axios';
 import moment from 'moment';
 import { DataSet } from 'vue2vis';
 import router from '@/router/index.js';
-import { generateServiceArray } from '../../utils/lodging/serviceArray';
-import { findServiceIndexByName } from '../../utils/lodging/findServiceIndex';
+import { generateServiceArray } from '@/utils/lodging/serviceArray';
+import { findServiceIndexByName } from '@/utils/lodging/findServiceIndex';
 
 const state = {
 	message: '',
@@ -274,11 +274,11 @@ const mutations = {
 				});
 			} else {
 				let defaultServices;
-				let temporalArray = [];
+				let temporaryArray = [];
 				for (let i = 0; i < servicesIndex; i++) {
-					temporalArray.push(1);
+					temporaryArray.push(1);
 				}
-				defaultServices = temporalArray;
+				defaultServices = temporaryArray;
 				return defaultServices;
 			}
 		};

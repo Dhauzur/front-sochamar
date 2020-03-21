@@ -1,9 +1,9 @@
 export const generateServiceArray = place => {
-	const temporalArray = [];
+	const temporaryArray = [];
 	let serviceArray;
 	place.services.forEach(() => {
-		temporalArray.push(1);
+		temporaryArray.push(1);
 	});
-	serviceArray = [temporalArray, temporalArray];
+	serviceArray = [temporaryArray, temporaryArray];
 	return JSON.stringify(serviceArray);
 };

@@ -97,16 +97,17 @@
 									</thead>
 									<tbody>
 										<tr
-											v-for="(c, index) in places"
+											v-for="(place, index) in places"
 											:key="index"
-											@click="selectPlace(c.id)"
+											@click="selectPlace(place.id)"
 										>
-											<td>{{ c.name }}</td>
-											<td>{{ c.rut }}</td>
+											<td>{{ place.name }}</td>
+											<td>{{ place.rut }}</td>
 											<td>
 												<v-btn
 													small
 													dark
+													fab
 													color="cyan"
 													@click="manageServices(c)"
 												>
@@ -114,7 +115,12 @@
 												</v-btn>
 											</td>
 											<td class="p-2">
-												<v-btn small dark @click="deletePlace(c.id)">
+												<v-btn
+													small
+													dark
+													fab
+													@click="deletePlace(place.id)"
+												>
 													<v-icon>
 														mdi-delete
 													</v-icon>
