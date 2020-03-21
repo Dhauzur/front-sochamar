@@ -2,6 +2,7 @@
 	<div>
 		<template v-if="loading">
 			<!-- loading -->
+			{{ lodgings }}
 			<v-dialog :value="loading" persistent width="300" hide-overlay>
 				<v-card color="secondary" dark>
 					<v-card-text>
@@ -592,8 +593,9 @@ export default {
 		},
 	},
 	created() {
+		console.log('sdfs');
 		this.selectPlace = this.place;
-		this.fetchPeriods(this.selectPlace);
+		this.fetchPeriods(null);
 		this.fetchPlace();
 		this.fetchLodgings();
 		this.setRangeDate({
