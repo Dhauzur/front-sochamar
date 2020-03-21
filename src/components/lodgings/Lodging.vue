@@ -2,7 +2,6 @@
 	<div>
 		<template v-if="loading">
 			<!-- loading -->
-			{{ lodgings }}
 			<v-dialog :value="loading" persistent width="300" hide-overlay>
 				<v-card color="secondary" dark>
 					<v-card-text>
@@ -217,7 +216,7 @@
 										v-if="editMode && p.service.lunch != undefined"
 										:id="p.id + ',' + p.date"
 										v-model="p.service.lunch"
-										type="number"
+										9="number"
 										class="inputService"
 										name="lunch"
 										:placeholder="p.service.lunch"
@@ -321,7 +320,6 @@ export default {
 				{ text: 'Alojamiento', value: 'alojamiento' },
 			],
 			serviceSelected: 'todos los servicios',
-			selectPlace: null,
 			options: {
 				editable: true,
 				start: moment(),
@@ -593,17 +591,13 @@ export default {
 		},
 	},
 	created() {
-		console.log('sdfs');
-		this.selectPlace = this.place;
-		this.fetchPeriods(null);
-		this.fetchPlace();
-		this.fetchLodgings();
 		this.setRangeDate({
 			start: moment(),
 			end: moment().add(15, 'day'),
 		});
-	},
-	mounted() {
+		this.fetchPlace();
+		this.fetchPeriods();
+		this.fetchLodgings();
 		this.fetchAllPersons();
 	},
 	methods: {

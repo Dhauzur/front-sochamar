@@ -21,7 +21,7 @@ const actions = {
 	},
 	async createPeriod({ state, commit, dispatch }, period) {
 		try {
-			period.placeId = state.idPlace;
+			period.placeId = state.place;
 			await axios.post(api + '/periods', period);
 			commit('setMessage', {
 				type: 'success',
@@ -87,7 +87,6 @@ const actions = {
 			commit('setLodgings', null);
 			const response = await axios.get(api + '/lodgings');
 			commit('setLoading', '');
-			console.log(response.data.lodgings);
 			commit('setLodgings', response.data.lodgings);
 			commit('setMessage', {
 				type: 'success',
@@ -104,7 +103,7 @@ const actions = {
 	},
 	async fetchPeriods({ commit }, placeId) {
 		try {
-			const response = await axios.get(`${api}/periods/${placeId}`);
+			const response = await axios.get(`${api}/periods/${placeId ? placeId : null}`);
 			const { periods } = response.data;
 			commit('setPeriods', periods);
 			commit('setMessage', {
