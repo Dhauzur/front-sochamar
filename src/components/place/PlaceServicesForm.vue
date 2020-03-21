@@ -88,7 +88,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				this.pushService(...this.formData);
+				this.pushService({ ...this.formData });
 				this.resetForm();
 				this.$v.$reset();
 			}
