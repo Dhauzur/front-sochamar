@@ -217,10 +217,7 @@ export default {
 			this.form = {
 				name: '',
 				rut: '',
-				breakfast: '',
-				lunch: '',
-				dinner: '',
-				lodging: '',
+				services: [],
 			};
 		},
 		pushService(service) {
