@@ -688,13 +688,18 @@ export default {
 </script>
 
 <style lang="css">
+.timelineContent:hover {
+	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
+	transition: all ease-in-out 0.5s;
+}
 .timelineContent {
 	background-color: transparent;
 	/* background: linear-gradient(90deg, rgba(106, 49, 255, 0.07) 0%, rgba(213, 47, 143, 0.18) 100%); */
 	margin-bottom: 20px !important;
 	padding: 10px;
 	border-radius: 10px;
-	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.45);
+	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
+	transition: all ease-in-out 0.5s;
 }
 
 .vis-selected {
