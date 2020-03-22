@@ -2,7 +2,7 @@
 	<v-container>
 		<!-- list person -->
 		<v-row>
-			<v-col cols="2">
+			<v-col cols="2" class="text-left">
 				<v-btn small color="accent" @click="dialog = !dialog">
 					<v-icon>mdi-plus</v-icon>
 					Agregar
@@ -20,13 +20,22 @@
 					@input="filter"
 				/>
 			</v-col>
-			<v-col v-if="personsList.length > 0" cols="12" style="height: 75vh; overflow: auto">
-				<persons-list
-					:delete-one="deleteOne"
-					:get-all-persons="getAllPersons"
-					:persons="resultFilter"
-					:selected-person="selectedPerson"
-				/>
+			<v-col v-if="Array.isArray(personsList) && personsList.length" cols="12">
+				<v-responsive class="overflow-y-auto" max-height="70vh">
+					<v-row>
+						<v-col
+							v-for="(item, index) in resultFilter"
+							:key="index"
+							cols="12"
+							sm="6"
+							md="4"
+							xl="3"
+							@click="selectedPerson(item)"
+						>
+							<persons-list :delete-one="deleteOne" :item="item" />
+						</v-col>
+					</v-row>
+				</v-responsive>
 			</v-col>
 			<v-col v-else cols="12">
 				<v-card color="secondary" flat>
@@ -54,7 +63,7 @@
 										alt="avatar"
 										class="pointer borderRadius"
 										max-width="130px"
-										:src="getAvatar"
+										:src="urlAvatar"
 										><div class="  textAvatar secondary">
 											{{
 												typeof person.avatar === 'string'
@@ -67,9 +76,9 @@
 								<v-file-input
 									id="avatar"
 									ref="avatar"
-									v-model="person.avatar"
 									class="pointer d-none"
 									accept="image/jpeg, image/png, image/gif, image/jpg"
+									@change="setAvatar"
 								/>
 							</v-col>
 							<!-- firstName -->
@@ -246,6 +255,8 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
+			urlAvatar: avatarDefault,
+			isActive: false,
 			filteredWord: '',
 			list: [],
 			comunas: [],
@@ -280,15 +291,6 @@ export default {
 				return this.personsList;
 			} else {
 				return this.list;
-			}
-		},
-		getAvatar() {
-			if (typeof this.person.avatar === 'string') {
-				return this.person.avatar;
-			} else if (this.person.avatar) {
-				return URL.createObjectURL(this.person.avatar);
-			} else {
-				return avatarDefault;
 			}
 		},
 		...mapGetters({
@@ -327,6 +329,10 @@ export default {
 		this.fetchRegions();
 	},
 	methods: {
+		setAvatar(file) {
+			this.person.avatar = file;
+			this.urlAvatar = URL.createObjectURL(file);
+		},
 		filter() {
 			this.list = this.personsList.filter(person => {
 				return person.firstName.toLowerCase().indexOf(this.filteredWord.toLowerCase()) > -1;
@@ -366,6 +372,7 @@ export default {
 						id: this.person._id,
 					});
 					this.getAllPersons();
+					this.closeDialog();
 				} else {
 					await this.savePerson(form);
 					this.getAllPersons();
@@ -375,12 +382,17 @@ export default {
 		},
 		selectedPerson(person) {
 			this.editMode = true;
-			this.person = person;
+			this.person = { ...person };
 			this.dialog = true;
 			if (this.person.region === undefined) {
 				this.disableComunaInput = true;
 			} else {
 				this.setComunas();
+			}
+			if (typeof this.person.avatar === 'string') {
+				this.urlAvatar = this.person.avatar;
+			} else {
+				this.urlAvatar = avatarDefault;
 			}
 		},
 		closeDialog() {
@@ -388,6 +400,7 @@ export default {
 			this.dialog = false;
 		},
 		clearInputs() {
+			this.urlAvatar = avatarDefault;
 			this.person = {
 				_id: null,
 				avatar: null,
