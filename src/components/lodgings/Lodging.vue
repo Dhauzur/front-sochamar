@@ -142,6 +142,7 @@
 				<v-col v-if="place" cols="12">
 					<timeline
 						v-if="periods.length > 0 && lodgings.length > 0"
+						class="timelineContent"
 						:events="['rangechanged', 'click', 'doubleClick']"
 						:groups="periods"
 						:items="lodgings"
@@ -151,19 +152,21 @@
 						@double-click="setBottomSheet({ action: true, lodging: null })"
 					/>
 				</v-col>
-				<v-col v-for="(p, index) in places" v-else :key="index" cols="12">
-					<h4 v-if="p.value" class="mb-2">{{ p.text }}</h4>
-					<timeline
-						v-if="p.value && periods.length > 0 && lodgings.length > 0"
-						:events="['rangechanged', 'click', 'doubleClick']"
-						:groups="periodAllPlace(p.value)"
-						:items="lodgingsAllPlace(p.value)"
-						:options="options"
-						@click="enableEdit"
-						@rangechanged="rangechanged"
-						@double-click="setBottomSheet({ action: true, lodging: null })"
-					/>
-				</v-col>
+				<template v-for="(p, index) in places" v-else>
+					<v-col v-if="p.value" :key="index" class="timelineContent " cols="12">
+						<h4 class="mb-2">{{ p.text }}</h4>
+						<timeline
+							v-if="periods.length > 0 && lodgings.length > 0"
+							:events="['rangechanged', 'click', 'doubleClick']"
+							:groups="periodAllPlace(p.value)"
+							:items="lodgingsAllPlace(p.value)"
+							:options="options"
+							@click="enableEdit"
+							@rangechanged="rangechanged"
+							@double-click="setBottomSheet({ action: true, lodging: null })"
+						/>
+					</v-col>
+				</template>
 			</v-row>
 			<v-row>
 				<v-col v-if="prices && place" cols="12" class="overflow-auto">
@@ -685,6 +688,15 @@ export default {
 </script>
 
 <style lang="css">
+.timelineContent {
+	background-color: transparent;
+	/* background: linear-gradient(90deg, rgba(106, 49, 255, 0.07) 0%, rgba(213, 47, 143, 0.18) 100%); */
+	margin-bottom: 20px !important;
+	padding: 10px;
+	border-radius: 10px;
+	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.45);
+}
+
 .vis-selected {
 	background-color: #c06240 !important;
 	color: white !important;
@@ -696,7 +708,7 @@ export default {
 .vis-inner,
 .vis-time-axis .vis-text.vis-saturday,
 .vis-time-axis .vis-text.vis-sunday {
-	color: #3a3b3e !important;
+	color: var(--v-textColor) !important;
 }
 
 .vis-time-axis .vis-grid.vis-saturday,
@@ -710,7 +722,7 @@ export default {
 }
 .vis-timeline {
 	margin-bottom: 15px;
-	background-color: #80808014;
+	background-color: transparent;
 	border: none !important;
 }
 .vis-item {

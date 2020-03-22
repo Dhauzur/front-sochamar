@@ -21,6 +21,7 @@ Se debe seguir este mismo esquema, previamente a solicitar el PR.
 * Todos los lugares, muestra un timeline para cada lugar
 * Mejorado modulo de personas y listado
 
+
 `0.0.2` _ (2020-02-09) (Mauro, Jesus, Javier)
 -------------------------
 * Corregido solapamiento de lodgings en diferentes eventos
