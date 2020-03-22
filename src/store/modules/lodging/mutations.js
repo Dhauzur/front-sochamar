@@ -257,6 +257,7 @@ const mutations = {
 				id: period._id,
 				content: period.name,
 				numberPassangerMax: period.numberPassangerMax,
+				place: period.place,
 			};
 		});
 		dataSet.add(mappedValues);

@@ -1,4 +1,14 @@
 const getters = {
+	periodAllPlace: state => place => {
+		return state.periods.get({
+			filter: item => item.place == place,
+		});
+	},
+	lodgingsAllPlace: state => place => {
+		return state.lodgings.get({
+			filter: item => item.place == place,
+		});
+	},
 	bottomSheet: state => state.bottomSheet,
 	message: state => state.message,
 	lodgingPersons: state => state.lodgingPersons,
@@ -18,7 +28,7 @@ const getters = {
 		if (state.periods)
 			state.periods.forEach(v => {
 				periods.push({
-					id: v._id,
+					id: v.id,
 					name: v.content,
 					numberPassangerMax: v.numberPassangerMax,
 				});

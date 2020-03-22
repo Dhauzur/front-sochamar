@@ -139,12 +139,25 @@
 			</v-row>
 			<!-- timeline -->
 			<v-row>
-				<v-col cols="12">
+				<v-col v-if="place" cols="12">
 					<timeline
 						v-if="periods.length > 0 && lodgings.length > 0"
 						:events="['rangechanged', 'click', 'doubleClick']"
 						:groups="periods"
 						:items="lodgings"
+						:options="options"
+						@click="enableEdit"
+						@rangechanged="rangechanged"
+						@double-click="setBottomSheet({ action: true, lodging: null })"
+					/>
+				</v-col>
+				<v-col v-for="(p, index) in places" v-else :key="index" cols="12">
+					<h4 v-if="p.value" class="mb-2">{{ p.text }}</h4>
+					<timeline
+						v-if="p.value && periods.length > 0 && lodgings.length > 0"
+						:events="['rangechanged', 'click', 'doubleClick']"
+						:groups="periodAllPlace(p.value)"
+						:items="lodgingsAllPlace(p.value)"
 						:options="options"
 						@click="enableEdit"
 						@rangechanged="rangechanged"
@@ -558,6 +571,8 @@ export default {
 			return dates;
 		},
 		...mapGetters({
+			periodAllPlace: 'Lodging/periodAllPlace',
+			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
 			bottomSheet: 'Lodging/bottomSheet',
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',

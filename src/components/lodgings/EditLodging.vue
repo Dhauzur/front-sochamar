@@ -243,7 +243,7 @@ export default {
 	mounted() {
 		this.setDateIntheState();
 		this.fetchRooms(this.idPlace);
-		setTimeout(() => (this.componentReady = true), 200);
+		setTimeout(() => (this.componentReady = true), 800);
 	},
 	methods: {
 		closeDialogPerson() {

@@ -153,6 +153,8 @@ export default {
 				this.createPeriod(this.form).then(() => {
 					this.clearInputs();
 					this.$v.$reset();
+					setTimeout(() => this.fetchLodgings(), 500);
+					setTimeout(() => this.fetchLodgings(), 500);
 				});
 			}
 		},
@@ -167,6 +169,8 @@ export default {
 			this.form.numberPassangerMax = '';
 		},
 		...mapActions({
+			fetchLodgings: 'Lodging/fetchLodgings',
+			fetchPeriods: 'Lodging/fetchPeriods',
 			createPeriod: 'Lodging/createPeriod',
 			deletePeriod: 'Lodging/deletePeriod',
 		}),
