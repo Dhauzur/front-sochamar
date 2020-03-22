@@ -216,7 +216,7 @@
 										v-if="editMode && p.service.lunch != undefined"
 										:id="p.id + ',' + p.date"
 										v-model="p.service.lunch"
-										9="number"
+										type="number"
 										class="inputService"
 										name="lunch"
 										:placeholder="p.service.lunch"

@@ -8,10 +8,9 @@ const mutations = {
 	setBottomSheet(state, value) {
 		if (value.action && state.place && value.lodging) {
 			setTimeout(() => {
-				state.lodgingSelect = state.lodgings.get(value.lodging);
+				// state.lodgingSelect = state.lodgings.get(value.lodging);
 				state.bottomSheet = true;
-				console.log('OKs');
-			}, 1000);
+			}, 300);
 		} else state.bottomSheet = true;
 		if (!value.action) state.bottomSheet = false;
 	},
@@ -152,7 +151,6 @@ const mutations = {
 	},
 	createOneLodging(state) {
 		state.editMode = false;
-		let place = state.Places.find(c => c.value == state.place);
 		let verificate = true;
 		state.lodgings.forEach(lod => {
 			if (
@@ -165,14 +163,14 @@ const mutations = {
 				verificate = false;
 		});
 		if (verificate) {
-			if (place.text == 'Turismo')
+			if (state.placeName == 'Turismo')
 				state.lodgings.add({
 					group: state.periods.getIds()[0],
 					start: moment().hours(15),
 					end: moment()
 						.hours(12)
 						.add(1, 'day'),
-					content: place.text,
+					content: state.placeName,
 					service: ['[[0,0,0,0],[0,0,0,0]]'],
 					place: state.place,
 				});
@@ -183,7 +181,7 @@ const mutations = {
 					end: moment()
 						.hours(12)
 						.add(1, 'day'),
-					content: place.text,
+					content: state.placeName,
 					service: ['[[1,1,1,1],[1,1,1,1]]'],
 					place: state.place,
 				});
@@ -285,7 +283,6 @@ const mutations = {
 		state.countLogingsPlace = value;
 	},
 	setLodgings(state, values) {
-		console.log(values);
 		let tempLodging = state.lodgings;
 		state.editMode = false;
 		state.lodgings = new DataSet([]);

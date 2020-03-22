@@ -25,7 +25,7 @@ const getters = {
 			});
 		return periods;
 	},
-	namePlace: state => state.Places.find(c => c.value == state.place).text,
+	placeName: state => state.Places.find(c => c.value == state.place).text,
 	places: state => state.Places,
 	place: state => state.place,
 };
