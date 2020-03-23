@@ -171,52 +171,50 @@
 			<!--aqui va la tabla-->
 			<v-row>
 				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
-					<v-simple-table>
-						<template v-slot:default>
-							<thead>
-								<tr>
-									<td>Actividad</td>
-									<td>Precios</td>
-									<td v-for="(d, index) in rangeDateTable" :key="index">
-										{{ d.numberDay }}
-										<br />
-										{{ d.nameDay }}
-									</td>
-								</tr>
-							</thead>
-							<tbody>
-								<tr v-for="(service, index) in selectedPlace.services" :key="index">
-									<td v-text="service.name"></td>
-									<td v-text="service.price"></td>
-									<td
-										v-for="(p, proyectionIndex) in proyectionTable"
-										:key="proyectionIndex"
-									>
-										<span v-if="!editMode">{{ p.service[service.name] }}</span>
-										<input
-											v-if="editMode && p.service[service.name] !== undefined"
-											:id="p.id + ',' + p.date"
-											v-model="p.service[service.name]"
-											type="number"
-											class="inputService"
-											:name="service.name"
-											:placeholder="p.service[service.name]"
-											@change="detectInputChange"
-										/>
-									</td>
-								</tr>
-								<!--TOTAL-->
-								<tr v-if="place" class="borderModule">
-									<td colspan="2">TOTAL</td>
-									<td v-for="(p, index) in proyectionTable" :key="index">
-										<span v-if="finalyPrice[index] !== 0">{{
-											finalyPrice[index]
-										}}</span>
-									</td>
-								</tr>
-							</tbody>
-						</template>
-					</v-simple-table>
+					<table>
+						<thead>
+							<tr>
+								<td>Actividad</td>
+								<td>Precios</td>
+								<td v-for="(d, index) in rangeDateTable" :key="index">
+									{{ d.numberDay }}
+									<br />
+									{{ d.nameDay }}
+								</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(service, index) in selectedPlace.services" :key="index">
+								<td v-text="service.name"></td>
+								<td v-text="service.price"></td>
+								<td
+									v-for="(p, proyectionIndex) in proyectionTable"
+									:key="proyectionIndex"
+								>
+									<span v-if="!editMode">{{ p.service[service.name] }}</span>
+									<input
+										v-if="editMode && p.service[service.name] !== undefined"
+										:id="p.id + ',' + p.date"
+										v-model="p.service[service.name]"
+										type="number"
+										class="inputService"
+										:name="service.name"
+										:placeholder="p.service[service.name]"
+										@change="detectInputChange"
+									/>
+								</td>
+							</tr>
+							<!--TOTAL-->
+							<tr v-if="place" class="borderModule">
+								<td colspan="2">TOTAL</td>
+								<td v-for="(p, index) in proyectionTable" :key="index">
+									<span v-if="finalyPrice[index] !== 0">{{
+										finalyPrice[index]
+									}}</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
 				</v-col>
 			</v-row>
 			<v-row v-if="lodgingSelect && selectedPlace">

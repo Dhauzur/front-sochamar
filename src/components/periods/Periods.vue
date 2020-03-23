@@ -155,7 +155,6 @@ export default {
 					this.clearInputs();
 					this.$v.$reset();
 					setTimeout(() => this.fetchLodgings(), 500);
-					setTimeout(() => this.fetchLodgings(), 500);
 				});
 			}
 		},

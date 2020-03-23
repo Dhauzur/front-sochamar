@@ -93,7 +93,8 @@ const actions = {
 	 * get all periods
 	 */
 	async fetchPeriods({ commit }, placeId) {
-		commit('setLoading', 'Cargando hospedajes...');
+		// commit('setLoading', true);
+
 		try {
 			const response = await axios.get(`${api}/periods/${placeId ? placeId : null}`);
 			const { periods } = response.data;
