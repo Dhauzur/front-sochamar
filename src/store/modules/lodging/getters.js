@@ -1,4 +1,14 @@
 const getters = {
+	periodAllPlace: state => place => {
+		return state.periods.get({
+			filter: item => item.place == place,
+		});
+	},
+	lodgingsAllPlace: state => place => {
+		return state.lodgings.get({
+			filter: item => item.place == place,
+		});
+	},
 	bottomSheet: state => state.bottomSheet,
 	message: state => state.message,
 	lodgingPersons: state => state.lodgingPersons,
