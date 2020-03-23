@@ -1,16 +1,16 @@
-import moment from 'moment';
 import { DataSet } from 'vue2vis';
+import moment from 'moment';
+import { findServiceIndexByName } from '@/utils/lodging/findServiceIndex';
+import { generateServiceArray } from '@/utils/lodging/serviceArray';
 
 const mutations = {
-	selectPeriod(state, value) {
-		state.periodSelected = state.periods.find(c => c.id == value);
-	},
 	setBottomSheet(state, value) {
 		if (value.action && state.place && value.lodging) {
 			setTimeout(() => {
-				// state.lodgingSelect = state.lodgings.get(value.lodging);
+				state.lodgingSelect = state.lodgings.get(value.lodging);
 				state.bottomSheet = true;
-			}, 300);
+				console.log('OKs');
+			}, 1000);
 		} else state.bottomSheet = true;
 		if (!value.action) state.bottomSheet = false;
 	},
@@ -68,13 +68,33 @@ const mutations = {
 			'days'
 		);
 		let oldService = JSON.parse(state.lodgingSelect.service[0]);
-		for (let i = 0; i <= numberDays; i++)
-			service.push([
-				oldService[i] ? oldService[i][0] : 1,
-				oldService[i] ? oldService[i][1] : 1,
-				oldService[i] ? oldService[i][2] : 1,
-				oldService[i] ? oldService[i][3] : 1,
-			]);
+		//Algoritmo
+		//1- el contador i esta contando la nueva cantidad de dias, recorre el primer acceso service[i].
+		//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
+		//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
+		//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
+		const servicesIndex = state.selectedPlace.services.length;
+		const generateNewServices = oldServices => {
+			if (oldServices) {
+				return oldServices.map(service => {
+					return service ? service : 1;
+				});
+			} else {
+				let defaultServices;
+				let temporaryArray = [];
+				for (let i = 0; i < servicesIndex; i++) {
+					temporaryArray.push(1);
+				}
+				defaultServices = temporaryArray;
+				return defaultServices;
+			}
+		};
+
+		for (let i = 0; i <= numberDays; i++) {
+			const newServices = generateNewServices(oldService[i]);
+			service.push(newServices);
+		}
+
 		let itemService = [];
 		itemService.push(JSON.stringify(service));
 		tempLodgings.update({
@@ -95,27 +115,40 @@ const mutations = {
 			moment(tempLodging.start).format('YYYY-MM-DD'),
 			'days'
 		);
+		//el primer for nos indica que por cada dia modificara una posicion de service;
 		for (let i = 0; i <= numberDays; i++) {
-			for (let u = 0; u <= 3; u++) {
-				if (service[i][u] == null) service[i][u] = 0;
+			//este forEach se encarga de recorrer todos los valores actuales de ese dia
+			//de ser null, el valor de ese service queda en 0;
+			service[i].forEach((singleService, index) => {
+				if (singleService == null) service[i][index] = 0;
+			});
+			//algoritmo
+			//1- si seleccionamos un servicio, buscar el index de este y con esto tendriamos la posicion de service para alterar su valor
+			//2- si el valor es 'todos los servicios' o un valor numerico que represente esta accion, hacer un foreach de service[i]
+			// y con esto podriamos alterar todos los valores
+			if (serviceSelected === 'todos los servicios') {
+				service[i].forEach((singleService, index) => {
+					service[i][index] = singleService - 1;
+				});
+			} else {
+				const foundIndex = findServiceIndexByName(
+					serviceSelected,
+					state.selectedPlace.services
+				);
+				service[i][foundIndex] = service[i][foundIndex] - 1;
 			}
-			if (serviceSelected == 'desayuno' || serviceSelected == 'todos los servicios')
-				service[i][0] = service[i][0] - 1;
-			if (serviceSelected == 'almuerzo' || serviceSelected == 'todos los servicios')
-				service[i][1] = service[i][1] - 1;
-			if (serviceSelected == 'cena' || serviceSelected == 'todos los servicios')
-				service[i][2] = service[i][2] - 1;
-			if (serviceSelected == 'alojamiento' || serviceSelected == 'todos los servicios')
-				service[i][3] = service[i][3] - 1;
-			for (let k = 0; k <= 3; k++) {
-				if (service[i][k] < 0) service[i][k] = 0;
-			}
+
+			//si el service fuera 0 y entra en esta funcion, este forEach esta evitando que registre valores negativos
+			service[i].forEach((singleService, index) => {
+				if (singleService < 0) service[i][index] = 0;
+			});
 		}
 		tempLodging.service[0] = JSON.stringify(service);
 		state.lodgingSelect = tempLodging;
 	},
 	addOneService(state, serviceSelected) {
 		let tempLodging = state.lodgingSelect;
+		const numberPassangerMax = state.periods.get(state.lodgingSelect.group).numberPassangerMax;
 		state.lodgingSelect = null;
 		let service = JSON.parse(tempLodging.service[0]);
 		let numberDays = moment(tempLodging.end).diff(
@@ -123,24 +156,32 @@ const mutations = {
 			'days'
 		);
 		for (let i = 0; i <= numberDays; i++) {
-			for (let u = 0; u <= 3; u++) {
-				if (service[i][u] == null) service[i][u] = 0;
-				if (service[i][u] >= 20) service[i][u] = 0;
+			service[i].forEach((singleService, index) => {
+				if (singleService == null) service[i][index] = 0;
+				if (singleService >= numberPassangerMax) service[i][index] = 0;
+			});
+			//Algoritmo
+			//1- si el servicio seleccionado es 'todos los servicios', entonces procedemos a actualizar el valor de todos los servicios
+			//2- en caso contrario, es un servicio seleccionado en especifico y en base a su nombre procedemos a buscar el index a modificar
+			if (serviceSelected === 'todos los servicios') {
+				service[i].forEach((singleService, index) => {
+					service[i][index] = singleService + 1;
+				});
+			} else {
+				const foundIndex = findServiceIndexByName(
+					serviceSelected,
+					state.selectedPlace.services
+				);
+				service[i][foundIndex] = service[i][foundIndex] + 1;
 			}
-			if (serviceSelected == 'desayuno' || serviceSelected == 'todos los servicios')
-				service[i][0] = service[i][0] + 1;
-			if (serviceSelected == 'almuerzo' || serviceSelected == 'todos los servicios')
-				service[i][1] = service[i][1] + 1;
-			if (serviceSelected == 'cena' || serviceSelected == 'todos los servicios')
-				service[i][2] = service[i][2] + 1;
-			if (serviceSelected == 'alojamiento' || serviceSelected == 'todos los servicios')
-				service[i][3] = service[i][3] + 1;
 		}
 		tempLodging.service[0] = JSON.stringify(service);
 		state.lodgingSelect = tempLodging;
 	},
 	setLodgingSelect(state, value) {
-		if (state.lodgings.get(value)) state.lodgingSelect = state.lodgings.get(value);
+		if (state.lodgings.get(value)) {
+			state.lodgingSelect = state.lodgings.get(value);
+		}
 	},
 	setLoading(state, value) {
 		state.loading = value;
@@ -151,7 +192,9 @@ const mutations = {
 	},
 	createOneLodging(state) {
 		state.editMode = false;
+		let place = state.Places.find(c => c.value === state.place);
 		let verificate = true;
+		const generatedService = generateServiceArray(place);
 		state.lodgings.forEach(lod => {
 			if (
 				lod.group == state.periods.getIds()[0] &&
@@ -163,7 +206,7 @@ const mutations = {
 				verificate = false;
 		});
 		if (verificate) {
-			if (state.placeName == 'Turismo')
+			if (place.text === 'Turismo') {
 				state.lodgings.add({
 					group: state.periods.getIds()[0],
 					start: moment().hours(15),
@@ -171,10 +214,10 @@ const mutations = {
 						.hours(12)
 						.add(1, 'day'),
 					content: state.placeName,
-					service: ['[[0,0,0,0],[0,0,0,0]]'],
+					service: [generatedService],
 					place: state.place,
 				});
-			else
+			} else {
 				state.lodgings.add({
 					group: state.periods.getIds()[0],
 					start: moment().hours(15),
@@ -182,9 +225,10 @@ const mutations = {
 						.hours(12)
 						.add(1, 'day'),
 					content: state.placeName,
-					service: ['[[1,1,1,1],[1,1,1,1]]'],
+					service: [generatedService],
 					place: state.place,
 				});
+			}
 		} else {
 			state.message = {
 				type: 'default',
@@ -207,6 +251,7 @@ const mutations = {
 					value: v._id,
 					text: v.name,
 					prices: v.prices,
+					services: v.services,
 				};
 			});
 			Places.push(...mapValues);
@@ -218,27 +263,39 @@ const mutations = {
 		let idValue = value.id.split(',')[0];
 		let dateValue = value.id.split(',')[1];
 		let newService = [];
-		if (value)
+		//Si el value existe, se inicia el proceso de actualizar service
+		if (value) {
 			state.lodgings.forEach(l => {
-				if (idValue == l.id) {
+				//Si la id de value coincide con un lodging, se continua el proceso de actualizar service
+				if (idValue === l.id) {
 					let numberDays = moment(l.end).diff(
 						moment(l.start).format('YYYY-MM-DD'),
 						'days'
 					);
+					//generalmente numberDay siempre va ser 1
 					for (let i = 0; i <= numberDays; i++) {
+						//si la fecha de value es igual a la fecha del lodging
 						if (
 							moment(l.start)
 								.add(i, 'day')
-								.format('YYYY-MM-DD') == dateValue
+								.format('YYYY-MM-DD') === dateValue
 						) {
+							//se obtiene el arreglo de service
 							let service = JSON.parse(l.service[0]);
-							if (value.name == 'dinner') service[i][2] = parseInt(value.value);
-							if (value.name == 'lunch') service[i][1] = parseInt(value.value);
-							if (value.name == 'accommodation')
-								service[i][3] = parseInt(value.value);
-							if (value.name == 'breakfast') service[i][0] = parseInt(value.value);
+							//service[i] nos indica que va tocar el service de un dia
+							//la segunda posicion de service[i][] corresponde al servicio a modificar
+
+							//la cantidad de service y placeServices son iguales, si encontramos el index de placeServices
+							//sabremos que posicion de service modificar
+							const foundIndex = findServiceIndexByName(
+								value.name,
+								state.selectedPlace.services
+							);
+							//En base al index encontrado y el dia, procedemos a actualizar el valor
+							service[i][foundIndex] = parseInt(value.value);
 							newService.push(JSON.stringify(service));
 							state.editMode = false;
+							//El lodging es modificado y el nuevo servicio queda registado
 							state.lodgings.update({
 								id: l.id,
 								service: newService,
@@ -248,6 +305,7 @@ const mutations = {
 					}
 				}
 			});
+		}
 	},
 	setPeriods(state, values) {
 		state.periods = new DataSet([]);
@@ -257,7 +315,6 @@ const mutations = {
 				id: period._id,
 				content: period.name,
 				numberPassangerMax: period.numberPassangerMax,
-				place: period.place,
 			};
 		});
 		dataSet.add(mappedValues);
@@ -328,6 +385,32 @@ const mutations = {
 			state.lodgings = tempLodging;
 			state.mirrorLodging = JSON.stringify(tempLodging);
 		} else state.lodgings = new DataSet([]);
+	},
+	setSelectedPlace(state) {
+		state.selectedPlace = state.Places.find(place => place.value === state.place);
+	},
+	setServicesComboBox(state) {
+		const allServicesObject = {
+			text: 'todos los servicios',
+			value: 'todos los servicios',
+		};
+		const comboBoxArray = [];
+		comboBoxArray.push(allServicesObject);
+		//Si services existe significa que un place fue seleccionado, entonces procedemos a generar el arreglo de comboBoxServices
+		//si services no existe significa que se selecciono 'Todas las empresas'  entonces servicesComboBox va ser un arreglo vacio,
+		//ya qua no vamos a añadir o disminuir servicios en esa parte
+		if (state.selectedPlace.services) {
+			const comboBoxServices = state.selectedPlace.services.map(service => {
+				return {
+					text: service.name,
+					value: service.name,
+				};
+			});
+			comboBoxArray.push(...comboBoxServices);
+			state.servicesComboBox = comboBoxArray;
+		} else {
+			state.servicesComboBox = [];
+		}
 	},
 };
 
