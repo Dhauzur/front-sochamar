@@ -12,6 +12,15 @@ Usar las siguientes palabras al inicio para añadir registros
 * Restricción
 
 Se debe seguir este mismo esquema, previamente a solicitar el PR.
+`0.0.3` _ (2020-02-09) (Mauro, Jesus, Javier)
+-------------------------
+* Remplazado framework BS4 por Vuetify
+* Corregido error de mostrar lodgings luego de agregar un turno
+* Mejorado servicios estaticos de lodgings a servicios dinamicos
+* Mejorado sistema de alojamiento en habitaciones dentro de un lodging
+* Todos los lugares, muestra un timeline para cada lugar
+* Mejorado modulo de personas y listado
+
 
 `0.0.2` _ (2020-02-09) (Mauro, Jesus, Javier)
 -------------------------

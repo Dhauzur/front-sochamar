@@ -14,6 +14,7 @@ export default new Vuetify({
 				warning: '#ff9800',
 				info: '#c06240',
 				success: '#4caf50',
+				textColor: '#000000',
 			},
 			dark: {
 				primary: '#ffb22b',
@@ -23,6 +24,7 @@ export default new Vuetify({
 				warning: '#ff9800',
 				info: '#c06240',
 				success: '#4caf50',
+				textColor: '#FFFFFF',
 			},
 		},
 	},
