@@ -2,79 +2,58 @@
 	<v-container>
 		<v-data-table :headers="headers" :items="placeForService.services" :items-per-page="5">
 			<template v-slot:top>
-				<v-toolbar flat color="white">
-					<v-toolbar-title v-text="tableTitle"></v-toolbar-title>
-					<v-divider class="mx-4" inset vertical></v-divider>
-					<v-spacer></v-spacer>
-					<!--FORM MODAL-->
-					<v-dialog v-model="dialog" max-width="500px">
-						<template v-slot:activator="{ on }">
-							<v-btn color="primary" dark class="mb-2" v-on="on"
-								>Nuevo Servicio</v-btn
-							>
-						</template>
-						<v-card>
-							<v-card-title>
-								<span class="headline">Servicio</span>
-							</v-card-title>
+				<v-row>
+					<v-col>
+						<p v-text="tableTitle"></p>
+					</v-col>
+					<v-col>
+						<v-dialog v-model="dialog" max-width="500px">
+							<template v-slot:activator="{ on }">
+								<v-btn color="primary" dark class="mb-2" v-on="on"
+									>Nuevo Servicio</v-btn
+								>
+							</template>
+							<v-card>
+								<v-card-title>
+									<span class="headline">Servicio</span>
+								</v-card-title>
 
-							<v-card-text>
-								<v-container>
-									<v-row>
-										<v-col cols="12" sm="6" md="4">
-											<v-text-field
-												v-model.trim="formData.name"
-												label="Nombre"
-											></v-text-field>
-											<div v-if="$v.formData.name.$dirty" class="text-right">
-												<small
-													v-if="!$v.formData.name.required"
-													class="text-danger"
-												>
-													Campo requerido
-												</small>
-												<small
-													v-if="!$v.formData.name.minLength"
-													class="text-danger"
-												>
-													Minimo 3 Caracteres
-												</small>
-												<small
-													v-if="!$v.formData.name.maxLength"
-													class="text-danger"
-												>
-													Maximo 50 Caracteres
-												</small>
-											</div>
-										</v-col>
-										<v-col cols="12" sm="6" md="4">
-											<v-text-field
-												v-model.number="formData.price"
-												label="Precio"
-											></v-text-field>
-											<div v-if="$v.formData.price.$dirty" class="text-right">
-												<small
-													v-if="!$v.formData.name.required"
-													class="text-danger"
-												>
-													Campo requerido
-												</small>
-											</div>
-										</v-col>
-									</v-row>
-								</v-container>
-							</v-card-text>
-							<small v-if="errors" class="text-danger"
-								>Llene el formulario correctamente</small
-							>
-							<v-card-actions>
-								<v-spacer></v-spacer>
-								<v-btn text @click="manageModal(false)">Cancelar</v-btn>
-								<v-btn text :loading="loading" @click="submit">Guardar</v-btn>
-							</v-card-actions>
-						</v-card>
-					</v-dialog>
-				</v-toolbar>
+								<v-card-text>
+									<v-container>
+										<v-row>
+											<v-col cols="12" sm="6" md="4">
+												<v-text-field
+													v-model.trim="formData.name"
+													label="Nombre"
+													:error-messages="nameErrors"
+													@input="$v.formData.name.$touch()"
+													@blur="$v.formData.name.$touch()"
+												></v-text-field>
+											</v-col>
+											<v-col cols="12" sm="6" md="4">
+												<v-text-field
+													v-model.number="formData.price"
+													label="Precio"
+													:error-messages="priceErrors"
+													@input="$v.formData.price.$touch()"
+													@blur="$v.formData.price.$touch()"
+												></v-text-field>
+											</v-col>
+										</v-row>
+									</v-container>
+								</v-card-text>
+								<small v-if="errors" class="text-danger"
+									>Llene el formulario correctamente</small
+								>
+								<v-card-actions>
+									<v-spacer></v-spacer>
+									<v-btn text @click="manageModal(false)">Cancelar</v-btn>
+									<v-btn text :loading="loading" @click="submit">Guardar</v-btn>
+								</v-card-actions>
+							</v-card>
+						</v-dialog>
+					</v-col>
+				</v-row>
 			</template>
 			<template v-slot:item.name="props">
 				<div>{{ props.item.name }}</div>
@@ -156,6 +135,20 @@ export default {
 	computed: {
 		tableTitle() {
 			return `Servicios de ${this.placeForService.name}`;
+		},
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.formData.name.$dirty) return errors;
+			!this.$v.formData.name.required && errors.push('Campo requerido');
+			!this.$v.formData.name.minLength && errors.push('Minimo 3 Caracteres');
+			!this.$v.formData.name.maxLength && errors.push('Maximo 50 Caracteres');
+			return errors;
+		},
+		priceErrors() {
+			const errors = [];
+			if (!this.$v.formData.name.$dirty) return errors;
+			!this.$v.formData.name.required && errors.push('Campo requerido');
+			return errors;
 		},
 		...mapGetters({
 			loading: 'Place/loading',

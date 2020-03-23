@@ -11,31 +11,23 @@
 						<label for="name" class="mv-0"><small>Nombre</small></label>
 						<v-text-field
 							id="name"
-							v-model="$v.form.name.$model"
-							required
+							v-model.trim="$v.form.name.$model"
 							placeholder="Ej: Minera los pelambres"
+							:error-messages="nameErrors"
+							@input="$v.form.name.$touch()"
+							@blur="$v.form.name.$touch()"
 						></v-text-field>
-						<div v-if="$v.form.name.$dirty" class="text-right">
-							<small v-if="!$v.form.name.required" class="text-danger">
-								Campo requerido
-							</small>
-							<small v-if="!$v.form.name.minLength" class="text-danger">
-								Minimo 3 Caracteres
-							</small>
-						</div>
 					</v-col>
 					<v-col cols="12" md lg="4">
 						<label for="rut" class="mv-0"><small>RUT</small></label>
 						<v-text-field
 							id="rut"
-							v-model="$v.form.rut.$model"
-							placeholder="Ej: 11.111.111-3"
+							v-model.trim="$v.form.rut.$model"
+							placeholder="Ej: 11.111.111-3	"
+							:error-messages="rutErrors"
+							@input="$v.form.rut.$touch()"
+							@blur="$v.form.rut.$touch()"
 						></v-text-field>
-						<div v-if="$v.form.rut.$dirty" class="text-right">
-							<small v-if="!$v.form.rut.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
 					</v-col>
 				</v-row>
 				<v-row class="mv-3 text-left">
@@ -109,7 +101,7 @@
 													dark
 													fab
 													color="cyan"
-													@click="manageServices(c)"
+													@click="manageServices(place)"
 												>
 													<v-icon>mdi-pencil</v-icon>
 												</v-btn>
@@ -148,7 +140,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
+import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import PlaceServicesForm from './PlaceServicesForm';
 import PlaceServicesCRUD from './PlaceServicesCRUD';
@@ -174,6 +166,20 @@ export default {
 		hasPlaces() {
 			return Array.isArray(this.places) && this.places.length;
 		},
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.form.name.$dirty) return errors;
+			!this.$v.form.name.required && errors.push('Campo requerido');
+			!this.$v.form.name.minLength && errors.push('Minimo 3 Caracteres');
+			!this.$v.form.name.maxLength && errors.push('Maximo 100 Caracteres');
+			return errors;
+		},
+		rutErrors() {
+			const errors = [];
+			if (!this.$v.form.rut.$dirty) return errors;
+			!this.$v.form.rut.required && errors.push('Campo requerido');
+			return errors;
+		},
 		...mapGetters({
 			places: 'Place/places',
 			placeSelected: 'Place/placeSelected',
@@ -195,6 +201,7 @@ export default {
 			name: {
 				required,
 				minLength: minLength(3),
+				maxLength: maxLength(100),
 			},
 			rut: {
 				required,
@@ -219,6 +226,7 @@ export default {
 				rut: '',
 				services: [],
 			};
+			this.errors = false;
 		},
 		pushService(service) {
 			const nameExist = this.checkRepeatedServiceName(service.name);

@@ -8,18 +8,10 @@
 				outlined
 				rounded
 				label="Nombre"
+				:error-messages="nameErrors"
+				@input="$v.formData.name.$touch()"
+				@blur="$v.formData.name.$touch()"
 			></v-text-field>
-			<div v-if="$v.formData.name.$dirty" class="text-right">
-				<small v-if="!$v.formData.name.required" class="text-danger">
-					Campo requerido
-				</small>
-				<small v-if="!$v.formData.name.minLength" class="text-danger">
-					Minimo 3 Caracteres
-				</small>
-				<small v-if="!$v.formData.name.maxLength" class="text-danger">
-					Maximo 50 Caracteres
-				</small>
-			</div>
 		</v-col>
 		<v-col cols="12" sm="6" md="4" lg="3">
 			<v-text-field
@@ -30,12 +22,10 @@
 				outlined
 				rounded
 				label="Precio"
+				:error-messages="priceErrors"
+				@input="$v.formData.price.$touch()"
+				@blur="$v.formData.price.$touch()"
 			></v-text-field>
-			<div v-if="$v.formData.price.$dirty" class="text-right">
-				<small v-if="!$v.formData.name.required" class="text-danger">
-					Campo requerido
-				</small>
-			</div>
 		</v-col>
 		<v-col cols="12" sm="6" md="3" lg="3">
 			<v-btn :loading="loading" block color="primary" rounded small @click="submit">
@@ -66,6 +56,22 @@ export default {
 			errors: false,
 		};
 	},
+	computed: {
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.formData.name.$dirty) return errors;
+			!this.$v.formData.name.required && errors.push('Campo requerido');
+			!this.$v.formData.name.minLength && errors.push('Minimo 3 Caracteres');
+			!this.$v.formData.name.maxLength && errors.push('Maximo 50 Caracteres');
+			return errors;
+		},
+		priceErrors() {
+			const errors = [];
+			if (!this.$v.formData.name.$dirty) return errors;
+			!this.$v.formData.name.required && errors.push('Campo requerido');
+			return errors;
+		},
+	},
 	validations: {
 		formData: {
 			name: {
@@ -81,6 +87,7 @@ export default {
 	methods: {
 		resetForm() {
 			this.formData = { name: '', price: '' };
+			this.errors = false;
 		},
 		submit() {
 			this.$v.$touch();
