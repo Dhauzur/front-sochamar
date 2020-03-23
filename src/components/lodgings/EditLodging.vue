@@ -119,6 +119,7 @@
 							</v-stepper>
 						</v-dialog>
 						<timeline
+							v-if="componentReady"
 							id="timelinePeople"
 							:items="items"
 							:groups="groups"
@@ -158,6 +159,7 @@ export default {
 	},
 	data() {
 		return {
+			componentReady: false,
 			tab: 0,
 			select: 'Sin habitación',
 			stepper: 1,
@@ -241,6 +243,7 @@ export default {
 	mounted() {
 		this.setDateIntheState();
 		this.fetchRooms(this.idPlace);
+		setTimeout(() => (this.componentReady = true), 800);
 	},
 	methods: {
 		closeDialogPerson() {

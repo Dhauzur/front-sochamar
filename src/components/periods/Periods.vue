@@ -40,7 +40,7 @@
 			</v-col>
 		</v-row>
 		<v-divider />
-		<v-row v-if="loading && !hasPeriods">
+		<v-row v-if="loading && periodsTable">
 			<v-col cols="12" md="7"
 				><v-skeleton-loader class="mx-auto" type="table"></v-skeleton-loader
 			></v-col>
@@ -60,14 +60,14 @@
 					></v-text-field>
 				</v-card-title>
 				<v-data-table
-					v-if="hasPeriods"
+					v-if="periodsTable"
 					disable-sort
 					item-key="name"
 					:loading="loading"
 					loading-text="Cargando... Por favor espere..."
 					:search="filterPeriodWord"
 					:headers="fields"
-					:items="periods"
+					:items="periodsTable"
 					:items-per-page="5"
 				>
 					<template v-slot:item.actions="{ item }">
@@ -89,12 +89,6 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
 export default {
 	name: 'Period',
 	mixins: [validationMixin],
-	props: {
-		idPlace: {
-			type: String,
-			required: true,
-		},
-	},
 	data() {
 		return {
 			fields: [
@@ -123,15 +117,13 @@ export default {
 			!this.$v.form.numberPassangerMax.required && errors.push('Campo es querido');
 			return errors;
 		},
-		hasPeriods() {
-			return Array.isArray(this.periods) && this.periods.length;
-		},
 		...mapGetters({
-			loading: 'Period/loading',
-			periods: 'Period/periods',
-			periodSelected: 'Period/periodSelected',
-			message: 'Period/message',
-			placeLodging: 'Lodging/places',
+			idPlace: 'Lodging/place',
+			periodsTable: 'Lodging/periodsTable',
+			loading: 'Lodging/loading',
+			periods: 'Lodging/periods',
+			periodSelected: 'Lodging/periodSelected',
+			message: 'Lodging/message',
 		}),
 	},
 	watch: {
@@ -140,13 +132,6 @@ export default {
 				type: newVal.type,
 			});
 		},
-		periods(newVal) {
-			this.setPeriods(newVal);
-		},
-	},
-	mounted() {
-		this.setIdPlacePeriod(this.idPlace);
-		this.fetchPeriods(this.idPlace);
 	},
 	validations: {
 		form: {
@@ -168,6 +153,8 @@ export default {
 				this.createPeriod(this.form).then(() => {
 					this.clearInputs();
 					this.$v.$reset();
+					setTimeout(() => this.fetchLodgings(), 500);
+					setTimeout(() => this.fetchLodgings(), 500);
 				});
 			}
 		},
@@ -182,14 +169,15 @@ export default {
 			this.form.numberPassangerMax = '';
 		},
 		...mapActions({
-			fetchPeriods: 'Period/fetchPeriods',
-			createPeriod: 'Period/createPeriod',
-			deletePeriod: 'Period/deletePeriod',
+			fetchLodgings: 'Lodging/fetchLodgings',
+			fetchPeriods: 'Lodging/fetchPeriods',
+			createPeriod: 'Lodging/createPeriod',
+			deletePeriod: 'Lodging/deletePeriod',
 		}),
 		...mapMutations({
 			setPeriods: 'Lodging/setPeriods',
-			selectPeriod: 'Period/selectPeriod',
-			setIdPlacePeriod: 'Period/setIdPlacePeriod',
+			selectPeriod: 'Lodging/selectPeriod',
+			setIdPlacePeriod: 'Lodging/setIdPlacePeriod',
 		}),
 	},
 };

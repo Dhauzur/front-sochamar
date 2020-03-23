@@ -139,9 +139,10 @@
 			</v-row>
 			<!-- timeline -->
 			<v-row>
-				<v-col cols="12">
+				<v-col v-if="place" cols="12">
 					<timeline
 						v-if="periods.length > 0 && lodgings.length > 0"
+						class="timelineContent"
 						:events="['rangechanged', 'click', 'doubleClick']"
 						:groups="periods"
 						:items="lodgings"
@@ -151,6 +152,21 @@
 						@double-click="setBottomSheet({ action: true, lodging: null })"
 					/>
 				</v-col>
+				<template v-for="(p, index) in places" v-else>
+					<v-col v-if="p.value" :key="index" class="timelineContent " cols="12">
+						<h4 class="mb-2">{{ p.text }}</h4>
+						<timeline
+							v-if="periods.length > 0 && lodgings.length > 0"
+							:events="['rangechanged', 'click', 'doubleClick']"
+							:groups="periodAllPlace(p.value)"
+							:items="lodgingsAllPlace(p.value)"
+							:options="options"
+							@click="enableEdit"
+							@rangechanged="rangechanged"
+							@double-click="setBottomSheet({ action: true, lodging: null })"
+						/>
+					</v-col>
+				</template>
 			</v-row>
 			<v-row>
 				<v-col v-if="prices && place" cols="12" class="overflow-auto">
@@ -320,7 +336,6 @@ export default {
 				{ text: 'Alojamiento', value: 'alojamiento' },
 			],
 			serviceSelected: 'todos los servicios',
-			selectPlace: null,
 			options: {
 				editable: true,
 				start: moment(),
@@ -559,6 +574,8 @@ export default {
 			return dates;
 		},
 		...mapGetters({
+			periodAllPlace: 'Lodging/periodAllPlace',
+			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
 			bottomSheet: 'Lodging/bottomSheet',
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',
@@ -592,16 +609,13 @@ export default {
 		},
 	},
 	created() {
-		this.selectPlace = this.place;
-		this.fetchPeriods(this.selectPlace);
-		this.fetchPlace();
-		this.fetchLodgings();
 		this.setRangeDate({
 			start: moment(),
 			end: moment().add(15, 'day'),
 		});
-	},
-	mounted() {
+		this.fetchPlace();
+		this.fetchPeriods();
+		this.fetchLodgings();
 		this.fetchAllPersons();
 	},
 	methods: {
@@ -674,6 +688,20 @@ export default {
 </script>
 
 <style lang="css">
+.timelineContent:hover {
+	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
+	transition: all ease-in-out 0.5s;
+}
+.timelineContent {
+	background-color: transparent;
+	/* background: linear-gradient(90deg, rgba(106, 49, 255, 0.07) 0%, rgba(213, 47, 143, 0.18) 100%); */
+	margin-bottom: 20px !important;
+	padding: 10px;
+	border-radius: 10px;
+	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
+	transition: all ease-in-out 0.5s;
+}
+
 .vis-selected {
 	background-color: #c06240 !important;
 	color: white !important;
@@ -685,7 +713,7 @@ export default {
 .vis-inner,
 .vis-time-axis .vis-text.vis-saturday,
 .vis-time-axis .vis-text.vis-sunday {
-	color: #3a3b3e !important;
+	color: var(--v-textColor) !important;
 }
 
 .vis-time-axis .vis-grid.vis-saturday,
@@ -699,7 +727,7 @@ export default {
 }
 .vis-timeline {
 	margin-bottom: 15px;
-	background-color: #80808014;
+	background-color: transparent;
 	border: none !important;
 }
 .vis-item {
