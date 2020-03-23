@@ -1,5 +1,6 @@
 const getters = {
 	periodAllPlace: state => place => {
+		console.log(place);
 		return state.periods.get({
 			filter: item => item.place == place,
 		});
@@ -26,6 +27,7 @@ const getters = {
 	places: state => state.Places,
 	place: state => state.place,
 	periodsTable: state => {
+		console.log(state.periods);
 		var periods = [];
 		if (state.periods)
 			state.periods.forEach(v => {

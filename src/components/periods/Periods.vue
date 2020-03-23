@@ -40,7 +40,7 @@
 			</v-col>
 		</v-row>
 		<v-divider />
-		<v-row v-if="loading && periodsTable">
+		<v-row v-if="loading">
 			<v-col cols="12" md="7"
 				><v-skeleton-loader class="mx-auto" type="table"></v-skeleton-loader
 			></v-col>
@@ -59,8 +59,8 @@
 						hide-details
 					></v-text-field>
 				</v-card-title>
+				{{ loading }}
 				<v-data-table
-					v-if="periodsTable"
 					disable-sort
 					item-key="name"
 					:loading="loading"
@@ -100,6 +100,7 @@ export default {
 			form: {
 				name: '',
 				numberPassangerMax: '',
+				idPlace: this.idPlace,
 			},
 			filterPeriodWord: '',
 		};

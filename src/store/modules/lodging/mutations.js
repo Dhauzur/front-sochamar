@@ -9,7 +9,6 @@ const mutations = {
 			setTimeout(() => {
 				state.lodgingSelect = state.lodgings.get(value.lodging);
 				state.bottomSheet = true;
-				console.log('OKs');
 			}, 1000);
 		} else state.bottomSheet = true;
 		if (!value.action) state.bottomSheet = false;
@@ -43,7 +42,6 @@ const mutations = {
 	setMirrorLodging(state, value) {
 		state.mirrorLodging = value;
 	},
-	//Elimina de dataset del front, un hospedaje
 	setDeletLodging(state, value) {
 		let tempLodgings = state.lodgings;
 		state.editMode = false;
@@ -315,6 +313,7 @@ const mutations = {
 				id: period._id,
 				content: period.name,
 				numberPassangerMax: period.numberPassangerMax,
+				place: period.place,
 			};
 		});
 		dataSet.add(mappedValues);

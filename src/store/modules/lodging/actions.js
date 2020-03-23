@@ -3,6 +3,23 @@ import { api } from '@/config/index.js';
 import router from '@/router/index.js';
 
 const actions = {
+	async createPeriod({ state, commit, dispatch }, period) {
+		try {
+			period.placeId = state.place;
+			await axios.post(api + '/periods', period);
+			commit('setMessage', {
+				type: 'success',
+				text: 'Turno creado ',
+			});
+			dispatch('fetchPeriods', period.placeId);
+		} catch (e) {
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al crear Turno',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
+	},
 	/**
 	 * delete a lodging
 	 */
@@ -10,7 +27,7 @@ const actions = {
 		try {
 			commit('setLoading', 'Eliminando hospedaje...');
 			await axios.delete(`${api}/lodging/delete/place/${value.id}`);
-			commit('setLoading', '');
+			commit('setLoading', false);
 			commit('setDeletLodging', value);
 			commit('setMessage', {
 				type: 'default',
@@ -33,7 +50,7 @@ const actions = {
 			commit('setPlaces', null);
 			commit('setLoading', 'Cargando lugares...');
 			const response = await axios.get(`${api}/place`);
-			commit('setLoading', '');
+			commit('setLoading', false);
 			commit('setPlaces', response.data.place);
 			commit('setMessage', {
 				type: 'success',
@@ -57,7 +74,7 @@ const actions = {
 			commit('setModeEdit', false);
 			commit('setLodgings', null);
 			const response = await axios.get(api + '/lodgings');
-			commit('setLoading', '');
+			commit('setLoading', false);
 			commit('setLodgings', response.data.lodgings);
 			commit('setMessage', {
 				type: 'success',
@@ -76,6 +93,7 @@ const actions = {
 	 * get all periods
 	 */
 	async fetchPeriods({ commit }, placeId) {
+		commit('setLoading', 'Cargando hospedajes...');
 		try {
 			const response = await axios.get(`${api}/periods/${placeId ? placeId : null}`);
 			const { periods } = response.data;
@@ -84,12 +102,14 @@ const actions = {
 				type: 'success',
 				text: 'Habitaciones descargadas',
 			});
+			commit('setLoading', false);
 		} catch (e) {
 			commit('setPeriods', null);
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al descargar habitaciones',
 			});
+			commit('setLoading', false);
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
@@ -136,7 +156,7 @@ const actions = {
 						.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)));
 				}
 			});
-			commit('setLoading', '');
+			commit('setLoading', false);
 		} catch (error) {
 			commit('setMessage', {
 				type: 'error',
