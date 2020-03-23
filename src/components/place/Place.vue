@@ -11,97 +11,55 @@
 						<label for="name" class="mv-0"><small>Nombre</small></label>
 						<v-text-field
 							id="name"
-							v-model="$v.form.name.$model"
-							required
+							v-model.trim="$v.form.name.$model"
 							placeholder="Ej: Minera los pelambres"
+							:error-messages="nameErrors"
+							@input="$v.form.name.$touch()"
+							@blur="$v.form.name.$touch()"
 						></v-text-field>
-						<div v-if="$v.form.name.$dirty" class="text-right">
-							<small v-if="!$v.form.name.required" class="text-danger">
-								Campo requerido
-							</small>
-							<small v-if="!$v.form.name.minLength" class="text-danger">
-								Minimo 3 Caracteres
-							</small>
-						</div>
 					</v-col>
 					<v-col cols="12" md lg="4">
 						<label for="rut" class="mv-0"><small>RUT</small></label>
 						<v-text-field
 							id="rut"
-							v-model="$v.form.rut.$model"
-							placeholder="Ej: 11.111.111-3"
+							v-model.trim="$v.form.rut.$model"
+							placeholder="Ej: 11.111.111-3	"
+							:error-messages="rutErrors"
+							@input="$v.form.rut.$touch()"
+							@blur="$v.form.rut.$touch()"
 						></v-text-field>
-						<div v-if="$v.form.rut.$dirty" class="text-right">
-							<small v-if="!$v.form.rut.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
 					</v-col>
 				</v-row>
 				<v-row class="mv-3 text-left">
 					<v-col>
-						<h6>Precios</h6>
+						<PlaceServicesForm :push-service="pushService"></PlaceServicesForm>
+						<v-simple-table>
+							<template v-slot:default>
+								<thead>
+									<tr>
+										<th class="text-left">Nombre</th>
+										<th class="text-left">Precio</th>
+										<th class="text-left">Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="item in form.services" :key="item.name">
+										<td>{{ item.name }}</td>
+										<td>{{ item.price }}</td>
+										<td>
+											<v-icon small @click="removeService(item)">
+												mdi-delete
+											</v-icon>
+										</td>
+									</tr>
+								</tbody>
+							</template>
+						</v-simple-table>
 					</v-col>
 				</v-row>
 				<v-row class="mv-5 text-left">
-					<v-col cols="12" md>
-						<label for="breakfast" class="mv-0"><small>Desayuno</small></label>
-						<v-text-field
-							id="breakfast"
-							v-model="$v.form.breakfast.$model"
-							type="number"
-							placeholder="Ej: 4000"
-						></v-text-field>
-						<div v-if="$v.form.breakfast.$dirty" class="text-right">
-							<small v-if="!$v.form.breakfast.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</v-col>
-					<v-col cols="12" md>
-						<label for="lunch" class="mv-0"><small>Almuerzo</small></label>
-						<v-text-field
-							id="lunch"
-							v-model="$v.form.lunch.$model"
-							type="number"
-							placeholder="Ej: 8000"
-						></v-text-field>
-						<div v-if="$v.form.lunch.$dirty" class="text-right">
-							<small v-if="!$v.form.lunch.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</v-col>
-					<v-col cols="12" md>
-						<label for="dinner" class="mv-0"><small>Cena</small></label>
-						<v-text-field
-							id="dinner"
-							v-model="$v.form.dinner.$model"
-							type="number"
-							placeholder="Ej: 6000"
-						></v-text-field>
-						<div v-if="$v.form.dinner.$dirty" class="text-right">
-							<small v-if="!$v.form.dinner.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</v-col>
-					<v-col cols="12" md>
-						<label for="lodging" class="mv-0"><small>Alojamiento</small></label>
-						<v-text-field
-							id="lodging"
-							v-model="$v.form.lodging.$model"
-							type="number"
-							placeholder="Ej: 25000"
-						></v-text-field>
-						<div v-if="$v.form.lodging.$dirty" class="text-right">
-							<small v-if="!$v.form.lodging.required" class="text-danger">
-								Campo requerido
-							</small>
-						</div>
-					</v-col>
 					<v-col cols="12" md class="mt-3">
-						<v-btn block size="sm" class="col-12" @click="onsubmit()">
+						<v-btn block size="sm" class="col-6" @click="onsubmit()">
 							Guardar
 						</v-btn>
 						<small v-if="errors" class="mt-2 d-block text-danger">
@@ -109,102 +67,97 @@
 						</small>
 					</v-col>
 				</v-row>
+				<!--PLACE TABLE-->
+				<v-text-field
+					v-model="filterPlaceWord"
+					size="sm"
+					placeholder="Filtrar lugar"
+					@keyup="filterPlace(filterPlaceWord)"
+				></v-text-field>
 				<div v-if="hasPlaces">
-					<v-row
-						style="max-height: 150px; overflow-y: auto;"
-						class="background-into-module mr-2 mv-3"
-					>
-						<v-col>
-							<table class="table table-bordered table-hover">
-								<thead>
-									<tr>
-										<th>Nombre</th>
-										<th>RUT / ID</th>
-										<th>Precios</th>
-										<th>Eliminar</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr
-										v-for="(c, index) in places"
-										:key="index"
-										@click="selectPlace(c.id)"
-									>
-										<td>{{ c.name }}</td>
-										<td>{{ c.rut }}</td>
-										<td>
-											<table class="table ">
-												<thead>
-													<th>Tipo</th>
-													<th>Precio</th>
-												</thead>
-												<tbody>
-													<tr>
-														<td>Desayuno</td>
-														<td>{{ c.prices[0] }}</td>
-													</tr>
-													<tr>
-														<td>Almuerzo</td>
-														<td>{{ c.prices[1] }}</td>
-													</tr>
-													<tr>
-														<td>Cena</td>
-														<td>{{ c.prices[2] }}</td>
-													</tr>
-													<tr>
-														<td>Alojamiento</td>
-														<td>{{ c.prices[3] }}</td>
-													</tr>
-												</tbody>
-											</table>
-										</td>
-										<td class="p-2">
-											<v-btn variant="danger" @click="deletePlace(c.id)">
-												X
-											</v-btn>
-										</td>
-									</tr>
-								</tbody>
-							</table>
+					<v-row>
+						<v-col class="mv-5" cols="12">
+							<v-simple-table>
+								<template v-slot:default>
+									<thead>
+										<tr>
+											<th>Nombre</th>
+											<th>RUT / ID</th>
+											<th>Servicios</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr
+											v-for="(place, index) in places"
+											:key="index"
+											@click="selectPlace(place.id)"
+										>
+											<td>{{ place.name }}</td>
+											<td>{{ place.rut }}</td>
+											<td>
+												<v-btn
+													small
+													dark
+													fab
+													color="cyan"
+													@click="manageServices(place)"
+												>
+													<v-icon>mdi-pencil</v-icon>
+												</v-btn>
+											</td>
+											<td class="p-2">
+												<v-btn
+													small
+													dark
+													fab
+													@click="deletePlace(place.id)"
+												>
+													<v-icon>
+														mdi-delete
+													</v-icon>
+												</v-btn>
+											</td>
+										</tr>
+									</tbody>
+								</template>
+							</v-simple-table>
 						</v-col>
 					</v-row>
 				</div>
 				<div v-else>
 					<h6 class="m-5">Vacio</h6>
 				</div>
-				<v-row>
-					<v-col cols="6" offset="6">
-						<v-text-field
-							v-model="filterPlaceWord"
-							size="sm"
-							placeholder="Filtrar lugar"
-							@keyup="filterPlace(filterPlaceWord)"
-						></v-text-field>
-					</v-col>
-				</v-row>
 			</v-col>
 		</v-row>
+		<v-bottom-sheet v-model="servicesSheet">
+			<v-sheet class="text-center" height="500px">
+				<PlaceServicesCRUD></PlaceServicesCRUD>
+			</v-sheet>
+		</v-bottom-sheet>
 	</v-container>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate';
-import { required, minLength } from 'vuelidate/lib/validators';
+import { required, minLength, maxLength } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import PlaceServicesForm from './PlaceServicesForm';
+import PlaceServicesCRUD from './PlaceServicesCRUD';
 
 export default {
 	name: 'Place',
+	components: { PlaceServicesForm, PlaceServicesCRUD },
 	mixins: [validationMixin],
 	data() {
 		return {
 			form: {
 				name: '',
 				rut: '',
-				breakfast: '',
-				lunch: '',
-				dinner: '',
-				lodging: '',
+				services: [],
 			},
+			servicesSheet: false,
+			selectedPlace: {},
 			errors: '',
 			filterPlaceWord: '',
 		};
@@ -212,6 +165,20 @@ export default {
 	computed: {
 		hasPlaces() {
 			return Array.isArray(this.places) && this.places.length;
+		},
+		nameErrors() {
+			const errors = [];
+			if (!this.$v.form.name.$dirty) return errors;
+			!this.$v.form.name.required && errors.push('Campo requerido');
+			!this.$v.form.name.minLength && errors.push('Minimo 3 Caracteres');
+			!this.$v.form.name.maxLength && errors.push('Maximo 100 Caracteres');
+			return errors;
+		},
+		rutErrors() {
+			const errors = [];
+			if (!this.$v.form.rut.$dirty) return errors;
+			!this.$v.form.rut.required && errors.push('Campo requerido');
+			return errors;
 		},
 		...mapGetters({
 			places: 'Place/places',
@@ -234,20 +201,9 @@ export default {
 			name: {
 				required,
 				minLength: minLength(3),
+				maxLength: maxLength(100),
 			},
 			rut: {
-				required,
-			},
-			breakfast: {
-				required,
-			},
-			lunch: {
-				required,
-			},
-			dinner: {
-				required,
-			},
-			lodging: {
 				required,
 			},
 		},
@@ -259,14 +215,7 @@ export default {
 			if (this.$v.$invalid) {
 				this.errors = true;
 			} else {
-				let tempArray = [];
-				tempArray.push(
-					this.form.breakfast,
-					this.form.lunch,
-					this.form.dinner,
-					this.form.lodging
-				);
-				this.createPlace({ name: this.form.name, rut: this.form.rut, prices: tempArray });
+				this.createPlace(this.form);
 				this.clearInputs();
 				this.$v.$reset();
 			}
@@ -275,11 +224,29 @@ export default {
 			this.form = {
 				name: '',
 				rut: '',
-				breakfast: '',
-				lunch: '',
-				dinner: '',
-				lodging: '',
+				services: [],
 			};
+			this.errors = false;
+		},
+		pushService(service) {
+			const nameExist = this.checkRepeatedServiceName(service.name);
+			if (!nameExist) {
+				this.form.services.push(service);
+			} else {
+				this.$toasted.error('No se permiten nombres duplicados');
+			}
+		},
+		removeService(targetService) {
+			this.form.services = this.form.services.filter(service => service !== targetService);
+		},
+		checkRepeatedServiceName(name) {
+			const found = this.form.services.find(service => service.name === name);
+			if (found) return true;
+			else return false;
+		},
+		manageServices(place) {
+			this.servicesSheet = true;
+			this.setPlaceForServices(place);
 		},
 		...mapActions({
 			fetchPlace: 'Place/fetchPlace',
@@ -289,6 +256,7 @@ export default {
 		...mapMutations({
 			selectPlace: 'Place/selectPlace',
 			filterPlace: 'Place/filterPlace',
+			setPlaceForServices: 'Place/setPlaceForServices',
 		}),
 	},
 };

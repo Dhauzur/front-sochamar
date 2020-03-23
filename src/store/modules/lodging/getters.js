@@ -15,7 +15,7 @@ const getters = {
 	updatingService: state => state.updatingService,
 	mirrorLodging: state => state.mirrorLodging,
 	lodgingSelect: state => state.lodgingSelect,
-	loading: state => (state.loading ? true : false),
+	loading: state => state.loading,
 	editMode: state => state.editMode,
 	lodgings: state => state.lodgings,
 	rangeDatePayments: state => state.rangeDatePayments,
@@ -23,6 +23,8 @@ const getters = {
 	countLogingsPlace: state => state.countLogingsPlace,
 	rangeDate: state => state.rangeDate,
 	periods: state => state.periods,
+	places: state => state.Places,
+	place: state => state.place,
 	periodsTable: state => {
 		var periods = [];
 		if (state.periods)
@@ -36,8 +38,8 @@ const getters = {
 		return periods;
 	},
 	placeName: state => state.Places.find(c => c.value == state.place).text,
-	places: state => state.Places,
-	place: state => state.place,
+	selectedPlace: state => state.selectedPlace,
+	servicesComboBox: state => state.servicesComboBox,
 };
 
 export default getters;

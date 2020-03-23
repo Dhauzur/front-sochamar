@@ -1,6 +1,7 @@
 import { api } from '@/config/index.js';
 import axios from 'axios';
 import router from '@/router/index.js';
+import { toastMessage } from '@/utils/toast/messages';
 
 const state = {
 	message: '',
@@ -8,6 +9,8 @@ const state = {
 	places: [],
 	filterPlaceWord: '',
 	place: {},
+	loading: false,
+	placeForService: {},
 };
 
 const getters = {
@@ -24,6 +27,8 @@ const getters = {
 			});
 		else return state.places;
 	},
+	loading: state => state.loading,
+	placeForService: state => state.placeForService,
 };
 
 const actions = {
@@ -65,25 +70,67 @@ const actions = {
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
+	async createService({ commit, dispatch }, { payload, placeId }) {
+		commit('setLoading', true);
+		try {
+			const response = await axios.post(`${api}/place/${placeId}/service`, payload);
+			const { service } = response.data;
+			commit('setMessage', toastMessage('success', 'Servicio creado'));
+			commit('addServiceToPlaceForService', service);
+			dispatch('fetchPlace');
+		} catch (e) {
+			console.log(e);
+			commit('setMessage', toastMessage('error', 'no se permiten nombres repetidos'));
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		} finally {
+			commit('setLoading', false);
+		}
+	},
+	async updateService({ commit, dispatch }, { payload, placeId }) {
+		commit('setLoading', true);
+		try {
+			const serviceId = payload._id;
+			await axios.put(`${api}/place/${placeId}/service/${serviceId}`, payload);
+			commit('setMessage', toastMessage('success', 'Servicio Actualizado'));
+			dispatch('fetchPlace');
+		} catch (e) {
+			commit('setMessage', toastMessage('error', 'error al actulizar servicio'));
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		} finally {
+			commit('setLoading', false);
+		}
+	},
+	async deleteService({ commit, dispatch }, { serviceId, placeId }) {
+		commit('setLoading', true);
+		try {
+			await axios.delete(`${api}/place/${placeId}/service/${serviceId}`);
+			commit('setMessage', toastMessage('success', 'Servicio Borrado con exito'));
+			dispatch('fetchPlace');
+		} catch (e) {
+			commit('setMessage', toastMessage('error', 'error al borrar Servicio'));
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		} finally {
+			commit('setLoading', false);
+		}
+	},
 	async fetchPlace({ commit }) {
 		commit('setPlaces', null);
-		return axios
-			.get(`${api}/place`)
-			.then(response => {
-				commit('setMessage', {
-					type: 'success',
-					text: 'Lugars descargadas',
-				});
-				commit('setPlaces', response.data.place);
-			})
-			.catch(e => {
-				commit('setPlaces', null);
-				commit('setMessage', {
-					type: 'error',
-					text: 'Error al descargar lugares',
-				});
-				if (e.message == 'Request failed with status code 401') router.push('/login');
+		try {
+			const response = await axios.get(`${api}/place`);
+			const { place } = response.data;
+			commit('setMessage', {
+				type: 'success',
+				text: 'Lugares descargados',
 			});
+			commit('setPlaces', place);
+		} catch (e) {
+			commit('setPlaces', null);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al descargar lugares',
+			});
+			if (e.message == 'Request failed with status code 401') router.push('/login');
+		}
 	},
 	async fetchOnePlace({ commit }, id) {
 		try {
@@ -104,6 +151,7 @@ const mutations = {
 	setMessage(state, value) {
 		state.message = value;
 	},
+	addServiceToPlaceForService: (state, value) => state.placeForService.services.push(value),
 	filterPlace(state, value) {
 		state.filterPlaceWord = value;
 	},
@@ -113,6 +161,9 @@ const mutations = {
 	setPlace(state, value) {
 		state.place = value;
 	},
+	setPlaceForServices(state, value) {
+		state.placeForService = value;
+	},
 	setPlaces(state, value) {
 		var places = [];
 		if (value)
@@ -120,12 +171,13 @@ const mutations = {
 				places.push({
 					id: v._id,
 					name: v.name,
-					prices: v.prices,
+					services: v.services,
 					rut: v.rut,
 				});
 			});
 		state.places = places;
 	},
+	setLoading: (state, loading) => (state.loading = loading),
 };
 
 export default {

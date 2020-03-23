@@ -127,7 +127,7 @@
 						/>
 					</v-tab-item>
 					<v-tab-item>
-						<rooms :id-place="idPlace" />
+						<rooms v-if="idPlace" :id-place="idPlace" />
 					</v-tab-item>
 				</v-tabs-items>
 			</v-col>

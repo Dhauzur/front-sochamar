@@ -168,8 +168,9 @@
 					</v-col>
 				</template>
 			</v-row>
+			<!--aqui va la tabla-->
 			<v-row>
-				<v-col v-if="prices && place" cols="12" class="overflow-auto">
+				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
 					<table>
 						<thead>
 							<tr>
@@ -183,86 +184,31 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td>ALOJAMIENTO</td>
-								<td v-if="place">
-									{{ prices.prices[3] }}
-								</td>
-								<td v-for="(p, index) in proyectionTable" :key="index">
-									<span v-if="!editMode">{{ p.service.accommodation }}</span>
+							<tr v-for="(service, index) in selectedPlace.services" :key="index">
+								<td v-text="service.name"></td>
+								<td v-text="service.price"></td>
+								<td
+									v-for="(p, proyectionIndex) in proyectionTable"
+									:key="proyectionIndex"
+								>
+									<span v-if="!editMode">{{ p.service[service.name] }}</span>
 									<input
-										v-if="editMode && p.service.accommodation !== undefined"
+										v-if="editMode && p.service[service.name] !== undefined"
 										:id="p.id + ',' + p.date"
-										v-model="p.service.accommodation"
+										v-model="p.service[service.name]"
 										type="number"
 										class="inputService"
-										name="accommodation"
-										:placeholder="p.service.accommodation"
+										:name="service.name"
+										:placeholder="p.service[service.name]"
 										@change="detectInputChange"
 									/>
 								</td>
 							</tr>
-							<tr>
-								<td>DESAYUNO</td>
-								<td v-if="place">
-									{{ prices.prices[0] }}
-								</td>
-								<td v-for="(p, index) in proyectionTable" :key="index">
-									<span v-if="!editMode">{{ p.service.breakfast }}</span>
-									<input
-										v-if="editMode && p.service.breakfast !== undefined"
-										:id="p.id + ',' + p.date"
-										v-model="p.service.breakfast"
-										type="number"
-										class="inputService"
-										name="breakfast"
-										:placeholder="p.service.breakfast"
-										@change="detectInputChange"
-									/>
-								</td>
-							</tr>
-							<tr>
-								<td>ALMUERZO</td>
-								<td v-if="place">
-									{{ prices.prices[1] }}
-								</td>
-								<td v-for="(p, index) in proyectionTable" :key="index">
-									<span v-if="!editMode">{{ p.service.lunch }}</span>
-									<input
-										v-if="editMode && p.service.lunch != undefined"
-										:id="p.id + ',' + p.date"
-										v-model="p.service.lunch"
-										type="number"
-										class="inputService"
-										name="lunch"
-										:placeholder="p.service.lunch"
-										@change="detectInputChange"
-									/>
-								</td>
-							</tr>
-							<tr>
-								<td>CENA</td>
-								<td v-if="place">
-									{{ prices.prices[2] }}
-								</td>
-								<td v-for="(p, index) in proyectionTable" :key="index">
-									<span v-if="!editMode">{{ p.service.dinner }}</span>
-									<input
-										v-if="editMode && p.service.dinner !== undefined"
-										:id="p.id + ',' + p.date"
-										v-model="p.service.dinner"
-										type="number"
-										class="inputService"
-										name="dinner"
-										:placeholder="p.service.dinner"
-										@change="detectInputChange"
-									/>
-								</td>
-							</tr>
+							<!--TOTAL-->
 							<tr v-if="place" class="borderModule">
 								<td colspan="2">TOTAL</td>
 								<td v-for="(p, index) in proyectionTable" :key="index">
-									<span v-if="finalyPrice[index] != 0">{{
+									<span v-if="finalyPrice[index] !== 0">{{
 										finalyPrice[index]
 									}}</span>
 								</td>
@@ -271,14 +217,14 @@
 					</table>
 				</v-col>
 			</v-row>
-			<v-row v-if="lodgingSelect">
+			<v-row v-if="lodgingSelect && selectedPlace">
 				<v-col cols="12" sm="4">
 					<v-select
 						id="services_select"
 						v-model="serviceSelected"
-						:items="services"
+						:items="servicesComboBox"
 						dense
-						label="Sericios"
+						label="Servicios"
 						outlined
 					>
 					</v-select>
@@ -313,9 +259,10 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 import { Timeline } from 'vue2vis';
 import moment from 'moment';
+import { generateServiceArray } from '../../utils/lodging/serviceArray';
 
 export default {
 	components: {
@@ -328,13 +275,8 @@ export default {
 		return {
 			dialogPeriods: false,
 			dialogPayments: false,
-			services: [
-				{ text: 'Todos los servicios', value: 'todos los servicios' },
-				{ text: 'Desayuno', value: 'desayuno' },
-				{ text: 'Almuerzo', value: 'almuerzo' },
-				{ text: 'Cena', value: 'cena' },
-				{ text: 'Alojamiento', value: 'alojamiento' },
-			],
+			sheet: false,
+			//Este string interactua con la comboBox de services
 			serviceSelected: 'todos los servicios',
 			options: {
 				editable: true,
@@ -363,6 +305,7 @@ export default {
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//Esta funcion hace trigger cuando estamos moviendo el lodging, nos sirve para verificar el overlay
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
 					if (this.place) {
@@ -370,6 +313,7 @@ export default {
 						else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//Esta funcion hace trigger cuando removemos un lodging de la timeline
 				onRemove: (item, callback) => {
 					if (this.lodgings.length > 1 && this.place) {
 						this.setModeEdit(false);
@@ -377,6 +321,8 @@ export default {
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//No tenemos que modificar nada mas de onAdd
+				//Cuando clickeo una parte del timeline esta función hace trigger
 				onAdd: (item, callback) => {
 					if (this.place) {
 						item.start = moment(item.start).hours(15);
@@ -385,10 +331,11 @@ export default {
 							.add(1, 'day');
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							var place = this.places.find(c => c.value == this.place).text;
-							item.content = place;
-							if (place != 'Turismo') item.service = ['[[1,1,1,1],[1,1,1,1]]'];
-							else item.service = ['[[0,0,0,0],[0,0,0,0]]'];
+							const place = this.places.find(c => c.value === this.place);
+							const generatedService = generateServiceArray(place);
+							item.content = place.text;
+							if (place != 'Turismo') item.service = [generatedService];
+							else item.service = [generatedService];
 							var timestamp = new Date().getTime().toString(16);
 							timestamp +
 								'xxxxxxxxxxxxxxxx'
@@ -402,22 +349,42 @@ export default {
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
+				//Cuando agrando o muevo un lodging esta función hace trigger
 				onMove: (item, callback) => {
 					if (this.place) {
-						var service = [];
-						var numberDays = moment(item.end).diff(
+						let service = [];
+						let numberDays = moment(item.end).diff(
 							moment(item.start).format('YYYY-MM-DD'),
 							'days'
 						);
-						var oldService = JSON.parse(item.service[0]);
-						for (var i = 0; i <= numberDays; i++)
-							service.push([
-								oldService[i] ? oldService[i][0] : 1,
-								oldService[i] ? oldService[i][1] : 1,
-								oldService[i] ? oldService[i][2] : 1,
-								oldService[i] ? oldService[i][3] : 1,
-							]);
-						var itemService = [];
+						const oldService = JSON.parse(item.service[0]);
+						//1- el contador i se esta contando la nueva cantidad de dias, recorrer el primer acceso service[i].
+						//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
+						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
+						//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
+						const servicesIndex = this.selectedPlace.services.length;
+						const generateNewServices = oldServices => {
+							if (oldServices) {
+								return oldServices.map(service => {
+									return service ? service : 1;
+								});
+							} else {
+								let defaultServices;
+								let temporalArray = [];
+								for (let i = 0; i < servicesIndex; i++) {
+									temporalArray.push(1);
+								}
+								defaultServices = temporalArray;
+								return defaultServices;
+							}
+						};
+
+						for (let i = 0; i <= numberDays; i++) {
+							const newServices = generateNewServices(oldService[i]);
+							service.push(newServices);
+						}
+
+						let itemService = [];
 						itemService.push(JSON.stringify(service));
 						item.service = itemService;
 						item.start = moment(item.start).hours(15);
@@ -433,43 +400,56 @@ export default {
 		};
 	},
 	computed: {
+		//funcion de mirrorLodginds
 		getMirrorLodging() {
 			var hola = JSON.stringify(this.lodgings);
-			if (hola == this.mirrorLodging) return false;
+			if (hola === this.mirrorLodging) return false;
 			else return true;
 		},
 		finalyPrice() {
-			var prices = [];
-			var dayPrice = 0;
+			//el fin de esta funcion, es generar un arreglo de precios totales por cada dia de nuestra proyection table
+			let prices = [];
+			let dayPrice = 0;
 			if (this.place)
 				this.proyectionTable.forEach(dailyService => {
-					dayPrice =
-						(dailyService.service.breakfast
-							? dailyService.service.breakfast * this.prices.prices[0]
-							: 0) +
-						(dailyService.service.lunch
-							? dailyService.service.lunch * this.prices.prices[1]
-							: 0) +
-						(dailyService.service.dinner
-							? dailyService.service.dinner * this.prices.prices[2]
-							: 0) +
-						(dailyService.service.accommodation
-							? dailyService.service.accommodation * this.prices.prices[3]
-							: 0);
+					//algoritmo
+					//1- tenemos dos evaluaciones, si existe un valor entonces multiplicamos cantidadUsos * precioServicio
+					//de no existir un valor asignamos 0.
+					//2- dailyService.service no tiene el precio del servicio, pero si lo podemos obtener de this.selectedPlace.Services.
+					//3- dailyService.service comparte posiciones con el arreglo de services, esto es util para realizar el calculo.
+					//4- cada dayPrice es la suma de todos los servicios * su cantidad de usos.
+					//5- para llevar a cabo este calculo, necesitamos obtener el precio de cada servicio de manera exacta.
+					//6- vamos a generar una iteracion por cada key de dailyService.service
+					//7- con la variable key obtenemos el el servicio a calcular, y con serviceIndex obtenedremos el precio de este servicio
+					//como los dos servicios comparten la misma cantidad de indices,
+
+					//iterationPrice se encarga de ir sumando el valor multiplicado de cada iteracion
+					let iterationPrice = 0;
+					Object.keys(dailyService.service).forEach((key, serviceIndex) => {
+						let servicePrice = dailyService.service[key]
+							? dailyService.service[key] *
+							  this.selectedPlace.services[serviceIndex].price
+							: 0;
+						iterationPrice = iterationPrice + servicePrice;
+					});
+					dayPrice = iterationPrice;
 					prices.push(dayPrice);
 				});
 			return prices;
 		},
+		//falta ver para que sirve
 		prices() {
 			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
 		},
+		//Esta funcion le da vida a la tabla de servicios y sus precios
+		//Nueva proyection table
 		proyectionTable() {
-			// eslint-disable-next-line no-unused-vars
-			var proyectionTable = [];
-			var daysLodging = [];
-			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
-			for (var i = 0; i <= numberDays; i++)
+			let daysLodging = [];
+			let numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
+			//Aca son creado los lodging del dia, por cada dia en nuestra proyection table
+			//daylodging se encuentra presente para guardar los numeros de servicios utilizados.
+			for (let i = 0; i <= numberDays; i++) {
 				daysLodging.push({
 					date: moment(this.rangeDate.start)
 						.add(i, 'day')
@@ -477,10 +457,13 @@ export default {
 					service: [],
 					id: null,
 				});
-
+			}
+			//En esta parte en base a los lodging existentes, daylodgings es recorrido y poblado con datos como services y la id del lodging
+			//La id del lodging solo se añade si if(this.lodgingSelect) es valido
 			this.lodgings.forEach(l => {
-				var index = 0;
-				if (!this.editMode)
+				let dayIndex = 0;
+				//Solo service es añadido
+				if (!this.editMode) {
 					daysLodging.forEach(day => {
 						if (
 							moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) &&
@@ -488,46 +471,55 @@ export default {
 						) {
 							if (
 								!this.place &&
-								this.places.find(c => c.value == l.place).text == 'Turismo'
+								this.places.find(c => c.value === l.place).text === 'Turismo'
 							) {
-								var numberPassangerMax = this.periods.get(l.group)
-									.numberPassangerMax;
-								day.service = {
-									breakfast: day.service.breakfast
-										? numberPassangerMax + day.service.breakfast
-										: numberPassangerMax,
-									lunch: day.service.lunch
-										? numberPassangerMax + day.service.lunch
-										: numberPassangerMax,
-									dinner: day.service.dinner
-										? numberPassangerMax + day.service.dinner
-										: numberPassangerMax,
-									accommodation: day.service.accommodation
-										? numberPassangerMax + day.service.accommodation
-										: numberPassangerMax,
+								//El precio iba a estar segun la cantidad de personas en turismo
+								//OMITIR ESTO MIENTRAS
+								/*var numberPassangerMax = this.periods.get(l.group)
+									.numberPassangerMax;*/
+								const reduceServicesForTourism = (acc, service) => {
+									return Object.assign(acc, {
+										[service.name]: 0,
+									});
 								};
+								//Aca podriamos definir las variables en base a nombreServicio: 1;
+								day.service = this.selectedPlace.services.reduce(
+									reduceServicesForTourism,
+									{}
+								);
 							} else {
-								var service = JSON.parse(l.service[0]);
-								day.service = {
-									breakfast: day.service.breakfast
-										? service[index][0] + day.service.breakfast
-										: service[index][0],
-									lunch: day.service.lunch
-										? service[index][1] + day.service.lunch
-										: service[index][1],
-									dinner: day.service.dinner
-										? service[index][2] + day.service.dinner
-										: service[index][2],
-									accommodation: day.service.accommodation
-										? service[index][3] + day.service.accommodation
-										: service[index][3],
+								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
+								const reduceServices = (acc, service) => {
+									return Object.assign(acc, {
+										//el problema de las sumas si este valor estaba en 1, ahora en este push deje seteado el valor en 0
+										[service.name]: 0,
+									});
 								};
+								day.service = this.selectedPlace.services.reduce(
+									reduceServices,
+									{}
+								);
+								const service = JSON.parse(l.service[0]);
+								//Algoritmo nuevo
+								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
+								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
+								//3- por cada iteracion, usamos el index de la iteracion para consultar service de esta forma: service[index][placeServicesIndex];
+								//4- si tiene el valor va ser service[index][indexService] + day.service.nombreServicio
+								//5- si no tiene valor, el valor va ser service[index][indexService]
+								Object.keys(day.service).forEach((key, serviceIndex) => {
+									day.service[key] = day.service[key]
+										? service[dayIndex][serviceIndex] + day.service[key]
+										: service[dayIndex][serviceIndex];
+								});
 							}
-							index++;
+							//index indica la cantidad de dias, nos ayuda a recorrer service
+							dayIndex++;
 						}
 					});
-				if (this.lodgingSelect)
-					if (this.editMode && this.lodgingSelect.id == l.id) {
+				}
+				//Service y la id del lodging son añadidos
+				if (this.lodgingSelect) {
+					if (this.editMode && this.lodgingSelect.id === l.id) {
 						daysLodging.forEach(day => {
 							if (
 								moment(day.date).isSameOrAfter(
@@ -535,29 +527,33 @@ export default {
 								) &&
 								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
 							) {
-								var service = JSON.parse(l.service[0]);
-								day.service = {
-									breakfast: day.service.breakfast
-										? service[index][0] + day.service.breakfast
-										: service[index][0],
-									lunch: day.service.lunch
-										? service[index][1] + day.service.lunch
-										: service[index][1],
-									dinner: day.service.dinner
-										? service[index][2] + day.service.dinner
-										: service[index][2],
-									accommodation: day.service.accommodation
-										? service[index][3] + day.service.accommodation
-										: service[index][3],
+								const service = JSON.parse(l.service[0]);
+								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
+								const reduceServices = (acc, service) => {
+									return Object.assign(acc, {
+										[service.name]: 0,
+									});
 								};
+								//Aca podriamos definir las variables en base a nombreServicio: 1;
+								day.service = this.selectedPlace.services.reduce(
+									reduceServices,
+									{}
+								);
+								Object.keys(day.service).forEach((key, serviceIndex) => {
+									day.service[key] = day.service[key]
+										? service[dayIndex][serviceIndex] + day.service[key]
+										: service[dayIndex][serviceIndex];
+								});
 								day.id = l.id;
-								index++;
+								dayIndex++;
 							}
 						});
 					}
+				}
 			});
 			return daysLodging;
 		},
+		//Complemento de la proyectionTable, esta función se encarga de crear y renderizar las columnas de dias
 		rangeDateTable() {
 			var dates = [];
 			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
@@ -573,6 +569,7 @@ export default {
 				});
 			return dates;
 		},
+		// eslint-disable-next-line vue/return-in-computed-property
 		...mapGetters({
 			periodAllPlace: 'Lodging/periodAllPlace',
 			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
@@ -588,6 +585,8 @@ export default {
 			places: 'Lodging/places',
 			rangeDate: 'Lodging/rangeDate',
 			updatingService: 'Lodging/updatingService',
+			selectedPlace: 'Lodging/selectedPlace',
+			servicesComboBox: 'Lodging/servicesComboBox',
 		}),
 	},
 	watch: {
@@ -636,16 +635,28 @@ export default {
 		setPlace(payload) {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
+			this.setSelectedPlace();
+			this.setServicesComboBox();
 			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
+		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
+		//Esta funcion se encarga de evaluar el valor y luego pasarlo a updateService, updateService es el encargado real de actualizar el valor
 		detectInputChange(payload) {
-			if (payload.target.value == '' || payload.target.value == 0) payload.target.value = 0;
-			var numberPassangerMax = this.periods.get(this.lodgingSelect.group).numberPassangerMax;
+			//Si es 0 o string, deja el value como 0
+			if (payload.target.value === '' || payload.target.value === 0) payload.target.value = 0;
+			//busca el numero de pasajeros en el lodging seleccionado
+			const numberPassangerMax = this.periods.get(this.lodgingSelect.group)
+				.numberPassangerMax;
+			//si el valor excede el numero de pasaejeros, se setea el numero de pasajeros como valor y se levanta una notificacion toast
 			if (payload.target.value > numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
 				payload.target.value = numberPassangerMax;
 			}
-			if (payload.target.value < 0) payload.target.value = numberPassangerMax;
+			//si el valor es menor a 0, se setea el numero de pasajeros como valor
+			if (payload.target.value < 0) {
+				payload.target.value = numberPassangerMax;
+			}
+			//se pasa el valor a updateService, esta funcion se encarga de actualizar el valor en pantalla
 			this.updateService(payload.target);
 		},
 		enableEdit(payload) {
@@ -682,6 +693,8 @@ export default {
 			setPlaceLodging: 'Lodging/setPlaceLodging',
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
+			setSelectedPlace: 'Lodging/setSelectedPlace',
+			setServicesComboBox: 'Lodging/setServicesComboBox',
 		}),
 	},
 };
@@ -718,7 +731,7 @@ export default {
 
 .vis-time-axis .vis-grid.vis-saturday,
 .vis-time-axis .vis-grid.vis-sunday {
-	background: #ffffff7a !important;
+	background-color: #9090906e !important;
 	border: none !important;
 }
 
