@@ -154,7 +154,7 @@
 				</v-col>
 				<template v-for="(p, index) in places" v-else>
 					<v-col v-if="p.value" :key="index" class="timelineContent " cols="12">
-						<h4 class="mb-2">{{ p.text }}{{ periods }}</h4>
+						<h4 class="mb-2">{{ p.text }}</h4>
 						<timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
 							:events="['rangechanged', 'click', 'doubleClick']"
@@ -360,14 +360,11 @@ export default {
 							'days'
 						);
 						const oldService = JSON.parse(item.service[0]);
-
-						//Algoritmo
 						//1- el contador i se esta contando la nueva cantidad de dias, recorrer el primer acceso service[i].
 						//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
 						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
 						//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
 						const servicesIndex = this.selectedPlace.services.length;
-
 						const generateNewServices = oldServices => {
 							if (oldServices) {
 								return oldServices.map(service => {
@@ -736,7 +733,7 @@ export default {
 
 .vis-time-axis .vis-grid.vis-saturday,
 .vis-time-axis .vis-grid.vis-sunday {
-	background: #ffffff7a !important;
+	background-color: #9090906e !important;
 	border: none !important;
 }
 
