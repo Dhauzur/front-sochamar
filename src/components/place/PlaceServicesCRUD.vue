@@ -4,9 +4,9 @@
 			<template v-slot:top>
 				<v-row>
 					<v-col>
-						<p v-text="tableTitle"></p>
+						<p class="text-left" v-text="tableTitle"></p>
 					</v-col>
-					<v-col>
+					<v-col class="d-flex flex-row-reverse">
 						<v-dialog v-model="dialog" max-width="500px">
 							<template v-slot:activator="{ on }">
 								<v-btn color="primary" dark class="mb-2" v-on="on"
