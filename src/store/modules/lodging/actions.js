@@ -77,7 +77,7 @@ const actions = {
 	 */
 	async fetchPeriods({ commit }, placeId) {
 		try {
-			const response = await axios.get(`${api}/periods/${placeId}`);
+			const response = await axios.get(`${api}/periods/${placeId ? placeId : null}`);
 			const { periods } = response.data;
 			commit('setPeriods', periods);
 			commit('setMessage', {
