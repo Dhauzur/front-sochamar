@@ -25,6 +25,19 @@ const getters = {
 	periods: state => state.periods,
 	places: state => state.Places,
 	place: state => state.place,
+	periodsTable: state => {
+		var periods = [];
+		if (state.periods)
+			state.periods.forEach(v => {
+				periods.push({
+					id: v.id,
+					name: v.content,
+					numberPassangerMax: v.numberPassangerMax,
+				});
+			});
+		return periods;
+	},
+	placeName: state => state.Places.find(c => c.value == state.place).text,
 	selectedPlace: state => state.selectedPlace,
 	servicesComboBox: state => state.servicesComboBox,
 };
