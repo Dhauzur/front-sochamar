@@ -195,7 +195,8 @@ export default {
 		},
 		items() {
 			if (this.lodgingSelect.persons) {
-				return this.lodgingSelect.persons.map(person => ({
+				return this.lodgingSelect.persons.map((person, index) => ({
+					index,
 					id: person.id,
 					group: person.group,
 					start: person.dateStart,
@@ -207,11 +208,17 @@ export default {
 		},
 		options() {
 			return {
+				editable: true,
 				start: moment(),
 				end: moment().add(14, 'day'),
-				editable: false,
 				zoomMin: 1000 * 60 * 60 * 24 * 7,
 				zoomMax: 1000 * 60 * 60 * 24 * 30,
+				onRemove: item => {
+					this.removeLodgingPersons(item.index);
+					this.setBottomSheet({ action: false, lodging: null });
+					this.setBottomSheet({ action: true, lodging: this.lodgingSelect.id });
+					this.saveLodgings();
+				},
 			};
 		},
 		personFormatted() {
