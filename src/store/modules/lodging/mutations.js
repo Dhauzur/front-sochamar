@@ -118,7 +118,7 @@ const mutations = {
 			//este forEach se encarga de recorrer todos los valores actuales de ese dia
 			//de ser null, el valor de ese service queda en 0;
 			service[i].forEach((singleService, index) => {
-				if (singleService == null) service[i][index] = 0;
+				if (singleService.quantity == null) service[i][index].quantity = 0;
 			});
 			//algoritmo
 			//1- si seleccionamos un servicio, buscar el index de este y con esto tendriamos la posicion de service para alterar su valor
@@ -126,19 +126,18 @@ const mutations = {
 			// y con esto podriamos alterar todos los valores
 			if (serviceSelected === 'todos los servicios') {
 				service[i].forEach((singleService, index) => {
-					service[i][index] = singleService - 1;
+					console.log(singleService.name);
+					service[i][index].quantity = singleService.quantity - 1;
 				});
 			} else {
-				const foundIndex = findServiceIndexByName(
-					serviceSelected,
-					state.selectedPlace.services
-				);
-				service[i][foundIndex] = service[i][foundIndex] - 1;
+				const foundIndex = findServiceIndexByName(serviceSelected, service[i]);
+				console.log(service[i][foundIndex]);
+				service[i][foundIndex].quantity = service[i][foundIndex].quantity - 1;
 			}
 
 			//si el service fuera 0 y entra en esta funcion, este forEach esta evitando que registre valores negativos
 			service[i].forEach((singleService, index) => {
-				if (singleService < 0) service[i][index] = 0;
+				if (singleService.quantity < 0) service[i][index].quantity = 0;
 			});
 		}
 		tempLodging.service[0] = JSON.stringify(service);
@@ -155,22 +154,19 @@ const mutations = {
 		);
 		for (let i = 0; i <= numberDays; i++) {
 			service[i].forEach((singleService, index) => {
-				if (singleService == null) service[i][index] = 0;
-				if (singleService >= numberPassangerMax) service[i][index] = 0;
+				if (singleService.quantity == null) service[i][index].quantity = 0;
+				if (singleService.quantity >= numberPassangerMax) service[i][index].quantity = 0;
 			});
 			//Algoritmo
 			//1- si el servicio seleccionado es 'todos los servicios', entonces procedemos a actualizar el valor de todos los servicios
 			//2- en caso contrario, es un servicio seleccionado en especifico y en base a su nombre procedemos a buscar el index a modificar
 			if (serviceSelected === 'todos los servicios') {
 				service[i].forEach((singleService, index) => {
-					service[i][index] = singleService + 1;
+					service[i][index].quantity = singleService.quantity + 1;
 				});
 			} else {
-				const foundIndex = findServiceIndexByName(
-					serviceSelected,
-					state.selectedPlace.services
-				);
-				service[i][foundIndex] = service[i][foundIndex] + 1;
+				const foundIndex = findServiceIndexByName(serviceSelected, service[i]);
+				service[i][foundIndex].quantity = service[i][foundIndex].quantity + 1;
 			}
 		}
 		tempLodging.service[0] = JSON.stringify(service);
