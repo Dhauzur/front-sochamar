@@ -262,7 +262,8 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import { Timeline } from 'vue2vis';
 import moment from 'moment';
-import { generateServiceArray } from '../../utils/lodging/serviceArray';
+import { generateServiceArray, generateSingleServiceArray } from '../../utils/lodging/serviceArray';
+import { findServiceIndexByName } from '../../utils/lodging/findServiceIndex';
 
 export default {
 	components: {
@@ -322,7 +323,7 @@ export default {
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				//No tenemos que modificar nada mas de onAdd
-				//Cuando clickeo una parte del timeline esta función hace trigger
+				//Cuando clickeo una parte del timeline esta función hace trigger y se encarga de crear un lodging, es similar a createOnelodging de la store
 				onAdd: (item, callback) => {
 					if (this.place) {
 						item.start = moment(item.start).hours(15);
@@ -336,6 +337,7 @@ export default {
 							item.content = place.text;
 							if (place != 'Turismo') item.service = [generatedService];
 							else item.service = [generatedService];
+							console.log('este es el service de onAdd: ' + item.service);
 							var timestamp = new Date().getTime().toString(16);
 							timestamp +
 								'xxxxxxxxxxxxxxxx'
@@ -360,22 +362,17 @@ export default {
 						const oldService = JSON.parse(item.service[0]);
 						//1- el contador i se esta contando la nueva cantidad de dias, recorrer el primer acceso service[i].
 						//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
-						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
+						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 0.
 						//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
-						const servicesIndex = this.selectedPlace.services.length;
 						const generateNewServices = oldServices => {
 							if (oldServices) {
 								return oldServices.map(service => {
-									return service ? service : 1;
+									//Esta parte va afectar el añadir un servicio
+									service.quantity = service.quantity ? service.quantity : 0;
+									return service;
 								});
 							} else {
-								let defaultServices;
-								let temporalArray = [];
-								for (let i = 0; i < servicesIndex; i++) {
-									temporalArray.push(1);
-								}
-								defaultServices = temporalArray;
-								return defaultServices;
+								return generateSingleServiceArray(this.selectedPlace);
 							}
 						};
 
@@ -425,6 +422,7 @@ export default {
 
 					//iterationPrice se encarga de ir sumando el valor multiplicado de cada iteracion
 					let iterationPrice = 0;
+					//Esto va cambiar
 					Object.keys(dailyService.service).forEach((key, serviceIndex) => {
 						let servicePrice = dailyService.service[key]
 							? dailyService.service[key] *
@@ -476,8 +474,10 @@ export default {
 								//El precio iba a estar segun la cantidad de personas en turismo
 								//OMITIR ESTO MIENTRAS
 								/*var numberPassangerMax = this.periods.get(l.group)
-									.numberPassangerMax;*/
-								const reduceServicesForTourism = (acc, service) => {
+									.numberPassangerMax;*/ const reduceServicesForTourism = (
+									acc,
+									service
+								) => {
 									return Object.assign(acc, {
 										[service.name]: 0,
 									});
@@ -506,10 +506,15 @@ export default {
 								//3- por cada iteracion, usamos el index de la iteracion para consultar service de esta forma: service[index][placeServicesIndex];
 								//4- si tiene el valor va ser service[index][indexService] + day.service.nombreServicio
 								//5- si no tiene valor, el valor va ser service[index][indexService]
-								Object.keys(day.service).forEach((key, serviceIndex) => {
+								Object.keys(day.service).forEach(key => {
+									//ahora va ser necesario encontrar el index del objeto en el arreglo
+									const serviceIndex = service[dayIndex].findIndex(
+										s => s.name === key
+									);
 									day.service[key] = day.service[key]
-										? service[dayIndex][serviceIndex] + day.service[key]
-										: service[dayIndex][serviceIndex];
+										? service[dayIndex][serviceIndex].quantity +
+										  day.service[key]
+										: service[dayIndex][serviceIndex].quantity;
 								});
 							}
 							//index indica la cantidad de dias, nos ayuda a recorrer service
@@ -539,10 +544,17 @@ export default {
 									reduceServices,
 									{}
 								);
-								Object.keys(day.service).forEach((key, serviceIndex) => {
+								Object.keys(day.service).forEach(key => {
+									//ahora va ser necesario encontrar el index del objeto en el arreglo
+
+									const serviceIndex = findServiceIndexByName(
+										key,
+										service[dayIndex]
+									);
 									day.service[key] = day.service[key]
-										? service[dayIndex][serviceIndex] + day.service[key]
-										: service[dayIndex][serviceIndex];
+										? service[dayIndex][serviceIndex].quantity +
+										  day.service[key]
+										: service[dayIndex][serviceIndex].quantity;
 								});
 								day.id = l.id;
 								dayIndex++;

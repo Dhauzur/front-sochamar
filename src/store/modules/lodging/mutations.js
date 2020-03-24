@@ -285,12 +285,9 @@ const mutations = {
 
 							//la cantidad de service y placeServices son iguales, si encontramos el index de placeServices
 							//sabremos que posicion de service modificar
-							const foundIndex = findServiceIndexByName(
-								value.name,
-								state.selectedPlace.services
-							);
+							const serviceIndex = findServiceIndexByName(value.name, service[i]);
 							//En base al index encontrado y el dia, procedemos a actualizar el valor
-							service[i][foundIndex] = parseInt(value.value);
+							service[i][serviceIndex].quantity = parseInt(value.value);
 							newService.push(JSON.stringify(service));
 							state.editMode = false;
 							//El lodging es modificado y el nuevo servicio queda registado
