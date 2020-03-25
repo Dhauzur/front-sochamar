@@ -34,11 +34,6 @@
 						</v-dialog>
 						<!-- steppers -->
 						<v-dialog v-model="dialogAddPerson" max-width="440">
-							<template v-slot:activator="{ on }">
-								<v-btn small color="accent" class="ma-2" v-on="on">
-									Agregar persona
-								</v-btn>
-							</template>
 							<v-stepper v-model="stepper" class="elevation-12">
 								<v-stepper-header>
 									<v-stepper-step :complete="stepper > 1" step="1">
@@ -83,7 +78,6 @@
 											v-model="datesPersons"
 											no-title
 											range
-											:first-day-of-week="1"
 											locale="es"
 											:show-current="false"
 											scrollable
@@ -198,6 +192,7 @@ export default {
 				return this.lodgingSelect.persons.map((person, index) => ({
 					index,
 					id: person.id,
+					idPerson: person.idPerson,
 					group: person.group,
 					start: person.dateStart,
 					end: person.dateEnd,
@@ -209,8 +204,8 @@ export default {
 		options() {
 			return {
 				editable: true,
-				start: moment(),
-				end: moment().add(14, 'day'),
+				start: moment(this.lodgingSelect.start),
+				end: moment(this.lodgingSelect.end),
 				zoomMin: 1000 * 60 * 60 * 24 * 7,
 				zoomMax: 1000 * 60 * 60 * 24 * 30,
 				onRemove: item => {
@@ -218,6 +213,30 @@ export default {
 					this.setBottomSheet({ action: false, lodging: null });
 					this.setBottomSheet({ action: true, lodging: this.lodgingSelect.id });
 					this.saveLodgings();
+				},
+				onAdd: () => {
+					this.openDialogPerson();
+				},
+				onMove: (item, callback) => {
+					if (
+						this.verifyOverlay({
+							id: item.idPerson,
+							dateStart: item.start,
+							dateEnd: item.end,
+							timestamp: item.id,
+						})
+					) {
+						this.updatePersonsLodging(item);
+						callback(item);
+						this.setBottomSheet({ action: false, lodging: null });
+						this.setBottomSheet({ action: true, lodging: this.lodgingSelect.id });
+						this.saveLodgings();
+					} else {
+						this.$toasted.show(
+							'Ya existe el pasajero para el rango de fecha selecionado',
+							{ type: 'error' }
+						);
+					}
 				},
 			};
 		},
@@ -253,6 +272,9 @@ export default {
 		setTimeout(() => (this.componentReady = true), 800);
 	},
 	methods: {
+		openDialogPerson() {
+			this.dialogAddPerson = true;
+		},
 		closeDialogPerson() {
 			this.personSelected = null;
 			this.dialogAddPerson = false;
@@ -347,9 +369,10 @@ export default {
 				: this.dateStart;
 			const dateEnd = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
 			const group = this.select;
-			this.verifyOverlay() === 'OK'
-				? this.updateLodgingPersons({
-						id,
+			this.verifyOverlay({ id, dateStart, dateEnd })
+				? this.addPersonsLodging({
+						id: Date.now(),
+						idPerson: id,
 						group,
 						name,
 						dateStart,
@@ -365,33 +388,29 @@ export default {
 			this.setBottomSheet({ action: true, lodging: oldIdLodgingSelect });
 		},
 		/**
-		 * check if date of person is already taken
+		 * Check date of person is already taken
+		 * @param {Object} element to verify overlay
+		 * @param {String} element.id id person
+		 * @param {String} element.dateStart dateStart person
+		 * @param {String} element.dateEnd dateEnd person
 		 */
-		verifyOverlay() {
-			const id = this.personSelected._id;
-			const start = this.setDateStartPerson();
-			const end = this.setDateEndPerson();
-			let verificate = null;
+		verifyOverlay(element) {
+			let verificate = true;
 			let temp = this.lodgingPersons.filter(person => {
-				return person.id === id;
+				return person.idPerson === element.id && person.id !== element.timestamp;
 			});
 
-			if (temp.length > 0) {
+			temp.length &&
 				temp.map(item => {
-					if (
-						(moment(start).isBefore(moment(item.dateStart)) &&
-							moment(end).isBefore(moment(item.dateStart))) ||
-						(moment(start).isAfter(moment(item.dateEnd)) &&
-							moment(end).isAfter(moment(item.dateEnd)))
-					) {
-						verificate = 'OK';
-					} else {
-						verificate = 'No puede agregar en esa fecha';
+					let validation =
+						(moment(element.dateStart).isBefore(moment(item.dateStart)) &&
+							moment(element.dateEnd).isBefore(moment(item.dateStart))) ||
+						(moment(element.dateStart).isAfter(moment(item.dateEnd)) &&
+							moment(element.dateEnd).isAfter(moment(item.dateEnd)));
+					if (!validation) {
+						verificate = false;
 					}
 				});
-			} else {
-				verificate = 'OK';
-			}
 
 			return verificate;
 		},
@@ -404,7 +423,8 @@ export default {
 			setLodgingSelect: 'Lodging/setLodgingSelect',
 			setBottomSheet: 'Lodging/setBottomSheet',
 			sendDateChange: 'Lodging/dateChange',
-			updateLodgingPersons: 'Lodging/updateLodgingPersons',
+			addPersonsLodging: 'Lodging/addPersonsLodging',
+			updatePersonsLodging: 'Lodging/updatePersonsLodging',
 			removeLodgingPersons: 'Lodging/removeLodgingPersons',
 		}),
 	},
