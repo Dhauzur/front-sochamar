@@ -201,8 +201,8 @@ export default {
 					id: person.id,
 					idPerson: person.idPerson,
 					group: person.group,
-					start: person.dateStart,
-					end: person.dateEnd,
+					start: moment(person.dateStart),
+					end: moment(person.dateEnd),
 					content: person.name,
 				}));
 			}
@@ -227,10 +227,10 @@ export default {
 				onMove: (item, callback) => {
 					// range into lodging
 					let range =
-						moment(item.start).isAfter(
+						moment(item.start).isSameOrAfter(
 							moment(this.lodgingSelect.start).format('YYYY-MM-DD')
 						) &&
-						moment(item.end).isBefore(
+						moment(item.end).isSameOrBefore(
 							moment(this.lodgingSelect.end).format('YYYY-MM-DD')
 						);
 
@@ -396,8 +396,8 @@ export default {
 						idPerson: id,
 						group,
 						name,
-						dateStart,
-						dateEnd,
+						dateStart: moment(dateStart),
+						dateEnd: moment(dateEnd),
 				  })
 				: this.$toasted.show(`Ya existe un pasajero para el rango de fecha selecionado`, {
 						type: 'error',
