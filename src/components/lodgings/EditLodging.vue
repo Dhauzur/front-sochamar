@@ -211,8 +211,8 @@ export default {
 		options() {
 			return {
 				editable: true,
-				start: moment(),
-				end: moment().add(14, 'day'),
+				start: moment(this.lodgingSelect.start),
+				end: moment(this.lodgingSelect.end),
 				zoomMin: 1000 * 60 * 60 * 24 * 7,
 				zoomMax: 1000 * 60 * 60 * 24 * 30,
 				onRemove: item => {
@@ -227,10 +227,10 @@ export default {
 				onMove: (item, callback) => {
 					// range into lodging
 					let range =
-						moment(item.start).isSameOrAfter(
+						moment(item.start).isAfter(
 							moment(this.lodgingSelect.start).format('YYYY-MM-DD')
 						) &&
-						moment(item.end).isSameOrBefore(
+						moment(item.end).isBefore(
 							moment(this.lodgingSelect.end).format('YYYY-MM-DD')
 						);
 
