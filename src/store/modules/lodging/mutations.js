@@ -1,7 +1,8 @@
 import { DataSet } from 'vue2vis';
 import moment from 'moment';
 import { findServiceIndexByName } from '@/utils/lodging/findServiceIndex';
-import { generateServiceArray } from '@/utils/lodging/serviceArray';
+import { generateDaysArray } from '@/utils/lodging/daysArray';
+import { generateSingleDay } from '../../../utils/lodging/daysArray';
 
 const mutations = {
 	setBottomSheet(state, value) {
@@ -51,7 +52,9 @@ const mutations = {
 		state.lodgings = tempLodgings;
 		state.mirrorLodging = JSON.stringify(state.lodgings);
 	},
+	//Esto pasa al editar el lodging, comentar todo mientras pasamos a la nueva estructura
 	dateChange(state, value) {
+		console.log('trigger de detectChange');
 		let tempLodging = state.lodgingSelect;
 		let tempLodgings = state.lodgings;
 		state.lodgings = new DataSet([]);
@@ -60,48 +63,40 @@ const mutations = {
 			start: moment(value.dateStart).hours(15),
 			end: moment(value.dateEnd).hours(12),
 		});
-		let service = [];
+
+		let newDays = [];
 		let numberDays = moment(value.dateEnd).diff(
 			moment(value.dateStart).format('YYYY-MM-DD'),
 			'days'
 		);
-		let oldService = JSON.parse(state.lodgingSelect.service[0]);
+		const oldDays = state.lodgingSelect.days;
 		//Algoritmo
 		//1- el contador i esta contando la nueva cantidad de dias, recorre el primer acceso service[i].
 		//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
 		//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
 		//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
-		const servicesIndex = state.selectedPlace.services.length;
-		const generateNewServices = oldServices => {
-			if (oldServices) {
-				return oldServices.map(service => {
-					return service ? service : 1;
-				});
+		const generateNewDays = oldDay => {
+			if (oldDay) {
+				//por evaluar si debemos controlar el valor quantity con un ternario
+				//este valor ya esta definido antes de llegar a este codigo
+				return oldDay;
 			} else {
-				let defaultServices;
-				let temporaryArray = [];
-				for (let i = 0; i < servicesIndex; i++) {
-					temporaryArray.push(1);
-				}
-				defaultServices = temporaryArray;
-				return defaultServices;
+				return generateSingleDay(this.selectedPlace);
 			}
 		};
-
+		//TRANSPORTAR LA MISMA LOGICA DE ONMOVE ACA
 		for (let i = 0; i <= numberDays; i++) {
-			const newServices = generateNewServices(oldService[i]);
-			service.push(newServices);
+			const newDay = generateNewDays(oldDays[i]);
+			newDays.push(newDay);
 		}
 
-		let itemService = [];
-		itemService.push(JSON.stringify(service));
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
-			service: itemService,
+			days: newDays,
 		});
 		tempLodging.start = moment(value.dateStart).hours(15);
 		tempLodging.end = moment(value.dateEnd).hours(12);
-		tempLodging.service = itemService;
+		tempLodging.daysservice = newDays;
 		state.lodgingSelect = tempLodging;
 		state.lodgings = tempLodgings;
 	},
@@ -118,7 +113,7 @@ const mutations = {
 			//este forEach se encarga de recorrer todos los valores actuales de ese dia
 			//de ser null, el valor de ese service queda en 0;
 			service[i].forEach((singleService, index) => {
-				if (singleService.quantity == null) service[i][index].quantity = 0;
+				if (singleService.quantity == null) service[i][index].quantity = 8;
 			});
 			//algoritmo
 			//1- si seleccionamos un servicio, buscar el index de este y con esto tendriamos la posicion de service para alterar su valor
@@ -126,12 +121,10 @@ const mutations = {
 			// y con esto podriamos alterar todos los valores
 			if (serviceSelected === 'todos los servicios') {
 				service[i].forEach((singleService, index) => {
-					console.log(singleService.name);
 					service[i][index].quantity = singleService.quantity - 1;
 				});
 			} else {
 				const foundIndex = findServiceIndexByName(serviceSelected, service[i]);
-				console.log(service[i][foundIndex]);
 				service[i][foundIndex].quantity = service[i][foundIndex].quantity - 1;
 			}
 
@@ -153,6 +146,14 @@ const mutations = {
 			'days'
 		);
 		for (let i = 0; i <= numberDays; i++) {
+			//Este foreach esta evaluando si algun valor excede o es igual a la cantidad maxima de pasajeros
+			// va ser necesario volver a hacer esta logica, esta interfiriendo gravemente con otros services al momento de añadir en uno
+			// ejemplo: almuerzo: 0 once: 1 desayuno 0, añado un uso a desayuno entonces este foreach es ejecutado
+			// al ejectuarse va evaluar todos los servicios y si encuentra uno igual o mayor a la cantidad de pasajeros, lo va volver 0
+			// entonces nuestro servicio once o cualquier servicio externo a desayuno va cambiar su valor a 0
+
+			//Tal vez este foreach es mejor dejarlo para el caso todos los 'servicios'
+			//para evaluar un servicio especifico, copiar las condiciones del foreach y aprovechar la busqueda de index que tenemos en el else
 			service[i].forEach((singleService, index) => {
 				if (singleService.quantity == null) service[i][index].quantity = 0;
 				if (singleService.quantity >= numberPassangerMax) service[i][index].quantity = 0;
@@ -188,7 +189,7 @@ const mutations = {
 		state.editMode = false;
 		let place = state.Places.find(c => c.value === state.place);
 		let verificate = true;
-		const generatedService = generateServiceArray(place);
+		const generatedDays = generateDaysArray(place);
 		state.lodgings.forEach(lod => {
 			if (
 				lod.group == state.periods.getIds()[0] &&
@@ -208,7 +209,7 @@ const mutations = {
 						.hours(12)
 						.add(1, 'day'),
 					content: state.placeName,
-					service: [generatedService],
+					days: generatedDays,
 					place: state.place,
 				});
 			} else {
@@ -219,7 +220,7 @@ const mutations = {
 						.hours(12)
 						.add(1, 'day'),
 					content: state.placeName,
-					service: [generatedService],
+					days: generatedDays,
 					place: state.place,
 				});
 			}
@@ -347,7 +348,7 @@ const mutations = {
 							start: moment(lodging.start).hours(15),
 							end: moment(lodging.end).hours(12),
 							content: place.text,
-							service: lodging.service,
+							days: lodging.days,
 							place: lodging.place,
 							persons: lodging.persons,
 							mountTotal: lodging.mountTotal,
@@ -359,7 +360,7 @@ const mutations = {
 						start: moment(lodging.start).hours(15),
 						end: moment(lodging.end).hours(12),
 						content: place.text,
-						service: lodging.service,
+						days: lodging.days,
 						place: lodging.place,
 						persons: lodging.persons,
 						mountTotal: lodging.mountTotal,
@@ -381,6 +382,7 @@ const mutations = {
 	setSelectedPlace(state) {
 		state.selectedPlace = state.Places.find(place => place.value === state.place);
 	},
+	//esto nos va servir en las cards
 	setServicesComboBox(state) {
 		const allServicesObject = {
 			text: 'todos los servicios',

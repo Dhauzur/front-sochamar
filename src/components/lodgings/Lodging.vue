@@ -169,7 +169,7 @@
 				</template>
 			</v-row>
 			<!--aqui va la tabla-->
-			<v-row>
+			<!--<v-row>
 				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
 					<table>
 						<thead>
@@ -204,7 +204,7 @@
 									/>
 								</td>
 							</tr>
-							<!--TOTAL-->
+							&lt;!&ndash;TOTAL&ndash;&gt;
 							<tr v-if="place" class="borderModule">
 								<td colspan="2">TOTAL</td>
 								<td v-for="(p, index) in proyectionTable" :key="index">
@@ -216,8 +216,9 @@
 						</tbody>
 					</table>
 				</v-col>
-			</v-row>
-			<v-row v-if="lodgingSelect && selectedPlace">
+			</v-row>-->
+			<!--aqui van los botones de proyection-->
+			<!--<v-row v-if="lodgingSelect && selectedPlace">
 				<v-col cols="12" sm="4">
 					<v-select
 						id="services_select"
@@ -239,7 +240,7 @@
 						-1 {{ serviceSelected }}
 					</v-btn>
 				</v-col>
-			</v-row>
+			</v-row>-->
 			<v-row justify="center">
 				<v-col>
 					<v-bottom-sheet
@@ -262,7 +263,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import { Timeline } from 'vue2vis';
 import moment from 'moment';
-import { generateServiceArray, generateSingleServiceArray } from '../../utils/lodging/serviceArray';
+import { generateDaysArray, generateSingleDay } from '../../utils/lodging/daysArray';
 import { findServiceIndexByName } from '../../utils/lodging/findServiceIndex';
 
 export default {
@@ -333,12 +334,11 @@ export default {
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
 							const place = this.places.find(c => c.value === this.place);
-							const generatedService = generateServiceArray(place);
+							const generatedDays = generateDaysArray(place);
 							item.content = place.text;
-							if (place != 'Turismo') item.service = [generatedService];
-							else item.service = [generatedService];
-							console.log('este es el service de onAdd: ' + item.service);
-							var timestamp = new Date().getTime().toString(16);
+							if (place != 'Turismo') item.days = generatedDays;
+							else item.days = generatedDays;
+							let timestamp = new Date().getTime().toString(16);
 							timestamp +
 								'xxxxxxxxxxxxxxxx'
 									.replace(/[x]/g, function() {
@@ -352,38 +352,35 @@ export default {
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				//Cuando agrando o muevo un lodging esta función hace trigger
+				//Esta funcion va tener que cambiar harto, por el momento la dejo comentada
+				// eslint-disable-next-line no-unused-vars
 				onMove: (item, callback) => {
 					if (this.place) {
-						let service = [];
+						let newDays = [];
 						let numberDays = moment(item.end).diff(
 							moment(item.start).format('YYYY-MM-DD'),
 							'days'
 						);
-						const oldService = JSON.parse(item.service[0]);
-						//1- el contador i se esta contando la nueva cantidad de dias, recorrer el primer acceso service[i].
-						//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
-						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 0.
-						//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
-						const generateNewServices = oldServices => {
-							if (oldServices) {
-								return oldServices.map(service => {
-									//Esta parte va afectar el añadir un servicio
-									service.quantity = service.quantity ? service.quantity : 0;
-									return service;
-								});
+						const oldDays = item.days;
+						//1- el contador i se esta contando la nueva cantidad de dias, esta encargado de recorrer nuestro arreglo de days
+						//3- entonces, por cada dia se va pushear un objeto days o se va conservar el existente.
+						//4- Si existe algo en la posicion entonces lo retornamos;
+						//5- si no existe el dia en la posicion, generamos un dia nuevo para esa posicion con generateSingleDay
+						const generateNewDays = oldDay => {
+							if (oldDay) {
+								//por evaluar si debemos controlar el valor quantity con un ternario
+								//este valor ya esta definido antes de llegar a este codigo
+								return oldDay;
 							} else {
-								return generateSingleServiceArray(this.selectedPlace);
+								return generateSingleDay(this.selectedPlace);
 							}
 						};
 
 						for (let i = 0; i <= numberDays; i++) {
-							const newServices = generateNewServices(oldService[i]);
-							service.push(newServices);
+							const newDay = generateNewDays(oldDays[i]);
+							newDays.push(newDay);
 						}
-
-						let itemService = [];
-						itemService.push(JSON.stringify(service));
-						item.service = itemService;
+						item.days = newDays;
 						item.start = moment(item.start).hours(15);
 						item.end = moment(item.end).hours(12);
 						if (this.verifyOverlay(item)) {
@@ -423,10 +420,11 @@ export default {
 					//iterationPrice se encarga de ir sumando el valor multiplicado de cada iteracion
 					let iterationPrice = 0;
 					//Esto va cambiar
-					Object.keys(dailyService.service).forEach((key, serviceIndex) => {
+					//Algo muy imoportante, dailyService no cuenta con los valores del service
+					// pero esto lo podriamos arreglar añadiendo otra variable tipo servicesPrices con reduce y crear {nombreServicio: precio}
+					Object.keys(dailyService.service).forEach(key => {
 						let servicePrice = dailyService.service[key]
-							? dailyService.service[key] *
-							  this.selectedPlace.services[serviceIndex].price
+							? dailyService.service[key] * dailyService.servicesPrices[key]
 							: 0;
 						iterationPrice = iterationPrice + servicePrice;
 					});
@@ -500,6 +498,16 @@ export default {
 									{}
 								);
 								const service = JSON.parse(l.service[0]);
+								const reduceServicesPrice = (acc, service) => {
+									return Object.assign(acc, {
+										[service.name]: service.price,
+									});
+								};
+								//Esto tal vez igual nos puede ayudar al momento de mostrar valores borrados
+								day.servicesPrices = service[dayIndex].reduce(
+									reduceServicesPrice,
+									{}
+								);
 								//Algoritmo nuevo
 								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
 								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
@@ -542,6 +550,15 @@ export default {
 								//Aca podriamos definir las variables en base a nombreServicio: 1;
 								day.service = this.selectedPlace.services.reduce(
 									reduceServices,
+									{}
+								);
+								const reduceServicesPrice = (acc, service) => {
+									return Object.assign(acc, {
+										[service.name]: service.price,
+									});
+								};
+								day.servicesPrices = service[dayIndex].reduce(
+									reduceServicesPrice,
 									{}
 								);
 								Object.keys(day.service).forEach(key => {
