@@ -112,12 +112,6 @@
 								</v-stepper-items>
 							</v-stepper>
 						</v-dialog>
-						<v-overlay v-if="!items.length" :value="overlay" absolute :opacity="0.8">
-							Doble click para agregar persona
-							<v-btn icon @click="overlay = false">
-								<v-icon>mdi-close</v-icon>
-							</v-btn>
-						</v-overlay>
 						<timeline
 							v-if="componentReady"
 							id="timelinePeople"
@@ -125,6 +119,15 @@
 							:groups="groups"
 							:options="options"
 						/>
+						<v-overlay v-if="!items.length" :value="overlay" absolute :opacity="0.8">
+							Doble click para agregar persona
+							<v-btn icon @click="overlay = false">
+								<v-icon>mdi-close</v-icon>
+							</v-btn>
+						</v-overlay>
+						<span v-else class="caption text--secondary"
+							>Doble click para agregar persona</span
+						>
 					</v-tab-item>
 					<v-tab-item>
 						<rooms v-if="idPlace" :id-place="idPlace" />

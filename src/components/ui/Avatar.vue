@@ -1,8 +1,8 @@
 <template>
 	<v-avatar :color="randomColors">
 		<img v-if="Boolean(url)" :src="url" alt="avatar" />
-		<span v-else class="white--text headline">
-			{{ initials.toUpperCase() }}
+		<span v-else class="white--text headline text-uppercase">
+			{{ initials }}
 		</span>
 		<v-progress-circular
 			v-if="loading"
