@@ -2,7 +2,7 @@
 	<v-avatar :color="randomColors">
 		<img v-if="Boolean(url)" :src="url" alt="avatar" />
 		<span v-else class="white--text headline">
-			{{ initials }}
+			{{ initials.toUpperCase() }}
 		</span>
 		<v-progress-circular
 			v-if="loading"

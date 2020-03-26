@@ -112,6 +112,12 @@
 								</v-stepper-items>
 							</v-stepper>
 						</v-dialog>
+						<v-overlay v-if="!items.length" :value="overlay" absolute :opacity="0.8">
+							Doble click para agregar persona
+							<v-btn icon @click="overlay = false">
+								<v-icon>mdi-close</v-icon>
+							</v-btn>
+						</v-overlay>
 						<timeline
 							v-if="componentReady"
 							id="timelinePeople"
@@ -153,6 +159,7 @@ export default {
 	},
 	data() {
 		return {
+			overlay: true,
 			componentReady: false,
 			tab: 0,
 			select: 'Sin habitación',
@@ -204,8 +211,8 @@ export default {
 		options() {
 			return {
 				editable: true,
-				start: moment(this.lodgingSelect.start),
-				end: moment(this.lodgingSelect.end),
+				start: moment(),
+				end: moment().add(14, 'day'),
 				zoomMin: 1000 * 60 * 60 * 24 * 7,
 				zoomMax: 1000 * 60 * 60 * 24 * 30,
 				onRemove: item => {
@@ -218,24 +225,37 @@ export default {
 					this.openDialogPerson();
 				},
 				onMove: (item, callback) => {
-					if (
-						this.verifyOverlay({
+					// range into lodging
+					let range =
+						moment(item.start).isSameOrAfter(
+							moment(this.lodgingSelect.start).format('YYYY-MM-DD')
+						) &&
+						moment(item.end).isSameOrBefore(
+							moment(this.lodgingSelect.end).format('YYYY-MM-DD')
+						);
+
+					if (range) {
+						let dataOverlay = {
 							id: item.idPerson,
 							dateStart: item.start,
 							dateEnd: item.end,
 							timestamp: item.id,
-						})
-					) {
-						this.updatePersonsLodging(item);
-						callback(item);
-						this.setBottomSheet({ action: false, lodging: null });
-						this.setBottomSheet({ action: true, lodging: this.lodgingSelect.id });
-						this.saveLodgings();
+						};
+
+						if (this.verifyOverlay(dataOverlay)) {
+							this.updatePersonsLodging(item);
+							callback(item);
+							this.setBottomSheet({ action: false, lodging: null });
+							this.setBottomSheet({ action: true, lodging: this.lodgingSelect.id });
+							this.saveLodgings();
+						} else {
+							this.$toasted.show(
+								'Ya existe el pasajero para el rango de fecha selecionado',
+								{ type: 'error' }
+							);
+						}
 					} else {
-						this.$toasted.show(
-							'Ya existe el pasajero para el rango de fecha selecionado',
-							{ type: 'error' }
-						);
+						this.$toasted.show('La fecha esta fuera del hospedaje', { type: 'error' });
 					}
 				},
 			};
@@ -267,6 +287,7 @@ export default {
 		},
 	},
 	mounted() {
+		this.overlay = true;
 		this.setDateIntheState();
 		this.fetchRooms(this.idPlace);
 		setTimeout(() => (this.componentReady = true), 800);
