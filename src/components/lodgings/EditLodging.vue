@@ -216,8 +216,8 @@ export default {
 				editable: true,
 				start: moment(this.lodgingSelect.start),
 				end: moment(this.lodgingSelect.end),
-				zoomMin: 1000 * 60 * 60 * 24 * 7,
-				zoomMax: 1000 * 60 * 60 * 24 * 30,
+				zoomMin: 1000 * 60 * 60 * 24 * 10,
+				zoomMax: 1000 * 60 * 60 * 24 * 15,
 				onRemove: item => {
 					this.removeLodgingPersons(item.index);
 					this.setBottomSheet({ action: false, lodging: null });
