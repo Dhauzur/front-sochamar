@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<v-row>
+		<v-row class="px-2">
 			<v-col cols="12">
 				Agregar nuevo
 			</v-col>
