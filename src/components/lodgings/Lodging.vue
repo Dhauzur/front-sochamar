@@ -169,6 +169,71 @@
 				</template>
 			</v-row>
 			<!--aqui va la tabla-->
+			<v-row v-if="selectedPlace.value">
+				<v-col v-for="lodging in lodgings._data" :key="lodging.id" cols="12">
+					<v-card>
+						<v-card-title class="headline">
+							EJ: DIA 03 - DIA 10
+						</v-card-title>
+						<v-simple-table>
+							<template v-slot:default>
+								<thead>
+									<tr>
+										<th class="text-left">fecha</th>
+										<th class="text-left">Total diario</th>
+										<th class="text-left">Servicios</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr v-for="(day, index) in lodging.days" :key="index">
+										<td>{{ day.date }}</td>
+										<td>{{ day.dayTotal }}</td>
+										<td>
+											<v-btn @click="setCardSelectedServices(day.services)">
+												Servicios
+											</v-btn>
+										</td>
+									</tr>
+								</tbody>
+							</template>
+						</v-simple-table>
+					</v-card>
+				</v-col>
+			</v-row>
+			<!--dialogo de servicios-->
+			<v-dialog v-model="ServicesDialog" width="500">
+				<template v-slot:activator="{ on }"> </template>
+				<v-card>
+					<v-card-title>Servicios</v-card-title>
+					<v-simple-table>
+						<template v-slot:default>
+							<thead>
+								<tr>
+									<th class="text-left">Nombre</th>
+									<th class="text-left">Precio</th>
+									<th class="text-left">Cantidad</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(service, index) in cardSelectedServices" :key="index">
+									<td>{{ service.name }}</td>
+									<td>{{ service.price }}</td>
+									<td>
+										<label>
+											<input
+												:id="index"
+												v-model.number="service.quantity"
+												type="number"
+												class="inputService"
+											/>
+										</label>
+									</td>
+								</tr>
+							</tbody>
+						</template>
+					</v-simple-table>
+				</v-card>
+			</v-dialog>
 			<!--<v-row>
 				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
 					<table>
@@ -277,6 +342,8 @@ export default {
 		return {
 			dialogPeriods: false,
 			dialogPayments: false,
+			ServicesDialog: false,
+			cardSelectedServices: [],
 			sheet: false,
 			//Este string interactua con la comboBox de services
 			serviceSelected: 'todos los servicios',
@@ -701,6 +768,10 @@ export default {
 					end: moment(payload.end),
 				});
 			}
+		},
+		setCardSelectedServices(services) {
+			this.cardSelectedServices = services;
+			this.ServicesDialog = true;
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
