@@ -102,28 +102,8 @@
 						<span>Guardar</span>
 					</v-tooltip>
 				</v-col>
-				<!-- periods dialog -->
-				<v-bottom-sheet
-					v-if="lodgingSelect"
-					v-model="bottomSheet"
-					inset
-					@click:outside="setBottomSheet(false)"
-				>
-					<v-sheet style="height: 75vh">
-						<edit-lodging :lodgings="lodgings" :id-place="place" />
-					</v-sheet>
-				</v-bottom-sheet>
-				<v-bottom-sheet
-					v-model="dialogPeriods"
-					inset
-					@click:outside="dialogPeriods = false"
-				>
-					<v-sheet style="height: 75vh">
-						<Periods :id-place="place" />
-					</v-sheet>
-				</v-bottom-sheet>
 				<!-- payments dialog -->
-				<template v-if="Boolean(place) && dialogPayments">
+				<!-- <template v-if="Boolean(place) && dialogPayments">
 					<v-dialog v-model="dialogPayments" fullscreen>
 						<v-card>
 							<v-toolbar dark color="primary">
@@ -135,7 +115,7 @@
 							<Payments :id-place="place" />
 						</v-card>
 					</v-dialog>
-				</template>
+				</template> -->
 			</v-row>
 			<!-- timeline -->
 			<v-row>
@@ -243,13 +223,32 @@
 			<v-row justify="center">
 				<v-col>
 					<v-bottom-sheet
-						v-if="lodgingSelect"
-						v-model="bottomSheet"
+						v-model="dialogEditLodging"
 						inset
 						@click:outside="setBottomSheet(false)"
 					>
 						<v-sheet style="height: 75vh">
-							<edit-lodging :lodgings="lodgings" :id-place="place" />
+							<edit-lodging />
+						</v-sheet>
+					</v-bottom-sheet>
+					<v-bottom-sheet
+						v-if="dialogPeriods"
+						v-model="dialogPeriods"
+						inset
+						@click:outside="dialogPeriods = false"
+					>
+						<v-sheet style="height: 75vh">
+							<Periods />
+						</v-sheet>
+					</v-bottom-sheet>
+					<v-bottom-sheet
+						v-if="dialogPayments"
+						v-model="dialogPayments"
+						inset
+						@click:outside="dialogPayments = false"
+					>
+						<v-sheet style="height: 75vh; overflow-y: auto;">
+							<Payments />
 						</v-sheet>
 					</v-bottom-sheet>
 				</v-col>
@@ -275,7 +274,6 @@ export default {
 		return {
 			dialogPeriods: false,
 			dialogPayments: false,
-			sheet: false,
 			//Este string interactua con la comboBox de services
 			serviceSelected: 'todos los servicios',
 			options: {
@@ -573,7 +571,7 @@ export default {
 		...mapGetters({
 			periodAllPlace: 'Lodging/periodAllPlace',
 			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
-			bottomSheet: 'Lodging/bottomSheet',
+			dialogEditLodging: 'Lodging/bottomSheet',
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',
 			lodgings: 'Lodging/lodgings',

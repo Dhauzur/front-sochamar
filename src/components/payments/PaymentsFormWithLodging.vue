@@ -6,9 +6,9 @@
 					id="date"
 					v-model="$v.lodgingSelected.$model"
 					dense
+					label="Seleccione hospedaje"
 					outlined
 					:items="optionsLodgings"
-					label="Seleccione"
 					:error-messages="lodgingSelectedErrors"
 					@change="setMount"
 					@input="$v.lodgingSelected.$touch()"
@@ -49,7 +49,7 @@
 				</v-file-input>
 			</v-col>
 			<v-col cols="12" sm="6" md="3" lg="3">
-				<v-btn :loading="loading" block color="primary" class="mt-1" small @click="submit">
+				<v-btn :loading="loading" block color="accent" class="mt-1" small @click="submit">
 					Agregar Pago
 				</v-btn>
 				<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
@@ -73,27 +73,9 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
 	name: 'PaymentsWithLodging',
 	mixins: [validationMixin],
-	props: {
-		lodgings: {
-			type: Array,
-			required: false,
-			default: () => [],
-		},
-		payments: {
-			type: Array,
-			required: false,
-			default: () => [],
-		},
-		place: {
-			type: Object,
-			required: false,
-			default: () => {},
-		},
-	},
 	data() {
 		return {
 			form: new FormData(),
-			idPlace: this.$route.params.place,
 			lodgingSelected: null,
 			mount: '',
 			voucher: null,
@@ -104,13 +86,13 @@ export default {
 		voucherErrors() {
 			const errors = [];
 			if (!this.$v.voucher.$dirty) return errors;
-			!this.$v.voucher.required && errors.push('campo requerido');
+			!this.$v.voucher.required && errors.push('Campo requerido');
 			return errors;
 		},
 		lodgingSelectedErrors() {
 			const errors = [];
 			if (!this.$v.lodgingSelected.$dirty) return errors;
-			!this.$v.lodgingSelected.required && errors.push('campo requerido');
+			!this.$v.lodgingSelected.required && errors.push('Campo requerido');
 			return errors;
 		},
 		optionsLodgings() {
@@ -142,15 +124,18 @@ export default {
 		},
 		...mapGetters({
 			loading: 'Payments/loadingSave',
+			place: 'Lodging/place',
+			payments: 'Payments/payments',
+			message: 'Payments/message',
+			countLodgings: 'Lodging/countLogingsPlace',
+			lodgings: 'Lodging/lodgingsPlace',
 		}),
 	},
 	validations: {
 		mount: {
 			required,
 		},
-		voucher: {
-			required,
-		},
+		voucher: {},
 		lodgingSelected: {
 			required,
 		},
