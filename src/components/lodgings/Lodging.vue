@@ -322,9 +322,12 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import { Timeline } from 'vue2vis';
-import moment from 'moment';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
 import { generateDaysArray, generateSingleDay } from '../../utils/lodging/daysArray';
 import { findServiceIndexByName } from '../../utils/lodging/findServiceIndex';
+
+const moment = extendMoment(Moment);
 
 export default {
 	components: {
@@ -423,23 +426,29 @@ export default {
 							moment(item.start).format('YYYY-MM-DD'),
 							'days'
 						);
+
+						const range = moment.range(item.start, item.end);
+						const arrayOfDates = Array.from(range.by('days'));
 						const oldDays = item.days;
 						//1- el contador i se esta contando la nueva cantidad de dias, esta encargado de recorrer nuestro arreglo de days
 						//3- entonces, por cada dia se va pushear un objeto days o se va conservar el existente.
 						//4- Si existe algo en la posicion entonces lo retornamos;
 						//5- si no existe el dia en la posicion, generamos un dia nuevo para esa posicion con generateSingleDay
-						const generateNewDays = oldDay => {
+						//6- si es un dia nuevo, va ser necesario saber cual va ser la fecha del dia a ingresar;
+						const generateNewDays = (oldDay, dayIndex) => {
 							if (oldDay) {
-								//por evaluar si debemos controlar el valor quantity con un ternario
-								//este valor ya esta definido antes de llegar a este codigo
+								//va ser necesario  mapear el valor con la nueva fecha de inicio
 								return oldDay;
 							} else {
-								return generateSingleDay(this.selectedPlace);
+								return generateSingleDay(
+									this.selectedPlace,
+									arrayOfDates[dayIndex]
+								);
 							}
 						};
 
 						for (let i = 0; i <= numberDays; i++) {
-							const newDay = generateNewDays(oldDays[i]);
+							const newDay = generateNewDays(oldDays[i], i - 1);
 							newDays.push(newDay);
 						}
 						item.days = newDays;
@@ -447,7 +456,8 @@ export default {
 						item.end = moment(item.end).hours(12);
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(true);
-							this.updateService(item);
+							//Esta funcion ya no funciona con v3, preguntar el por que se actualizan los servvices aca
+							/*this.updateService(item);*/
 							callback(item);
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');

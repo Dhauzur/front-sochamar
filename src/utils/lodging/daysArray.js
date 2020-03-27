@@ -53,13 +53,11 @@ export const generateDaysArray = (place, startDate, endDate) => {
 	return daysArray;
 };
 //vamos a necesitar la fecha del dia exacto
-export const generateSingleDay = place => {
+export const generateSingleDay = (place, dayDate) => {
 	const servicesArray = [];
 	const dayObject = {
 		services: [],
-		//una idea que tengo es pasarle el start y end del lodging y por cada dia entre estos rangos generar un objeto
-		//dayObject, con esto tendriamos la fecha exacta del dia
-		date: 'por definir',
+		date: dayDate.format('L'),
 		dayTotal: 0,
 	};
 	place.services.forEach(service => {
