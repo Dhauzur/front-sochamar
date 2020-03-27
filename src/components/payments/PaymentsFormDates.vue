@@ -10,7 +10,6 @@
 				label="Total"
 				dense
 				outlined
-				prepend-icon="mdi-cash-usd"
 				:error-messages="mountErrors"
 				@input="$v.mount.$touch()"
 				@blur="$v.mount.$touch()"
@@ -31,10 +30,10 @@
 					<v-text-field
 						v-model="dates"
 						dense
+						readonly
 						clearable
 						outlined
 						label="Fecha de ingreso y salida"
-						prepend-icon="mdi-calendar"
 						:error-messages="datesErrors"
 						@input="$v.dates.$touch()"
 						@blur="$v.dates.$touch()"
@@ -52,7 +51,7 @@
 					scrollable
 				>
 					<v-spacer></v-spacer>
-					<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+					<v-btn text color="primary" @click="menu = false">Cancelar</v-btn>
 					<v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
 				</v-date-picker>
 			</v-menu>
@@ -68,9 +67,6 @@
 				clearable
 				outlined
 				prepend-icon="mdi-paperclip"
-				:error-messages="voucherErrors"
-				@input="$v.voucher.$touch()"
-				@blur="$v.voucher.$touch()"
 			>
 				<template v-slot:selection="{ text }">
 					<v-chip small label color="secondary">
@@ -96,12 +92,17 @@ import moment from 'moment';
 export default {
 	name: 'PaymentsForm',
 	mixins: [validationMixin],
+	props: {
+		idPlace: {
+			type: String,
+			required: true,
+		},
+	},
 	data() {
 		return {
 			dates: [],
 			menu: null,
 			text: '',
-			idPlace: this.$route.params.place,
 			form: new FormData(),
 			startDate: '',
 			endDate: '',
@@ -123,12 +124,6 @@ export default {
 			const errors = [];
 			if (!this.$v.dates.$dirty) return errors;
 			!this.$v.dates.required && errors.push('campo requerido');
-			return errors;
-		},
-		voucherErrors() {
-			const errors = [];
-			if (!this.$v.voucher.$dirty) return errors;
-			!this.$v.voucher.required && errors.push('campo requerido');
 			return errors;
 		},
 		setDateStart() {
@@ -156,9 +151,6 @@ export default {
 			required,
 		},
 		dates: {
-			required,
-		},
-		voucher: {
 			required,
 		},
 	},

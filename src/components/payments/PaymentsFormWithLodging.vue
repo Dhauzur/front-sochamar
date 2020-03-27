@@ -73,6 +73,12 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
 	name: 'PaymentsWithLodging',
 	mixins: [validationMixin],
+	props: {
+		idPlace: {
+			type: String,
+			required: true,
+		},
+	},
 	data() {
 		return {
 			form: new FormData(),

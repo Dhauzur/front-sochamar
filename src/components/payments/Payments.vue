@@ -11,11 +11,11 @@
 				</v-radio-group>
 			</v-col>
 			<v-col cols="12">
-				<payments-form-lodging v-if="visible == 1" />
-				<payments-form-dates v-if="visible == 2" />
+				<payments-form-lodging v-if="visible == 1" :id-place="idPlace" />
+				<payments-form-dates v-if="visible == 2" :id-place="idPlace" />
 			</v-col>
 			<v-col cols="12" class="mx-auto">
-				<!-- <v-card-title>
+				<v-card-title>
 					Lista de Pagos
 					<v-spacer></v-spacer>
 					<v-text-field
@@ -26,12 +26,13 @@
 						label="Filtrar"
 						hide-details
 					></v-text-field>
-				</v-card-title> -->
-				<!-- <v-data-table
-					v-if="itemFiltered.length"
+				</v-card-title>
+				<v-data-table
+					v-if="payments.length"
+					dense
 					:search="wordForFilter"
 					:headers="fields"
-					:items="itemFiltered"
+					:items="payments"
 					:items-per-page="5"
 				>
 					<template v-slot:item.voucher="props">
@@ -44,13 +45,12 @@
 							:return-value.sync="props.item.comments"
 							@save="saveComment(props.item)"
 						>
-							<v-btn fab x-small color="error" @click="deleteItem(item._id)">
-								<v-icon>text-box-search</v-icon>
-							</v-btn>
-							{{ props.item.comments }}
+							<div v-for="(element, i) in props.item.comments" :key="i">
+								{{ element }}
+							</div>
 							<template v-slot:input>
 								<v-text-field
-									v-model="props.item.comments"
+									v-model="newComment"
 									label="Comentario"
 									single-line
 									counter
@@ -63,9 +63,7 @@
 							<v-icon>mdi-delete</v-icon>
 						</v-btn>
 					</template>
-				</v-data-table> --> </v-col
-			><v-col v-if="lodgings.length == 0" class="text-center">
-				<h6>No hay pagos registrados</h6>
+				</v-data-table>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -75,6 +73,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
+import moment from 'moment';
 
 export default {
 	name: 'Payments',
@@ -92,6 +91,7 @@ export default {
 				{ value: 'comments', text: 'Comentarios' },
 				{ text: 'Acción', value: 'actions' },
 			],
+			newComment: '',
 			selected: {},
 			index: '',
 			wordForFilter: '',
@@ -101,7 +101,7 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			place: 'Lodging/place',
+			idPlace: 'Lodging/place',
 			payments: 'Payments/payments',
 			message: 'Payments/message',
 			loading: 'Payments/loading',
@@ -110,11 +110,6 @@ export default {
 		}),
 	},
 	watch: {
-		lodgings() {
-			if (this.wordForFilter === '') {
-				this.itemFiltered = this.lodgings;
-			}
-		},
 		message(newVal) {
 			this.$toasted.show(newVal.text, {
 				type: newVal.type,
@@ -122,14 +117,15 @@ export default {
 		},
 	},
 	created() {
-		this.fetchOnePlace(this.place);
-		this.fetchLodgingsForPlace(this.place);
-		this.fetchPayments(this.place);
+		moment.locale('es');
+		this.fetchOnePlace(this.idPlace);
+		this.fetchLodgingsForPlace(this.idPlace);
+		this.fetchPayments(this.idPlace);
 	},
 	methods: {
 		async deleteItem(id) {
 			await this.delete(id);
-			this.updatePayments(this.idPlace);
+			this.fetchPayments(this.idPlace);
 		},
 		onRowSelected(items) {
 			this.selected = items[0];
@@ -139,15 +135,17 @@ export default {
 			this.$refs.selectableTable.clearSelected();
 		},
 		saveComment(item) {
-			let form = new FormData();
-			form.set('comments', item.comments);
-			this.edit({ payload: form, id: item._id });
+			const date = moment().format('YYYY-MM-DD');
+			const temp = [...item.comments, `${this.newComment} - ${date}`];
+			this.edit({ comments: temp, id: item._id })
+				.then((this.newComment = ''))
+				.then(this.fetchPayments(this.idPlace));
 		},
 		...mapActions({
 			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
 			fetchOnePlace: 'Place/fetchOnePlace',
 			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
-			deleteOnePayment: 'Payments/deleteOnePayment',
+			delete: 'Payments/deleteOnePayment',
 			edit: 'Payments/editPayment',
 		}),
 	},

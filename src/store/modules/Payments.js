@@ -53,10 +53,11 @@ const actions = {
 		}
 		commit('setLoadingSave', false);
 	},
-	async editPayment({ commit }, { payload, id }) {
+	async editPayment({ commit }, { comments, id }) {
+		console.log(comments);
+
 		try {
-			const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-			await axios.put(`${api}/payments/${id}`, payload, config);
+			await axios.put(`${api}/payments/${id}`, { comments });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',
