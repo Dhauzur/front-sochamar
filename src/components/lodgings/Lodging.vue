@@ -211,7 +211,8 @@
 																		$event,
 																		lodging.group,
 																		lodging.id,
-																		dayIndex
+																		dayIndex,
+																		serviceIndex
 																	)
 																"
 															/>
@@ -386,14 +387,16 @@ export default {
 				//Cuando clickeo una parte del timeline esta función hace trigger y se encarga de crear un lodging, es similar a createOnelodging de la store
 				onAdd: (item, callback) => {
 					if (this.place) {
-						item.start = moment(item.start).hours(15);
-						item.end = moment(item.start)
+						const startDate = moment(item.start).hours(15);
+						const endDate = moment(item.start)
 							.hours(12)
 							.add(1, 'day');
+						item.start = startDate;
+						item.end = endDate;
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
 							const place = this.places.find(c => c.value === this.place);
-							const generatedDays = generateDaysArray(place);
+							const generatedDays = generateDaysArray(place, startDate, endDate);
 							item.content = place.text;
 							if (place != 'Turismo') item.days = generatedDays;
 							else item.days = generatedDays;
@@ -729,9 +732,11 @@ export default {
 		},
 		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
 		//Esta funcion se encarga de evaluar el valor y luego pasarlo a updateService, updateService es el encargado real de actualizar el valor
-		detectServiceQuantityChange(payload, lodgingGroup, lodgingId, dayIndex) {
+		detectServiceQuantityChange(payload, lodgingGroup, lodgingId, dayIndex, serviceIndex) {
 			//Si es 0 o string, deja el value como 0
-			console.log(`id del lodging ${lodgingId} y index del dia ${dayIndex}`);
+			console.log(
+				`id del lodging ${lodgingId} ,  index del dia ${dayIndex} y index del servicio ${serviceIndex}`
+			);
 			if (payload.target.value === '') payload.target.value = 0;
 			//busca el numero de pasajeros en el lodging seleccionado
 			const numberPassangerMax = this.periods.get(lodgingGroup).numberPassangerMax;
