@@ -49,10 +49,9 @@
 				</v-file-input>
 			</v-col>
 			<v-col cols="12" sm="6" md="3" lg="3">
-				<v-btn :loading="loading" block color="accent" class="mt-1" small @click="submit">
+				<v-btn :loading="loading" block color="primary" class="mt-2" small @click="submit">
 					Agregar Pago
 				</v-btn>
-				<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
 			</v-col>
 		</v-row>
 		<v-row v-else>

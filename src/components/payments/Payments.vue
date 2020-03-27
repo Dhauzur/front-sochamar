@@ -14,7 +14,7 @@
 				<payments-form-lodging v-if="visible == 1" :id-place="idPlace" />
 				<payments-form-dates v-if="visible == 2" :id-place="idPlace" />
 			</v-col>
-			<v-col cols="12" class="mx-auto">
+			<v-col v-if="payments.length" cols="12" class="mx-auto">
 				<v-card-title>
 					Lista de Pagos
 					<v-spacer></v-spacer>
@@ -28,7 +28,6 @@
 					></v-text-field>
 				</v-card-title>
 				<v-data-table
-					v-if="payments.length"
 					dense
 					:search="wordForFilter"
 					:headers="fields"
@@ -45,7 +44,11 @@
 							:return-value.sync="props.item.comments"
 							@save="saveComment(props.item)"
 						>
-							<div v-for="(element, i) in props.item.comments" :key="i">
+							<div
+								v-for="(element, i) in props.item.comments"
+								:key="i"
+								class="text-lowercase"
+							>
 								{{ element }}
 							</div>
 							<template v-slot:input>
@@ -64,6 +67,9 @@
 						</v-btn>
 					</template>
 				</v-data-table>
+			</v-col>
+			<v-col v-else cols="12">
+				<span class="text--secondary caption">No hay pagos registrados</span>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -101,12 +107,12 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			idPlace: 'Lodging/place',
-			payments: 'Payments/payments',
-			message: 'Payments/message',
-			loading: 'Payments/loading',
 			countLodgings: 'Lodging/countLogingsPlace',
+			idPlace: 'Lodging/place',
+			loading: 'Payments/loading',
 			lodgings: 'Lodging/lodgingsPlace',
+			message: 'Payments/message',
+			payments: 'Payments/payments',
 		}),
 	},
 	watch: {

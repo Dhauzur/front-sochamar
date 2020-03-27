@@ -62,7 +62,7 @@
 				id="voucher"
 				ref="voucher"
 				v-model="voucher"
-				label="voucher"
+				label="Voucher"
 				dense
 				clearable
 				outlined
@@ -76,7 +76,7 @@
 			</v-file-input>
 		</v-col>
 		<v-col cols="12" sm="6" md="3">
-			<v-btn dark small color="primary" block class="mt-2" @click="submit">
+			<v-btn :loading="loading" dark small color="primary" block class="mt-2" @click="submit">
 				Guardar
 			</v-btn>
 		</v-col>
@@ -144,7 +144,7 @@ export default {
 				return this.dates[1];
 			}
 		},
-		...mapGetters({ range: 'Lodging/rangeDatePayments' }),
+		...mapGetters({ range: 'Lodging/rangeDatePayments', loading: 'Payments/loadingSave' }),
 	},
 	validations: {
 		mount: {

@@ -54,8 +54,6 @@ const actions = {
 		commit('setLoadingSave', false);
 	},
 	async editPayment({ commit }, { comments, id }) {
-		console.log(comments);
-
 		try {
 			await axios.put(`${api}/payments/${id}`, { comments });
 			commit('setMessage', {
