@@ -173,7 +173,7 @@
 				<v-col v-for="lodging in lodgings._data" :key="lodging.id" cols="12">
 					<v-card>
 						<v-card-title class="headline">
-							EJ: DIA 03 - DIA 10
+							{{ lodging.start.format('L') + ' - ' + lodging.end.format('L') }}
 						</v-card-title>
 						<v-simple-table>
 							<template v-slot:default>

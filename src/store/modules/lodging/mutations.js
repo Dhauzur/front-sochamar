@@ -189,7 +189,11 @@ const mutations = {
 		state.editMode = false;
 		let place = state.Places.find(c => c.value === state.place);
 		let verificate = true;
-		const generatedDays = generateDaysArray(place);
+		const startDate = moment().hours(15);
+		const endDate = moment()
+			.hours(12)
+			.add(1, 'day');
+		const generatedDays = generateDaysArray(place, startDate, endDate);
 		state.lodgings.forEach(lod => {
 			if (
 				lod.group == state.periods.getIds()[0] &&
@@ -204,10 +208,8 @@ const mutations = {
 			if (place.text === 'Turismo') {
 				state.lodgings.add({
 					group: state.periods.getIds()[0],
-					start: moment().hours(15),
-					end: moment()
-						.hours(12)
-						.add(1, 'day'),
+					start: startDate,
+					end: endDate,
 					content: state.placeName,
 					days: generatedDays,
 					place: state.place,
@@ -215,10 +217,8 @@ const mutations = {
 			} else {
 				state.lodgings.add({
 					group: state.periods.getIds()[0],
-					start: moment().hours(15),
-					end: moment()
-						.hours(12)
-						.add(1, 'day'),
+					start: startDate,
+					end: endDate,
 					content: state.placeName,
 					days: generatedDays,
 					place: state.place,
