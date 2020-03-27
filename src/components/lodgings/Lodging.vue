@@ -172,52 +172,59 @@
 			<!--v2-->
 			<v-row v-if="selectedPlace.value">
 				<v-col v-for="lodging in lodgings._data" :key="lodging.id" cols="12">
-					<v-card>
+					<v-card cols="3">
 						<v-card-title class="headline">
 							{{ lodging.start.format('L') + ' - ' + lodging.end.format('L') }}
 						</v-card-title>
-						<div v-for="(day, index) in lodging.days" :key="index" cols="3">
-							<v-card>
-								<div>Fecha: {{ day.date }}</div>
-								<div>Total: {{ day.dayTotal }}</div>
-								<v-simple-table>
-									<template v-slot:default>
-										<thead>
-											<tr>
-												<th class="text-left">Nombre</th>
-												<th class="text-left">Precio</th>
-												<th class="text-left">Cantidad</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr
-												v-for="(service, index) in day.services"
-												:key="index"
-											>
-												<td>{{ service.name }}</td>
-												<td>{{ service.price }}</td>
-												<td>
-													<label>
-														<input
-															:id="index"
-															v-model.number="service.quantity"
-															type="number"
-															class="inputService"
-															@change="
-																detectServiceQuantityChange(
-																	$event,
-																	lodging.group
-																)
-															"
-														/>
-													</label>
-												</td>
-											</tr>
-										</tbody>
-									</template>
-								</v-simple-table>
-							</v-card>
-						</div>
+						<v-row>
+							<v-col v-for="(day, dayIndex) in lodging.days" :key="dayIndex" cols="4">
+								<v-card>
+									<div>{{ day.date }}</div>
+									<v-simple-table>
+										<template v-slot:default>
+											<thead>
+												<tr>
+													<th class="text-left">Nombre</th>
+													<th class="text-left">Precio</th>
+													<th class="text-left">Cantidad</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr
+													v-for="(service, serviceIndex) in day.services"
+													:key="serviceIndex"
+												>
+													{{
+														service.quantity
+													}}
+													<td>{{ service.name }}</td>
+													<td>{{ service.price }}</td>
+													<td>
+														<label>
+															<input
+																:id="serviceIndex"
+																v-model.number="service.quantity"
+																type="number"
+																class="inputService"
+																@change="
+																	detectServiceQuantityChange(
+																		$event,
+																		lodging.group,
+																		lodging.id,
+																		dayIndex
+																	)
+																"
+															/>
+														</label>
+													</td>
+												</tr>
+											</tbody>
+										</template>
+									</v-simple-table>
+									<div>Total: {{ dayTotal(day.services) }}</div>
+								</v-card>
+							</v-col>
+						</v-row>
 					</v-card>
 				</v-col>
 			</v-row>
@@ -722,9 +729,10 @@ export default {
 		},
 		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
 		//Esta funcion se encarga de evaluar el valor y luego pasarlo a updateService, updateService es el encargado real de actualizar el valor
-		detectServiceQuantityChange(payload, lodgingGroup) {
+		detectServiceQuantityChange(payload, lodgingGroup, lodgingId, dayIndex) {
 			//Si es 0 o string, deja el value como 0
-			if (payload.target.value === '' || payload.target.value === 0) payload.target.value = 0;
+			console.log(`id del lodging ${lodgingId} y index del dia ${dayIndex}`);
+			if (payload.target.value === '') payload.target.value = 0;
 			//busca el numero de pasajeros en el lodging seleccionado
 			const numberPassangerMax = this.periods.get(lodgingGroup).numberPassangerMax;
 			//si el valor excede el numero de pasaejeros, se setea el numero de pasajeros como valor y se levanta una notificacion toast
@@ -750,6 +758,14 @@ export default {
 					end: moment(payload.end),
 				});
 			}
+		},
+		dayTotal(services) {
+			let iterationPrice = 0;
+			services.forEach(service => {
+				let serviceTotal = service.price * service.quantity;
+				iterationPrice = iterationPrice + serviceTotal;
+			});
+			return iterationPrice;
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
