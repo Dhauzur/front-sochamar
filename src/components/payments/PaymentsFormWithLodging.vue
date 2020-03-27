@@ -5,6 +5,7 @@
 				id="date"
 				v-model="$v.lodgingSelected.$model"
 				dense
+				no-data-text="No tiene hospedajes por pagar"
 				label="Seleccione hospedaje"
 				outlined
 				:items="optionsLodgings"
@@ -14,7 +15,7 @@
 				@blur="$v.lodgingSelected.$touch()"
 			></v-select>
 		</v-col>
-		<v-col cols="12" sm="6" md="4" lg="3">
+		<v-col v-if="optionsLodgings.length" cols="12" sm="6" md="4" lg="3">
 			<v-text-field
 				id="mount"
 				v-model="mount"
@@ -26,19 +27,16 @@
 				placeholder="Ej: 10000 CLP"
 			></v-text-field>
 		</v-col>
-		<v-col cols="12" sm="6" md="4" lg="3">
+		<v-col v-if="optionsLodgings.length" cols="12" sm="6" md="4" lg="3">
 			<v-file-input
 				id="voucher"
 				ref="voucher"
-				v-model="$v.voucher.$model"
+				v-model="voucher"
 				label="Voucher"
 				dense
 				outlined
 				clearable
 				prepend-icon="mdi-paperclip"
-				:error-messages="voucherErrors"
-				@input="$v.voucher.$touch()"
-				@blur="$v.voucher.$touch()"
 			>
 				<template v-slot:selection="{ text }">
 					<v-chip small label color="secondary">
@@ -47,7 +45,7 @@
 				</template>
 			</v-file-input>
 		</v-col>
-		<v-col cols="12" sm="6" md="3" lg="3">
+		<v-col v-if="optionsLodgings.length" cols="12" sm="6" md="3" lg="3">
 			<v-btn :loading="loading" block color="primary" class="mt-2" small @click="submit">
 				Agregar Pago
 			</v-btn>
@@ -79,16 +77,12 @@ export default {
 		};
 	},
 	computed: {
-		voucherErrors() {
-			const errors = [];
-			if (!this.$v.voucher.$dirty) return errors;
-			!this.$v.voucher.required && errors.push('Campo requerido');
-			return errors;
-		},
 		lodgingSelectedErrors() {
 			const errors = [];
-			if (!this.$v.lodgingSelected.$dirty) return errors;
-			!this.$v.lodgingSelected.required && errors.push('Campo requerido');
+			if (this.optionsLodgings.length) {
+				if (!this.$v.lodgingSelected.$dirty) return errors;
+				!this.$v.lodgingSelected.required && errors.push('Campo requerido');
+			}
 			return errors;
 		},
 		optionsLodgings() {
@@ -133,7 +127,6 @@ export default {
 		mount: {
 			required,
 		},
-		voucher: {},
 		lodgingSelected: {
 			required,
 		},
