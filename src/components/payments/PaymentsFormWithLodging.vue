@@ -1,67 +1,58 @@
 <template>
-	<div>
-		<v-row v-if="Array.isArray(optionsLodgings) && optionsLodgings.length">
-			<v-col cols="12" sm="6" md="4" lg="3">
-				<v-select
-					id="date"
-					v-model="$v.lodgingSelected.$model"
-					dense
-					label="Seleccione hospedaje"
-					outlined
-					:items="optionsLodgings"
-					:error-messages="lodgingSelectedErrors"
-					@change="setMount"
-					@input="$v.lodgingSelected.$touch()"
-					@blur="$v.lodgingSelected.$touch()"
-				></v-select>
-			</v-col>
-			<v-col cols="12" sm="6" md="4" lg="3">
-				<v-text-field
-					id="mount"
-					v-model="mount"
-					type="number"
-					readonly
-					dense
-					outlined
-					label="Monto"
-					placeholder="Ej: 10000 CLP"
-				></v-text-field>
-			</v-col>
-			<v-col cols="12" sm="6" md="4" lg="3">
-				<v-file-input
-					id="voucher"
-					ref="voucher"
-					v-model="$v.voucher.$model"
-					label="Voucher"
-					dense
-					outlined
-					clearable
-					prepend-icon="mdi-paperclip"
-					:error-messages="voucherErrors"
-					@input="$v.voucher.$touch()"
-					@blur="$v.voucher.$touch()"
-				>
-					<template v-slot:selection="{ text }">
-						<v-chip small label color="secondary">
-							{{ text }}
-						</v-chip>
-					</template>
-				</v-file-input>
-			</v-col>
-			<v-col cols="12" sm="6" md="3" lg="3">
-				<v-btn :loading="loading" block color="primary" class="mt-2" small @click="submit">
-					Agregar Pago
-				</v-btn>
-			</v-col>
-		</v-row>
-		<v-row v-else>
-			<v-col>
-				<h6 class="text-left mt-1 ml-1 accent--text">
-					No tiene hospedajes por pagar
-				</h6>
-			</v-col>
-		</v-row>
-	</div>
+	<v-row>
+		<v-col cols="12" sm="6" md="4" lg="3">
+			<v-select
+				id="date"
+				v-model="$v.lodgingSelected.$model"
+				dense
+				label="Seleccione hospedaje"
+				outlined
+				:items="optionsLodgings"
+				:error-messages="lodgingSelectedErrors"
+				@change="setMount"
+				@input="$v.lodgingSelected.$touch()"
+				@blur="$v.lodgingSelected.$touch()"
+			></v-select>
+		</v-col>
+		<v-col cols="12" sm="6" md="4" lg="3">
+			<v-text-field
+				id="mount"
+				v-model="mount"
+				type="number"
+				readonly
+				dense
+				outlined
+				label="Monto"
+				placeholder="Ej: 10000 CLP"
+			></v-text-field>
+		</v-col>
+		<v-col cols="12" sm="6" md="4" lg="3">
+			<v-file-input
+				id="voucher"
+				ref="voucher"
+				v-model="$v.voucher.$model"
+				label="Voucher"
+				dense
+				outlined
+				clearable
+				prepend-icon="mdi-paperclip"
+				:error-messages="voucherErrors"
+				@input="$v.voucher.$touch()"
+				@blur="$v.voucher.$touch()"
+			>
+				<template v-slot:selection="{ text }">
+					<v-chip small label color="secondary">
+						{{ text }}
+					</v-chip>
+				</template>
+			</v-file-input>
+		</v-col>
+		<v-col cols="12" sm="6" md="3" lg="3">
+			<v-btn :loading="loading" block color="primary" class="mt-2" small @click="submit">
+				Agregar Pago
+			</v-btn>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
@@ -101,19 +92,21 @@ export default {
 			return errors;
 		},
 		optionsLodgings() {
-			let index = [];
-			let lod = [];
-			let pay = [];
-			if (this.lodgings) lod = [...this.lodgings];
-			if (this.payments) pay = [...this.payments];
+			let index = [],
+				lod = [],
+				pay = [];
+			this.lodgings.length && (lod = [...this.lodgings]);
+			this.payments.length && (pay = [...this.payments]);
+
 			const lodgingsPaid = pay.filter(
 				({ idLodging }) => !lod.every(({ _id }) => idLodging === _id)
 			);
-			if (lodgingsPaid.length > 0) {
+			if (lodgingsPaid.length) {
 				for (const i in lodgingsPaid) {
-					index.push(
-						pay.map(({ idLodging }) => idLodging).indexOf(lodgingsPaid[i].idLodging)
-					);
+					lodgingsPaid[i].idLodging &&
+						index.push(
+							pay.map(({ idLodging }) => idLodging).indexOf(lodgingsPaid[i].idLodging)
+						);
 				}
 				for (let i = index.length - 1; i >= 0; i--) {
 					lod.splice(i, 1);
