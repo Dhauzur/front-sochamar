@@ -1,57 +1,54 @@
 <template>
 	<v-container>
 		<v-row>
-			<v-col cols="12">
-				<v-dialog v-model="dialog" max-width="440">
-					<v-stepper v-model="stepper" class="elevation-12">
-						<v-stepper-header>
-							<v-stepper-step :complete="stepper > 1" step="1">
-								Seleccione
-							</v-stepper-step>
-							<v-divider></v-divider>
-							<v-stepper-step :complete="stepper > 2" step="2">
-								Formulario
-							</v-stepper-step>
-						</v-stepper-header>
-						<v-stepper-items>
-							<v-stepper-content step="1">
-								<v-radio-group v-model="visible" row>
-									<v-radio label="Agregar pago por alojamiento" value="1">
-									</v-radio>
-									<v-radio label="Agregar pago por fecha" value="2"></v-radio>
-								</v-radio-group>
-								<v-btn
-									small
-									text
-									color="primary"
-									:disabled="!Boolean(visible)"
-									@click="stepper = 2"
-								>
-									Continuar
-								</v-btn>
-								<v-btn small text color="primary" @click="closeDialog">
-									Cancelar
-								</v-btn>
-							</v-stepper-content>
-							<v-stepper-content step="2">
-								<payments-form-lodging
-									v-if="visible == 1"
-									:id-place="idPlace"
-									:back="() => (stepper = 1)"
-									:close="closeDialog"
-								/>
-								<payments-form-dates
-									v-if="visible == 2"
-									:id-place="idPlace"
-									:back="() => (stepper = 1)"
-									:close="closeDialog"
-								/>
-							</v-stepper-content>
-						</v-stepper-items>
-					</v-stepper>
-				</v-dialog>
-			</v-col>
-			<v-col v-if="payments.length" cols="12" class="mx-auto">
+			<v-dialog v-model="dialog" max-width="440" persistent>
+				<v-stepper v-model="stepper" class="elevation-12">
+					<v-stepper-header>
+						<v-stepper-step :complete="stepper > 1" step="1">
+							Seleccione
+						</v-stepper-step>
+						<v-divider></v-divider>
+						<v-stepper-step :complete="stepper > 2" step="2">
+							Formulario
+						</v-stepper-step>
+					</v-stepper-header>
+					<v-stepper-items>
+						<v-stepper-content step="1">
+							<v-radio-group v-model="visible" row>
+								<v-radio label="Agregar pago por alojamiento" value="1"> </v-radio>
+								<v-radio label="Agregar pago por fecha" value="2"></v-radio>
+							</v-radio-group>
+							<v-btn
+								small
+								text
+								color="primary"
+								:disabled="!Boolean(visible)"
+								@click="stepper = 2"
+							>
+								Continuar
+							</v-btn>
+							<v-btn small text color="primary" @click="closeDialog">
+								Cerrar
+							</v-btn>
+						</v-stepper-content>
+						<v-stepper-content step="2">
+							<payments-form-lodging
+								v-if="visible == 1"
+								:id-place="idPlace"
+								:back="() => (stepper = 1)"
+								:close="closeDialog"
+							/>
+							<payments-form-dates
+								v-if="visible == 2"
+								:id-place="idPlace"
+								:back="() => (stepper = 1)"
+								:close="closeDialog"
+							/>
+						</v-stepper-content>
+					</v-stepper-items>
+				</v-stepper>
+			</v-dialog>
+			<v-col cols="12" class="mx-auto">
 				<v-card-title>
 					Lista de Pagos
 					<v-btn small color="primary" class="ma-3" @click="dialog = true">
@@ -69,10 +66,14 @@
 				</v-card-title>
 				<v-data-table
 					dense
+					loading-text="Cargando... por favor espere"
+					no-data-text="No hay pagos"
+					:loading="loading"
 					:search="wordForFilter"
 					:headers="fields"
 					:items="payments"
 					:items-per-page="5"
+					item-key="_id"
 				>
 					<template v-slot:item.voucher="props">
 						<v-btn text :href="props.item.voucher.url" small>
@@ -80,36 +81,41 @@
 						</v-btn>
 					</template>
 					<template v-slot:item.comments="props">
-						<v-edit-dialog
-							:return-value.sync="props.item.comments"
-							@save="saveComment(props.item)"
+						<small
+							v-for="(element, i) in props.item.comments"
+							:key="i"
+							class="text-lowercase d-block"
 						>
-							<div
-								v-for="(element, i) in props.item.comments"
-								:key="i"
-								class="text-lowercase"
-							>
-								{{ element }}
-							</div>
-							<template v-slot:input>
-								<v-text-field
-									v-model="newComment"
-									label="Comentario"
-									single-line
-									counter
-								></v-text-field>
-							</template>
-						</v-edit-dialog>
+							{{ element }}
+						</small>
 					</template>
 					<template v-slot:item.actions="{ item }">
-						<v-btn fab x-small color="error" @click="deleteItem(item._id)">
+						<span style="display: inline-block !important">
+							<v-edit-dialog @save="saveComment(item)">
+								<v-btn fab color="success" x-small>
+									<v-icon>mdi-comment-plus</v-icon>
+								</v-btn>
+								<template v-slot:input>
+									<v-text-field
+										v-model="newComment"
+										label="Comentario"
+										single-line
+										counter
+									></v-text-field>
+								</template>
+							</v-edit-dialog>
+						</span>
+						<v-btn
+							x-small
+							fab
+							color="error"
+							class="mr-2 ml-2"
+							@click="deleteItem(item._id)"
+						>
 							<v-icon>mdi-delete</v-icon>
 						</v-btn>
 					</template>
 				</v-data-table>
-			</v-col>
-			<v-col v-else cols="12">
-				<span class="text--secondary caption">No hay pagos registrados</span>
 			</v-col>
 		</v-row>
 	</v-container>

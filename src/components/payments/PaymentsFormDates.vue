@@ -80,7 +80,7 @@
 				regresar
 			</v-btn>
 			<v-btn small text color="primary" @click="close">
-				Cancelar
+				Cerrar
 			</v-btn>
 			<v-btn :loading="loading" text small color="primary" @click="submit">
 				Guardar
@@ -175,9 +175,11 @@ export default {
 		},
 	},
 	methods: {
-		clearInputFile(input) {
-			this.$refs[input].reset();
+		clearInputs() {
+			this.mount = '';
+			this.dates = [];
 			this.voucher = null;
+			this.$v.$reset();
 		},
 		async submit() {
 			// validations
@@ -192,6 +194,8 @@ export default {
 				this.form.append('voucher', this.voucher);
 				await this.save(this.form);
 				this.updatePayments(this.idPlace);
+				this.clearInputs();
+				this.close();
 			}
 		},
 		cutText(text) {

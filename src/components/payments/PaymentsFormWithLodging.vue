@@ -50,9 +50,16 @@
 				Regresar
 			</v-btn>
 			<v-btn small text color="primary" @click="close">
-				Cancelar
+				Cerrar
 			</v-btn>
-			<v-btn :loading="loading" color="primary" text small @click="submit">
+			<v-btn
+				:loading="loading"
+				color="primary"
+				text
+				small
+				:disabled="!optionsLodgings.length"
+				@click="submit"
+			>
 				Guardar
 			</v-btn>
 		</v-col>
@@ -87,7 +94,6 @@ export default {
 			lodgingSelected: null,
 			mount: '',
 			voucher: null,
-			errors: false,
 		};
 	},
 	computed: {
@@ -147,19 +153,15 @@ export default {
 	},
 	methods: {
 		clearInputs() {
-			this.$refs['voucher'].reset();
 			this.voucher = null;
 			this.lodgingSelected = null;
 			this.mount = '';
 			this.$v.$reset();
-			this.errors = false;
 		},
 		async submit() {
 			// validations
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				this.errors = true;
-			} else {
+			if (!this.$v.$invalid) {
 				this.form.set('idPlace', this.idPlace);
 				this.form.set('idLodging', this.lodgingSelected.id);
 				this.form.set('startDate', this.lodgingSelected.start);
@@ -169,6 +171,7 @@ export default {
 				await this.save(this.form);
 				this.clearInputs();
 				this.updatePayments(this.idPlace);
+				this.close();
 			}
 		},
 		setMount() {
