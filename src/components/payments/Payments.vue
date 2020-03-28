@@ -1,6 +1,6 @@
 <template>
-	<v-container style="position: relative; height=100vh;">
-		<v-row class="px-2">
+	<v-container>
+		<v-row>
 			<v-col cols="12">
 				<v-dialog v-model="dialog" max-width="440">
 					<v-stepper v-model="stepper" class="elevation-12">
