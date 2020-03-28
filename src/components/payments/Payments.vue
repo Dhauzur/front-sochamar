@@ -1,22 +1,62 @@
 <template>
-	<v-container>
+	<v-container style="position: relative; height=100vh;">
 		<v-row class="px-2">
 			<v-col cols="12">
-				Agregar nuevo
-			</v-col>
-			<v-col cols="12">
-				<v-radio-group v-model="visible" row>
-					<v-radio label="Agregar pago por alojamiento" value="1"></v-radio>
-					<v-radio label="Agregar pago por fecha" value="2"></v-radio>
-				</v-radio-group>
-			</v-col>
-			<v-col cols="12">
-				<payments-form-lodging v-if="visible == 1" :id-place="idPlace" />
-				<payments-form-dates v-if="visible == 2" :id-place="idPlace" />
+				<v-dialog v-model="dialog" max-width="440">
+					<v-stepper v-model="stepper" class="elevation-12">
+						<v-stepper-header>
+							<v-stepper-step :complete="stepper > 1" step="1">
+								Seleccione
+							</v-stepper-step>
+							<v-divider></v-divider>
+							<v-stepper-step :complete="stepper > 2" step="2">
+								Formulario
+							</v-stepper-step>
+						</v-stepper-header>
+						<v-stepper-items>
+							<v-stepper-content step="1">
+								<v-radio-group v-model="visible" row>
+									<v-radio label="Agregar pago por alojamiento" value="1">
+									</v-radio>
+									<v-radio label="Agregar pago por fecha" value="2"></v-radio>
+								</v-radio-group>
+								<v-btn
+									small
+									text
+									color="primary"
+									:disabled="!Boolean(visible)"
+									@click="stepper = 2"
+								>
+									Continuar
+								</v-btn>
+								<v-btn small text color="primary" @click="closeDialog">
+									Cancelar
+								</v-btn>
+							</v-stepper-content>
+							<v-stepper-content step="2">
+								<payments-form-lodging
+									v-if="visible == 1"
+									:id-place="idPlace"
+									:back="() => (stepper = 1)"
+									:close="closeDialog"
+								/>
+								<payments-form-dates
+									v-if="visible == 2"
+									:id-place="idPlace"
+									:back="() => (stepper = 1)"
+									:close="closeDialog"
+								/>
+							</v-stepper-content>
+						</v-stepper-items>
+					</v-stepper>
+				</v-dialog>
 			</v-col>
 			<v-col v-if="payments.length" cols="12" class="mx-auto">
 				<v-card-title>
 					Lista de Pagos
+					<v-btn small color="primary" class="ma-3" @click="dialog = true">
+						<v-icon>mdi-plus</v-icon>
+					</v-btn>
 					<v-spacer></v-spacer>
 					<v-text-field
 						v-model="wordForFilter"
@@ -97,6 +137,8 @@ export default {
 				{ value: 'comments', text: 'Comentarios' },
 				{ text: 'Acción', value: 'actions' },
 			],
+			stepper: 1,
+			dialog: false,
 			newComment: '',
 			selected: {},
 			index: '',
@@ -132,6 +174,10 @@ export default {
 		async deleteItem(id) {
 			await this.delete(id);
 			this.fetchPayments(this.idPlace);
+		},
+		closeDialog() {
+			this.dialog = false;
+			this.stepper = 1;
 		},
 		onRowSelected(items) {
 			this.selected = items[0];

@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<!-- mount -->
-		<v-col cols="12" sm="6" md="3">
+		<v-col cols="12">
 			<v-text-field
 				id="total"
 				v-model="$v.mount.$model"
@@ -16,7 +16,7 @@
 			></v-text-field>
 		</v-col>
 		<!-- dates -->
-		<v-col cols="12" sm="6" md="3">
+		<v-col cols="12">
 			<v-menu
 				ref="menu"
 				v-model="menu"
@@ -57,7 +57,7 @@
 			</v-menu>
 		</v-col>
 		<!-- voucher -->
-		<v-col cols="12" sm="6" md="3">
+		<v-col cols="12">
 			<v-file-input
 				id="voucher"
 				ref="voucher"
@@ -75,8 +75,14 @@
 				</template>
 			</v-file-input>
 		</v-col>
-		<v-col cols="12" sm="6" md="3">
-			<v-btn :loading="loading" dark small color="primary" block class="mt-2" @click="submit">
+		<v-col cols="12">
+			<v-btn small text color="primary" @click="back">
+				regresar
+			</v-btn>
+			<v-btn small text color="primary" @click="close">
+				Cancelar
+			</v-btn>
+			<v-btn :loading="loading" text small color="primary" @click="submit">
 				Guardar
 			</v-btn>
 		</v-col>
@@ -95,6 +101,14 @@ export default {
 	props: {
 		idPlace: {
 			type: String,
+			required: true,
+		},
+		back: {
+			type: Function,
+			required: true,
+		},
+		close: {
+			type: Function,
 			required: true,
 		},
 	},

@@ -1,6 +1,6 @@
 <template>
 	<v-row>
-		<v-col cols="12" sm="6" md="4" lg="3">
+		<v-col cols="12">
 			<v-select
 				id="date"
 				v-model="$v.lodgingSelected.$model"
@@ -15,7 +15,7 @@
 				@blur="$v.lodgingSelected.$touch()"
 			></v-select>
 		</v-col>
-		<v-col v-if="optionsLodgings.length" cols="12" sm="6" md="4" lg="3">
+		<v-col v-if="optionsLodgings.length" cols="12">
 			<v-text-field
 				id="mount"
 				v-model="mount"
@@ -27,7 +27,7 @@
 				placeholder="Ej: 10000 CLP"
 			></v-text-field>
 		</v-col>
-		<v-col v-if="optionsLodgings.length" cols="12" sm="6" md="4" lg="3">
+		<v-col v-if="optionsLodgings.length" cols="12">
 			<v-file-input
 				id="voucher"
 				ref="voucher"
@@ -45,9 +45,15 @@
 				</template>
 			</v-file-input>
 		</v-col>
-		<v-col v-if="optionsLodgings.length" cols="12" sm="6" md="3" lg="3">
-			<v-btn :loading="loading" block color="primary" class="mt-2" small @click="submit">
-				Agregar Pago
+		<v-col cols="12">
+			<v-btn small text color="primary" @click="back">
+				Regresar
+			</v-btn>
+			<v-btn small text color="primary" @click="close">
+				Cancelar
+			</v-btn>
+			<v-btn :loading="loading" color="primary" text small @click="submit">
+				Guardar
 			</v-btn>
 		</v-col>
 	</v-row>
@@ -64,6 +70,14 @@ export default {
 	props: {
 		idPlace: {
 			type: String,
+			required: true,
+		},
+		back: {
+			type: Function,
+			required: true,
+		},
+		close: {
+			type: Function,
 			required: true,
 		},
 	},
