@@ -90,7 +90,6 @@ export default {
 	},
 	data() {
 		return {
-			form: new FormData(),
 			lodgingSelected: null,
 			mount: '',
 			voucher: null,
@@ -162,13 +161,14 @@ export default {
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				this.form.set('idPlace', this.idPlace);
-				this.form.set('idLodging', this.lodgingSelected.id);
-				this.form.set('startDate', this.lodgingSelected.start);
-				this.form.set('endDate', this.lodgingSelected.end);
-				this.form.set('mount', this.mount);
-				this.form.append('voucher', this.voucher);
-				await this.save(this.form);
+				let form = new FormData();
+				form.set('idPlace', this.idPlace);
+				form.set('idLodging', this.lodgingSelected.id);
+				form.set('startDate', this.lodgingSelected.start);
+				form.set('endDate', this.lodgingSelected.end);
+				form.set('mount', this.mount);
+				form.set('voucher', this.voucher);
+				await this.save(form);
 				this.clearInputs();
 				this.updatePayments(this.idPlace);
 				this.close();

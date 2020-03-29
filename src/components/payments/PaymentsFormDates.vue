@@ -117,14 +117,12 @@ export default {
 			dates: [],
 			menu: null,
 			text: '',
-			form: new FormData(),
 			startDate: '',
 			endDate: '',
 			mount: '',
 			voucher: null,
 			voucherName: null,
 			comments: '',
-			errors: '',
 		};
 	},
 	computed: {
@@ -184,15 +182,14 @@ export default {
 		async submit() {
 			// validations
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				this.errors = true;
-			} else {
-				this.form.set('idPlace', this.idPlace);
-				this.form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
-				this.form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
-				this.form.set('mount', this.mount);
-				this.form.append('voucher', this.voucher);
-				await this.save(this.form);
+			if (!this.$v.$invalid) {
+				let form = new FormData();
+				form.set('idPlace', this.idPlace);
+				form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
+				form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
+				form.set('mount', this.mount);
+				form.set('voucher', this.voucher);
+				await this.save(form);
 				this.updatePayments(this.idPlace);
 				this.clearInputs();
 				this.close();

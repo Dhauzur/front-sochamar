@@ -5,11 +5,11 @@
 				<v-stepper v-model="stepper" class="elevation-12">
 					<v-stepper-header>
 						<v-stepper-step :complete="stepper > 1" step="1">
-							Seleccione
+							Tipo
 						</v-stepper-step>
 						<v-divider></v-divider>
 						<v-stepper-step :complete="stepper > 2" step="2">
-							Formulario
+							Pago
 						</v-stepper-step>
 					</v-stepper-header>
 					<v-stepper-items>
