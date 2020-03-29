@@ -177,13 +177,12 @@ export default {
 			this.clearInputs();
 			this.$v.$reset();
 		},
-		async deleteOne(id) {
-			(await confirm('Estas seguro de que quieres eliminar este turno?')) &&
+		deleteOne(id) {
+			confirm('Estas seguro de que quieres eliminar este turno?') &&
 				this.deletePeriod({
 					id: id,
 					placeId: this.idPlace,
-				});
-			this.fetchLodgings();
+				}).then(this.fetchLodgings());
 		},
 		clearInputs() {
 			this.form.name = '';
