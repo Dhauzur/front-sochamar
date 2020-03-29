@@ -1,6 +1,97 @@
 <template>
 	<v-container>
 		<v-row>
+			<!-- header -->
+			<v-col cols="12">
+				<v-row justify="center">
+					<v-col cols="4">
+						<span class="title">Lista de Pagos</span>
+					</v-col>
+				</v-row>
+				<v-row justify="space-between">
+					<v-col cols="12" md="2" class="text-left py-0">
+						<v-btn small color="accent" @click="dialog = true">
+							<v-icon>mdi-plus</v-icon>Agregar
+						</v-btn>
+					</v-col>
+					<v-col cols="12" md="3" class="py-0">
+						<v-text-field
+							v-model="wordForFilter"
+							dense
+							outlined
+							append-icon="mdi-magnify"
+							label="Filtrar"
+							hide-details
+						></v-text-field>
+					</v-col>
+				</v-row>
+			</v-col>
+			<!-- table -->
+			<v-col cols="12" class="mx-auto">
+				<v-data-table
+					dense
+					loading-text="Cargando... por favor espere"
+					no-data-text="No hay pagos"
+					:loading="loading"
+					:search="wordForFilter"
+					:headers="fields"
+					:items="payments"
+					:items-per-page="5"
+					item-key="_id"
+					class="caption"
+				>
+					<template v-slot:item.startDate="props">
+						<span>{{ formatStartDate(props.item) }}</span>
+					</template>
+					<template v-slot:item.endDate="props">
+						<span>{{ formatEndDate(props.item) }}</span>
+					</template>
+					<template v-slot:item.mount="{ item }">
+						<span class="success--text">$ {{ item.mount }}</span>
+					</template>
+					<template v-slot:item.voucher="props">
+						<v-btn text :href="props.item.voucher.url" small>
+							{{ props.item.voucher.name }}
+						</v-btn>
+					</template>
+					<template v-slot:item.comments="props">
+						<small
+							v-for="(element, i) in props.item.comments"
+							:key="i"
+							class="text-lowercase d-block"
+						>
+							{{ element }}
+						</small>
+					</template>
+					<template v-slot:item.actions="{ item }">
+						<span style="display: inline-block !important">
+							<v-edit-dialog @save="saveComment(item)">
+								<v-btn fab color="success" x-small>
+									<v-icon>mdi-comment-plus</v-icon>
+								</v-btn>
+								<template v-slot:input>
+									<v-text-field
+										v-model="newComment"
+										label="Comentario"
+										single-line
+										counter
+									></v-text-field>
+								</template>
+							</v-edit-dialog>
+						</span>
+						<v-btn
+							x-small
+							fab
+							color="error"
+							class="mr-2 ml-2"
+							@click="deleteItem(item._id)"
+						>
+							<v-icon>mdi-delete</v-icon>
+						</v-btn>
+					</template>
+				</v-data-table>
+			</v-col>
+			<!-- dialog steeper form -->
 			<v-dialog v-model="dialog" max-width="440" persistent>
 				<v-stepper v-model="stepper" class="elevation-12">
 					<v-stepper-header>
@@ -48,75 +139,6 @@
 					</v-stepper-items>
 				</v-stepper>
 			</v-dialog>
-			<v-col cols="12" class="mx-auto">
-				<v-card-title>
-					Lista de Pagos
-					<v-btn small color="primary" class="ma-3" @click="dialog = true">
-						<v-icon>mdi-plus</v-icon>
-					</v-btn>
-					<v-spacer></v-spacer>
-					<v-text-field
-						v-model="wordForFilter"
-						dense
-						outlined
-						append-icon="mdi-magnify"
-						label="Filtrar"
-						hide-details
-					></v-text-field>
-				</v-card-title>
-				<v-data-table
-					dense
-					loading-text="Cargando... por favor espere"
-					no-data-text="No hay pagos"
-					:loading="loading"
-					:search="wordForFilter"
-					:headers="fields"
-					:items="payments"
-					:items-per-page="5"
-					item-key="_id"
-				>
-					<template v-slot:item.voucher="props">
-						<v-btn text :href="props.item.voucher.url" small>
-							{{ props.item.voucher.name }}
-						</v-btn>
-					</template>
-					<template v-slot:item.comments="props">
-						<small
-							v-for="(element, i) in props.item.comments"
-							:key="i"
-							class="text-lowercase d-block"
-						>
-							{{ element }}
-						</small>
-					</template>
-					<template v-slot:item.actions="{ item }">
-						<span style="display: inline-block !important">
-							<v-edit-dialog @save="saveComment(item)">
-								<v-btn fab color="success" x-small>
-									<v-icon>mdi-comment-plus</v-icon>
-								</v-btn>
-								<template v-slot:input>
-									<v-text-field
-										v-model="newComment"
-										label="Comentario"
-										single-line
-										counter
-									></v-text-field>
-								</template>
-							</v-edit-dialog>
-						</span>
-						<v-btn
-							x-small
-							fab
-							color="error"
-							class="mr-2 ml-2"
-							@click="deleteItem(item._id)"
-						>
-							<v-icon>mdi-delete</v-icon>
-						</v-btn>
-					</template>
-				</v-data-table>
-			</v-col>
 		</v-row>
 	</v-container>
 </template>
@@ -178,8 +200,14 @@ export default {
 	},
 	methods: {
 		async deleteItem(id) {
-			await this.delete(id);
+			(await confirm('Estas seguro de que quieres eliminar este pago?')) && this.delete(id);
 			this.fetchPayments(this.idPlace);
+		},
+		formatStartDate(item) {
+			return moment(item.startDate).format('LL');
+		},
+		formatEndDate(item) {
+			return moment(item.endDate).format('LL');
 		},
 		closeDialog() {
 			this.dialog = false;
