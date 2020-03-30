@@ -34,11 +34,6 @@
 						</v-dialog>
 						<!-- steppers -->
 						<v-dialog v-model="dialogAddPerson" max-width="440">
-							<template v-slot:activator="{ on }">
-								<v-btn small color="accent" class="ma-2" v-on="on">
-									Agregar persona
-								</v-btn>
-							</template>
 							<v-stepper v-model="stepper" class="elevation-12">
 								<v-stepper-header>
 									<v-stepper-step :complete="stepper > 1" step="1">
@@ -83,7 +78,6 @@
 											v-model="datesPersons"
 											no-title
 											range
-											:first-day-of-week="1"
 											locale="es"
 											:show-current="false"
 											scrollable
@@ -125,6 +119,15 @@
 							:groups="groups"
 							:options="options"
 						/>
+						<v-overlay v-if="!items.length" :value="overlay" absolute :opacity="0.8">
+							Doble click para agregar persona
+							<v-btn icon @click="overlay = false">
+								<v-icon>mdi-close</v-icon>
+							</v-btn>
+						</v-overlay>
+						<span v-else class="caption text--secondary"
+							>Doble click para agregar persona</span
+						>
 					</v-tab-item>
 					<v-tab-item>
 						<rooms v-if="idPlace" :id-place="idPlace" />
@@ -159,6 +162,7 @@ export default {
 	},
 	data() {
 		return {
+			overlay: true,
 			componentReady: false,
 			tab: 0,
 			select: 'Sin habitación',
@@ -195,11 +199,13 @@ export default {
 		},
 		items() {
 			if (this.lodgingSelect.persons) {
-				return this.lodgingSelect.persons.map(person => ({
+				return this.lodgingSelect.persons.map((person, index) => ({
+					index,
 					id: person.id,
+					idPerson: person.idPerson,
 					group: person.group,
-					start: person.dateStart,
-					end: person.dateEnd,
+					start: moment(person.dateStart),
+					end: moment(person.dateEnd),
 					content: person.name,
 				}));
 			}
@@ -207,11 +213,54 @@ export default {
 		},
 		options() {
 			return {
-				start: moment(),
-				end: moment().add(14, 'day'),
-				editable: false,
-				zoomMin: 1000 * 60 * 60 * 24 * 7,
-				zoomMax: 1000 * 60 * 60 * 24 * 30,
+				editable: true,
+				start: moment(this.lodgingSelect.start),
+				end: moment(this.lodgingSelect.end),
+				zoomMin: 1000 * 60 * 60 * 24 * 10,
+				zoomMax: 1000 * 60 * 60 * 24 * 15,
+				onRemove: item => {
+					this.removeLodgingPersons(item.index);
+					this.setBottomSheet({ action: false, lodging: null });
+					this.setBottomSheet({ action: true, lodging: this.lodgingSelect.id });
+					this.saveLodgings();
+				},
+				onAdd: () => {
+					this.openDialogPerson();
+				},
+				onMove: (item, callback) => {
+					// range into lodging
+					let range =
+						moment(item.start).isSameOrAfter(
+							moment(this.lodgingSelect.start).format('YYYY-MM-DD')
+						) &&
+						moment(item.end).isSameOrBefore(
+							moment(this.lodgingSelect.end).format('YYYY-MM-DD')
+						);
+
+					if (range) {
+						let dataOverlay = {
+							id: item.idPerson,
+							dateStart: item.start,
+							dateEnd: item.end,
+							timestamp: item.id,
+						};
+
+						if (this.verifyOverlay(dataOverlay)) {
+							this.updatePersonsLodging(item);
+							callback(item);
+							this.setBottomSheet({ action: false, lodging: null });
+							this.setBottomSheet({ action: true, lodging: this.lodgingSelect.id });
+							this.saveLodgings();
+						} else {
+							this.$toasted.show(
+								'Ya existe el pasajero para el rango de fecha selecionado',
+								{ type: 'error' }
+							);
+						}
+					} else {
+						this.$toasted.show('La fecha esta fuera del hospedaje', { type: 'error' });
+					}
+				},
 			};
 		},
 		personFormatted() {
@@ -242,11 +291,15 @@ export default {
 		},
 	},
 	mounted() {
+		this.overlay = true;
 		this.setDateIntheState();
 		this.fetchRooms(this.idPlace);
 		setTimeout(() => (this.componentReady = true), 800);
 	},
 	methods: {
+		openDialogPerson() {
+			this.dialogAddPerson = true;
+		},
 		closeDialogPerson() {
 			this.personSelected = null;
 			this.dialogAddPerson = false;
@@ -341,13 +394,14 @@ export default {
 				: this.dateStart;
 			const dateEnd = this.setDateEndPerson() ? this.setDateEndPerson() : this.dateEnd;
 			const group = this.select;
-			this.verifyOverlay() === 'OK'
-				? this.updateLodgingPersons({
-						id,
+			this.verifyOverlay({ id, dateStart, dateEnd })
+				? this.addPersonsLodging({
+						id: Date.now(),
+						idPerson: id,
 						group,
 						name,
-						dateStart,
-						dateEnd,
+						dateStart: moment(dateStart),
+						dateEnd: moment(dateEnd),
 				  })
 				: this.$toasted.show(`Ya existe un pasajero para el rango de fecha selecionado`, {
 						type: 'error',
@@ -359,33 +413,29 @@ export default {
 			this.setBottomSheet({ action: true, lodging: oldIdLodgingSelect });
 		},
 		/**
-		 * check if date of person is already taken
+		 * Check date of person is already taken
+		 * @param {Object} element to verify overlay
+		 * @param {String} element.id id person
+		 * @param {String} element.dateStart dateStart person
+		 * @param {String} element.dateEnd dateEnd person
 		 */
-		verifyOverlay() {
-			const id = this.personSelected._id;
-			const start = this.setDateStartPerson();
-			const end = this.setDateEndPerson();
-			let verificate = null;
+		verifyOverlay(element) {
+			let verificate = true;
 			let temp = this.lodgingPersons.filter(person => {
-				return person.id === id;
+				return person.idPerson === element.id && person.id !== element.timestamp;
 			});
 
-			if (temp.length > 0) {
+			temp.length &&
 				temp.map(item => {
-					if (
-						(moment(start).isBefore(moment(item.dateStart)) &&
-							moment(end).isBefore(moment(item.dateStart))) ||
-						(moment(start).isAfter(moment(item.dateEnd)) &&
-							moment(end).isAfter(moment(item.dateEnd)))
-					) {
-						verificate = 'OK';
-					} else {
-						verificate = 'No puede agregar en esa fecha';
+					let validation =
+						(moment(element.dateStart).isBefore(moment(item.dateStart)) &&
+							moment(element.dateEnd).isBefore(moment(item.dateStart))) ||
+						(moment(element.dateStart).isAfter(moment(item.dateEnd)) &&
+							moment(element.dateEnd).isAfter(moment(item.dateEnd)));
+					if (!validation) {
+						verificate = false;
 					}
 				});
-			} else {
-				verificate = 'OK';
-			}
 
 			return verificate;
 		},
@@ -398,7 +448,8 @@ export default {
 			setLodgingSelect: 'Lodging/setLodgingSelect',
 			setBottomSheet: 'Lodging/setBottomSheet',
 			sendDateChange: 'Lodging/dateChange',
-			updateLodgingPersons: 'Lodging/updateLodgingPersons',
+			addPersonsLodging: 'Lodging/addPersonsLodging',
+			updatePersonsLodging: 'Lodging/updatePersonsLodging',
 			removeLodgingPersons: 'Lodging/removeLodgingPersons',
 		}),
 	},

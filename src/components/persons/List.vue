@@ -3,9 +3,12 @@
 		<v-list three-line>
 			<template>
 				<v-list-item :key="item.title">
-					<v-list-item-avatar>
-						<v-img :src="setAvatarlist(item.avatar)"></v-img>
-					</v-list-item-avatar>
+					<Avatar
+						icon
+						:name="item.firstName"
+						:last-name="item.lastName"
+						:url="item.avatar"
+					/>
 					<v-list-item-content>
 						<v-list-item-title>
 							{{ name(item.firstName, item.lastName) }}
@@ -46,9 +49,12 @@
 </template>
 
 <script>
-import avatarDefault from '@/assets/default.png';
+import Avatar from '@/components/ui/Avatar';
 
 export default {
+	components: {
+		Avatar,
+	},
 	props: {
 		deleteOne: {
 			type: Function,
@@ -71,10 +77,6 @@ export default {
 				return `${text.substr(0, 14)}..`;
 			}
 			return text;
-		},
-		setAvatarlist(element) {
-			if (typeof element === 'string') return element;
-			else return avatarDefault;
 		},
 	},
 };

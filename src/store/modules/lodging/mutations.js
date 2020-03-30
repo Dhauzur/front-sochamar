@@ -19,8 +19,22 @@ const mutations = {
 	setAllLodgingPersons(state, values) {
 		state.lodgingPersons = values;
 	},
-	updateLodgingPersons(state, value) {
+	addPersonsLodging(state, value) {
 		state.lodgingPersons.push(value);
+		state.lodgings.update({
+			id: state.lodgingSelect.id,
+			persons: state.lodgingPersons,
+		});
+	},
+	updatePersonsLodging(state, value) {
+		state.lodgingPersons[value.index] = {
+			id: value.id,
+			idPerson: value.idPerson,
+			group: value.group,
+			dateStart: value.start,
+			dateEnd: value.end,
+			name: value.content,
+		};
 		state.lodgings.update({
 			id: state.lodgingSelect.id,
 			persons: state.lodgingPersons,
