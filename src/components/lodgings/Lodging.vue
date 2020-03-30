@@ -102,20 +102,6 @@
 						<span>Guardar</span>
 					</v-tooltip>
 				</v-col>
-				<!-- payments dialog -->
-				<!-- <template v-if="Boolean(place) && dialogPayments">
-					<v-dialog v-model="dialogPayments" fullscreen>
-						<v-card>
-							<v-toolbar dark color="primary">
-								<v-btn icon dark @click="dialogPayments = false">
-									<v-icon>mdi-close</v-icon>
-								</v-btn>
-								<v-toolbar-title>Gestion de Pagos</v-toolbar-title>
-							</v-toolbar>
-							<Payments :id-place="place" />
-						</v-card>
-					</v-dialog>
-				</template> -->
 			</v-row>
 			<!-- timeline -->
 			<v-row>
@@ -148,7 +134,7 @@
 					</v-col>
 				</template>
 			</v-row>
-			<!--aqui va la tabla-->
+			<!-- table -->
 			<v-row>
 				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
 					<table>
@@ -220,6 +206,7 @@
 					</v-btn>
 				</v-col>
 			</v-row>
+			<!-- bottom sheets -->
 			<v-row justify="center">
 				<v-col>
 					<v-bottom-sheet
@@ -567,7 +554,6 @@ export default {
 				});
 			return dates;
 		},
-		// eslint-disable-next-line vue/return-in-computed-property
 		...mapGetters({
 			periodAllPlace: 'Lodging/periodAllPlace',
 			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
