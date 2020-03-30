@@ -254,53 +254,6 @@ const mutations = {
 		}
 		state.Places = Places;
 	},
-	updateService(state, value) {
-		state.updatingService = null;
-		let idValue = value.id.split(',')[0];
-		let dateValue = value.id.split(',')[1];
-		let newService = [];
-		//Si el value existe, se inicia el proceso de actualizar service
-		if (value) {
-			state.lodgings.forEach(l => {
-				//Si la id de value coincide con un lodging, se continua el proceso de actualizar service
-				if (idValue === l.id) {
-					let numberDays = moment(l.end).diff(
-						moment(l.start).format('YYYY-MM-DD'),
-						'days'
-					);
-					//generalmente numberDay siempre va ser 1
-					for (let i = 0; i <= numberDays; i++) {
-						//si la fecha de value es igual a la fecha del lodging
-						if (
-							moment(l.start)
-								.add(i, 'day')
-								.format('YYYY-MM-DD') === dateValue
-						) {
-							//se obtiene el arreglo de service
-							let service = JSON.parse(l.service[0]);
-							//service[i] nos indica que va tocar el service de un dia
-							//la segunda posicion de service[i][] corresponde al servicio a modificar
-
-							//la cantidad de service y placeServices son iguales, si encontramos el index de placeServices
-							//sabremos que posicion de service modificar
-							const serviceIndex = findServiceIndexByName(value.name, service[i]);
-							//En base al index encontrado y el dia, procedemos a actualizar el valor
-							service[i][serviceIndex].quantity = parseInt(value.value);
-							newService.push(JSON.stringify(service));
-							state.editMode = false;
-							//El lodging es modificado y el nuevo servicio queda registado
-							state.lodgings.update({
-								id: l.id,
-								service: newService,
-							});
-							state.editMode = true;
-						}
-					}
-				}
-			});
-		}
-	},
-	// eslint-disable-next-line no-unused-vars
 	updateActualService(state, { inputValue, lodgingId, dayIndex, serviceIndex }) {
 		const foundLodging = state.lodgings.get({
 			filter: item => item.id === lodgingId,
@@ -314,6 +267,34 @@ const mutations = {
 		state.lodgings.update({
 			id: lodgingId,
 			days: foundLodging[0].days,
+		});
+	},
+	subDaysServices(state, { serviceName, lodgingId }) {
+		const foundLodging = state.lodgings.get({
+			filter: item => item.id === lodgingId,
+		});
+		foundLodging[0].days.forEach(day => {
+			day.services.forEach(service => {
+				if (service.name === serviceName) {
+					service.quantity = service.quantity - 1;
+					if (service.quantity < 0) service.quantity = 0;
+				}
+			});
+		});
+	},
+	addDaysServices(state, { serviceName, lodgingId }) {
+		const numberPassangerMax = 1;
+		const foundLodging = state.lodgings.get({
+			filter: item => item.id === lodgingId,
+		});
+		foundLodging[0].days.forEach(day => {
+			day.services.forEach(service => {
+				if (service.name === serviceName) {
+					service.quantity = service.quantity + 1;
+					if (service.quantity == null) service.quantity = 0;
+					if (service.quantity > numberPassangerMax) service.quantity = 0;
+				}
+			});
 		});
 	},
 	setPeriods(state, values) {

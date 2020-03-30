@@ -178,51 +178,89 @@
 						</v-card-title>
 						<v-row>
 							<v-col v-for="(day, dayIndex) in lodging.days" :key="dayIndex" cols="4">
-								{{ dayIndex }}
 								<v-card>
 									<div>{{ day.date }}</div>
-									<v-simple-table>
-										<template v-slot:default>
-											<thead>
-												<tr>
-													<th class="text-left">Nombre</th>
-													<th class="text-left">Precio</th>
-													<th class="text-left">Cantidad</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr
-													v-for="(service, serviceIndex) in day.services"
-													:key="serviceIndex"
-												>
-													<td>{{ serviceIndex }}</td>
-													<td>{{ service.name }}</td>
-													<td>{{ service.price }}</td>
-													<td>
-														<label>
-															<input
-																:id="serviceIndex"
-																v-model.number="service.quantity"
-																type="number"
-																class="inputService"
-																@input="
-																	detectServiceQuantityChange(
-																		$event,
-																		lodging.group,
-																		lodging.id,
-																		dayIndex,
-																		serviceIndex
-																	)
-																"
-															/>
-														</label>
-													</td>
-												</tr>
-											</tbody>
-										</template>
-									</v-simple-table>
+									{{ day.services }}
+									<table>
+										<thead>
+											<tr>
+												<th class="text-left">Nombre</th>
+												<th class="text-left">Precio</th>
+												<th class="text-left">Cantidad</th>
+												<th class="text-left">SubTotal</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												v-for="(service, serviceIndex) in day.services"
+												:key="serviceIndex"
+											>
+												<td>{{ service.name }}</td>
+												<td>{{ service.price }}</td>
+												<td>
+													<input
+														:id="day.date"
+														v-model.number="service.quantity"
+														type="number"
+														class="inputService"
+														@change="
+															detectServiceQuantityChange(
+																$event,
+																lodging.group,
+																lodging.id,
+																dayIndex,
+																serviceIndex
+															)
+														"
+													/>
+												</td>
+												<td>{{ service.price * service.quantity }}</td>
+											</tr>
+										</tbody>
+									</table>
 									<div>Total: {{ day.dayTotal }}</div>
 								</v-card>
+							</v-col>
+						</v-row>
+						<v-row>
+							<v-col cols="12" sm="4">
+								<v-select
+									id="services_select"
+									v-model="serviceSelected"
+									:items="servicesComboBox"
+									dense
+									label="Servicios"
+									outlined
+								>
+								</v-select>
+							</v-col>
+							<v-col cols="6" md="3" class="mt-1">
+								<v-btn
+									small
+									color="primary"
+									@click="
+										addDaysServices({
+											serviceName: serviceSelected,
+											lodgingId: lodging.id,
+										})
+									"
+								>
+									+1 {{ serviceSelected }}
+								</v-btn>
+							</v-col>
+							<v-col cols="6" md="3" class="mt-1">
+								<v-btn
+									small
+									color="primary"
+									@click="
+										subDaysServices({
+											serviceName: serviceSelected,
+											lodgingId: lodging.id,
+										})
+									"
+								>
+									-1 {{ serviceSelected }}
+								</v-btn>
 							</v-col>
 						</v-row>
 					</v-card>
@@ -277,29 +315,6 @@
 				</v-col>
 			</v-row>-->
 			<!--aqui van los botones de proyection-->
-			<!--<v-row v-if="lodgingSelect && selectedPlace">
-				<v-col cols="12" sm="4">
-					<v-select
-						id="services_select"
-						v-model="serviceSelected"
-						:items="servicesComboBox"
-						dense
-						label="Servicios"
-						outlined
-					>
-					</v-select>
-				</v-col>
-				<v-col cols="6" md="3" class="mt-1">
-					<v-btn small color="primary" @click="addOneService(serviceSelected)">
-						+1 {{ serviceSelected }}
-					</v-btn>
-				</v-col>
-				<v-col cols="6" md="3" class="mt-1">
-					<v-btn small color="primary" @click="subOneService(serviceSelected)">
-						-1 {{ serviceSelected }}
-					</v-btn>
-				</v-col>
-			</v-row>-->
 			<v-row justify="center">
 				<v-col>
 					<v-bottom-sheet
@@ -741,7 +756,14 @@ export default {
 		},
 		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
 		//Esta funcion se encarga de evaluar el valor y luego pasarlo a updateService, updateService es el encargado real de actualizar el valor
-		detectServiceQuantityChange(payload, lodgingGroup, lodgingId, dayIndex, serviceIndex) {
+		detectServiceQuantityChange(
+			payload,
+			lodgingGroup,
+			lodgingId,
+			dayIndex,
+			serviceIndex,
+			dayDate
+		) {
 			console.log('trigger de input value');
 			let inputValue = payload.target.value;
 			if (inputValue === '') inputValue = 0;
@@ -754,7 +776,7 @@ export default {
 			}
 			//si el valor es menor a 0, se setea el numero de pasajeros como valor
 			if (inputValue < 0) inputValue = numberPassangerMax;
-			this.updateActualService({ inputValue, lodgingId, dayIndex, serviceIndex });
+			this.updateActualService({ inputValue, lodgingId, dayIndex, serviceIndex, dayDate });
 		},
 		enableEdit(payload) {
 			if (this.place && payload.item) {
@@ -780,8 +802,8 @@ export default {
 		}),
 		...mapMutations({
 			setBottomSheet: 'Lodging/setBottomSheet',
-			addOneService: 'Lodging/addOneService',
-			subOneService: 'Lodging/subOneService',
+			subDaysServices: 'Lodging/subDaysServices',
+			addDaysServices: 'Lodging/addDaysServices',
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
 			setAllLodgingPersons: 'Lodging/setAllLodgingPersons',
