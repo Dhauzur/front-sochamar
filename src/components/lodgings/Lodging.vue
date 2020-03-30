@@ -228,7 +228,7 @@
 						@click:outside="setBottomSheet(false)"
 					>
 						<v-sheet style="height: 75vh">
-							<edit-lodging :lodgings="lodgings" :id-place="place" />
+							<edit-lodging />
 						</v-sheet>
 					</v-bottom-sheet>
 					<v-bottom-sheet
