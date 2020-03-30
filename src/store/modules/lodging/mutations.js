@@ -2,7 +2,8 @@ import { DataSet } from 'vue2vis';
 import moment from 'moment';
 import { findServiceIndexByName } from '@/utils/lodging/findServiceIndex';
 import { generateDaysArray } from '@/utils/lodging/daysArray';
-import { generateSingleDay } from '../../../utils/lodging/daysArray';
+import { generateSingleDay } from '@/utils/lodging/daysArray';
+import { dayTotal } from '@/utils/lodging/dayTotal';
 
 const mutations = {
 	setBottomSheet(state, value) {
@@ -298,6 +299,22 @@ const mutations = {
 				}
 			});
 		}
+	},
+	// eslint-disable-next-line no-unused-vars
+	updateActualService(state, { inputValue, lodgingId, dayIndex, serviceIndex }) {
+		const foundLodging = state.lodgings.get({
+			filter: item => item.id === lodgingId,
+		});
+		//En base al dia y index de servicio actualizamos la cantidad
+		//get de vis dataSet siempre nos devuelve un arreglo con objetos, en este caso es solo 1 por eso siempre usar la posicion 0 para este caso
+		foundLodging[0].days[dayIndex].services[serviceIndex].quantity = inputValue;
+		//como cambiamos un valor en especifico, podemos actualizar el valor de dayTotal
+		foundLodging[0].days[dayIndex].dayTotal = dayTotal(foundLodging[0].days[dayIndex].services);
+		//En base a la id del lodging actualizaremos la propiedad days
+		state.lodgings.update({
+			id: lodgingId,
+			days: foundLodging[0].days,
+		});
 	},
 	setPeriods(state, values) {
 		state.periods = new DataSet([]);

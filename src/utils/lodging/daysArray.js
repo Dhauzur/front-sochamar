@@ -1,5 +1,6 @@
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
+import { dayTotal } from './dayTotal';
 const moment = extendMoment(Moment);
 
 export const generateDaysArray = (place, startDate, endDate) => {
@@ -39,6 +40,7 @@ export const generateDaysArray = (place, startDate, endDate) => {
 				dayTotal: 0,
 			};
 			dayObject.services = servicesArray;
+			dayObject.dayTotal = dayTotal(servicesArray);
 			daysArray.push(dayObject);
 		});
 		//push del ultimo  dia
@@ -46,7 +48,9 @@ export const generateDaysArray = (place, startDate, endDate) => {
 		daysArray.push(endDay);
 	} else {
 		startDay.services = servicesArray;
+		startDay.dayTotal = dayTotal(servicesArray);
 		endDay.services = servicesArray;
+		endDay.dayTotal = dayTotal(servicesArray);
 		daysArray = [startDay, endDay];
 	}
 
@@ -69,5 +73,6 @@ export const generateSingleDay = (place, dayDate) => {
 		servicesArray.push(serviceObject);
 	});
 	dayObject.services = servicesArray;
+	dayObject.dayTotal = dayTotal(servicesArray);
 	return dayObject;
 };

@@ -178,6 +178,7 @@
 						</v-card-title>
 						<v-row>
 							<v-col v-for="(day, dayIndex) in lodging.days" :key="dayIndex" cols="4">
+								{{ dayIndex }}
 								<v-card>
 									<div>{{ day.date }}</div>
 									<v-simple-table>
@@ -194,9 +195,7 @@
 													v-for="(service, serviceIndex) in day.services"
 													:key="serviceIndex"
 												>
-													{{
-														service.quantity
-													}}
+													<td>{{ serviceIndex }}</td>
 													<td>{{ service.name }}</td>
 													<td>{{ service.price }}</td>
 													<td>
@@ -206,7 +205,7 @@
 																v-model.number="service.quantity"
 																type="number"
 																class="inputService"
-																@change="
+																@input="
 																	detectServiceQuantityChange(
 																		$event,
 																		lodging.group,
@@ -222,7 +221,7 @@
 											</tbody>
 										</template>
 									</v-simple-table>
-									<div>Total: {{ dayTotal(day.services) }}</div>
+									<div>Total: {{ day.dayTotal }}</div>
 								</v-card>
 							</v-col>
 						</v-row>
@@ -743,22 +742,19 @@ export default {
 		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
 		//Esta funcion se encarga de evaluar el valor y luego pasarlo a updateService, updateService es el encargado real de actualizar el valor
 		detectServiceQuantityChange(payload, lodgingGroup, lodgingId, dayIndex, serviceIndex) {
-			//Si es 0 o string, deja el value como 0
-			console.log(
-				`id del lodging ${lodgingId} ,  index del dia ${dayIndex} y index del servicio ${serviceIndex}`
-			);
-			if (payload.target.value === '') payload.target.value = 0;
+			console.log('trigger de input value');
+			let inputValue = payload.target.value;
+			if (inputValue === '') inputValue = 0;
 			//busca el numero de pasajeros en el lodging seleccionado
 			const numberPassangerMax = this.periods.get(lodgingGroup).numberPassangerMax;
 			//si el valor excede el numero de pasaejeros, se setea el numero de pasajeros como valor y se levanta una notificacion toast
-			if (payload.target.value > numberPassangerMax) {
+			if (inputValue >= numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
-				payload.target.value = numberPassangerMax;
+				inputValue = numberPassangerMax;
 			}
 			//si el valor es menor a 0, se setea el numero de pasajeros como valor
-			if (payload.target.value < 0) {
-				payload.target.value = numberPassangerMax;
-			}
+			if (inputValue < 0) inputValue = numberPassangerMax;
+			this.updateActualService({ inputValue, lodgingId, dayIndex, serviceIndex });
 		},
 		enableEdit(payload) {
 			if (this.place && payload.item) {
@@ -773,14 +769,6 @@ export default {
 					end: moment(payload.end),
 				});
 			}
-		},
-		dayTotal(services) {
-			let iterationPrice = 0;
-			services.forEach(service => {
-				let serviceTotal = service.price * service.quantity;
-				iterationPrice = iterationPrice + serviceTotal;
-			});
-			return iterationPrice;
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
@@ -804,6 +792,7 @@ export default {
 			updateService: 'Lodging/updateService',
 			setSelectedPlace: 'Lodging/setSelectedPlace',
 			setServicesComboBox: 'Lodging/setServicesComboBox',
+			updateActualService: 'Lodging/updateActualService',
 		}),
 	},
 };
