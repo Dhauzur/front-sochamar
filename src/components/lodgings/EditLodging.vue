@@ -270,7 +270,6 @@ export default {
 			}));
 		},
 		...mapGetters({
-			place: 'Lodging/place',
 			rooms: 'Room/rooms',
 			lodgingPersons: 'Lodging/lodgingPersons',
 			lodgingSelect: 'Lodging/lodgingSelect',
