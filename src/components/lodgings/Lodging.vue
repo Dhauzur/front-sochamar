@@ -242,6 +242,7 @@
 										addDaysServices({
 											serviceName: serviceSelected,
 											lodgingId: lodging.id,
+											lodgingGroup: lodging.group,
 										})
 									"
 								>
@@ -765,7 +766,7 @@ export default {
 			dayDate
 		) {
 			console.log('trigger de input value');
-			let inputValue = payload.target.value;
+			let inputValue = parseInt(payload.target.value);
 			if (inputValue === '') inputValue = 0;
 			//busca el numero de pasajeros en el lodging seleccionado
 			const numberPassangerMax = this.periods.get(lodgingGroup).numberPassangerMax;

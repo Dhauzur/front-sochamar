@@ -260,6 +260,7 @@ const mutations = {
 		});
 		//En base al dia y index de servicio actualizamos la cantidad
 		//get de vis dataSet siempre nos devuelve un arreglo con objetos, en este caso es solo 1 por eso siempre usar la posicion 0 para este caso
+		console.log(foundLodging[0].days[dayIndex]);
 		foundLodging[0].days[dayIndex].services[serviceIndex].quantity = inputValue;
 		//como cambiamos un valor en especifico, podemos actualizar el valor de dayTotal
 		foundLodging[0].days[dayIndex].dayTotal = dayTotal(foundLodging[0].days[dayIndex].services);
@@ -273,29 +274,52 @@ const mutations = {
 		const foundLodging = state.lodgings.get({
 			filter: item => item.id === lodgingId,
 		});
-		foundLodging[0].days.forEach(day => {
-			day.services.forEach(service => {
-				if (service.name === serviceName) {
+		if (serviceName === 'todos los servicios') {
+			foundLodging[0].days.forEach(day => {
+				day.services.forEach(service => {
 					service.quantity = service.quantity - 1;
 					if (service.quantity < 0) service.quantity = 0;
-				}
+					day.dayTotal = dayTotal(day.services);
+				});
 			});
-		});
+		} else {
+			foundLodging[0].days.forEach(day => {
+				day.services.forEach(service => {
+					if (service.name === serviceName) {
+						service.quantity = service.quantity - 1;
+						if (service.quantity < 0) service.quantity = 0;
+						day.dayTotal = dayTotal(day.services);
+					}
+				});
+			});
+		}
 	},
-	addDaysServices(state, { serviceName, lodgingId }) {
-		const numberPassangerMax = 1;
+	addDaysServices(state, { serviceName, lodgingId, lodgingGroup }) {
+		const numberPassangerMax = state.periods.get(lodgingGroup).numberPassangerMax;
 		const foundLodging = state.lodgings.get({
 			filter: item => item.id === lodgingId,
 		});
-		foundLodging[0].days.forEach(day => {
-			day.services.forEach(service => {
-				if (service.name === serviceName) {
+		if (serviceName === 'todos los servicios') {
+			foundLodging[0].days.forEach(day => {
+				day.services.forEach(service => {
 					service.quantity = service.quantity + 1;
 					if (service.quantity == null) service.quantity = 0;
 					if (service.quantity > numberPassangerMax) service.quantity = 0;
-				}
+					day.dayTotal = dayTotal(day.services);
+				});
 			});
-		});
+		} else {
+			foundLodging[0].days.forEach(day => {
+				day.services.forEach(service => {
+					if (service.name === serviceName) {
+						service.quantity = service.quantity + 1;
+						if (service.quantity == null) service.quantity = 0;
+						if (service.quantity > numberPassangerMax) service.quantity = 0;
+						day.dayTotal = dayTotal(day.services);
+					}
+				});
+			});
+		}
 	},
 	setPeriods(state, values) {
 		state.periods = new DataSet([]);
