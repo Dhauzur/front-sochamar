@@ -305,7 +305,6 @@ export default {
 			dialogPeriods: false,
 			dialogPayments: false,
 			sheet: false,
-			//Este string interactua con la comboBox de services
 			serviceSelected: 'todos los servicios',
 			options: {
 				editable: true,
@@ -325,12 +324,13 @@ export default {
 						repeat: 'daily',
 					},
 				],
+				//preguntar que pasa aca
 				onUpdate: (item, callback) => {
 					if (this.place) {
 						this.setModeEdit(true);
 						if (this.verifyOverlay(item)) {
 							callback(item);
-							this.updateService(item);
+							/*this.updateService(item);*/
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
@@ -350,8 +350,7 @@ export default {
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
-				//No tenemos que modificar nada mas de onAdd
-				//Cuando clickeo una parte del timeline esta función hace trigger y se encarga de crear un lodging, es similar a createOnelodging de la store
+				//al hacer click en una parte del timeline, esta función actua similar a createOneLodging
 				onAdd: (item, callback) => {
 					if (this.place) {
 						const startDate = moment(item.start).hours(15);
@@ -367,14 +366,17 @@ export default {
 							item.content = place.text;
 							if (place != 'Turismo') item.days = generatedDays;
 							else item.days = generatedDays;
-							let timestamp = new Date().getTime().toString(16);
-							timestamp +
-								'xxxxxxxxxxxxxxxx'
-									.replace(/[x]/g, function() {
-										return ((Math.random() * 16) | 0).toString(16);
-									})
-									.toLowerCase();
-							item.id = timestamp;
+							const setTimeStamp = () => {
+								let timestamp = new Date().getTime().toString(16);
+								timestamp +
+									'xxxxxxxxxxxxxxxx'
+										.replace(/[x]/g, function() {
+											return ((Math.random() * 16) | 0).toString(16);
+										})
+										.toLowerCase();
+								return timestamp;
+							};
+							item.id = setTimeStamp();
 							this.addLodging(item);
 							if (!this.lodgings.get(item.id)) callback(item);
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
@@ -385,15 +387,19 @@ export default {
 				// eslint-disable-next-line no-unused-vars
 				onMove: (item, callback) => {
 					if (this.place) {
+						//guardamos los dias antiguos
 						const oldDays = item.days;
 						const startDate = moment(item.start);
 						const endDate = moment(item.end);
-
+						//en base a los nuevos rangos de fecha, creamos un arreglo de dias
 						const newDaysArray = generateDaysArray(
 							this.selectedPlace,
 							startDate,
 							endDate
 						);
+						//Con el nuevo arreglo de dias generados, buscamos si existe un fecha que corresponda a un dia viejo
+						//si existe un match entre ellos, la posicion del dia nuevo asignara al dia viejo.
+						//Con esto logramos preservar la data existente si yo quisiera extender el lodging hacia la derecha o izquierda.
 						const saveOldDaysServices = (oldDays, newDays) => {
 							oldDays.forEach(oldDay => {
 								const foundIndex = newDays.findIndex(
@@ -403,17 +409,12 @@ export default {
 							});
 						};
 						saveOldDaysServices(oldDays, newDaysArray);
-						//1- el contador i se esta contando la nueva cantidad de dias, esta encargado de recorrer nuestro arreglo de days
-						//3- entonces, por cada dia se va pushear un objeto days o se va conservar el existente.
-						//4- Si existe algo en la posicion entonces lo retornamos;
-						//5- si no existe el dia en la posicion, generamos un dia nuevo para esa posicion con generateSingleDay
-						//6- si es un dia nuevo, va ser necesario saber cual va ser la fecha del dia a ingresar;
 						item.days = newDaysArray;
 						item.start = moment(item.start).hours(15);
 						item.end = moment(item.end).hours(12);
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(true);
-							//Esta funcion ya no funciona con v3, preguntar el por que se actualizan los servvices aca
+							//Esta funcion ya no funciona con v3, preguntar el por que se actualizan los services aca
 							/*this.updateService(item);*/
 							callback(item);
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');

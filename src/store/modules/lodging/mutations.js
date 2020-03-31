@@ -1,7 +1,6 @@
 import { DataSet } from 'vue2vis';
 import moment from 'moment';
 import { generateDaysArray } from '@/utils/lodging/daysArray';
-import { generateSingleDay } from '@/utils/lodging/daysArray';
 import { dayTotal } from '@/utils/lodging/dayTotal';
 
 const mutations = {
@@ -52,51 +51,42 @@ const mutations = {
 		state.lodgings = tempLodgings;
 		state.mirrorLodging = JSON.stringify(state.lodgings);
 	},
-	//Esto pasa al editar el lodging, comentar todo mientras pasamos a la nueva estructura
+	//Esto pasa al editar el lodging
 	dateChange(state, value) {
 		console.log('trigger de detectChange');
 		let tempLodging = state.lodgingSelect;
 		let tempLodgings = state.lodgings;
 		state.lodgings = new DataSet([]);
+		const startDate = moment(value.dateStart).hours(15);
+		const endDate = moment(value.dateEnd).hours(12);
+
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
-			start: moment(value.dateStart).hours(15),
-			end: moment(value.dateEnd).hours(12),
+			start: startDate,
+			end: endDate,
 		});
 
-		let newDays = [];
-		let numberDays = moment(value.dateEnd).diff(
-			moment(value.dateStart).format('YYYY-MM-DD'),
-			'days'
-		);
 		const oldDays = state.lodgingSelect.days;
-		//Algoritmo
-		//1- el contador i esta contando la nueva cantidad de dias, recorre el primer acceso service[i].
-		//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
-		//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
-		//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
-		const generateNewDays = oldDay => {
-			if (oldDay) {
-				//por evaluar si debemos controlar el valor quantity con un ternario
-				//este valor ya esta definido antes de llegar a este codigo
-				return oldDay;
-			} else {
-				return generateSingleDay(this.selectedPlace);
-			}
+		//en base a los nuevos rangos de fecha, creamos un arreglo de dias
+		const newDaysArray = generateDaysArray(this.selectedPlace, startDate, endDate);
+		//Con el nuevo arreglo de dias generados, buscamos si existe un fecha que corresponda a un dia viejo
+		//si existe un match entre ellos, la posicion del dia nuevo asignara al dia viejo.
+		//Con esto logramos preservar la data existente si yo quisiera extender el lodging hacia la derecha o izquierda.
+		const saveOldDaysServices = (oldDays, newDays) => {
+			oldDays.forEach(oldDay => {
+				const foundIndex = newDays.findIndex(newDay => newDay.date === oldDay.date);
+				if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
+			});
 		};
-		//TRANSPORTAR LA MISMA LOGICA DE ONMOVE ACA
-		for (let i = 0; i <= numberDays; i++) {
-			const newDay = generateNewDays(oldDays[i]);
-			newDays.push(newDay);
-		}
+		saveOldDaysServices(oldDays, newDaysArray);
 
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
-			days: newDays,
+			days: newDaysArray,
 		});
 		tempLodging.start = moment(value.dateStart).hours(15);
 		tempLodging.end = moment(value.dateEnd).hours(12);
-		tempLodging.daysservice = newDays;
+		tempLodging.daysservice = newDaysArray;
 		state.lodgingSelect = tempLodging;
 		state.lodgings = tempLodgings;
 	},
@@ -229,7 +219,8 @@ const mutations = {
 				day.services.forEach(service => {
 					service.quantity = service.quantity + 1;
 					if (service.quantity == null) service.quantity = 0;
-					if (service.quantity > numberPassangerMax) service.quantity = 0;
+					if (service.quantity >= numberPassangerMax)
+						service.quantity = numberPassangerMax;
 					day.dayTotal = dayTotal(day.services);
 				});
 			});
@@ -239,7 +230,8 @@ const mutations = {
 					if (service.name === serviceName) {
 						service.quantity = service.quantity + 1;
 						if (service.quantity == null) service.quantity = 0;
-						if (service.quantity > numberPassangerMax) service.quantity = 0;
+						if (service.quantity >= numberPassangerMax)
+							service.quantity = numberPassangerMax;
 						day.dayTotal = dayTotal(day.services);
 					}
 				});
@@ -329,7 +321,6 @@ const mutations = {
 	setSelectedPlace(state) {
 		state.selectedPlace = state.Places.find(place => place.value === state.place);
 	},
-	//esto nos va servir en las cards
 	setServicesComboBox(state) {
 		const allServicesObject = {
 			text: 'todos los servicios',
