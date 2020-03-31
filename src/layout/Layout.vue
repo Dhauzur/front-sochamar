@@ -18,9 +18,11 @@
 			mobile-break-point="768"
 			color="secondary"
 		>
-			<v-list> <Logo style="max-height: 80px;"/></v-list>
+			<v-list>
+				<Logo style="max-height: 80px;" />
+			</v-list>
 			<v-divider></v-divider>
-			<v-list nav dense>
+			<v-list v-if="isAdmin" nav dense>
 				<v-list-item active-class="accent--text" link to="/">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
@@ -106,6 +108,9 @@ export default {
 		fullName() {
 			if (this.profile.name) return this.profile.name + ' ' + this.profile.lastName;
 			return '';
+		},
+		isAdmin() {
+			return this.profile.role === 'admin';
 		},
 		...mapGetters({
 			isLogged: 'Auth/isLogged',

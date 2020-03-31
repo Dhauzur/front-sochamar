@@ -1,6 +1,6 @@
 <template>
 	<v-container fluid>
-		<v-row justify="center">
+		<v-row v-if="isAdmin" justify="center">
 			<v-col cols="12">
 				<v-card class="mx-auto" max-width="600">
 					<v-card-title>
@@ -32,6 +32,9 @@
 							{{ `${profile.name} ${profile.lastName && profile.lastName}` }}
 						</v-card-title>
 					</v-card-title>
+					<v-card-text class="text-left">
+						{{ profile.role }}
+					</v-card-text>
 					<v-card-text v-if="profile.analyst" class="text-left pt-0 mt-0">
 						Analista
 					</v-card-text>
@@ -94,6 +97,35 @@
 				</v-card>
 			</v-col>
 		</v-row>
+		<v-row v-if="isPerson">
+			<v-col cols="12" md="2">
+				<v-list dense nav elevation="24" height="100%">
+					<v-list-item>
+						<v-list-item-content>
+							<v-list-item-title class="title">
+								<avatar
+									:name="profile.name"
+									:last-name="profile.lastName"
+									:url="profile.img"
+									:loading="loadingUpload"
+								/>
+							</v-list-item-title>
+						</v-list-item-content>
+					</v-list-item>
+					<v-divider></v-divider>
+					<v-list-item-group v-model="selected" color="primary">
+						<v-list-item v-for="item in items" :key="item.title" link>
+							<v-list-item-content>
+								<v-list-item-title>{{ item.title }}</v-list-item-title>
+							</v-list-item-content>
+						</v-list-item>
+					</v-list-item-group>
+				</v-list>
+			</v-col>
+			<v-col cols="12" md="10">
+				<PersonForm title="Actualizar datos" :edit-mode="false" />
+			</v-col>
+		</v-row>
 	</v-container>
 </template>
 
@@ -106,10 +138,18 @@ import { minLength, maxLength, required } from 'vuelidate/lib/validators';
 export default {
 	components: {
 		Avatar,
+		PersonForm: () => import('@/components/persons/Form'),
 	},
 	mixins: [validationMixin],
 	data() {
 		return {
+			selected: 0,
+			items: [
+				{ title: 'Profile' },
+				{ title: 'Mensaje' },
+				{ title: 'Solicitudes' },
+				{ title: 'Leer politicas' },
+			],
 			avatar: null,
 			loadingUpload: false,
 			profileData: {
@@ -127,6 +167,12 @@ export default {
 		};
 	},
 	computed: {
+		isAdmin() {
+			return this.profile.role === 'admin';
+		},
+		isPerson() {
+			return this.profile.role === 'person';
+		},
 		lastnameErrors() {
 			const errors = [];
 			if (!this.$v.profileData.lastName.$dirty) return errors;

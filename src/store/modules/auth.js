@@ -25,7 +25,7 @@ const actions = {
 			commit('setToken', token);
 			commit('setIsLogged', true);
 			dispatch('User/fetchProfile', null, { root: true });
-			router.push('/');
+			router.push('/profile');
 		} catch (e) {
 			const message = {
 				type: 'error',
