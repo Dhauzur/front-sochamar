@@ -1,6 +1,5 @@
 import { DataSet } from 'vue2vis';
 import moment from 'moment';
-import { findServiceIndexByName } from '@/utils/lodging/findServiceIndex';
 import { generateDaysArray } from '@/utils/lodging/daysArray';
 import { generateSingleDay } from '@/utils/lodging/daysArray';
 import { dayTotal } from '@/utils/lodging/dayTotal';
@@ -101,79 +100,6 @@ const mutations = {
 		state.lodgingSelect = tempLodging;
 		state.lodgings = tempLodgings;
 	},
-	subOneService(state, serviceSelected) {
-		let tempLodging = state.lodgingSelect;
-		state.lodgingSelect = null;
-		let service = JSON.parse(tempLodging.service[0]);
-		let numberDays = moment(tempLodging.end).diff(
-			moment(tempLodging.start).format('YYYY-MM-DD'),
-			'days'
-		);
-		//el primer for nos indica que por cada dia modificara una posicion de service;
-		for (let i = 0; i <= numberDays; i++) {
-			//este forEach se encarga de recorrer todos los valores actuales de ese dia
-			//de ser null, el valor de ese service queda en 0;
-			service[i].forEach((singleService, index) => {
-				if (singleService.quantity == null) service[i][index].quantity = 8;
-			});
-			//algoritmo
-			//1- si seleccionamos un servicio, buscar el index de este y con esto tendriamos la posicion de service para alterar su valor
-			//2- si el valor es 'todos los servicios' o un valor numerico que represente esta accion, hacer un foreach de service[i]
-			// y con esto podriamos alterar todos los valores
-			if (serviceSelected === 'todos los servicios') {
-				service[i].forEach((singleService, index) => {
-					service[i][index].quantity = singleService.quantity - 1;
-				});
-			} else {
-				const foundIndex = findServiceIndexByName(serviceSelected, service[i]);
-				service[i][foundIndex].quantity = service[i][foundIndex].quantity - 1;
-			}
-
-			//si el service fuera 0 y entra en esta funcion, este forEach esta evitando que registre valores negativos
-			service[i].forEach((singleService, index) => {
-				if (singleService.quantity < 0) service[i][index].quantity = 0;
-			});
-		}
-		tempLodging.service[0] = JSON.stringify(service);
-		state.lodgingSelect = tempLodging;
-	},
-	addOneService(state, serviceSelected) {
-		let tempLodging = state.lodgingSelect;
-		const numberPassangerMax = state.periods.get(state.lodgingSelect.group).numberPassangerMax;
-		state.lodgingSelect = null;
-		let service = JSON.parse(tempLodging.service[0]);
-		let numberDays = moment(tempLodging.end).diff(
-			moment(tempLodging.start).format('YYYY-MM-DD'),
-			'days'
-		);
-		for (let i = 0; i <= numberDays; i++) {
-			//Este foreach esta evaluando si algun valor excede o es igual a la cantidad maxima de pasajeros
-			// va ser necesario volver a hacer esta logica, esta interfiriendo gravemente con otros services al momento de añadir en uno
-			// ejemplo: almuerzo: 0 once: 1 desayuno 0, añado un uso a desayuno entonces este foreach es ejecutado
-			// al ejectuarse va evaluar todos los servicios y si encuentra uno igual o mayor a la cantidad de pasajeros, lo va volver 0
-			// entonces nuestro servicio once o cualquier servicio externo a desayuno va cambiar su valor a 0
-
-			//Tal vez este foreach es mejor dejarlo para el caso todos los 'servicios'
-			//para evaluar un servicio especifico, copiar las condiciones del foreach y aprovechar la busqueda de index que tenemos en el else
-			service[i].forEach((singleService, index) => {
-				if (singleService.quantity == null) service[i][index].quantity = 0;
-				if (singleService.quantity >= numberPassangerMax) service[i][index].quantity = 0;
-			});
-			//Algoritmo
-			//1- si el servicio seleccionado es 'todos los servicios', entonces procedemos a actualizar el valor de todos los servicios
-			//2- en caso contrario, es un servicio seleccionado en especifico y en base a su nombre procedemos a buscar el index a modificar
-			if (serviceSelected === 'todos los servicios') {
-				service[i].forEach((singleService, index) => {
-					service[i][index].quantity = singleService.quantity + 1;
-				});
-			} else {
-				const foundIndex = findServiceIndexByName(serviceSelected, service[i]);
-				service[i][foundIndex].quantity = service[i][foundIndex].quantity + 1;
-			}
-		}
-		tempLodging.service[0] = JSON.stringify(service);
-		state.lodgingSelect = tempLodging;
-	},
 	setLodgingSelect(state, value) {
 		if (state.lodgings.get(value)) {
 			state.lodgingSelect = state.lodgings.get(value);
@@ -260,7 +186,6 @@ const mutations = {
 		});
 		//En base al dia y index de servicio actualizamos la cantidad
 		//get de vis dataSet siempre nos devuelve un arreglo con objetos, en este caso es solo 1 por eso siempre usar la posicion 0 para este caso
-		console.log(foundLodging[0].days[dayIndex]);
 		foundLodging[0].days[dayIndex].services[serviceIndex].quantity = inputValue;
 		//como cambiamos un valor en especifico, podemos actualizar el valor de dayTotal
 		foundLodging[0].days[dayIndex].dayTotal = dayTotal(foundLodging[0].days[dayIndex].services);

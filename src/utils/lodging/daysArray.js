@@ -29,10 +29,6 @@ export const generateDaysArray = (place, startDate, endDate) => {
 	});
 	//si el rango es mayor a uno, significa que son fechas mayores a un dia de diferencia
 	if (arrayOfDates.length > 1) {
-		//push del primer dia
-		startDay.services = servicesArray;
-		daysArray.push(startDay);
-		//recorremos el rando de fecha;
 		arrayOfDates.forEach(date => {
 			const dayObject = {
 				services: [],
@@ -43,9 +39,6 @@ export const generateDaysArray = (place, startDate, endDate) => {
 			dayObject.dayTotal = dayTotal(servicesArray);
 			daysArray.push(dayObject);
 		});
-		//push del ultimo  dia
-		endDay.services = servicesArray;
-		daysArray.push(endDay);
 	} else {
 		startDay.services = servicesArray;
 		startDay.dayTotal = dayTotal(servicesArray);
