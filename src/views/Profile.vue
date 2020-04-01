@@ -99,7 +99,7 @@
 		</v-row>
 		<v-row v-if="isPerson">
 			<v-col cols="12" md="2">
-				<v-list dense nav elevation="24" height="100%">
+				<v-list dense nav flat elevation="24" height="100%">
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-title class="title">

@@ -51,8 +51,8 @@
 				:selected="person"
 				:edit-mode="editMode"
 				:close="closeDialog"
-				title="Agregar nuevo"
 				:is-dialog="true"
+				title="Agregar nuevo"
 			/>
 		</v-dialog>
 	</v-container>
@@ -99,6 +99,11 @@ export default {
 		},
 	},
 	methods: {
+		closeDialog() {
+			this.editMode = false;
+			this.person = null;
+			this.dialog = false;
+		},
 		editPerson(person) {
 			this.editMode = true;
 			this.person = person;
@@ -109,13 +114,9 @@ export default {
 				return person.firstName.toLowerCase().indexOf(this.filteredWord.toLowerCase()) > -1;
 			});
 		},
-		closeDialog() {
-			this.editMode = false;
-			this.person = null;
-			this.dialog = false;
-		},
 		deleteOne(id) {
-			this.deleteOnePerson(id).then(() => this.getAllPersons());
+			confirm('Estas seguro de eliminarlo?') &&
+				this.deleteOnePerson(id).then(() => this.getAllPersons());
 		},
 		...mapActions({
 			deleteOnePerson: 'Persons/deleteOnePerson',

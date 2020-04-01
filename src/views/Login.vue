@@ -1,7 +1,7 @@
 <template lang="html">
 	<v-container class="fill-height" fluid>
 		<v-row align="center" justify="center">
-			<v-col v-if="!passwordRecover" cols="12" sm="6" md="4" lg="3" class="pb-5">
+			<v-col v-if="!passwordRecover" cols="12" sm="6" md="4" lg="3">
 				<Logo style="max-height: 30vh;" />
 				<v-form>
 					<v-text-field
@@ -10,10 +10,11 @@
 						label="Correo electronico"
 						name="login"
 						prepend-icon="mdi-account"
+						dense
+						outlined
 						type="text"
 						required
 					/>
-
 					<v-text-field
 						id="password-input"
 						v-model.trim="loginData.password"
@@ -21,6 +22,8 @@
 						label="Contraseña"
 						name="password"
 						prepend-icon="mdi-lock"
+						dense
+						outlined
 						:type="showPassword ? 'text' : 'password'"
 						required
 						@click:append="showPassword = !showPassword"
@@ -72,6 +75,7 @@ export default {
 		...mapGetters({
 			message: 'Auth/message',
 			loading: 'Auth/loading',
+			profile: 'User/profile',
 		}),
 	},
 	watch: {
@@ -80,8 +84,12 @@ export default {
 		},
 	},
 	methods: {
-		onSubmit() {
-			this.login(this.loginData);
+		async onSubmit() {
+			this.login(this.loginData).then(() =>
+				this.profile.role === 'admin'
+					? this.$router.push('/')
+					: this.$router.push('/profile')
+			);
 		},
 		toastedMessage(newVal) {
 			this.$toasted.show(newVal.text, {

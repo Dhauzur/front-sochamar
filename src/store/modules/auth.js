@@ -24,8 +24,7 @@ const actions = {
 			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
-			dispatch('User/fetchProfile', null, { root: true });
-			router.push('/profile');
+			await dispatch('User/fetchProfile', null, { root: true });
 		} catch (e) {
 			const message = {
 				type: 'error',
@@ -42,10 +41,9 @@ const actions = {
 			const { token } = response.data;
 			commit('setToken', token);
 			commit('setIsLogged', true);
-			dispatch('User/fetchProfile', null, { root: true });
-			router.push('/');
-		} catch (e) {
-			const message = { type: 'error', text: 'El correo ya existe' };
+			await dispatch('User/fetchProfile', null, { root: true });
+		} catch (error) {
+			const message = { type: 'error', text: error.message };
 			commit('setMessage', message);
 		}
 		commit('setLoading', false);

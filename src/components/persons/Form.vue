@@ -272,39 +272,43 @@ export default {
 			this.regiones = this.comunasRegiones.map(item => item.region);
 		},
 		async submit() {
-			let form = new FormData();
+			let payload = new FormData();
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				form.set('firstName', this.person.firstName.toLowerCase());
-				if (this.person.lastName) form.set('lastName', this.person.lastName.toLowerCase());
-				if (this.person.age) form.set('age', this.person.age.toString());
+				payload.set('firstName', this.person.firstName.toLowerCase());
+				if (this.person.lastName)
+					payload.set('lastName', this.person.lastName.toLowerCase());
+				if (this.person.age) payload.set('age', this.person.age.toString());
 				if (this.person.birthdate)
-					form.set('birthdate', this.person.birthdate.toLowerCase());
+					payload.set('birthdate', this.person.birthdate.toLowerCase());
 				if (this.person.appointment)
-					form.set('appointment', this.person.appointment.toLowerCase());
-				if (this.person.function) form.set('function', this.person.function.toLowerCase());
-				if (this.person.state) form.set('state', this.person.state.toLowerCase());
-				if (this.person.phone) form.set('phone', this.person.phone.toLowerCase());
-				if (this.person.region) form.set('region', this.person.region);
-				if (this.person.comuna) form.set('comuna', this.person.comuna);
-				if (this.person.avatar) form.append('avatar', this.person.avatar);
+					payload.set('appointment', this.person.appointment.toLowerCase());
+				if (this.person.function)
+					payload.set('function', this.person.function.toLowerCase());
+				if (this.person.state) payload.set('state', this.person.state.toLowerCase());
+				if (this.person.phone) payload.set('phone', this.person.phone.toLowerCase());
+				if (this.person.region) payload.set('region', this.person.region);
+				if (this.person.comuna) payload.set('comuna', this.person.comuna);
+				if (this.person.avatar) payload.append('avatar', this.person.avatar);
 				if (this.person.documents) {
-					for (let index = 0; index < this.person.documents.length; index++) {
-						form.append('documents', this.person.documents[index]);
+					for (const index in this.person.documents) {
+						payload.append('documents', this.person.documents[index]);
 					}
 				}
 				if (this.editMode) {
-					await this.editPerson({
-						payload: form,
+					this.editPerson({
+						payload,
 						id: this.person._id,
+					}).then(() => {
+						this.getAllPersons();
+						this.closeDialog();
 					});
-					this.getAllPersons();
-					this.closeDialog();
 				} else {
-					await this.savePerson(form);
-					this.getAllPersons();
-					this.closeDialog();
+					this.savePerson(payload).then(() => {
+						this.getAllPersons();
+						this.closeDialog();
+					});
 				}
 			}
 		},
