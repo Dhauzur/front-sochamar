@@ -53,7 +53,6 @@ const mutations = {
 	},
 	//Esto pasa al editar el lodging
 	dateChange(state, value) {
-		console.log('trigger de detectChange');
 		let tempLodging = state.lodgingSelect;
 		let tempLodgings = state.lodgings;
 		state.lodgings = new DataSet([]);
@@ -84,8 +83,8 @@ const mutations = {
 			id: state.lodgingSelect.id,
 			days: newDaysArray,
 		});
-		tempLodging.start = moment(value.dateStart).hours(15);
-		tempLodging.end = moment(value.dateEnd).hours(12);
+		tempLodging.start = startDate;
+		tempLodging.end = endDate;
 		tempLodging.daysservice = newDaysArray;
 		state.lodgingSelect = tempLodging;
 		state.lodgings = tempLodgings;
@@ -177,6 +176,7 @@ const mutations = {
 		//En base al dia y index de servicio actualizamos la cantidad
 		//get de vis dataSet siempre nos devuelve un arreglo con objetos, en este caso es solo 1 por eso siempre usar la posicion 0 para este caso
 		foundLodging[0].days[dayIndex].services[serviceIndex].quantity = inputValue;
+
 		//como cambiamos un valor en especifico, podemos actualizar el valor de dayTotal
 		foundLodging[0].days[dayIndex].dayTotal = dayTotal(foundLodging[0].days[dayIndex].services);
 		//En base a la id del lodging actualizaremos la propiedad days

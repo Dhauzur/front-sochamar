@@ -170,34 +170,36 @@
 			</v-row>
 			<!--v3 proyection-->
 			<v-row v-if="selectedPlace.value">
+				<!--days per lodging render-->
 				<v-col v-for="lodging in lodgings._data" :key="lodging.id" cols="12">
 					<v-card cols="3">
 						<v-card-title class="headline">
 							{{ lodging.start.format('L') + ' - ' + lodging.end.format('L') }}
 						</v-card-title>
+						<!--Day render-->
 						<v-row>
 							<v-col v-for="(day, dayIndex) in lodging.days" :key="dayIndex" cols="4">
-								<v-card>
-									<div>{{ day.date }}</div>
-									{{ day.services }}
-									<table>
-										<thead>
-											<tr>
-												<th class="text-left">Nombre</th>
-												<th class="text-left">Precio</th>
-												<th class="text-left">Cantidad</th>
-												<th class="text-left">SubTotal</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr
-												v-for="(service, serviceIndex) in day.services"
-												:key="serviceIndex"
-											>
-												<td>{{ service.name }}</td>
-												<td>{{ service.price }}</td>
-												<td>
+								<div>{{ day.date }}</div>
+								<v-simple-table>
+									<thead>
+										<tr>
+											<th class="text-left">Nombre</th>
+											<th class="text-left">Precio</th>
+											<th class="text-left">Cantidad</th>
+											<th class="text-left">SubTotal</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr
+											v-for="(service, serviceIndex) in day.services"
+											:key="serviceIndex"
+										>
+											<td>{{ service.name }}</td>
+											<td>{{ service.price }}</td>
+											<td>
+												<label>
 													<input
+														:id="day.date"
 														v-model.number="service.quantity"
 														type="number"
 														class="inputService"
@@ -211,15 +213,16 @@
 															)
 														"
 													/>
-												</td>
-												<td>{{ service.price * service.quantity }}</td>
-											</tr>
-										</tbody>
-									</table>
-									<div>Total: {{ day.dayTotal }}</div>
-								</v-card>
+												</label>
+											</td>
+											<td>{{ service.price * service.quantity }}</td>
+										</tr>
+									</tbody>
+								</v-simple-table>
+								<div>Total: {{ day.dayTotal }}</div>
 							</v-col>
 						</v-row>
+						<!--Services ComboBox-->
 						<v-row>
 							<v-col cols="12" sm="4">
 								<v-select
@@ -265,7 +268,7 @@
 					</v-card>
 				</v-col>
 			</v-row>
-			<!--aqui van los botones de proyection-->
+			<!--Edit Lodging-->
 			<v-row justify="center">
 				<v-col>
 					<v-bottom-sheet
@@ -389,8 +392,9 @@ export default {
 					if (this.place) {
 						//guardamos los dias antiguos
 						const oldDays = item.days;
-						const startDate = moment(item.start);
-						const endDate = moment(item.end);
+						//importante definir siempre las horas, con esto evitamos el error de rangos incorrectos al disminuir rapido el item de lodging
+						const startDate = moment(item.start).hours(15);
+						const endDate = moment(item.end).hours(12);
 						//en base a los nuevos rangos de fecha, creamos un arreglo de dias
 						const newDaysArray = generateDaysArray(
 							this.selectedPlace,
@@ -410,8 +414,8 @@ export default {
 						};
 						saveOldDaysServices(oldDays, newDaysArray);
 						item.days = newDaysArray;
-						item.start = moment(item.start).hours(15);
-						item.end = moment(item.end).hours(12);
+						item.start = startDate;
+						item.end = endDate;
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(true);
 							//Esta funcion ya no funciona con v3, preguntar el por que se actualizan los services aca
@@ -511,9 +515,9 @@ export default {
 			//busca el numero de pasajeros en el lodging seleccionado
 			const numberPassangerMax = this.periods.get(lodgingGroup).numberPassangerMax;
 			//si el valor excede el numero de pasaejeros, se setea el numero de pasajeros como valor y se levanta una notificacion toast
-			if (inputValue >= numberPassangerMax) {
+			if (inputValue > numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
-				inputValue = numberPassangerMax;
+				inputValue = 0;
 			}
 			//si el valor es menor a 0, se setea el numero de pasajeros como valor
 			if (inputValue < 0) inputValue = numberPassangerMax;

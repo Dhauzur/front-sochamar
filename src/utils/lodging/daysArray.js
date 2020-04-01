@@ -8,16 +8,7 @@ export const generateDaysArray = (place, startDate, endDate) => {
 	const arrayOfDates = Array.from(range.by('days'));
 	const servicesArray = [];
 	let daysArray = [];
-	const startDay = {
-		services: [],
-		date: startDate.format('L'),
-		dayTotal: 0,
-	};
-	const endDay = {
-		services: [],
-		date: endDate.format('L'),
-		dayTotal: 0,
-	};
+
 	//formateo del serviceObject
 	place.services.forEach(service => {
 		const serviceObject = {
@@ -27,23 +18,31 @@ export const generateDaysArray = (place, startDate, endDate) => {
 		};
 		servicesArray.push(serviceObject);
 	});
+
+	const startDay = {
+		services: servicesArray,
+		date: startDate.format('L'),
+		dayTotal: dayTotal(servicesArray),
+	};
+	const endDay = {
+		services: servicesArray,
+		date: endDate.format('L'),
+		dayTotal: dayTotal(servicesArray),
+	};
 	//si el rango es mayor a uno, significa que son fechas mayores a un dia de diferencia
+	//en caso contrario, significa que son solo un dia, se procede a crear el arreglo con startDay y endDay
 	if (arrayOfDates.length > 1) {
 		arrayOfDates.forEach(date => {
 			const dayObject = {
-				services: [],
+				services: servicesArray,
 				date: date.format('L'),
-				dayTotal: 0,
+				dayTotal: dayTotal(servicesArray),
 			};
-			dayObject.services = servicesArray;
-			dayObject.dayTotal = dayTotal(servicesArray);
 			daysArray.push(dayObject);
 		});
+		//el rango no cuenta con el dia final, entonces hacemos push de el cuando el foreach terminer
+		daysArray.push(endDay);
 	} else {
-		startDay.services = servicesArray;
-		startDay.dayTotal = dayTotal(servicesArray);
-		endDay.services = servicesArray;
-		endDay.dayTotal = dayTotal(servicesArray);
 		daysArray = [startDay, endDay];
 	}
 
