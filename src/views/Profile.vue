@@ -110,6 +110,9 @@
 									:loading="loadingUpload"
 								/>
 							</v-list-item-title>
+							<v-list-item-subtitle>
+								{{ profile.name }} {{ profile.lastName && profile.lastName }}
+							</v-list-item-subtitle>
 						</v-list-item-content>
 					</v-list-item>
 					<v-divider></v-divider>
@@ -122,8 +125,20 @@
 					</v-list-item-group>
 				</v-list>
 			</v-col>
-			<v-col cols="12" md="10">
-				<PersonForm title="Actualizar datos" :edit-mode="false" />
+			<v-col v-if="Boolean(profile)" cols="12" md="10">
+				<Form
+					title="Completa tus datos"
+					:edit-mode="true"
+					:selected="userPerson"
+					:update-user="updateUser"
+				/>
+			</v-col>
+			<v-col v-else>
+				<v-sheet elevation="24">
+					<v-skeleton-loader
+						type="list-item-two-line, list-item-three-line, list-item-three-line,  card-heading"
+					></v-skeleton-loader>
+				</v-sheet>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -138,12 +153,13 @@ import { minLength, maxLength, required } from 'vuelidate/lib/validators';
 export default {
 	components: {
 		Avatar,
-		PersonForm: () => import('@/components/persons/Form'),
+		Form: () => import('@/components/persons/Form'),
 	},
 	mixins: [validationMixin],
 	data() {
 		return {
-			selected: 0,
+			person: null,
+			selected: null,
 			items: [
 				{ title: 'Profile' },
 				{ title: 'Mensaje' },
@@ -167,6 +183,9 @@ export default {
 		};
 	},
 	computed: {
+		avatarMessage() {
+			return this.profileData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
+		},
 		isAdmin() {
 			return this.profile.role === 'admin';
 		},
@@ -187,8 +206,11 @@ export default {
 			!this.$v.profileData.name.maxLength && errors.push('Maximo 100 Caracteres');
 			return errors;
 		},
-		avatarMessage() {
-			return this.profileData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
+		userPerson() {
+			if (!this.person) {
+				return { firstName: this.profile.name };
+			}
+			return { ...this.person };
 		},
 		...mapGetters({
 			profile: 'User/profile',
@@ -204,7 +226,15 @@ export default {
 		},
 	},
 	created() {
-		this.fetchProfile().then(this.fetchprofileData);
+		this.fetchProfile()
+			.then(this.fetchprofileData)
+			.then(
+				() =>
+					this.profile.idPerson &&
+					this.fetchPerson(this.profile.idPerson).then(
+						response => (this.person = response)
+					)
+			);
 	},
 	validations: {
 		profileData: {
@@ -247,6 +277,11 @@ export default {
 				this.updateProfile(this.profileData).then(this.clearUpload);
 			}
 		},
+		updateUser(res) {
+			const data = { ...this.profile };
+			data.idPerson = res._id;
+			this.updateProfile(data);
+		},
 		submitNewPassword() {
 			this.$v.securityData.$touch();
 			if (this.$v.securityData.$invalid) {
@@ -262,6 +297,7 @@ export default {
 			this.updateAvatar(avatar).then(this.clearUpload);
 		},
 		...mapActions({
+			fetchPerson: 'Persons/fetchOnePerson',
 			fetchProfile: 'User/fetchProfile',
 			updateProfile: 'User/updateProfile',
 			updateAvatar: 'User/updateAvatar',

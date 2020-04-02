@@ -1,18 +1,20 @@
-import { api } from '@/config/index.js';
-import axios from 'axios';
-import router from '@/router/index.js';
+import router from '@/router/index';
+import {
+	login,
+	register,
+	setToken,
+	getToken,
+	updatePassword,
+	requestPasswordRecoverEmail,
+} from '@/service/auth';
 
 const state = {
 	message: {},
-	token: localStorage.getItem('token') || '',
 	loading: false,
 };
 
 const getters = {
 	message: state => state.message,
-	isLogged: state => {
-		return state.token ? true : false;
-	},
 	loading: state => state.loading,
 };
 
@@ -20,10 +22,7 @@ const actions = {
 	async login({ commit, dispatch }, loginData) {
 		try {
 			commit('setLoading', true);
-			const response = await axios.post(api + '/auth/login', loginData);
-			const { token } = response.data;
-			commit('setToken', token);
-			commit('setIsLogged', true);
+			await login(loginData);
 			await dispatch('User/fetchProfile', null, { root: true });
 		} catch (e) {
 			const message = {
@@ -37,10 +36,7 @@ const actions = {
 	async register({ commit, dispatch }, registerData) {
 		try {
 			commit('setLoading', true);
-			const response = await axios.post(api + '/auth/register', registerData);
-			const { token } = response.data;
-			commit('setToken', token);
-			commit('setIsLogged', true);
+			await register(registerData);
 			await dispatch('User/fetchProfile', null, { root: true });
 		} catch (error) {
 			const message = { type: 'error', text: error.message };
@@ -52,9 +48,10 @@ const actions = {
 		commit('setLoading', true);
 		try {
 			const { password, token } = recoverData;
-			axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-			await axios.put(api + '/auth/user/password', { password });
-			axios.defaults.headers.common['Authorization'] = '';
+			const loginToken = getToken();
+			setToken(token);
+			await updatePassword(password);
+			setToken(loginToken);
 			commit('setLoading', false);
 			const message = { type: 'success', text: 'Contraseña cambiada con exito' };
 			commit('setMessage', message);
@@ -68,7 +65,7 @@ const actions = {
 	async requestPasswordRecoverEmail({ commit }, email) {
 		commit('setLoading', true);
 		try {
-			await axios.post(api + '/auth/send/passwordRecover', { email });
+			await requestPasswordRecoverEmail({ email });
 			const message = { type: 'success', text: 'Correo de recuperación enviado con exito' };
 			commit('setMessage', message);
 			commit('setLoading', false);
@@ -81,18 +78,6 @@ const actions = {
 };
 
 const mutations = {
-	setToken: (state, token) => {
-		localStorage.setItem('token', token);
-		axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-		state.token = token;
-	},
-	logout: state => {
-		localStorage.removeItem('token');
-		delete axios.defaults.headers.common['Authorization'];
-		state.token = '';
-		router.push('/login');
-	},
-	setIsLogged: (state, change) => (state.isLogged = change),
 	setMessage: (state, message) => (state.message = message),
 	setLoading: (state, change) => (state.loading = change),
 };

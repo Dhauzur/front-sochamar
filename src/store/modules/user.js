@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { api } from '@/config/index.js';
+import fetch from '@/service/fetch';
 
 const state = {
 	message: '',
@@ -16,8 +15,7 @@ const getters = {
 const actions = {
 	async fetchProfile({ commit }) {
 		try {
-			const response = await axios.get(api + '/user/profile');
-			const profile = response.data;
+			const profile = await fetch('/user/profile');
 			commit('setProfile', profile);
 		} catch (e) {
 			const message = { type: 'error', text: 'Error de servidor' };
@@ -29,34 +27,32 @@ const actions = {
 		delete profileData.analyst;
 		delete profileData.img;
 		try {
-			const response = await axios.put(api + '/user/profile', profileData);
-			const profile = response.data;
+			const response = await fetch('/user/profile', { method: 'put', data: profileData });
+			const profile = response;
 			commit('setProfile', profile);
 			const message = { type: 'success', text: 'Perfil modificado con exito' };
 			commit('setMessage', message);
-		} catch (e) {
-			const message = { type: 'error', text: 'Parametros invalidos' };
+		} catch (error) {
+			const message = { type: 'error', text: error.message };
 			commit('setMessage', message);
 		}
 		commit('setLoading', false);
 	},
 	async updateAvatar({ commit }, avatar) {
-		const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 		try {
-			const response = await axios.patch(api + '/user/avatar', avatar, config);
-			const { img } = response.data;
-			commit('setAvatar', img);
+			const response = await fetch('/user/avatar', { method: 'patch', data: avatar });
+			commit('setAvatar', response.img);
 			const message = { type: 'success', text: 'Avatar actualizado con exito' };
 			commit('setMessage', message);
-		} catch (e) {
-			const message = { type: 'error', text: 'Imagen invalida' };
+		} catch (error) {
+			const message = { type: 'error', text: error.message };
 			commit('setMessage', message);
 		}
 	},
 	async updatePassword({ commit }, password) {
 		commit('setLoading', true);
 		try {
-			await axios.patch(api + '/user/password', { password });
+			await fetch('/user/password', { method: 'patch', data: { password } });
 			const message = { type: 'success', text: 'Contraseña actualizada con exito' };
 			commit('setMessage', message);
 		} catch (e) {

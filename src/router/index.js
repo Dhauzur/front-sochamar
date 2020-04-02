@@ -63,4 +63,10 @@ const router = new VueRouter({
 	routes,
 });
 
+router.beforeEach((to, from, next) => {
+	console.log('hola');
+	// if the user is not authenticated, `next` is called twice
+	next();
+});
+
 export default router;

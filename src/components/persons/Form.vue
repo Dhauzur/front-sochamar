@@ -40,6 +40,7 @@
 							outlined
 							dense
 							label="Nombre*"
+							:disabled="!isDialog"
 							:error-messages="nameErrors"
 							@input="$v.person.firstName.$touch()"
 							@blur="$v.person.firstName.$touch()"
@@ -213,6 +214,10 @@ export default {
 			type: Function,
 			default: () => {},
 		},
+		updateUser: {
+			type: Function,
+			default: () => {},
+		},
 		title: {
 			type: String,
 			required: true,
@@ -271,7 +276,7 @@ export default {
 			this.comunasRegiones = response.data;
 			this.regiones = this.comunasRegiones.map(item => item.region);
 		},
-		async submit() {
+		submit() {
 			let payload = new FormData();
 			// validations
 			this.$v.$touch();
@@ -296,19 +301,23 @@ export default {
 						payload.append('documents', this.person.documents[index]);
 					}
 				}
-				if (this.editMode) {
-					this.editPerson({
-						payload,
-						id: this.person._id,
-					}).then(() => {
-						this.getAllPersons();
-						this.closeDialog();
-					});
+				if (this.isDialog) {
+					if (this.editMode) {
+						this.editPerson({
+							payload,
+							id: this.person._id,
+						}).then(() => {
+							this.getAllPersons();
+							this.closeDialog();
+						});
+					} else {
+						this.savePerson(payload).then(() => {
+							this.getAllPersons();
+							this.closeDialog();
+						});
+					}
 				} else {
-					this.savePerson(payload).then(() => {
-						this.getAllPersons();
-						this.closeDialog();
-					});
+					this.savePerson(payload).then(res => this.updateUser(res));
 				}
 			}
 		},

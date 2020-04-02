@@ -69,7 +69,7 @@
 								<v-list-item link to="/profile">
 									<span>Perfil</span>
 								</v-list-item>
-								<v-list-item link @click="logout">
+								<v-list-item link @click="quit">
 									<span>Salir</span>
 								</v-list-item>
 							</v-list>
@@ -85,7 +85,8 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+import { isAuthenticated, setToken, logout } from '../service/auth';
 import Logo from '../assets/logo';
 import Avatar from '@/components/ui/Avatar';
 export default {
@@ -113,7 +114,6 @@ export default {
 			return this.profile.role === 'admin';
 		},
 		...mapGetters({
-			isLogged: 'Auth/isLogged',
 			profile: 'User/profile',
 		}),
 	},
@@ -121,12 +121,12 @@ export default {
 		this.oauthJWT = this.$route.query.token;
 		if (this.oauthJWT) {
 			this.deleteQueryFromRoute();
-			this.setToken(this.oauthJWT);
+			setToken(this.oauthJWT);
 			this.fetchProfile();
 			this.oauthJWT = '';
 		} else {
-			if (this.isLogged) {
-				this.setToken(localStorage.getItem('token'));
+			if (isAuthenticated()) {
+				setToken(localStorage.getItem('token'));
 				this.fetchProfile();
 			}
 		}
@@ -148,7 +148,10 @@ export default {
 		deleteQueryFromRoute() {
 			this.$router.replace({ query: null });
 		},
-		...mapMutations({ logout: 'Auth/logout', setToken: 'Auth/setToken' }),
+		async quit() {
+			await logout();
+			this.$router.replace({ name: 'login' });
+		},
 		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
 };

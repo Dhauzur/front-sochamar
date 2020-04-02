@@ -1,23 +1,22 @@
-import axios from 'axios';
-import { api } from '@/config/index.js';
+import fetch from '@/service/fetch';
 import router from '@/router/index.js';
 
 const actions = {
 	async createPeriod({ state, commit, dispatch }, period) {
 		try {
 			period.placeId = state.place;
-			await axios.post(api + '/periods', period);
+			await fetch('/periods', { method: 'post', data: period });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Turno creado ',
 			});
 			dispatch('fetchPeriods', period.placeId);
-		} catch (e) {
+		} catch (error) {
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al crear Turno',
 			});
-			if (e.message == 'Request failed with status code 401') router.push('/login');
+			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	/**
@@ -26,7 +25,7 @@ const actions = {
 	async deleteLodging({ commit }, value) {
 		try {
 			commit('setLoading', 'Eliminando hospedaje...');
-			await axios.delete(`${api}/lodging/delete/place/${value.id}`);
+			await fetch(`/lodging/delete/place/${value.id}`, { method: 'delete' });
 			commit('setLoading', false);
 			commit('setDeletLodging', value);
 			commit('setMessage', {
@@ -49,9 +48,9 @@ const actions = {
 			commit('setModeEdit', false);
 			commit('setPlaces', null);
 			commit('setLoading', 'Cargando lugares...');
-			const response = await axios.get(`${api}/place`);
+			const response = await fetch(`/place`);
 			commit('setLoading', false);
-			commit('setPlaces', response.data.place);
+			commit('setPlaces', response.place);
 			commit('setMessage', {
 				type: 'success',
 				text: 'lugares descargados',
@@ -73,9 +72,9 @@ const actions = {
 			commit('setLoading', 'Cargando hospedajes...');
 			commit('setModeEdit', false);
 			commit('setLodgings', null);
-			const response = await axios.get(api + '/lodgings');
+			const res = await fetch('/lodgings');
 			commit('setLoading', false);
-			commit('setLodgings', response.data.lodgings);
+			commit('setLodgings', res.lodgings);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Hospedajes descargados ',
@@ -86,7 +85,7 @@ const actions = {
 				type: 'error',
 				text: 'Fetch lodgings ' + error,
 			});
-			if (error.message == 'Request failed with status code 401') router.push('/login');
+			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	/**
@@ -96,22 +95,22 @@ const actions = {
 		// commit('setLoading', true);
 
 		try {
-			const response = await axios.get(`${api}/periods/${placeId ? placeId : null}`);
-			const { periods } = response.data;
+			const response = await fetch(`/periods/${placeId ? placeId : null}`);
+			const { periods } = response;
 			commit('setPeriods', periods);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Habitaciones descargadas',
 			});
 			commit('setLoading', false);
-		} catch (e) {
+		} catch (error) {
 			commit('setPeriods', null);
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al descargar habitaciones',
 			});
 			commit('setLoading', false);
-			if (e.message == 'Request failed with status code 401') router.push('/login');
+			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	/**
@@ -119,10 +118,10 @@ const actions = {
 	 */
 	async fetchLodgingsForPlace({ commit }, id) {
 		try {
-			const response = await axios.get(`${api}/lodgings/place/${id}`);
-			commit('setLodgingsPlace', response.data.lodgings);
-			commit('setRangeDatePayments', response.data.lodgings);
-			commit('setcountLogingsPlace', response.data.count);
+			const response = await fetch(`/lodgings/place/${id}`);
+			commit('setLodgingsPlace', response.lodgings);
+			commit('setRangeDatePayments', response.lodgings);
+			commit('setcountLogingsPlace', response.count);
 		} catch (error) {
 			commit('setLodgingsPlace', null);
 			commit('setMessage', {
@@ -144,8 +143,9 @@ const actions = {
 			state.lodgings.forEach((l, id) => {
 				//Si es diferente o si no existe
 				if (mirrorLodging._data[id] != l || !mirrorLodging[id]) {
-					axios
-						.post(api + '/lodging', {
+					fetch('/lodging', {
+						method: 'post',
+						data: {
 							id: l.id,
 							group: l.group,
 							start: l.start,
@@ -153,8 +153,8 @@ const actions = {
 							service: l.service[0],
 							persons: l.persons,
 							place: state.place,
-						})
-						.then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)));
+						},
+					}).then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)));
 				}
 			});
 			commit('setLoading', false);
