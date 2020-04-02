@@ -180,7 +180,7 @@
 						<v-row>
 							<v-col v-for="(day, dayIndex) in lodging.days" :key="dayIndex" cols="4">
 								<div>{{ day.date }}</div>
-								<v-simple-table>
+								<table>
 									<thead>
 										<tr>
 											<th class="text-left">Nombre</th>
@@ -199,8 +199,9 @@
 											<td>
 												<label>
 													<input
-														:id="day.date"
-														v-model.number="service.quantity"
+														v-model="
+															day.services[serviceIndex].quantity
+														"
 														type="number"
 														class="inputService"
 														@change="
@@ -218,7 +219,7 @@
 											<td>{{ service.price * service.quantity }}</td>
 										</tr>
 									</tbody>
-								</v-simple-table>
+								</table>
 								<div>Total: {{ day.dayTotal }}</div>
 							</v-col>
 						</v-row>
