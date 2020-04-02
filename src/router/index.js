@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import { isAuthenticated } from '../service/auth';
 Vue.use(VueRouter);
 
 const Home = () => import('@/views/Home.vue');
@@ -64,8 +65,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	console.log('hola');
-	// if the user is not authenticated, `next` is called twice
+	if (to.name !== 'login' && !isAuthenticated()) next({ name: 'login' });
 	next();
 });
 
