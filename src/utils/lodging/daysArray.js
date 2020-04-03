@@ -21,12 +21,12 @@ export const generateDaysArray = (place, startDate, endDate) => {
 
 	const startDay = {
 		services: servicesArray,
-		date: startDate.format('L'),
+		date: startDate,
 		dayTotal: dayTotal(servicesArray),
 	};
 	const endDay = {
 		services: servicesArray,
-		date: endDate.format('L'),
+		date: endDate,
 		dayTotal: dayTotal(servicesArray),
 	};
 	//si el rango es mayor a uno, significa que son fechas mayores a un dia de diferencia
@@ -35,7 +35,7 @@ export const generateDaysArray = (place, startDate, endDate) => {
 		arrayOfDates.forEach(date => {
 			const dayObject = {
 				services: servicesArray,
-				date: date.format('L'),
+				date: date,
 				dayTotal: dayTotal(servicesArray),
 			};
 			daysArray.push(dayObject);
@@ -53,7 +53,7 @@ export const generateSingleDay = (place, dayDate) => {
 	const servicesArray = [];
 	const dayObject = {
 		services: [],
-		date: dayDate.format('L'),
+		date: dayDate,
 		dayTotal: 0,
 	};
 	place.services.forEach(service => {

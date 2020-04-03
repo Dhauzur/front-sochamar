@@ -168,105 +168,99 @@
 					</v-col>
 				</template>
 			</v-row>
-			<!--v3 proyection-->
-			<v-row v-if="selectedPlace.value">
-				<!--days per lodging render-->
-				<v-col v-for="lodging in lodgings._data" :key="lodging.id" cols="12">
-					<v-card cols="3">
-						<v-card-title class="headline">
-							{{ lodging.start.format('L') + ' - ' + lodging.end.format('L') }}
-						</v-card-title>
-						<!--Day render-->
-						<v-row>
-							<v-col v-for="(day, dayIndex) in lodging.days" :key="dayIndex" cols="4">
-								<div>{{ day.date }}</div>
-								<table>
-									<thead>
-										<tr>
-											<th class="text-left">Nombre</th>
-											<th class="text-left">Precio</th>
-											<th class="text-left">Cantidad</th>
-											<th class="text-left">SubTotal</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											v-for="(service, serviceIndex) in day.services"
-											:key="serviceIndex"
-										>
-											<td>{{ service.name }}</td>
-											<td>{{ service.price }}</td>
-											<td>
-												<label>
-													<input
-														v-model="
-															day.services[serviceIndex].quantity
-														"
-														type="number"
-														class="inputService"
-														@change="
-															detectServiceQuantityChange(
-																$event,
-																lodging.group,
-																lodging.id,
-																dayIndex,
-																serviceIndex
-															)
-														"
-													/>
-												</label>
-											</td>
-											<td>{{ service.price * service.quantity }}</td>
-										</tr>
-									</tbody>
-								</table>
-								<div>Total: {{ day.dayTotal }}</div>
-							</v-col>
-						</v-row>
-						<!--Services ComboBox-->
-						<v-row>
-							<v-col cols="12" sm="4">
-								<v-select
-									id="services_select"
-									v-model="serviceSelected"
-									:items="servicesComboBox"
-									dense
-									label="Servicios"
-									outlined
+			<v-row v-if="selectedPlace.value && lodgingSelect">
+				<v-col v-for="lodging in lodgings._data" :key="lodging.id">
+					<v-row v-if="lodging.id == lodgingSelect.id">
+						<div class="d-inline-flex overflow-x-auto pb-3 ">
+							<div
+								v-for="(day, dayIndex) in lodging.days"
+								:key="dayIndex"
+								class="microCard  "
+							>
+								<div class="">
+									{{ day.date }}
+								</div>
+								<div
+									v-for="(service, serviceIndex) in day.services"
+									:key="serviceIndex"
+									class="mt-4 d-flex"
 								>
-								</v-select>
-							</v-col>
-							<v-col cols="6" md="3" class="mt-1">
-								<v-btn
-									small
-									color="primary"
-									@click="
-										addDaysServices({
-											serviceName: serviceSelected,
-											lodgingId: lodging.id,
-											lodgingGroup: lodging.group,
-										})
-									"
-								>
-									+1 {{ serviceSelected }}
-								</v-btn>
-							</v-col>
-							<v-col cols="6" md="3" class="mt-1">
-								<v-btn
-									small
-									color="primary"
-									@click="
-										subDaysServices({
-											serviceName: serviceSelected,
-											lodgingId: lodging.id,
-										})
-									"
-								>
-									-1 {{ serviceSelected }}
-								</v-btn>
-							</v-col>
-						</v-row>
-					</v-card>
+									<b>{{ service.name }}</b
+									>(${{ service.price }})<br />
+									<b>x</b><br />
+									<label>
+										<input
+											:id="day.date + day.services[serviceIndex]"
+											v-model="day.services[serviceIndex].quantity"
+											type="number"
+											class="inputService"
+											@change="
+												detectServiceQuantityChange(
+													$event,
+													lodging.group,
+													lodging.id,
+													dayIndex,
+													serviceIndex
+												)
+											"
+										/>
+										: {{ service.price * service.quantity }}
+									</label>
+								</div>
+								<div>
+									<b>TOTAL: {{ day.dayTotal }} </b>
+								</div>
+							</div>
+						</div>
+					</v-row>
+					<!--Services ComboBox-->
+					<v-row v-if="lodging.id == lodgingSelect.id">
+						<v-col cols="12" sm="4" class="d-inline-flex">
+							<span class="dateDayCard">
+								{{
+									lodging.start.format('DD-MM-YY') +
+										' - ' +
+										lodging.end.format('DD-MM-YY')
+								}}</span
+							>
+							<v-select
+								id="services_select"
+								v-model="serviceSelected"
+								:items="servicesComboBox"
+								dense
+								label="Servicios"
+								outlined
+							>
+							</v-select>
+							<v-btn
+								color="accent"
+								class="ml-2"
+								rounded
+								@click="
+									addDaysServices({
+										serviceName: serviceSelected,
+										lodgingId: lodging.id,
+										lodgingGroup: lodging.group,
+									})
+								"
+							>
+								+1
+							</v-btn>
+							<v-btn
+								class="ml-2"
+								color="accent"
+								rounded
+								@click="
+									subDaysServices({
+										serviceName: serviceSelected,
+										lodgingId: lodging.id,
+									})
+								"
+							>
+								-1
+							</v-btn>
+						</v-col>
+					</v-row>
 				</v-col>
 			</v-row>
 			<!--Edit Lodging-->
@@ -357,9 +351,9 @@ export default {
 				//al hacer click en una parte del timeline, esta función actua similar a createOneLodging
 				onAdd: (item, callback) => {
 					if (this.place) {
-						const startDate = moment(item.start).hours(15);
+						const startDate = moment(item.start).hours(12);
 						const endDate = moment(item.start)
-							.hours(12)
+							.hours(10)
 							.add(1, 'day');
 						item.start = startDate;
 						item.end = endDate;
@@ -394,8 +388,8 @@ export default {
 						//guardamos los dias antiguos
 						const oldDays = item.days;
 						//importante definir siempre las horas, con esto evitamos el error de rangos incorrectos al disminuir rapido el item de lodging
-						const startDate = moment(item.start).hours(15);
-						const endDate = moment(item.end).hours(12);
+						const startDate = moment(item.start).hours(12);
+						const endDate = moment(item.end).hours(10);
 						//en base a los nuevos rangos de fecha, creamos un arreglo de dias
 						const newDaysArray = generateDaysArray(
 							this.selectedPlace,
@@ -567,6 +561,28 @@ export default {
 </script>
 
 <style lang="css">
+.dateDayCard {
+	border: 1px solid #0000006b;
+	border-radius: 10px;
+	padding: 10px;
+	margin-right: 15px;
+	margin-left: -15px;
+	min-width: 200px;
+	max-height: 41px;
+}
+.microCard {
+	border-radius: 10px;
+	background-color: transparent;
+	background: linear-gradient(
+		115deg,
+		rgba(210, 141, 181, 0.22) 0%,
+		rgba(194, 173, 247, 0.16) 100%
+	);
+	padding: 10px;
+	margin-right: 15px;
+	box-shadow: 0px 3px 10px -2px rgba(0, 0, 0, 0.75);
+	min-width: 300px;
+}
 .timelineContent:hover {
 	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
 	transition: all ease-in-out 0.5s;
@@ -582,7 +598,7 @@ export default {
 }
 
 .vis-selected {
-	background-color: #c06240 !important;
+	background-color: #6a31ff !important;
 	color: white !important;
 	transition: all ease-in-out 0.3s;
 	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
@@ -602,7 +618,9 @@ export default {
 }
 
 .inputService {
-	max-width: 60px;
+	width: 60px;
+	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
+	padding-left: 5px;
 }
 .vis-timeline {
 	margin-bottom: 15px;
@@ -610,15 +628,11 @@ export default {
 	border: none !important;
 }
 .vis-item {
+	background-color: rgba(194, 173, 247, 0.46);
+	color: var(--v-textColor) !important;
+	box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.95);
 	border: none !important;
-	background: rgb(213, 47, 143);
-	background: linear-gradient(
-		90deg,
-		rgba(213, 47, 143, 0.861782212885154) 0%,
-		rgba(106, 49, 255, 0.8701855742296919) 100%
-	);
-	color: white;
-	border-radius: 5px !important;
+	border-left: 4px solid #6a31ff !important;
 	transition: all ease-in-out 0.3s;
 }
 </style>

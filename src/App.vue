@@ -61,6 +61,7 @@ table {
 /* width */
 ::-webkit-scrollbar {
 	width: 4px;
+	height: 4px;
 }
 
 /* Track */
@@ -70,12 +71,12 @@ table {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-	background: transparent;
+	background: #818181d9;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: transparent;
+	background: #8181816e;
 }
 
 .pointer {
