@@ -1,89 +1,84 @@
-<template lang="html">
-	<v-container>
-		<v-row id="nav" class="justify-content-center">
-			<v-col md="8" lg="6" class="background-module pb-3 px-4">
-				<h3 class="my-4">Restaurar contraseña</h3>
-				<b-form @submit.prevent="sendNewPassword">
-					<!--NUEVA CONTRASEÑA-->
-					<b-form-group
-						id="input-group-1"
-						label="Nueva Contraseña:"
-						label-for="email-input"
-					>
-						<b-form-input
-							id="email-input"
-							v-model.trim="formData.newPassword"
-							type="password"
-							placeholder="Ingresa la contraseña"
-						></b-form-input>
-						<div v-if="$v.formData.newPassword.$dirty">
-							<small v-if="!$v.formData.newPassword.required" class="text-danger">
-								Campo requerido
-							</small>
-							<small v-if="!$v.formData.newPassword.minLength" class="text-danger">
-								Minimo 5 caracteres
-							</small>
-							<small v-if="!$v.formData.newPassword.maxLength" class="text-danger">
-								Minimo 100 caracteres
-							</small>
-						</div>
-					</b-form-group>
-					<!--REPETIR CONTRASEÑA-->
-					<b-form-group
-						id="input-group-2"
-						label="Ingresala nuevamente:"
-						label-for="email-input"
-					>
-						<b-form-input
-							id="email-input"
-							v-model.trim="formData.repeatedPassword"
-							type="password"
-							placeholder="Ingresa la contraseña nuevamente"
-						></b-form-input>
-						<div v-if="$v.formData.repeatedPassword.$dirty">
-							<small
-								v-if="!$v.formData.repeatedPassword.sameAsPassword"
-								class="text-danger"
-							>
-								Las contraseñas no son iguales
-							</small>
-						</div>
-					</b-form-group>
-					<!--SUBMIT-->
-					<b-button v-if="!loading" class="mt-2" type="submit" variant="primary"
-						>Actualizar</b-button
-					>
-					<small v-if="errors" class="mt-2 d-block text-danger">
-						Debe rellenar el formulario correctamente
-					</small>
-				</b-form>
+<template>
+	<v-container class="fill-height" fluid>
+		<v-row align="center" justify="center">
+			<v-col cols="12" sm="8" md="4" lg="3">
+				<h3 class="title my-4">Restaurar contraseña</h3>
+				<!-- password -->
+				<v-text-field
+					id="password-input"
+					v-model.trim="$v.formData.newPassword.$model"
+					type="password"
+					dense
+					outlined
+					placeholder="Nueva contraseña"
+					:error-messages="newPasswordErrors"
+					@input="$v.formData.newPassword.$touch()"
+					@blur="$v.formData.newPassword.$touch()"
+				></v-text-field>
+				<!-- repet password -->
+				<v-text-field
+					id="email-input"
+					v-model.trim="$v.formData.repeatedPassword.$model"
+					type="password"
+					dense
+					outlined
+					placeholder="Repita la contraseña"
+					:error-messages="repetPasswordErrors"
+					@input="$v.formData.repeatedPassword.$touch()"
+					@blur="$v.formData.repeatedPassword.$touch()"
+				></v-text-field>
+				<!-- submit -->
+				<v-btn
+					:disabled="loading"
+					:loading="loading"
+					block
+					color="primary"
+					class="mt-2"
+					type="submit"
+					variant="primary"
+					@click="onSubmit"
+				>
+					Actualizar
+				</v-btn>
 			</v-col>
 		</v-row>
 	</v-container>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength, sameAs } from 'vuelidate/lib/validators';
+import { updatePassword } from '@/service/auth';
 
 export default {
 	mixins: [validationMixin],
 	data() {
 		return {
+			loading: false,
 			formData: {
 				newPassword: '',
 				repeatedPassword: '',
 			},
 			temporalJwt: '',
-			errors: false,
 		};
 	},
 	computed: {
-		...mapGetters({
-			message: 'Auth/message',
-			loading: 'Auth/loading',
-		}),
+		newPasswordErrors() {
+			const errors = [];
+			if (!this.$v.formData.newPassword.$dirty) return errors;
+			!this.$v.formData.newPassword.required && errors.push('Campo querido');
+			!this.$v.formData.newPassword.maxLength && errors.push('Maximo 100 caracteres');
+			!this.$v.formData.newPassword.minLength && errors.push('Minimo 5 caracteres');
+			return errors;
+		},
+		repetPasswordErrors() {
+			const errors = [];
+			if (!this.$v.formData.repeatedPassword.$dirty) return errors;
+			!this.$v.formData.repeatedPassword.required && errors.push('Campo querido');
+			!this.$v.formData.repeatedPassword.sameAsPassword &&
+				errors.push('Las contraseñas no son iguales');
+			return errors;
+		},
 	},
 	validations: {
 		formData: {
@@ -97,36 +92,32 @@ export default {
 			},
 		},
 	},
-	watch: {
-		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
-		},
-	},
 	created() {
 		this.temporalJwt = this.$route.query.token;
 		this.deleteQueryFromRoute();
 	},
 	methods: {
-		sendNewPassword() {
+		async onSubmit() {
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				this.errors = true;
-			} else {
-				const recoverData = {
-					token: this.temporalJwt,
-					password: this.formData.newPassword,
-				};
-				this.updatePassword(recoverData);
+			if (!this.$v.$invalid) {
+				try {
+					this.loading = !this.loading;
+					await updatePassword(this.temporalJwt, this.formData.newPassword);
+					this.$toasted.show('Contraseña cambiada con exito', {
+						type: 'success',
+					});
+					this.$router.replace({ name: 'login' });
+				} catch (error) {
+					this.$toasted.show('Expiro el tiempo para cambiar la contraseña', {
+						type: 'error',
+					});
+				}
+				this.loading = !this.loading;
 			}
 		},
 		deleteQueryFromRoute() {
 			this.$router.replace({ query: null });
 		},
-		...mapActions({
-			updatePassword: 'Auth/updatePassword',
-		}),
 	},
 };
 </script>
