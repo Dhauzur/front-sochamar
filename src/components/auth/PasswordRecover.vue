@@ -9,6 +9,8 @@
 				<v-text-field
 					id="password-email"
 					v-model.trim="email"
+					outlined
+					dense
 					label="Correo Electronico"
 					type="email"
 					prepend-icon="mdi-account"
@@ -21,7 +23,7 @@
 				Cancelar
 			</v-btn>
 			<v-spacer />
-			<v-btn :loading="loading" small color="primary" @click="handleSubmit">
+			<v-btn :loading="loading" small color="primary" @click="onSubmit">
 				Enviar Recuperación
 			</v-btn>
 		</v-card-actions>
@@ -29,8 +31,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
 import Logo from '@/assets/logo';
+import { requestPasswordRecoverEmail } from '@/service/auth';
 
 export default {
 	components: {
@@ -44,22 +46,25 @@ export default {
 	},
 	data() {
 		return {
+			loading: false,
 			email: '',
 		};
 	},
-	computed: {
-		...mapGetters({
-			loading: 'Auth/loading',
-		}),
-	},
 	methods: {
-		...mapActions({
-			requestPasswordRecoverEmail: 'Auth/requestPasswordRecoverEmail',
-		}),
-		handleSubmit() {
-			this.requestPasswordRecoverEmail(this.email).then(() =>
-				this.disablePasswordRecover(false)
-			);
+		async onSubmit() {
+			try {
+				this.loading = !this.loading;
+				await requestPasswordRecoverEmail(this.email);
+				this.disablePasswordRecover(false);
+				this.$toasted.show('Correo de recuperación enviado con exito', {
+					type: 'success',
+				});
+			} catch (error) {
+				this.$toasted.show('Ese correo no existe en sistema', {
+					type: 'error',
+				});
+			}
+			this.loading = !this.loading;
 		},
 	},
 };
