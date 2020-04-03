@@ -1,5 +1,4 @@
 import fetch from '@/service/fetch';
-import router from '@/router/index.js';
 
 const state = {
 	filterRoomWord: '',
