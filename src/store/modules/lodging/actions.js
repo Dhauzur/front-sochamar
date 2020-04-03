@@ -16,7 +16,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al crear Turno',
 			});
-			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	/**
@@ -37,7 +36,6 @@ const actions = {
 				type: 'error',
 				text: 'Delete lodging ' + error,
 			});
-			if (error.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	/**
@@ -61,7 +59,6 @@ const actions = {
 				type: 'error',
 				text: 'Fetch place ' + error,
 			});
-			if (error.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	/**
@@ -85,7 +82,6 @@ const actions = {
 				type: 'error',
 				text: 'Fetch lodgings ' + error,
 			});
-			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	/**
@@ -110,7 +106,6 @@ const actions = {
 				text: 'Error al descargar habitaciones',
 			});
 			commit('setLoading', false);
-			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	/**
@@ -128,7 +123,6 @@ const actions = {
 				type: 'error',
 				text: 'Fetch lodgings ' + error,
 			});
-			if (error.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	/**
@@ -163,7 +157,6 @@ const actions = {
 				type: 'error',
 				text: 'Create lodging ' + error,
 			});
-			if (error.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 };

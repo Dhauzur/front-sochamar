@@ -36,7 +36,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al eliminar Turno',
 			});
-			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	async createRoom({ commit, dispatch }, room) {
@@ -54,7 +53,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al crear Turno',
 			});
-			if (error.response.status === 401) router.push('/login');
 		}
 		commit('setLoading', false);
 	},
@@ -71,7 +69,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al descargar turnos',
 			});
-			if (error.response.status === 401) router.push('/login');
 		}
 		commit('setLoading', false);
 	},

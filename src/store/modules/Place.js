@@ -50,7 +50,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al eliminar lugar',
 			});
-			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	async createPlace({ commit, dispatch }, place) {
@@ -66,7 +65,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al crear lugar',
 			});
-			if (error.response.status === 401) router.push('/login');
 		}
 	},
 	async createService({ commit, dispatch }, { payload, placeId }) {
@@ -82,7 +80,6 @@ const actions = {
 			dispatch('fetchPlace');
 		} catch (error) {
 			commit('setMessage', toastMessage('error', 'no se permiten nombres repetidos'));
-			if (error.response.status === 401) router.push('/login');
 		} finally {
 			commit('setLoading', false);
 		}
@@ -99,7 +96,6 @@ const actions = {
 			dispatch('fetchPlace');
 		} catch (error) {
 			commit('setMessage', toastMessage('error', 'error al actulizar servicio'));
-			if (error.response.status === 401) router.push('/login');
 		} finally {
 			commit('setLoading', false);
 		}
@@ -112,7 +108,6 @@ const actions = {
 			dispatch('fetchPlace');
 		} catch (error) {
 			commit('setMessage', toastMessage('error', 'error al borrar Servicio'));
-			if (error.response.status === 401) router.push('/login');
 		} finally {
 			commit('setLoading', false);
 		}
@@ -133,7 +128,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al descargar lugares',
 			});
-			// if (error.response.status === 401) router.push('/login');
 		}
 	},
 	async fetchOnePlace({ commit }, id) {
@@ -146,7 +140,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al descargar lugar',
 			});
-			if (error.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 };

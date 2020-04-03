@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { api as baseURL } from '@/config/index.js';
 import { isAuthenticated, getToken } from '@/service/auth';
+import router from '@/router/index.js';
 
 export const api = axios.create({
 	baseURL,
@@ -11,10 +12,10 @@ api.interceptors.response.use(
 	response => response,
 	error => {
 		if (error.response.status === 403) {
-			console.log('403');
+			router.replace({ name: 'profile' });
 		}
 		if (error.response.status === 401) {
-			console.log('401');
+			router.replace({ name: 'login' });
 		}
 		return error;
 	}
