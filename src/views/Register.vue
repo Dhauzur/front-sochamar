@@ -55,7 +55,7 @@
 						color="primary"
 						label="Analista"
 					></v-switch>
-					<v-btn :loading="loading" block color="primary" small @click="submit">
+					<v-btn :loading="loading" block color="primary" small @click="onSubmit">
 						Finalizar Registro
 					</v-btn>
 					<div class="text--secondary pt-2">¿Ya tienes una cuenta?</div>
@@ -143,13 +143,13 @@ export default {
 		},
 	},
 	methods: {
-		submit() {
+		onSubmit() {
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
 				this.register(this.formData).then(() =>
 					this.profile.role === 'admin'
-						? this.$router.push('/')
-						: this.$router.push('/profile')
+						? this.$router.replace({ name: 'home' })
+						: this.$router.replace({ name: 'profile' })
 				);
 			}
 		},

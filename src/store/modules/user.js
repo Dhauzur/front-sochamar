@@ -17,6 +17,7 @@ const actions = {
 		try {
 			const profile = await fetch('/user/profile');
 			commit('setProfile', profile);
+			return profile;
 		} catch (e) {
 			const message = { type: 'error', text: 'Error de servidor' };
 			commit('setMessage', message);

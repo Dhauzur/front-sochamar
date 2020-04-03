@@ -87,8 +87,8 @@ export default {
 		async onSubmit() {
 			this.login(this.loginData).then(() =>
 				this.profile.role === 'admin'
-					? this.$router.push('/')
-					: this.$router.push('/profile')
+					? this.$router.replace({ name: 'home' })
+					: this.$router.replace({ name: 'profile' })
 			);
 		},
 		toastedMessage(newVal) {

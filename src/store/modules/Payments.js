@@ -20,7 +20,7 @@ const actions = {
 			commit('setLoading', true);
 			const response = await fetch(`/payments/${id}`);
 			commit('setPayments', response.payments);
-			if (response.payments.length > 0) {
+			if (response.payments.length) {
 				commit('setMessage', {
 					type: 'success',
 					text: 'Lista de Pagos ok',

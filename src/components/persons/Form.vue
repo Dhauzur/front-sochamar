@@ -241,7 +241,7 @@ export default {
 			menu: false,
 			regiones: [],
 			success: '',
-			person: this.selected || { firstName: '' },
+			person: { firstName: '' },
 		};
 	},
 	computed: {
@@ -261,6 +261,11 @@ export default {
 				required,
 				minLength: minLength(3),
 			},
+		},
+	},
+	watch: {
+		selected() {
+			this.person = this.selected;
 		},
 	},
 	mounted() {

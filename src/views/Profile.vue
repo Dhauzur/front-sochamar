@@ -1,146 +1,152 @@
 <template>
 	<v-container fluid>
-		<v-row v-if="isAdmin" justify="center">
-			<v-col cols="12">
-				<v-card class="mx-auto" max-width="600">
-					<v-card-title>
-						<v-tooltip bottom>
-							<template v-slot:activator="{ on }">
-								<label for="upload" class="pointer" v-on="on">
+		<template v-if="loadingInitial">
+			<v-sheet elevation="24">
+				<v-skeleton-loader
+					type="list-item-two-line, list-item-three-line, list-item-three-line,  card-heading"
+				></v-skeleton-loader>
+			</v-sheet>
+		</template>
+		<template v-else>
+			<v-row v-if="isAdmin" justify="center">
+				<v-col cols="12">
+					<v-card class="mx-auto" max-width="600">
+						<v-card-title>
+							<v-tooltip bottom>
+								<template v-slot:activator="{ on }">
+									<label for="upload" class="pointer" v-on="on">
+										<avatar
+											:name="profile.name"
+											:last-name="profile.lastName"
+											:url="profile.img"
+											:loading="loadingUpload"
+										/>
+									</label>
+									<v-file-input
+										id="upload"
+										ref="avatar"
+										v-model="avatar"
+										class="d-none"
+										dense
+										accept="image/jpeg, image/png, image/gif, image/jpg"
+										placeholder="Agrega una imagen"
+										drop-placeholder="Arrastrar aqui..."
+										@change="onFileUpload"
+									></v-file-input>
+								</template>
+								<span>Sube o cambia la imagen</span>
+							</v-tooltip>
+							<v-card-title primary-title>
+								{{ `${profile.name} ${profile.lastName && profile.lastName}` }}
+							</v-card-title>
+						</v-card-title>
+						<v-card-text class="text-left">
+							{{ profile.role }}
+						</v-card-text>
+						<v-card-text v-if="profile.analyst" class="text-left pt-0 mt-0">
+							Analista
+						</v-card-text>
+						<v-card-text class="pb-0 mb-0">
+							<form>
+								<v-text-field
+									id="firstname"
+									v-model.trim="profileData.name"
+									dense
+									outlined
+									label="Nombre"
+									:error-messages="nameErrors"
+									@input="$v.profileData.name.$touch()"
+									@blur="$v.profileData.name.$touch()"
+								></v-text-field>
+								<v-text-field
+									id="lastname"
+									v-model.trim="profileData.lastName"
+									dense
+									outlined
+									label="Apellido"
+									:error-messages="lastnameErrors"
+									@input="$v.profileData.lastName.$touch()"
+									@blur="$v.profileData.lastName.$touch()"
+								></v-text-field>
+							</form>
+						</v-card-text>
+						<v-card-actions>
+							<v-spacer></v-spacer>
+							<v-btn :loading="loading" text color="primary" @click="submitForm">
+								Actualizar
+							</v-btn>
+						</v-card-actions>
+					</v-card>
+				</v-col>
+				<v-col cols="12">
+					<v-card class="mx-auto" max-width="600">
+						<v-card-title class="text-left">
+							Seguridad
+						</v-card-title>
+						<v-card-text class="pb-0 mb-0">
+							<v-text-field
+								id="new-password"
+								v-model.trim="securityData.newPassword"
+								type="password"
+								dense
+								outlined
+								label="Nueva contraseña"
+								:error-messages="lastnameErrors"
+								@input="$v.securityData.newPassword.$touch()"
+								@blur="$v.securityData.newPassword.$touch()"
+							></v-text-field>
+						</v-card-text>
+						<v-card-actions>
+							<v-spacer></v-spacer>
+							<v-btn
+								:disabled="loading"
+								text
+								color="primary"
+								@click="submitNewPassword"
+								>Actualizar contraseña
+							</v-btn>
+						</v-card-actions>
+					</v-card>
+				</v-col>
+			</v-row>
+			<v-row v-if="isPerson">
+				<v-col cols="12" md="2">
+					<v-list dense nav flat elevation="24" height="100%">
+						<v-list-item>
+							<v-list-item-content>
+								<v-list-item-title class="title">
 									<avatar
 										:name="profile.name"
 										:last-name="profile.lastName"
 										:url="profile.img"
 										:loading="loadingUpload"
 									/>
-								</label>
-								<v-file-input
-									id="upload"
-									ref="avatar"
-									v-model="avatar"
-									class="d-none"
-									dense
-									accept="image/jpeg, image/png, image/gif, image/jpg"
-									placeholder="Agrega una imagen"
-									drop-placeholder="Arrastrar aqui..."
-									@change="onFileUpload"
-								></v-file-input>
-							</template>
-							<span>Sube o cambia la imagen</span>
-						</v-tooltip>
-						<v-card-title primary-title>
-							{{ `${profile.name} ${profile.lastName && profile.lastName}` }}
-						</v-card-title>
-					</v-card-title>
-					<v-card-text class="text-left">
-						{{ profile.role }}
-					</v-card-text>
-					<v-card-text v-if="profile.analyst" class="text-left pt-0 mt-0">
-						Analista
-					</v-card-text>
-					<v-card-text class="pb-0 mb-0">
-						<form>
-							<v-text-field
-								id="firstname"
-								v-model.trim="profileData.name"
-								dense
-								outlined
-								label="Nombre"
-								:error-messages="nameErrors"
-								@input="$v.profileData.name.$touch()"
-								@blur="$v.profileData.name.$touch()"
-							></v-text-field>
-							<v-text-field
-								id="lastname"
-								v-model.trim="profileData.lastName"
-								dense
-								outlined
-								label="Apellido"
-								:error-messages="lastnameErrors"
-								@input="$v.profileData.lastName.$touch()"
-								@blur="$v.profileData.lastName.$touch()"
-							></v-text-field>
-						</form>
-					</v-card-text>
-					<v-card-actions>
-						<v-spacer></v-spacer>
-						<v-btn :loading="loading" text color="primary" @click="submitForm">
-							Actualizar
-						</v-btn>
-					</v-card-actions>
-				</v-card>
-			</v-col>
-			<v-col cols="12">
-				<v-card class="mx-auto" max-width="600">
-					<v-card-title class="text-left">
-						Seguridad
-					</v-card-title>
-					<v-card-text class="pb-0 mb-0">
-						<v-text-field
-							id="new-password"
-							v-model.trim="securityData.newPassword"
-							type="password"
-							dense
-							outlined
-							label="Nueva contraseña"
-							:error-messages="lastnameErrors"
-							@input="$v.securityData.newPassword.$touch()"
-							@blur="$v.securityData.newPassword.$touch()"
-						></v-text-field>
-					</v-card-text>
-					<v-card-actions>
-						<v-spacer></v-spacer>
-						<v-btn :disabled="loading" text color="primary" @click="submitNewPassword"
-							>Actualizar contraseña
-						</v-btn>
-					</v-card-actions>
-				</v-card>
-			</v-col>
-		</v-row>
-		<v-row v-if="isPerson">
-			<v-col cols="12" md="2">
-				<v-list dense nav flat elevation="24" height="100%">
-					<v-list-item>
-						<v-list-item-content>
-							<v-list-item-title class="title">
-								<avatar
-									:name="profile.name"
-									:last-name="profile.lastName"
-									:url="profile.img"
-									:loading="loadingUpload"
-								/>
-							</v-list-item-title>
-							<v-list-item-subtitle>
-								{{ profile.name }} {{ profile.lastName && profile.lastName }}
-							</v-list-item-subtitle>
-						</v-list-item-content>
-					</v-list-item>
-					<v-divider></v-divider>
-					<v-list-item-group v-model="selected" color="primary">
-						<v-list-item v-for="item in items" :key="item.title" link>
-							<v-list-item-content>
-								<v-list-item-title>{{ item.title }}</v-list-item-title>
+								</v-list-item-title>
+								<v-list-item-subtitle>
+									{{ profile.name }} {{ profile.lastName && profile.lastName }}
+								</v-list-item-subtitle>
 							</v-list-item-content>
 						</v-list-item>
-					</v-list-item-group>
-				</v-list>
-			</v-col>
-			<v-col v-if="Boolean(profile)" cols="12" md="10">
-				<Form
-					title="Completa tus datos"
-					:edit-mode="true"
-					:selected="userPerson"
-					:update-user="updateUser"
-				/>
-			</v-col>
-			<v-col v-else>
-				<v-sheet elevation="24">
-					<v-skeleton-loader
-						type="list-item-two-line, list-item-three-line, list-item-three-line,  card-heading"
-					></v-skeleton-loader>
-				</v-sheet>
-			</v-col>
-		</v-row>
+						<v-divider></v-divider>
+						<v-list-item-group v-model="selected" color="primary">
+							<v-list-item v-for="item in items" :key="item.title" link>
+								<v-list-item-content>
+									<v-list-item-title>{{ item.title }}</v-list-item-title>
+								</v-list-item-content>
+							</v-list-item>
+						</v-list-item-group>
+					</v-list>
+				</v-col>
+				<v-col cols="12" md="10">
+					<Form
+						title="Completa tus datos"
+						:edit-mode="true"
+						:selected="userPerson"
+						:update-user="updateUser"
+					/>
+				</v-col>
+			</v-row>
+		</template>
 	</v-container>
 </template>
 
@@ -158,6 +164,7 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
+			loadingInitial: true,
 			person: null,
 			selected: null,
 			items: [
@@ -226,15 +233,7 @@ export default {
 		},
 	},
 	created() {
-		this.fetchProfile()
-			.then(this.fetchprofileData)
-			.then(
-				() =>
-					this.profile.idPerson &&
-					this.fetchPerson(this.profile.idPerson).then(
-						response => (this.person = response)
-					)
-			);
+		this.initialFetch().then(() => (this.loadingInitial = false));
 	},
 	validations: {
 		profileData: {
@@ -256,8 +255,12 @@ export default {
 		},
 	},
 	methods: {
-		fetchprofileData() {
-			this.profileData = Object.assign(this.profileData, this.profile);
+		async initialFetch() {
+			const profile = await this.fetchProfile();
+			this.profileData = profile;
+			if (profile.idPerson) {
+				this.person = await this.fetchPerson(profile.idPerson);
+			}
 		},
 		setAvatarObject(file) {
 			const avatar = new FormData();
