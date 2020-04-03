@@ -50,7 +50,9 @@ table {
 	border-spacing: 5px !important;
 }
 
-.fade-enter-active,
+.fade-enter-active {
+	transition: opacity 1.5s;
+}
 .fade-leave-active {
 	transition: opacity 0.5s;
 }

@@ -168,114 +168,118 @@
 					</v-col>
 				</template>
 			</v-row>
-			<v-row v-if="selectedPlace.value && lodgingSelect">
-				<v-col v-for="lodging in lodgings._data" :key="lodging.id">
-					<v-row v-if="lodging.id == lodgingSelect.id">
-						<div class="d-inline-flex overflow-x-auto pb-3 ">
-							<div
-								v-for="(day, dayIndex) in lodging.days"
-								:key="dayIndex"
-								class="microCard  "
-							>
-								<div class="">
-									{{ day.date }}
+			<v-row>
+				<v-col cols="12">
+					<template v-for="lodging in lodgings._data">
+						<v-row v-if="selectedPlace.value && lodgingSelect" :key="lodging.id">
+							<v-col v-if="lodging.id == lodgingSelect.id" class="overflow-x-auto">
+								<div class="d-inline-flex overflow-x-auto pb-3 ">
+									<div
+										v-for="(day, dayIndex) in lodging.days"
+										:key="dayIndex"
+										class="microCard"
+									>
+										{{ day.date }}
+										<div
+											v-for="(service, serviceIndex) in day.services"
+											:key="serviceIndex"
+											class="mt-3 "
+										>
+											<b>{{ service.name }}&nbsp;por&nbsp;</b>${{
+												service.price
+											}}<br />
+											<b>&nbsp;x&nbsp;</b>
+											<label>
+												<input
+													:id="day.date + day.services[serviceIndex]"
+													v-model="day.services[serviceIndex].quantity"
+													type="number"
+													class="inputService"
+													@change="
+														detectServiceQuantityChange(
+															$event,
+															lodging.group,
+															lodging.id,
+															dayIndex,
+															serviceIndex
+														)
+													"
+												/>
+												: {{ service.price * service.quantity }}
+											</label>
+										</div>
+										<div class="mt-2">
+											<b>SUBTOTAL: {{ day.dayTotal }} </b>
+										</div>
+									</div>
 								</div>
-								<div
-									v-for="(service, serviceIndex) in day.services"
-									:key="serviceIndex"
-									class="mt-4 d-flex"
-								>
-									<b>{{ service.name }}</b
-									>(${{ service.price }})<br />
-									<b>x</b><br />
-									<label>
-										<input
-											:id="day.date + day.services[serviceIndex]"
-											v-model="day.services[serviceIndex].quantity"
-											type="number"
-											class="inputService"
-											@change="
-												detectServiceQuantityChange(
-													$event,
-													lodging.group,
-													lodging.id,
-													dayIndex,
-													serviceIndex
-												)
+								<!--Services ComboBox-->
+								<div v-if="lodging.id == lodgingSelect.id">
+									<v-col cols="12" sm="4" class="d-inline-flex ">
+										<span class="dateDayCard">
+											{{
+												lodging.start.format('DD-MM-YY') +
+													' - ' +
+													lodging.end.format('DD-MM-YY')
+											}}&nbsp;Neto:&nbsp;${{ lodging.mountTotal }}</span
+										>
+										<v-select
+											id="services_select"
+											v-model="serviceSelected"
+											:items="servicesComboBox"
+											dense
+											label="Servicios"
+											outlined
+										>
+										</v-select>
+										<v-btn
+											color="accent"
+											class="ml-2"
+											rounded
+											@click="
+												addDaysServices({
+													serviceName: serviceSelected,
+													lodgingId: lodging.id,
+													lodgingGroup: lodging.group,
+												})
 											"
-										/>
-										: {{ service.price * service.quantity }}
-									</label>
+										>
+											+1
+										</v-btn>
+										<v-btn
+											class="ml-2"
+											color="accent"
+											rounded
+											@click="
+												subDaysServices({
+													serviceName: serviceSelected,
+													lodgingId: lodging.id,
+												})
+											"
+										>
+											-1
+										</v-btn>
+									</v-col>
 								</div>
-								<div>
-									<b>TOTAL: {{ day.dayTotal }} </b>
-								</div>
-							</div>
-						</div>
-					</v-row>
-					<!--Services ComboBox-->
-					<v-row v-if="lodging.id == lodgingSelect.id">
-						<v-col cols="12" sm="4" class="d-inline-flex">
-							<span class="dateDayCard">
-								{{
-									lodging.start.format('DD-MM-YY') +
-										' - ' +
-										lodging.end.format('DD-MM-YY')
-								}}</span
+							</v-col>
+						</v-row>
+					</template>
+
+					<!--Edit Lodging-->
+					<v-row justify="center">
+						<v-col>
+							<v-bottom-sheet
+								v-if="lodgingSelect"
+								v-model="bottomSheet"
+								inset
+								@click:outside="setBottomSheet(false)"
 							>
-							<v-select
-								id="services_select"
-								v-model="serviceSelected"
-								:items="servicesComboBox"
-								dense
-								label="Servicios"
-								outlined
-							>
-							</v-select>
-							<v-btn
-								color="accent"
-								class="ml-2"
-								rounded
-								@click="
-									addDaysServices({
-										serviceName: serviceSelected,
-										lodgingId: lodging.id,
-										lodgingGroup: lodging.group,
-									})
-								"
-							>
-								+1
-							</v-btn>
-							<v-btn
-								class="ml-2"
-								color="accent"
-								rounded
-								@click="
-									subDaysServices({
-										serviceName: serviceSelected,
-										lodgingId: lodging.id,
-									})
-								"
-							>
-								-1
-							</v-btn>
+								<v-sheet style="height: 75vh">
+									<edit-lodging :lodgings="lodgings" :id-place="place" />
+								</v-sheet>
+							</v-bottom-sheet>
 						</v-col>
 					</v-row>
-				</v-col>
-			</v-row>
-			<!--Edit Lodging-->
-			<v-row justify="center">
-				<v-col>
-					<v-bottom-sheet
-						v-if="lodgingSelect"
-						v-model="bottomSheet"
-						inset
-						@click:outside="setBottomSheet(false)"
-					>
-						<v-sheet style="height: 75vh">
-							<edit-lodging :lodgings="lodgings" :id-place="place" />
-						</v-sheet>
-					</v-bottom-sheet>
 				</v-col>
 			</v-row>
 		</template>
@@ -567,7 +571,7 @@ export default {
 	padding: 10px;
 	margin-right: 15px;
 	margin-left: -15px;
-	min-width: 200px;
+	min-width: 400px;
 	max-height: 41px;
 }
 .microCard {
@@ -581,7 +585,7 @@ export default {
 	padding: 10px;
 	margin-right: 15px;
 	box-shadow: 0px 3px 10px -2px rgba(0, 0, 0, 0.75);
-	min-width: 300px;
+	min-width: 190px;
 }
 .timelineContent:hover {
 	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
@@ -619,7 +623,7 @@ export default {
 
 .inputService {
 	width: 60px;
-	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
+	box-shadow: 0px 3px 7px -1px rgba(0, 0, 0, 0.8);
 	padding-left: 5px;
 }
 .vis-timeline {
