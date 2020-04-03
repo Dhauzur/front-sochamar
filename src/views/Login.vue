@@ -50,10 +50,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import PasswordRecover from '../components/auth/PasswordRecover';
-import GoogleButton from '../components/auth/GoogleButton';
 import Logo from '@/assets/logo';
+import { mapActions } from 'vuex';
+import { login } from '@/service/auth';
+import GoogleButton from '@/components/auth/GoogleButton';
+import PasswordRecover from '@/components/auth/PasswordRecover';
 
 export default {
 	components: {
@@ -63,6 +64,7 @@ export default {
 	},
 	data() {
 		return {
+			loading: false,
 			showPassword: false,
 			loginData: {
 				email: '',
@@ -71,36 +73,27 @@ export default {
 			passwordRecover: false,
 		};
 	},
-	computed: {
-		...mapGetters({
-			message: 'Auth/message',
-			loading: 'Auth/loading',
-			profile: 'User/profile',
-		}),
-	},
-	watch: {
-		message(newVal) {
-			this.toastedMessage(newVal);
-		},
-	},
 	methods: {
 		async onSubmit() {
-			this.login(this.loginData).then(() =>
-				this.profile.role === 'admin'
+			try {
+				this.loading = !this.loading;
+				await login(this.loginData);
+				const profile = await this.fetchProfile();
+				profile.role === 'admin'
 					? this.$router.replace({ name: 'home' })
-					: this.$router.replace({ name: 'profile' })
-			);
-		},
-		toastedMessage(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
+					: this.$router.replace({ name: 'profile' });
+			} catch (error) {
+				this.$toasted.show('Usuario o contraseña incorrectos', {
+					type: 'error',
+				});
+			}
+			this.loading = !this.loading;
 		},
 		controlPasswordRecover(value) {
 			this.passwordRecover = value;
 		},
 		...mapActions({
-			login: 'Auth/login',
+			fetchProfile: 'User/fetchProfile',
 		}),
 	},
 };

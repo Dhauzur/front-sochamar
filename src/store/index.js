@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Auth from './modules/auth';
 import Lodging from './modules/lodging/';
 import Maintenance from './modules/Maintenance';
 import Payments from './modules/Payments';
@@ -13,7 +12,6 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
 	modules: {
-		Auth,
 		Lodging,
 		Maintenance,
 		Payments,

@@ -41,8 +41,8 @@
 						dense
 						outlined
 						required
-						:error-messages="passwordErrors"
 						hide-details
+						:error-messages="passwordErrors"
 						@input="$v.formData.password.$touch()"
 						@blur="$v.formData.password.$touch()"
 					/>
@@ -70,6 +70,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { register } from '@/service/auth';
 import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength, email } from 'vuelidate/lib/validators';
 import Logo from '@/assets/logo';
@@ -81,6 +82,7 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
+			loading: false,
 			formData: {
 				name: '',
 				email: '',
@@ -116,8 +118,6 @@ export default {
 		},
 		...mapGetters({
 			message: 'Auth/message',
-			loading: 'Auth/loading',
-			profile: 'User/profile',
 		}),
 	},
 	validations: {
@@ -135,26 +135,27 @@ export default {
 			},
 		},
 	},
-	watch: {
-		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
-		},
-	},
 	methods: {
-		onSubmit() {
+		async onSubmit() {
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				this.register(this.formData).then(() =>
-					this.profile.role === 'admin'
+				try {
+					this.loading = !this.loading;
+					await register(this.formData);
+					const profile = await this.fetchProfile();
+					profile.role === 'admin'
 						? this.$router.replace({ name: 'home' })
-						: this.$router.replace({ name: 'profile' })
-				);
+						: this.$router.replace({ name: 'profile' });
+				} catch (error) {
+					this.$toasted.show(error.message, {
+						type: 'error',
+					});
+				}
+				this.loading = !this.loading;
 			}
 		},
 		...mapActions({
-			register: 'Auth/register',
+			fetchProfile: 'User/fetchProfile',
 		}),
 	},
 };

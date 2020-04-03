@@ -11,6 +11,7 @@ const login = async data => {
 		data,
 	});
 	setToken(response.token);
+	return response;
 };
 
 /**
@@ -24,19 +25,21 @@ const register = async data => {
 		data,
 	});
 	setToken(response.token);
+	return response;
 };
 
 /**
  * Update password
  * @param {Object} data
  */
-const updatePassword = async data => {
+const updatePassword = async (token, password) => {
 	const url = '/auth/user/password';
+	setToken(token);
 	const response = await fetch(url, {
 		method: 'put',
-		data,
+		data: password,
 	});
-
+	logout();
 	return response;
 };
 
