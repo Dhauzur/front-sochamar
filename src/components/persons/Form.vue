@@ -1,5 +1,6 @@
 <template>
 	<v-card elevation="24">
+		{{ person.comuna }}
 		<v-card-title>
 			<span class="headline">{{ title }}</span>
 		</v-card-title>
@@ -17,11 +18,7 @@
 								max-width="130px"
 								:src="urlAvatar"
 								><div class="  textAvatar secondary">
-									{{
-										typeof person.avatar === 'string'
-											? 'Cambiar avatar'
-											: 'Subir avatar'
-									}}
+									Actualiza avatar
 								</div>
 							</v-img>
 						</label>
@@ -40,7 +37,6 @@
 							outlined
 							dense
 							label="Nombre*"
-							:disabled="!isDialog"
 							:error-messages="nameErrors"
 							@input="$v.person.firstName.$touch()"
 							@blur="$v.person.firstName.$touch()"
@@ -159,6 +155,7 @@
 							label="Comuna"
 							:items="comunas"
 							outlined
+							eager
 							dense
 							:disabled="disableComunaInput"
 						></v-select>
@@ -269,6 +266,7 @@ export default {
 		},
 	},
 	mounted() {
+		if (this.selected) this.person = this.selected;
 		this.fetchRegions();
 	},
 	methods: {
@@ -322,7 +320,14 @@ export default {
 						});
 					}
 				} else {
-					this.savePerson(payload).then(res => this.updateUser(res));
+					if (this.editMode) {
+						this.editPerson({
+							payload,
+							id: this.person._id,
+						}).then(res => this.updateUser(res));
+					} else {
+						this.savePerson(payload).then(res => this.updateUser(res));
+					}
 				}
 			}
 		},

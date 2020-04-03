@@ -178,7 +178,9 @@ export default {
 					this.onReset();
 				})
 				.catch(error => {
-					console.error('Error al subir ' + error);
+					this.$toasted.show(error.message, {
+						type: 'error',
+					});
 				});
 		},
 

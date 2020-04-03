@@ -59,7 +59,9 @@ const actions = {
 			commit('setActivities', response);
 			return true;
 		} catch (error) {
-			console.error('Error al intentar hacer la descarga');
+			this.$toasted.show(error.message, {
+				type: 'error',
+			});
 		}
 	},
 };

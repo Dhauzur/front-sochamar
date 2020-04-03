@@ -23,13 +23,12 @@ const actions = {
 			commit('setMessage', message);
 		}
 	},
-	async updateProfile({ commit }, profileData) {
+	async updateProfile({ commit }, data) {
 		commit('setLoading', true);
-		delete profileData.analyst;
-		delete profileData.img;
+		delete data.analyst;
+		delete data.img;
 		try {
-			const response = await fetch('/user/profile', { method: 'put', data: profileData });
-			const profile = response;
+			const profile = await fetch('/user/profile', { method: 'put', data });
 			commit('setProfile', profile);
 			const message = { type: 'success', text: 'Perfil modificado con exito' };
 			commit('setMessage', message);

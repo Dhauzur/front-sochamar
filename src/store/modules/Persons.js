@@ -66,18 +66,20 @@ const actions = {
 	async editPerson({ commit }, { payload, id }) {
 		try {
 			commit('setLoading', true);
-			await fetch(`/persons/${id}`, { method: 'put', data: payload });
+			const response = await fetch(`/persons/${id}`, { method: 'put', data: payload });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',
 			});
+			commit('setLoading', false);
+			return response.person;
 		} catch (error) {
 			commit('setMessage', {
 				type: 'error',
 				text: error.message,
 			});
+			commit('setLoading', false);
 		}
-		commit('setLoading', false);
 	},
 	async deleteAllPersons({ commit }) {
 		try {

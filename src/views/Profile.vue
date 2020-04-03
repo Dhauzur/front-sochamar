@@ -140,8 +140,8 @@
 				<v-col cols="12" md="10">
 					<Form
 						title="Completa tus datos"
-						:edit-mode="true"
-						:selected="userPerson"
+						:edit-mode="Boolean(person)"
+						:selected="userSelected"
 						:update-user="updateUser"
 					/>
 				</v-col>
@@ -164,8 +164,8 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
-			loadingInitial: true,
 			person: null,
+			loadingInitial: true,
 			selected: null,
 			items: [
 				{ title: 'Profile' },
@@ -199,6 +199,9 @@ export default {
 		isPerson() {
 			return this.profile.role === 'person';
 		},
+		userSelected() {
+			return this.person ? this.person : { firstName: this.profile.name };
+		},
 		lastnameErrors() {
 			const errors = [];
 			if (!this.$v.profileData.lastName.$dirty) return errors;
@@ -212,12 +215,6 @@ export default {
 			!this.$v.profileData.name.minLength && errors.push('Minimo 5 Caracteres');
 			!this.$v.profileData.name.maxLength && errors.push('Maximo 100 Caracteres');
 			return errors;
-		},
-		userPerson() {
-			if (!this.person) {
-				return { firstName: this.profile.name };
-			}
-			return { ...this.person };
 		},
 		...mapGetters({
 			profile: 'User/profile',
@@ -233,7 +230,7 @@ export default {
 		},
 	},
 	created() {
-		this.initialFetch().then(() => (this.loadingInitial = false));
+		this.initialFetch();
 	},
 	validations: {
 		profileData: {
@@ -257,10 +254,11 @@ export default {
 	methods: {
 		async initialFetch() {
 			const profile = await this.fetchProfile();
-			this.profileData = profile;
 			if (profile.idPerson) {
 				this.person = await this.fetchPerson(profile.idPerson);
 			}
+			this.profileData = profile;
+			this.loadingInitial = !this.loadingInitial;
 		},
 		setAvatarObject(file) {
 			const avatar = new FormData();
@@ -283,6 +281,7 @@ export default {
 		updateUser(res) {
 			const data = { ...this.profile };
 			data.idPerson = res._id;
+			data.lastName = res.lastName;
 			this.updateProfile(data);
 		},
 		submitNewPassword() {
