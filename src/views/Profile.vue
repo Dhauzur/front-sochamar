@@ -278,10 +278,13 @@ export default {
 				this.updateProfile(this.profileData).then(this.clearUpload);
 			}
 		},
-		updateUser(res) {
-			const data = { ...this.profile };
-			data.idPerson = res._id;
-			data.lastName = res.lastName;
+		updateUser(person) {
+			let data = {
+				img: person.avatar,
+				idPerson: person.idPerson,
+				lastName: person.lastName,
+				...this.profile,
+			};
 			this.updateProfile(data);
 		},
 		submitNewPassword() {
