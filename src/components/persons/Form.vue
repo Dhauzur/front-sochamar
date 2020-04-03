@@ -1,6 +1,5 @@
 <template>
 	<v-card elevation="24">
-		{{ person.comuna }}
 		<v-card-title>
 			<span class="headline">{{ title }}</span>
 		</v-card-title>
