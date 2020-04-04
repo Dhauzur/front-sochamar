@@ -106,7 +106,7 @@ export default {
 					this.$toasted.show('Contraseña cambiada con exito', {
 						type: 'success',
 					});
-					this.$router.replace({ name: 'login' });
+					this.$router.replace({ name: 'auth' });
 				} catch (error) {
 					this.$toasted.show('Expiro el tiempo para cambiar la contraseña', {
 						type: 'error',

@@ -5,9 +5,8 @@ Vue.use(VueRouter);
 
 const Home = () => import('@/views/Home.vue');
 const Management = () => import('@/views/Management.vue');
-const Login = () => import('@/views/Login');
+const Auth = () => import('@/views/Auth');
 const PasswordReset = () => import('@/views/PasswordReset');
-const Register = () => import('@/views/Register');
 const Report = () => import('@/views/Report.vue');
 const Profile = () => import('@/views/Profile');
 
@@ -44,14 +43,9 @@ const routes = [
 		meta: { title: 'Perfil', layout: 'layout' },
 	},
 	{
-		path: '/login',
-		name: 'login',
-		component: Login,
-	},
-	{
-		path: '/register',
-		name: 'register',
-		component: Register,
+		path: '/auth',
+		name: 'auth',
+		component: Auth,
 	},
 	{
 		path: '*',
@@ -65,7 +59,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	if (to.name !== 'login' && !isAuthenticated()) next({ name: 'login' });
+	if (to.name !== 'auth' && !isAuthenticated()) next({ name: 'auth' });
 	next();
 });
 

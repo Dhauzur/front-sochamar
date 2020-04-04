@@ -1,71 +1,55 @@
 <template lang="html">
-	<v-container class="fill-height" fluid>
-		<v-row align="center" justify="center">
-			<v-col cols="12" sm="6" md="4" lg="3">
-				<Logo style="max-height: 30vh;" />
-				<v-form>
-					<!-- name -->
-					<v-text-field
-						id="name-input"
-						v-model.trim="$v.formData.name.$model"
-						placeholder="Ej: Mauro Pérez"
-						label="Nombre"
-						dense
-						outlined
-						required
-						:error-messages="nameErrors"
-						@input="$v.formData.name.$touch()"
-						@blur="$v.formData.name.$touch()"
-					/>
-					<!-- email -->
-					<v-text-field
-						id="email-input"
-						v-model.trim="$v.formData.email.$model"
-						type="email"
-						placeholder="Ej: mauro@prueba.cl"
-						label="Correo Electronico"
-						dense
-						outlined
-						required
-						:error-messages="emailErrors"
-						@input="$v.formData.email.$touch()"
-						@blur="$v.formData.email.$touch()"
-					/>
-					<!-- password -->
-
-					<v-text-field
-						id="email-password"
-						v-model.trim="$v.formData.password.$model"
-						type="password"
-						label="Contraseña"
-						dense
-						outlined
-						required
-						hide-details
-						:error-messages="passwordErrors"
-						@input="$v.formData.password.$touch()"
-						@blur="$v.formData.password.$touch()"
-					/>
-					<v-radio-group v-model="formData.role" hide-details row>
-						<v-radio label="Administrador" value="admin"></v-radio>
-						<v-radio label="Persona" value="person"></v-radio>
-					</v-radio-group>
-					<v-switch
-						v-model="formData.analyst"
-						color="primary"
-						label="Analista"
-					></v-switch>
-					<v-btn :loading="loading" block color="primary" small @click="onSubmit">
-						Finalizar Registro
-					</v-btn>
-					<div class="text--secondary pt-2">¿Ya tienes una cuenta?</div>
-					<v-btn block text color="primary" small to="/login">
-						Ingresa ya
-					</v-btn>
-				</v-form>
-			</v-col>
-		</v-row>
-	</v-container>
+	<v-form>
+		<!-- name -->
+		<v-text-field
+			id="name-input"
+			v-model.trim="$v.formData.name.$model"
+			placeholder="Ej: Mauro Pérez"
+			label="Nombre"
+			dense
+			outlined
+			required
+			:error-messages="nameErrors"
+			@input="$v.formData.name.$touch()"
+			@blur="$v.formData.name.$touch()"
+		/>
+		<!-- email -->
+		<v-text-field
+			id="email-input"
+			v-model.trim="$v.formData.email.$model"
+			type="email"
+			placeholder="Ej: mauro@prueba.cl"
+			label="Correo Electronico"
+			dense
+			outlined
+			required
+			:error-messages="emailErrors"
+			@input="$v.formData.email.$touch()"
+			@blur="$v.formData.email.$touch()"
+		/>
+		<!-- password -->
+		<v-text-field
+			id="email-password"
+			v-model.trim="$v.formData.password.$model"
+			type="password"
+			label="Contraseña"
+			dense
+			outlined
+			required
+			hide-details
+			:error-messages="passwordErrors"
+			@input="$v.formData.password.$touch()"
+			@blur="$v.formData.password.$touch()"
+		/>
+		<v-radio-group v-model="formData.role" hide-details row>
+			<v-radio label="Administrador" value="admin"></v-radio>
+			<v-radio label="Persona" value="person"></v-radio>
+		</v-radio-group>
+		<v-switch v-model="formData.analyst" color="primary" label="Analista"></v-switch>
+		<v-btn :loading="loading" block color="primary" small @click="onSubmit">
+			Finalizar Registro
+		</v-btn>
+	</v-form>
 </template>
 
 <script>
@@ -73,12 +57,8 @@ import { mapGetters, mapActions } from 'vuex';
 import { register } from '@/service/auth';
 import { validationMixin } from 'vuelidate';
 import { required, minLength, maxLength, email } from 'vuelidate/lib/validators';
-import Logo from '@/assets/logo';
 
 export default {
-	components: {
-		Logo,
-	},
 	mixins: [validationMixin],
 	data() {
 		return {
@@ -103,7 +83,7 @@ export default {
 		nameErrors() {
 			const errors = [];
 			if (!this.$v.formData.name.$dirty) return errors;
-			!this.$v.formData.name.required && errors.push('El monto es querido');
+			!this.$v.formData.name.required && errors.push('El nombre es querido');
 			!this.$v.formData.name.maxLength && errors.push('Maximo 200 caracteres');
 			!this.$v.formData.name.minLength && errors.push('Minimo 3 caracteres');
 			return errors;

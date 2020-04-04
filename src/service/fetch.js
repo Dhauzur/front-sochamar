@@ -15,7 +15,7 @@ api.interceptors.response.use(
 			router.replace({ name: 'profile' });
 		}
 		if (error.response.status === 401) {
-			router.replace({ name: 'login' });
+			router.replace({ name: 'auth' });
 		}
 		return error;
 	}

@@ -150,7 +150,7 @@ export default {
 		},
 		async quit() {
 			await logout();
-			this.$router.replace({ name: 'login' });
+			this.$router.replace({ name: 'auth' });
 		},
 		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
