@@ -279,13 +279,11 @@ export default {
 			}
 		},
 		updateUser(person) {
-			let data = {
-				img: person.avatar,
-				idPerson: person.idPerson,
-				lastName: person.lastName,
-				...this.profile,
-			};
-			this.updateProfile(data);
+			let data = { ...this.profile };
+			data.idPerson = person._id;
+			data.lastName = person.lastName;
+			data.img = person.avatar;
+			this.updateProfile(data).then(() => (this.person = person));
 		},
 		submitNewPassword() {
 			this.$v.securityData.$touch();
