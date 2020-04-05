@@ -171,44 +171,66 @@
 			<v-row>
 				<v-col cols="12">
 					<v-row>
-						<v-col class="overflow-x-auto">
+						<v-col>
+							<v-switch
+								v-if="this.place && this.lodgingSelect"
+								v-model="viewPrices"
+								label="Ver precios"
+							></v-switch>
 							<div class="d-inline-flex overflow-x-auto pb-3 ">
 								<div
 									v-for="(day, dayIndex) in servicesTableDetails.days"
 									:key="dayIndex"
-									class="microCard"
+									class="microCard  "
+									style="min-width: max-content;"
 								>
-									<div
-										v-for="(service, serviceIndex) in day.services"
-										:key="serviceIndex"
-										class="mt-3 "
-									>
-										<b>{{ service.name }}&nbsp;por&nbsp;</b>${{ service.price
-										}}<br />
-										<b>&nbsp;x&nbsp;</b>
-										<label>
-											<input
-												:id="day.date + day.services[serviceIndex]"
-												:value="service.quantity"
-												type="number"
-												class="inputService"
-												@change="
-													detectServiceQuantityChange(
-														$event,
-														servicesTableDetails.id,
-														dayIndex,
-														serviceIndex
-													)
-												"
-											/>
-											: {{ service.price * service.quantity }}
-										</label>
-									</div>
-									<div class="mt-2">
-										<b>SUBTOTAL: {{ day.dayTotal }} </b>
-									</div>
+									<table>
+										<thead>
+											<tr>
+												<th>Servicio</th>
+												<th>Cantidad</th>
+												<th>Subtotal</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												v-for="(service, serviceIndex) in day.services"
+												:key="serviceIndex"
+											>
+												<td style="max-width: 200px;">
+													<b>{{ service.name }}</b>
+													<span v-if="viewPrices">
+														<br />(${{ service.price }})
+													</span>
+												</td>
+												<td>
+													<input
+														:id="day.date + day.services[serviceIndex]"
+														:value="service.quantity"
+														type="number"
+														class="inputService"
+														@change="
+															detectServiceQuantityChange(
+																$event,
+																servicesTableDetails.id,
+																dayIndex,
+																serviceIndex
+															)
+														"
+													/>
+												</td>
+												<td>{{ service.price * service.quantity }}</td>
+											</tr>
+											<tr>
+												<td></td>
+												<td>Total</td>
+												<td>
+													<b>{{ day.dayTotal }} </b>
+												</td>
+											</tr>
+										</tbody>
+									</table>
 								</div>
-								-->
 							</div>
 						</v-col>
 					</v-row>
@@ -236,6 +258,7 @@ export default {
 	},
 	data() {
 		return {
+			viewPrices: false,
 			dialogPeriods: false,
 			dialogPayments: false,
 			sheet: false,
@@ -485,6 +508,9 @@ export default {
 </script>
 
 <style lang="css">
+.subTotalTable {
+	min-width: 100px;
+}
 .dateDayCard {
 	border: 1px solid #0000006b;
 	border-radius: 10px;
@@ -496,16 +522,16 @@ export default {
 }
 .microCard {
 	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
 	background-color: transparent;
-	background: linear-gradient(
+	/* background: linear-gradient(
 		115deg,
 		rgba(210, 141, 181, 0.22) 0%,
 		rgba(194, 173, 247, 0.16) 100%
-	);
-	padding: 10px;
-	margin-right: 15px;
-	box-shadow: 0px 3px 10px -2px rgba(0, 0, 0, 0.75);
-	min-width: 190px;
+	); */
+	margin: 5px;
+	padding: 5px;
+	box-shadow: 0px 1px 10px -2px rgba(0, 0, 0, 0.75);
 }
 .timelineContent:hover {
 	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
@@ -514,7 +540,6 @@ export default {
 .timelineContent {
 	background-color: transparent;
 	/* background: linear-gradient(90deg, rgba(106, 49, 255, 0.07) 0%, rgba(213, 47, 143, 0.18) 100%); */
-	margin-bottom: 20px !important;
 	padding: 10px;
 	border-radius: 10px;
 	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
@@ -541,8 +566,12 @@ export default {
 	border: none !important;
 }
 
+input {
+	text-align: center;
+}
+
 .inputService {
-	width: 60px;
+	width: 80px;
 	box-shadow: 0px 3px 7px -1px rgba(0, 0, 0, 0.8);
 	padding-left: 5px;
 }
