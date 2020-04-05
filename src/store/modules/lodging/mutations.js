@@ -154,7 +154,7 @@ const mutations = {
 		let Places = [];
 		Places.push({
 			value: null,
-			text: 'Todas las empresas',
+			text: 'Todas los lugares',
 		});
 		if (values) {
 			const mapValues = values.map(v => {
@@ -170,16 +170,16 @@ const mutations = {
 		state.Places = Places;
 	},
 	updateActualService(state, { inputValue, lodgingId, dayIndex, serviceIndex }) {
-		const foundLodging = state.lodgings.get({
+		let foundLodging = state.lodgings.get({
 			filter: item => item.id === lodgingId,
 		});
-		//En base al dia y index de servicio actualizamos la cantidad
-		//get de vis dataSet siempre nos devuelve un arreglo con objetos, en este caso es solo 1 por eso siempre usar la posicion 0 para este caso
-		foundLodging[0].days[dayIndex].services[serviceIndex].quantity = inputValue;
-
-		//como cambiamos un valor en especifico, podemos actualizar el valor de dayTotal
+		//BUG CON FALTA DE EXPLICACION: Por referenciacion de arrays, el value se replicaba en el resto del array days
+		//Para evitar esta replicacion, se utilizo stringify - parse. Se sugiere volver a verificar funcionamiento erroneo
+		let dayString = JSON.stringify(foundLodging[0].days[dayIndex]);
+		let day = JSON.parse(dayString);
+		day.services[serviceIndex].quantity = inputValue;
+		foundLodging[0].days[dayIndex].services = day.services;
 		foundLodging[0].days[dayIndex].dayTotal = dayTotal(foundLodging[0].days[dayIndex].services);
-		//En base a la id del lodging actualizaremos la propiedad days
 		state.lodgings.update({
 			id: lodgingId,
 			days: foundLodging[0].days,

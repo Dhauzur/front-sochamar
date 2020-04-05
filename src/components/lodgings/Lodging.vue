@@ -170,114 +170,46 @@
 			</v-row>
 			<v-row>
 				<v-col cols="12">
-					<template v-for="lodging in lodgings._data">
-						<v-row v-if="selectedPlace.value && lodgingSelect" :key="lodging.id">
-							<v-col v-if="lodging.id == lodgingSelect.id" class="overflow-x-auto">
-								<div class="d-inline-flex overflow-x-auto pb-3 ">
+					<v-row>
+						<v-col class="overflow-x-auto">
+							<div class="d-inline-flex overflow-x-auto pb-3 ">
+								<div
+									v-for="(day, dayIndex) in servicesTableDetails.days"
+									:key="dayIndex"
+									class="microCard"
+								>
 									<div
-										v-for="(day, dayIndex) in lodging.days"
-										:key="dayIndex"
-										class="microCard"
+										v-for="(service, serviceIndex) in day.services"
+										:key="serviceIndex"
+										class="mt-3 "
 									>
-										{{ day.date }}
-										<div
-											v-for="(service, serviceIndex) in day.services"
-											:key="serviceIndex"
-											class="mt-3 "
-										>
-											<b>{{ service.name }}&nbsp;por&nbsp;</b>${{
-												service.price
-											}}<br />
-											<b>&nbsp;x&nbsp;</b>
-											<label>
-												<input
-													:id="day.date + day.services[serviceIndex]"
-													v-model="day.services[serviceIndex].quantity"
-													type="number"
-													class="inputService"
-													@change="
-														detectServiceQuantityChange(
-															$event,
-															lodging.group,
-															lodging.id,
-															dayIndex,
-															serviceIndex
-														)
-													"
-												/>
-												: {{ service.price * service.quantity }}
-											</label>
-										</div>
-										<div class="mt-2">
-											<b>SUBTOTAL: {{ day.dayTotal }} </b>
-										</div>
+										<b>{{ service.name }}&nbsp;por&nbsp;</b>${{ service.price
+										}}<br />
+										<b>&nbsp;x&nbsp;</b>
+										<label>
+											<input
+												:id="day.date + day.services[serviceIndex]"
+												:value="service.quantity"
+												type="number"
+												class="inputService"
+												@change="
+													detectServiceQuantityChange(
+														$event,
+														servicesTableDetails.id,
+														dayIndex,
+														serviceIndex
+													)
+												"
+											/>
+											: {{ service.price * service.quantity }}
+										</label>
+									</div>
+									<div class="mt-2">
+										<b>SUBTOTAL: {{ day.dayTotal }} </b>
 									</div>
 								</div>
-								<!--Services ComboBox-->
-								<div v-if="lodging.id == lodgingSelect.id">
-									<v-col cols="12" sm="4" class="d-inline-flex ">
-										<span class="dateDayCard">
-											{{
-												lodging.start.format('DD-MM-YY') +
-													' - ' +
-													lodging.end.format('DD-MM-YY')
-											}}&nbsp;Neto:&nbsp;${{ lodging.mountTotal }}</span
-										>
-										<v-select
-											id="services_select"
-											v-model="serviceSelected"
-											:items="servicesComboBox"
-											dense
-											label="Servicios"
-											outlined
-										>
-										</v-select>
-										<v-btn
-											color="accent"
-											class="ml-2"
-											rounded
-											@click="
-												addDaysServices({
-													serviceName: serviceSelected,
-													lodgingId: lodging.id,
-													lodgingGroup: lodging.group,
-												})
-											"
-										>
-											+1
-										</v-btn>
-										<v-btn
-											class="ml-2"
-											color="accent"
-											rounded
-											@click="
-												subDaysServices({
-													serviceName: serviceSelected,
-													lodgingId: lodging.id,
-												})
-											"
-										>
-											-1
-										</v-btn>
-									</v-col>
-								</div>
-							</v-col>
-						</v-row>
-					</template>
-
-					<!--Edit Lodging-->
-					<v-row justify="center">
-						<v-col>
-							<v-bottom-sheet
-								v-if="lodgingSelect"
-								v-model="bottomSheet"
-								inset
-								@click:outside="setBottomSheet(false)"
-							>
-								<v-sheet style="height: 75vh">
-									<edit-lodging :lodgings="lodgings" :id-place="place" />
-								</v-sheet>
-							</v-bottom-sheet>
+								-->
+							</div>
 						</v-col>
 					</v-row>
 				</v-col>
@@ -293,7 +225,7 @@ import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import { generateDaysArray } from '../../utils/lodging/daysArray';
 
-const moment = extendMoment(Moment);
+let moment = extendMoment(Moment);
 
 export default {
 	components: {
@@ -355,20 +287,20 @@ export default {
 				//al hacer click en una parte del timeline, esta función actua similar a createOneLodging
 				onAdd: (item, callback) => {
 					if (this.place) {
-						const startDate = moment(item.start).hours(12);
-						const endDate = moment(item.start)
+						let startDate = moment(item.start).hours(12);
+						let endDate = moment(item.start)
 							.hours(10)
 							.add(1, 'day');
 						item.start = startDate;
 						item.end = endDate;
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							const place = this.places.find(c => c.value === this.place);
-							const generatedDays = generateDaysArray(place, startDate, endDate);
+							let place = this.places.find(c => c.value === this.place);
+							let generatedDays = generateDaysArray(place, startDate, endDate);
 							item.content = place.text;
 							if (place != 'Turismo') item.days = generatedDays;
 							else item.days = generatedDays;
-							const setTimeStamp = () => {
+							let setTimeStamp = () => {
 								let timestamp = new Date().getTime().toString(16);
 								timestamp +
 									'xxxxxxxxxxxxxxxx'
@@ -384,28 +316,19 @@ export default {
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
-				//Cuando agrando o muevo un lodging esta función hace trigger
-				//Esta funcion va tener que cambiar harto, por el momento la dejo comentada
-				// eslint-disable-next-line no-unused-vars
 				onMove: (item, callback) => {
 					if (this.place) {
-						//guardamos los dias antiguos
-						const oldDays = item.days;
-						//importante definir siempre las horas, con esto evitamos el error de rangos incorrectos al disminuir rapido el item de lodging
-						const startDate = moment(item.start).hours(12);
-						const endDate = moment(item.end).hours(10);
-						//en base a los nuevos rangos de fecha, creamos un arreglo de dias
-						const newDaysArray = generateDaysArray(
+						let oldDays = item.days;
+						let startDate = moment(item.start).hours(12);
+						let endDate = moment(item.end).hours(10);
+						let newDaysArray = generateDaysArray(
 							this.selectedPlace,
 							startDate,
 							endDate
 						);
-						//Con el nuevo arreglo de dias generados, buscamos si existe un fecha que corresponda a un dia viejo
-						//si existe un match entre ellos, la posicion del dia nuevo asignara al dia viejo.
-						//Con esto logramos preservar la data existente si yo quisiera extender el lodging hacia la derecha o izquierda.
-						const saveOldDaysServices = (oldDays, newDays) => {
+						let saveOldDaysServices = (oldDays, newDays) => {
 							oldDays.forEach(oldDay => {
-								const foundIndex = newDays.findIndex(
+								let foundIndex = newDays.findIndex(
 									newDay => newDay.date === oldDay.date
 								);
 								if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
@@ -417,8 +340,6 @@ export default {
 						item.end = endDate;
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(true);
-							//Esta funcion ya no funciona con v3, preguntar el por que se actualizan los services aca
-							/*this.updateService(item);*/
 							callback(item);
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
@@ -427,13 +348,17 @@ export default {
 		};
 	},
 	computed: {
-		//funcion de mirrorLodginds
+		servicesTableDetails() {
+			if (this.place && this.lodgingSelect) {
+				let lodging = this.lodgings.get(this.lodgingSelect.id);
+				return lodging;
+			} else return 'Debe selecionar un lugar y lodging para ver data';
+		},
 		getMirrorLodging() {
-			var hola = JSON.stringify(this.lodgings);
-			if (hola === this.mirrorLodging) return false;
+			let copy = JSON.stringify(this.lodgings);
+			if (copy === this.mirrorLodging) return false;
 			else return true;
 		},
-		//falta ver para que sirve
 		prices() {
 			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
@@ -499,7 +424,6 @@ export default {
 			});
 			return verificate;
 		},
-		/*parece que en esta funcion no esta el error*/
 		setPlace(payload) {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
@@ -507,18 +431,14 @@ export default {
 			this.setServicesComboBox();
 			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
-		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
-		//Esta funcion se encarga de evaluar el valor y luego pasarlo a updateService, updateService es el encargado real de actualizar el valor
-		detectServiceQuantityChange(payload, lodgingGroup, lodgingId, dayIndex, serviceIndex) {
+		detectServiceQuantityChange(payload, lodgingId, dayIndex, serviceIndex) {
 			let inputValue = parseInt(payload.target.value);
-			//busca el numero de pasajeros en el lodging seleccionado
-			const numberPassangerMax = this.periods.get(lodgingGroup).numberPassangerMax;
-			//si el valor excede el numero de pasaejeros, se setea el numero de pasajeros como valor y se levanta una notificacion toast
+			let numberPassangerMax = this.periods.get(this.lodgings.get(lodgingId).group)
+				.numberPassangerMax;
 			if (inputValue > numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
 				inputValue = 0;
 			}
-			//si el valor es menor a 0, se setea el numero de pasajeros como valor
 			if (inputValue < 0) inputValue = numberPassangerMax;
 			this.updateActualService({ inputValue, lodgingId, dayIndex, serviceIndex });
 		},
