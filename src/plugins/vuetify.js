@@ -15,6 +15,7 @@ export default new Vuetify({
 				info: '#c06240',
 				success: '#4caf50',
 				textColor: '#000000',
+				textColorInv: '#FFFFFF',
 			},
 			dark: {
 				primary: '#ffb22b',
@@ -25,6 +26,7 @@ export default new Vuetify({
 				info: '#c06240',
 				success: '#4caf50',
 				textColor: '#FFFFFF',
+				textColorInv: '#000000',
 			},
 		},
 	},
