@@ -221,8 +221,8 @@ export default {
 			this.$refs.selectableTable.clearSelected();
 		},
 		saveComment(item) {
-			const date = moment().format('YYYY-MM-DD');
-			const temp = [...item.comments, `${this.newComment} - ${date}`];
+			const date = moment().format('YYYY-MM-DD hh:mm');
+			const temp = [...item.comments, `${date}: ${this.newComment}`];
 			this.edit({ comments: temp, id: item._id })
 				.then((this.newComment = ''))
 				.then(this.fetchPayments(this.idPlace));
