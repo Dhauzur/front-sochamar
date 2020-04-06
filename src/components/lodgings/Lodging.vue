@@ -184,7 +184,7 @@
 					<v-row>
 						<v-col>
 							<v-switch
-								v-if="this.place && this.lodgingSelect"
+								v-if="place && lodgingSelect"
 								v-model="viewPrices"
 								label="Ver precios"
 							></v-switch>

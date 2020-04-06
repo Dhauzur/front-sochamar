@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
 	<v-form>
 		<!-- name -->
 		<v-text-field
@@ -41,10 +41,20 @@
 			@input="$v.formData.password.$touch()"
 			@blur="$v.formData.password.$touch()"
 		/>
-		<v-radio-group v-model="formData.role" hide-details row>
+		<v-radio-group
+			v-model="$v.formData.role.$modle"
+			hide-details
+			row
+			:error-messages="roleErrors"
+			@input="$v.formData.role.$touch()"
+			@blur="$v.formData.role.$touch()"
+		>
 			<v-radio label="Administrador" value="admin"></v-radio>
 			<v-radio label="Persona" value="person"></v-radio>
 		</v-radio-group>
+		<div>
+			<p class="error--text text-left caption ma-2">{{ roleErrors }}</p>
+		</div>
 		<v-switch v-model="formData.analyst" color="primary" label="Analista"></v-switch>
 		<v-btn :loading="loading" block color="primary" small @click="onSubmit">
 			Finalizar Registro
@@ -67,7 +77,7 @@ export default {
 				name: '',
 				email: '',
 				password: '',
-				role: 'admin',
+				role: '',
 				analyst: false,
 			},
 		};
@@ -86,6 +96,12 @@ export default {
 			!this.$v.formData.name.required && errors.push('El nombre es querido');
 			!this.$v.formData.name.maxLength && errors.push('Maximo 200 caracteres');
 			!this.$v.formData.name.minLength && errors.push('Minimo 3 caracteres');
+			return errors;
+		},
+		roleErrors() {
+			let errors = '';
+			if (!this.$v.formData.role.$dirty) return errors;
+			if (!this.$v.formData.role.required) errors = 'Selecciona tu rol';
 			return errors;
 		},
 		passwordErrors() {
@@ -107,6 +123,7 @@ export default {
 				minLength: minLength(3),
 				maxLength: maxLength(200),
 			},
+			role: { required },
 			email: { required, email },
 			password: {
 				required,
