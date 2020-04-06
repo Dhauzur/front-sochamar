@@ -79,7 +79,6 @@ const actions = {
 			commit('addServiceToPlaceForService', service);
 			dispatch('fetchPlace');
 		} catch (e) {
-			console.log(e);
 			commit('setMessage', toastMessage('error', 'no se permiten nombres repetidos'));
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		} finally {
