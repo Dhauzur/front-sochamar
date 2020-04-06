@@ -248,7 +248,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import { Timeline } from 'vue2vis';
 import moment from 'moment';
-import { generateServiceArray } from '../../utils/lodging/serviceArray';
+import { generateDaysArray } from '../../utils/lodging/daysArray';
 
 export default {
 	components: {
@@ -317,7 +317,7 @@ export default {
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
 							const place = this.places.find(c => c.value === this.place);
-							const generatedService = generateServiceArray(place);
+							const generatedService = generateDaysArray(place);
 							item.content = place.text;
 							if (place != 'Turismo') item.service = [generatedService];
 							else item.service = [generatedService];
