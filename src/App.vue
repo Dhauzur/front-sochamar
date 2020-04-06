@@ -32,7 +32,7 @@ export default {
 }
 
 td {
-	border: none !important;
+	// border: none !important;
 	padding: 1px !important;
 	padding-right: 2px !important;
 	min-width: 60px;

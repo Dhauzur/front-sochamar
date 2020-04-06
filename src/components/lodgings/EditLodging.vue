@@ -150,16 +150,6 @@ export default {
 		Timeline,
 		Rooms,
 	},
-	props: {
-		lodgings: {
-			type: Object,
-			required: true,
-		},
-		idPlace: {
-			type: String,
-			required: true,
-		},
-	},
 	data() {
 		return {
 			overlay: true,
@@ -270,6 +260,8 @@ export default {
 			}));
 		},
 		...mapGetters({
+			idPlace: 'Lodging/place',
+			lodgings: 'Lodging/lodgings',
 			rooms: 'Room/rooms',
 			lodgingPersons: 'Lodging/lodgingPersons',
 			lodgingSelect: 'Lodging/lodgingSelect',

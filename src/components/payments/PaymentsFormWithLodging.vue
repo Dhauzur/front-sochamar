@@ -1,68 +1,69 @@
 <template>
-	<div>
-		<v-row v-if="Array.isArray(optionsLodgings) && optionsLodgings.length">
-			<v-col cols="12" sm="6" md="4" lg="3">
-				<v-select
-					id="date"
-					v-model="$v.lodgingSelected.$model"
-					dense
-					outlined
-					:items="optionsLodgings"
-					label="Seleccione"
-					:error-messages="lodgingSelectedErrors"
-					@change="setMount"
-					@input="$v.lodgingSelected.$touch()"
-					@blur="$v.lodgingSelected.$touch()"
-				></v-select>
-			</v-col>
-			<v-col cols="12" sm="6" md="4" lg="3">
-				<v-text-field
-					id="mount"
-					v-model="mount"
-					type="number"
-					readonly
-					dense
-					outlined
-					label="Monto"
-					placeholder="Ej: 10000 CLP"
-				></v-text-field>
-			</v-col>
-			<v-col cols="12" sm="6" md="4" lg="3">
-				<v-file-input
-					id="voucher"
-					ref="voucher"
-					v-model="$v.voucher.$model"
-					label="Voucher"
-					dense
-					outlined
-					clearable
-					prepend-icon="mdi-paperclip"
-					:error-messages="voucherErrors"
-					@input="$v.voucher.$touch()"
-					@blur="$v.voucher.$touch()"
-				>
-					<template v-slot:selection="{ text }">
-						<v-chip small label color="secondary">
-							{{ text }}
-						</v-chip>
-					</template>
-				</v-file-input>
-			</v-col>
-			<v-col cols="12" sm="6" md="3" lg="3">
-				<v-btn :loading="loading" block color="primary" class="mt-1" small @click="submit">
-					Agregar Pago
-				</v-btn>
-				<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
-			</v-col>
-		</v-row>
-		<v-row v-else>
-			<v-col>
-				<h6 class="text-left mt-1 ml-1 accent--text">
-					No tiene hospedajes por pagar
-				</h6>
-			</v-col>
-		</v-row>
-	</div>
+	<v-row>
+		<v-col cols="12">
+			<v-select
+				id="date"
+				v-model="$v.lodgingSelected.$model"
+				dense
+				no-data-text="No tiene hospedajes por pagar"
+				label="Seleccione hospedaje"
+				outlined
+				:items="optionsLodgings"
+				:error-messages="lodgingSelectedErrors"
+				@change="setMount"
+				@input="$v.lodgingSelected.$touch()"
+				@blur="$v.lodgingSelected.$touch()"
+			></v-select>
+		</v-col>
+		<v-col v-if="optionsLodgings.length" cols="12">
+			<v-text-field
+				id="mount"
+				v-model="mount"
+				type="number"
+				readonly
+				dense
+				outlined
+				label="Monto"
+				placeholder="Ej: 10000 CLP"
+			></v-text-field>
+		</v-col>
+		<v-col v-if="optionsLodgings.length" cols="12">
+			<v-file-input
+				id="voucher"
+				ref="voucher"
+				v-model="voucher"
+				label="Voucher"
+				dense
+				outlined
+				clearable
+				prepend-icon="mdi-paperclip"
+			>
+				<template v-slot:selection="{ text }">
+					<v-chip small label color="secondary">
+						{{ text }}
+					</v-chip>
+				</template>
+			</v-file-input>
+		</v-col>
+		<v-col cols="12">
+			<v-btn small text color="primary" @click="back">
+				Regresar
+			</v-btn>
+			<v-btn small text color="primary" @click="close">
+				Cerrar
+			</v-btn>
+			<v-btn
+				:loading="loading"
+				color="primary"
+				text
+				small
+				:disabled="!optionsLodgings.length"
+				@click="submit"
+			>
+				Guardar
+			</v-btn>
+		</v-col>
+	</v-row>
 </template>
 
 <script>
@@ -74,59 +75,51 @@ export default {
 	name: 'PaymentsWithLodging',
 	mixins: [validationMixin],
 	props: {
-		lodgings: {
-			type: Array,
-			required: false,
-			default: () => [],
+		idPlace: {
+			type: String,
+			required: true,
 		},
-		payments: {
-			type: Array,
-			required: false,
-			default: () => [],
+		back: {
+			type: Function,
+			required: true,
 		},
-		place: {
-			type: Object,
-			required: false,
-			default: () => {},
+		close: {
+			type: Function,
+			required: true,
 		},
 	},
 	data() {
 		return {
-			form: new FormData(),
-			idPlace: this.$route.params.place,
 			lodgingSelected: null,
 			mount: '',
 			voucher: null,
-			errors: false,
 		};
 	},
 	computed: {
-		voucherErrors() {
-			const errors = [];
-			if (!this.$v.voucher.$dirty) return errors;
-			!this.$v.voucher.required && errors.push('campo requerido');
-			return errors;
-		},
 		lodgingSelectedErrors() {
 			const errors = [];
-			if (!this.$v.lodgingSelected.$dirty) return errors;
-			!this.$v.lodgingSelected.required && errors.push('campo requerido');
+			if (this.optionsLodgings.length) {
+				if (!this.$v.lodgingSelected.$dirty) return errors;
+				!this.$v.lodgingSelected.required && errors.push('Campo requerido');
+			}
 			return errors;
 		},
 		optionsLodgings() {
-			let index = [];
-			let lod = [];
-			let pay = [];
-			if (this.lodgings) lod = [...this.lodgings];
-			if (this.payments) pay = [...this.payments];
+			let index = [],
+				lod = [],
+				pay = [];
+			this.lodgings.length && (lod = [...this.lodgings]);
+			this.payments.length && (pay = [...this.payments]);
+
 			const lodgingsPaid = pay.filter(
 				({ idLodging }) => !lod.every(({ _id }) => idLodging === _id)
 			);
-			if (lodgingsPaid.length > 0) {
+			if (lodgingsPaid.length) {
 				for (const i in lodgingsPaid) {
-					index.push(
-						pay.map(({ idLodging }) => idLodging).indexOf(lodgingsPaid[i].idLodging)
-					);
+					lodgingsPaid[i].idLodging &&
+						index.push(
+							pay.map(({ idLodging }) => idLodging).indexOf(lodgingsPaid[i].idLodging)
+						);
 				}
 				for (let i = index.length - 1; i >= 0; i--) {
 					lod.splice(i, 1);
@@ -142,13 +135,15 @@ export default {
 		},
 		...mapGetters({
 			loading: 'Payments/loadingSave',
+			place: 'Lodging/place',
+			payments: 'Payments/payments',
+			message: 'Payments/message',
+			countLodgings: 'Lodging/countLogingsPlace',
+			lodgings: 'Lodging/lodgingsPlace',
 		}),
 	},
 	validations: {
 		mount: {
-			required,
-		},
-		voucher: {
 			required,
 		},
 		lodgingSelected: {
@@ -157,28 +152,26 @@ export default {
 	},
 	methods: {
 		clearInputs() {
-			this.$refs['voucher'].reset();
 			this.voucher = null;
 			this.lodgingSelected = null;
 			this.mount = '';
 			this.$v.$reset();
-			this.errors = false;
 		},
 		async submit() {
 			// validations
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				this.errors = true;
-			} else {
-				this.form.set('idPlace', this.idPlace);
-				this.form.set('idLodging', this.lodgingSelected.id);
-				this.form.set('startDate', this.lodgingSelected.start);
-				this.form.set('endDate', this.lodgingSelected.end);
-				this.form.set('mount', this.mount);
-				this.form.append('voucher', this.voucher);
-				await this.save(this.form);
+			if (!this.$v.$invalid) {
+				let form = new FormData();
+				form.set('idPlace', this.idPlace);
+				form.set('idLodging', this.lodgingSelected.id);
+				form.set('startDate', this.lodgingSelected.start);
+				form.set('endDate', this.lodgingSelected.end);
+				form.set('mount', this.mount);
+				form.set('voucher', this.voucher);
+				await this.save(form);
 				this.clearInputs();
 				this.updatePayments(this.idPlace);
+				this.close();
 			}
 		},
 		setMount() {
