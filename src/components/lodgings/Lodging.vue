@@ -168,28 +168,21 @@
 					</v-col>
 				</template>
 			</v-row>
-			<!-- table -->
 			<v-row>
-				<v-col v-if="selectedPlace && place" cols="12" class="overflow-auto">
-					<table>
-						<thead>
-							<tr>
-								<td>Actividad</td>
-								<td>Precios</td>
-								<td v-for="(d, index) in rangeDateTable" :key="index">
-									{{ d.numberDay }}
-									<br />
-									{{ d.nameDay }}
-								</td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="(service, index) in selectedPlace.services" :key="index">
-								<td v-text="service.name"></td>
-								<td v-text="service.price"></td>
-								<td
-									v-for="(p, proyectionIndex) in proyectionTable"
-									:key="proyectionIndex"
+				<v-col cols="12">
+					<v-row>
+						<v-col>
+							<v-switch
+								v-if="this.place && this.lodgingSelect"
+								v-model="viewPrices"
+								label="Ver precios"
+							></v-switch>
+							<div class="d-inline-flex overflow-x-auto pb-3 ">
+								<div
+									v-for="(day, dayIndex) in servicesTableDetails.days"
+									:key="dayIndex"
+									class="microCard  "
+									style="min-width: max-content;"
 								>
 									<table>
 										<thead>
@@ -250,8 +243,11 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import { Timeline } from 'vue2vis';
-import moment from 'moment';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
 import { generateDaysArray } from '../../utils/lodging/daysArray';
+
+let moment = extendMoment(Moment);
 
 export default {
 	components: {
@@ -262,6 +258,7 @@ export default {
 	},
 	data() {
 		return {
+			viewPrices: false,
 			dialogPeriods: false,
 			dialogPayments: false,
 			sheet: false,
@@ -284,12 +281,13 @@ export default {
 						repeat: 'daily',
 					},
 				],
+				//preguntar que pasa aca
 				onUpdate: (item, callback) => {
 					if (this.place) {
 						this.setModeEdit(true);
 						if (this.verifyOverlay(item)) {
 							callback(item);
-							this.updateService(item);
+							/*this.updateService(item);*/
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
@@ -309,77 +307,62 @@ export default {
 						callback(item);
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
-				//No tenemos que modificar nada mas de onAdd
-				//Cuando clickeo una parte del timeline esta función hace trigger
+				//al hacer click en una parte del timeline, esta función actua similar a createOneLodging
 				onAdd: (item, callback) => {
 					if (this.place) {
-						item.start = moment(item.start).hours(15);
-						item.end = moment(item.start)
-							.hours(12)
+						let startDate = moment(item.start).hours(12);
+						let endDate = moment(item.start)
+							.hours(10)
 							.add(1, 'day');
+						item.start = startDate;
+						item.end = endDate;
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(false);
-							const place = this.places.find(c => c.value === this.place);
-							const generatedService = generateDaysArray(place);
+							let place = this.places.find(c => c.value === this.place);
+							let generatedDays = generateDaysArray(place, startDate, endDate);
 							item.content = place.text;
-							if (place != 'Turismo') item.service = [generatedService];
-							else item.service = [generatedService];
-							var timestamp = new Date().getTime().toString(16);
-							timestamp +
-								'xxxxxxxxxxxxxxxx'
-									.replace(/[x]/g, function() {
-										return ((Math.random() * 16) | 0).toString(16);
-									})
-									.toLowerCase();
-							item.id = timestamp;
+							if (place != 'Turismo') item.days = generatedDays;
+							else item.days = generatedDays;
+							let setTimeStamp = () => {
+								let timestamp = new Date().getTime().toString(16);
+								timestamp +
+									'xxxxxxxxxxxxxxxx'
+										.replace(/[x]/g, function() {
+											return ((Math.random() * 16) | 0).toString(16);
+										})
+										.toLowerCase();
+								return timestamp;
+							};
+							item.id = setTimeStamp();
 							this.addLodging(item);
 							if (!this.lodgings.get(item.id)) callback(item);
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
-				//Cuando agrando o muevo un lodging esta función hace trigger
 				onMove: (item, callback) => {
 					if (this.place) {
-						let service = [];
-						let numberDays = moment(item.end).diff(
-							moment(item.start).format('YYYY-MM-DD'),
-							'days'
+						let oldDays = item.days;
+						let startDate = moment(item.start).hours(12);
+						let endDate = moment(item.end).hours(10);
+						let newDaysArray = generateDaysArray(
+							this.selectedPlace,
+							startDate,
+							endDate
 						);
-						const oldService = JSON.parse(item.service[0]);
-						//1- el contador i se esta contando la nueva cantidad de dias, recorrer el primer acceso service[i].
-						//3- entonces, por cada dia se vas pushear un nuevo arreglo en service.
-						//4- Si existe algo en la posicion, procedemos a hacer map con la condicion de  existeValor ? retorna valor : returna un numero default 1.
-						//5- si no existe el dia en la posicion service[i], generamos un arreglo de service pero sin volverlo string.
-						const servicesIndex = this.selectedPlace.services.length;
-						const generateNewServices = oldServices => {
-							if (oldServices) {
-								return oldServices.map(service => {
-									return service ? service : 1;
-								});
-							} else {
-								let defaultServices;
-								let temporalArray = [];
-								for (let i = 0; i < servicesIndex; i++) {
-									temporalArray.push(1);
-								}
-								defaultServices = temporalArray;
-								return defaultServices;
-							}
+						let saveOldDaysServices = (oldDays, newDays) => {
+							oldDays.forEach(oldDay => {
+								let foundIndex = newDays.findIndex(
+									newDay => newDay.date === oldDay.date
+								);
+								if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
+							});
 						};
-
-						for (let i = 0; i <= numberDays; i++) {
-							const newServices = generateNewServices(oldService[i]);
-							service.push(newServices);
-						}
-
-						let itemService = [];
-						itemService.push(JSON.stringify(service));
-						item.service = itemService;
-						item.start = moment(item.start).hours(15);
-						item.end = moment(item.end).hours(12);
+						saveOldDaysServices(oldDays, newDaysArray);
+						item.days = newDaysArray;
+						item.start = startDate;
+						item.end = endDate;
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(true);
-							this.updateService(item);
 							callback(item);
 						} else this.$toasted.show('Existe un alojamiento para esas fechas');
 					} else this.$toasted.show('Selecione una entidad primero');
@@ -388,174 +371,20 @@ export default {
 		};
 	},
 	computed: {
-		//funcion de mirrorLodginds
+		servicesTableDetails() {
+			if (this.place && this.lodgingSelect) {
+				let lodging = this.lodgings.get(this.lodgingSelect.id);
+				return lodging;
+			} else return 'Debe selecionar un lugar y lodging para ver data';
+		},
 		getMirrorLodging() {
-			var hola = JSON.stringify(this.lodgings);
-			if (hola === this.mirrorLodging) return false;
+			let copy = JSON.stringify(this.lodgings);
+			if (copy === this.mirrorLodging) return false;
 			else return true;
 		},
-		finalyPrice() {
-			//el fin de esta funcion, es generar un arreglo de precios totales por cada dia de nuestra proyection table
-			let prices = [];
-			let dayPrice = 0;
-			if (this.place)
-				this.proyectionTable.forEach(dailyService => {
-					//algoritmo
-					//1- tenemos dos evaluaciones, si existe un valor entonces multiplicamos cantidadUsos * precioServicio
-					//de no existir un valor asignamos 0.
-					//2- dailyService.service no tiene el precio del servicio, pero si lo podemos obtener de this.selectedPlace.Services.
-					//3- dailyService.service comparte posiciones con el arreglo de services, esto es util para realizar el calculo.
-					//4- cada dayPrice es la suma de todos los servicios * su cantidad de usos.
-					//5- para llevar a cabo este calculo, necesitamos obtener el precio de cada servicio de manera exacta.
-					//6- vamos a generar una iteracion por cada key de dailyService.service
-					//7- con la variable key obtenemos el el servicio a calcular, y con serviceIndex obtenedremos el precio de este servicio
-					//como los dos servicios comparten la misma cantidad de indices,
-
-					//iterationPrice se encarga de ir sumando el valor multiplicado de cada iteracion
-					let iterationPrice = 0;
-					Object.keys(dailyService.service).forEach((key, serviceIndex) => {
-						let servicePrice = dailyService.service[key]
-							? dailyService.service[key] *
-							  this.selectedPlace.services[serviceIndex].price
-							: 0;
-						iterationPrice = iterationPrice + servicePrice;
-					});
-					dayPrice = iterationPrice;
-					prices.push(dayPrice);
-				});
-			return prices;
-		},
-		//falta ver para que sirve
 		prices() {
 			if (this.place) return this.places.find(c => c.value == this.place);
 			else return [];
-		},
-		//Esta funcion le da vida a la tabla de servicios y sus precios
-		//Nueva proyection table
-		proyectionTable() {
-			let daysLodging = [];
-			let numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
-			//Aca son creado los lodging del dia, por cada dia en nuestra proyection table
-			//daylodging se encuentra presente para guardar los numeros de servicios utilizados.
-			for (let i = 0; i <= numberDays; i++) {
-				daysLodging.push({
-					date: moment(this.rangeDate.start)
-						.add(i, 'day')
-						.format('YYYY-MM-DD'),
-					service: [],
-					id: null,
-				});
-			}
-			//En esta parte en base a los lodging existentes, daylodgings es recorrido y poblado con datos como services y la id del lodging
-			//La id del lodging solo se añade si if(this.lodgingSelect) es valido
-			this.lodgings.forEach(l => {
-				let dayIndex = 0;
-				//Solo service es añadido
-				if (!this.editMode) {
-					daysLodging.forEach(day => {
-						if (
-							moment(day.date).isSameOrAfter(moment(l.start).format('YYYY-MM-DD')) &&
-							moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
-						) {
-							if (
-								!this.place &&
-								this.places.find(c => c.value === l.place).text === 'Turismo'
-							) {
-								//El precio iba a estar segun la cantidad de personas en turismo
-								//OMITIR ESTO MIENTRAS
-								/*var numberPassangerMax = this.periods.get(l.group)
-									.numberPassangerMax;*/
-								const reduceServicesForTourism = (acc, service) => {
-									return Object.assign(acc, {
-										[service.name]: 0,
-									});
-								};
-								//Aca podriamos definir las variables en base a nombreServicio: 1;
-								day.service = this.selectedPlace.services.reduce(
-									reduceServicesForTourism,
-									{}
-								);
-							} else {
-								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
-								const reduceServices = (acc, service) => {
-									return Object.assign(acc, {
-										//el problema de las sumas si este valor estaba en 1, ahora en este push deje seteado el valor en 0
-										[service.name]: 0,
-									});
-								};
-								day.service = this.selectedPlace.services.reduce(
-									reduceServices,
-									{}
-								);
-								const service = JSON.parse(l.service[0]);
-								//Algoritmo nuevo
-								//1- cada propiedad de day.service tiene como nombre base el nombre de servicio, entonces necesitaremos iterar el objeto
-								//2- sabemos que service y placeServices son iguales en tamaño y orden de servicios, entonces no necesitamos saber un index especifico.
-								//3- por cada iteracion, usamos el index de la iteracion para consultar service de esta forma: service[index][placeServicesIndex];
-								//4- si tiene el valor va ser service[index][indexService] + day.service.nombreServicio
-								//5- si no tiene valor, el valor va ser service[index][indexService]
-								Object.keys(day.service).forEach((key, serviceIndex) => {
-									day.service[key] = day.service[key]
-										? service[dayIndex][serviceIndex] + day.service[key]
-										: service[dayIndex][serviceIndex];
-								});
-							}
-							//index indica la cantidad de dias, nos ayuda a recorrer service
-							dayIndex++;
-						}
-					});
-				}
-				//Service y la id del lodging son añadidos
-				if (this.lodgingSelect) {
-					if (this.editMode && this.lodgingSelect.id === l.id) {
-						daysLodging.forEach(day => {
-							if (
-								moment(day.date).isSameOrAfter(
-									moment(l.start).format('YYYY-MM-DD')
-								) &&
-								moment(day.date).isSameOrBefore(moment(l.end).format('YYYY-MM-DD'))
-							) {
-								const service = JSON.parse(l.service[0]);
-								//Por cada servicio  vamos a devolver un objeto { nombreServicio: cantidadUsos}
-								const reduceServices = (acc, service) => {
-									return Object.assign(acc, {
-										[service.name]: 0,
-									});
-								};
-								//Aca podriamos definir las variables en base a nombreServicio: 1;
-								day.service = this.selectedPlace.services.reduce(
-									reduceServices,
-									{}
-								);
-								Object.keys(day.service).forEach((key, serviceIndex) => {
-									day.service[key] = day.service[key]
-										? service[dayIndex][serviceIndex] + day.service[key]
-										: service[dayIndex][serviceIndex];
-								});
-								day.id = l.id;
-								dayIndex++;
-							}
-						});
-					}
-				}
-			});
-			return daysLodging;
-		},
-		//Complemento de la proyectionTable, esta función se encarga de crear y renderizar las columnas de dias
-		rangeDateTable() {
-			var dates = [];
-			var numberDays = this.rangeDate.end.diff(this.rangeDate.start, 'days');
-			// if(numberDays >= 7) numberDays = 7
-			for (var i = 0; i <= numberDays; i++)
-				dates.push({
-					numberDay: moment(this.rangeDate.start)
-						.add(i, 'day')
-						.format('DD MMM'),
-					nameDay: moment(this.rangeDate.start)
-						.add(i, 'day')
-						.format('ddd'),
-				});
-			return dates;
 		},
 		...mapGetters({
 			periodAllPlace: 'Lodging/periodAllPlace',
@@ -618,7 +447,6 @@ export default {
 			});
 			return verificate;
 		},
-		/*parece que en esta funcion no esta el error*/
 		setPlace(payload) {
 			this.setPlaceLodging(payload);
 			this.setModeEdit(false);
@@ -626,25 +454,16 @@ export default {
 			this.setServicesComboBox();
 			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
 		},
-		//Cuando cambio de valor un servicio, esta funcion se encarga de evaluar si estoy excediendo el numero de pasajeros
-		//Esta funcion se encarga de evaluar el valor y luego pasarlo a updateService, updateService es el encargado real de actualizar el valor
-		detectInputChange(payload) {
-			//Si es 0 o string, deja el value como 0
-			if (payload.target.value === '' || payload.target.value === 0) payload.target.value = 0;
-			//busca el numero de pasajeros en el lodging seleccionado
-			const numberPassangerMax = this.periods.get(this.lodgingSelect.group)
+		detectServiceQuantityChange(payload, lodgingId, dayIndex, serviceIndex) {
+			let inputValue = parseInt(payload.target.value);
+			let numberPassangerMax = this.periods.get(this.lodgings.get(lodgingId).group)
 				.numberPassangerMax;
-			//si el valor excede el numero de pasaejeros, se setea el numero de pasajeros como valor y se levanta una notificacion toast
-			if (payload.target.value > numberPassangerMax) {
+			if (inputValue > numberPassangerMax) {
 				this.$toasted.show('Cantidad máxima de la habitación excedida');
-				payload.target.value = numberPassangerMax;
+				inputValue = 0;
 			}
-			//si el valor es menor a 0, se setea el numero de pasajeros como valor
-			if (payload.target.value < 0) {
-				payload.target.value = numberPassangerMax;
-			}
-			//se pasa el valor a updateService, esta funcion se encarga de actualizar el valor en pantalla
-			this.updateService(payload.target);
+			if (inputValue < 0) inputValue = numberPassangerMax;
+			this.updateActualService({ inputValue, lodgingId, dayIndex, serviceIndex });
 		},
 		enableEdit(payload) {
 			if (this.place && payload.item) {
@@ -670,8 +489,8 @@ export default {
 		}),
 		...mapMutations({
 			setBottomSheet: 'Lodging/setBottomSheet',
-			addOneService: 'Lodging/addOneService',
-			subOneService: 'Lodging/subOneService',
+			subDaysServices: 'Lodging/subDaysServices',
+			addDaysServices: 'Lodging/addDaysServices',
 			createOneLodging: 'Lodging/createOneLodging',
 			addLodging: 'Lodging/addLodging',
 			setAllLodgingPersons: 'Lodging/setAllLodgingPersons',
@@ -682,12 +501,38 @@ export default {
 			updateService: 'Lodging/updateService',
 			setSelectedPlace: 'Lodging/setSelectedPlace',
 			setServicesComboBox: 'Lodging/setServicesComboBox',
+			updateActualService: 'Lodging/updateActualService',
 		}),
 	},
 };
 </script>
 
 <style lang="css">
+.subTotalTable {
+	min-width: 100px;
+}
+.dateDayCard {
+	border: 1px solid #0000006b;
+	border-radius: 10px;
+	padding: 10px;
+	margin-right: 15px;
+	margin-left: -15px;
+	min-width: 400px;
+	max-height: 41px;
+}
+.microCard {
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background-color: transparent;
+	/* background: linear-gradient(
+		115deg,
+		rgba(210, 141, 181, 0.22) 0%,
+		rgba(194, 173, 247, 0.16) 100%
+	); */
+	margin: 5px;
+	padding: 5px;
+	box-shadow: 0px 1px 10px -2px rgba(0, 0, 0, 0.75);
+}
 .timelineContent:hover {
 	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
 	transition: all ease-in-out 0.5s;
@@ -695,7 +540,6 @@ export default {
 .timelineContent {
 	background-color: transparent;
 	/* background: linear-gradient(90deg, rgba(106, 49, 255, 0.07) 0%, rgba(213, 47, 143, 0.18) 100%); */
-	margin-bottom: 20px !important;
 	padding: 10px;
 	border-radius: 10px;
 	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
@@ -703,7 +547,7 @@ export default {
 }
 
 .vis-selected {
-	background-color: #c06240 !important;
+	background-color: #6a31ff !important;
 	color: white !important;
 	transition: all ease-in-out 0.3s;
 	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
@@ -722,8 +566,14 @@ export default {
 	border: none !important;
 }
 
+input {
+	text-align: center;
+}
+
 .inputService {
-	max-width: 60px;
+	width: 80px;
+	box-shadow: 0px 3px 7px -1px rgba(0, 0, 0, 0.8);
+	padding-left: 5px;
 }
 .vis-timeline {
 	margin-bottom: 15px;
@@ -731,15 +581,11 @@ export default {
 	border: none !important;
 }
 .vis-item {
+	background-color: rgba(194, 173, 247, 0.46);
+	color: var(--v-textColor) !important;
+	box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.95);
 	border: none !important;
-	background: rgb(213, 47, 143);
-	background: linear-gradient(
-		90deg,
-		rgba(213, 47, 143, 0.861782212885154) 0%,
-		rgba(106, 49, 255, 0.8701855742296919) 100%
-	);
-	color: white;
-	border-radius: 5px !important;
+	border-left: 4px solid #6a31ff !important;
 	transition: all ease-in-out 0.3s;
 }
 </style>
