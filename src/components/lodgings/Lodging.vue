@@ -102,6 +102,40 @@
 						<span>Guardar</span>
 					</v-tooltip>
 				</v-col>
+				<!-- periods dialog -->
+				<v-bottom-sheet
+					v-if="lodgingSelect"
+					v-model="bottomSheet"
+					inset
+					@click:outside="setBottomSheet(false)"
+				>
+					<v-sheet style="height: 75vh">
+						<edit-lodging :lodgings="lodgings" :id-place="place" />
+					</v-sheet>
+				</v-bottom-sheet>
+				<v-bottom-sheet
+					v-model="dialogPeriods"
+					inset
+					@click:outside="dialogPeriods = false"
+				>
+					<v-sheet style="height: 75vh">
+						<Periods :id-place="place" />
+					</v-sheet>
+				</v-bottom-sheet>
+				<!-- payments dialog -->
+				<template v-if="Boolean(place) && dialogPayments">
+					<v-dialog v-model="dialogPayments" fullscreen>
+						<v-card>
+							<v-toolbar dark color="primary">
+								<v-btn icon dark @click="dialogPayments = false">
+									<v-icon>mdi-close</v-icon>
+								</v-btn>
+								<v-toolbar-title>Gestion de Pagos</v-toolbar-title>
+							</v-toolbar>
+							<Payments :id-place="place" />
+						</v-card>
+					</v-dialog>
+				</template>
 			</v-row>
 			<!-- timeline -->
 			<v-row>
@@ -157,87 +191,56 @@
 									v-for="(p, proyectionIndex) in proyectionTable"
 									:key="proyectionIndex"
 								>
-									<span v-if="!editMode">{{ p.service[service.name] }}</span>
-									<input
-										v-if="editMode && p.service[service.name] !== undefined"
-										:id="p.id + ',' + p.date"
-										v-model="p.service[service.name]"
-										type="number"
-										class="inputService"
-										:name="service.name"
-										:placeholder="p.service[service.name]"
-										@change="detectInputChange"
-									/>
-								</td>
-							</tr>
-							<!--TOTAL-->
-							<tr v-if="place" class="borderModule">
-								<td colspan="2">TOTAL</td>
-								<td v-for="(p, index) in proyectionTable" :key="index">
-									<span v-if="finalyPrice[index] !== 0">{{
-										finalyPrice[index]
-									}}</span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</v-col>
-			</v-row>
-			<v-row v-if="lodgingSelect && selectedPlace">
-				<v-col cols="12" sm="4">
-					<v-select
-						id="services_select"
-						v-model="serviceSelected"
-						:items="servicesComboBox"
-						dense
-						label="Servicios"
-						outlined
-					>
-					</v-select>
-				</v-col>
-				<v-col cols="6" md="3" class="mt-1">
-					<v-btn small color="primary" @click="addOneService(serviceSelected)">
-						+1 {{ serviceSelected }}
-					</v-btn>
-				</v-col>
-				<v-col cols="6" md="3" class="mt-1">
-					<v-btn small color="primary" @click="subOneService(serviceSelected)">
-						-1 {{ serviceSelected }}
-					</v-btn>
-				</v-col>
-			</v-row>
-			<!-- bottom sheets -->
-			<v-row justify="center">
-				<v-col>
-					<v-bottom-sheet
-						v-model="dialogEditLodging"
-						inset
-						@click:outside="setBottomSheet(false)"
-					>
-						<v-sheet style="height: 75vh">
-							<edit-lodging />
-						</v-sheet>
-					</v-bottom-sheet>
-					<v-bottom-sheet
-						v-if="dialogPeriods"
-						v-model="dialogPeriods"
-						inset
-						@click:outside="dialogPeriods = false"
-					>
-						<v-sheet style="height: 75vh">
-							<Periods />
-						</v-sheet>
-					</v-bottom-sheet>
-					<v-bottom-sheet
-						v-if="dialogPayments"
-						v-model="dialogPayments"
-						inset
-						@click:outside="dialogPayments = false"
-					>
-						<v-sheet style="height: 75vh; overflow-y: auto;">
-							<Payments />
-						</v-sheet>
-					</v-bottom-sheet>
+									<table>
+										<thead>
+											<tr>
+												<th>Servicio</th>
+												<th>Cantidad</th>
+												<th>Subtotal</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												v-for="(service, serviceIndex) in day.services"
+												:key="serviceIndex"
+											>
+												<td style="max-width: 200px;">
+													<b>{{ service.name }}</b>
+													<span v-if="viewPrices">
+														<br />(${{ service.price }})
+													</span>
+												</td>
+												<td>
+													<input
+														:id="day.date + day.services[serviceIndex]"
+														:value="service.quantity"
+														type="number"
+														class="inputService"
+														@change="
+															detectServiceQuantityChange(
+																$event,
+																servicesTableDetails.id,
+																dayIndex,
+																serviceIndex
+															)
+														"
+													/>
+												</td>
+												<td>{{ service.price * service.quantity }}</td>
+											</tr>
+											<tr>
+												<td></td>
+												<td>Total</td>
+												<td>
+													<b>{{ day.dayTotal }} </b>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</v-col>
+					</v-row>
 				</v-col>
 			</v-row>
 		</template>
@@ -261,7 +264,7 @@ export default {
 		return {
 			dialogPeriods: false,
 			dialogPayments: false,
-			//Este string interactua con la comboBox de services
+			sheet: false,
 			serviceSelected: 'todos los servicios',
 			options: {
 				editable: true,
@@ -557,7 +560,7 @@ export default {
 		...mapGetters({
 			periodAllPlace: 'Lodging/periodAllPlace',
 			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
-			dialogEditLodging: 'Lodging/bottomSheet',
+			bottomSheet: 'Lodging/bottomSheet',
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',
 			lodgings: 'Lodging/lodgings',
