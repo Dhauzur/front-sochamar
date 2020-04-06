@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import { isAuthenticated } from '../service/auth';
+import { isAuthenticated, setToken } from '@/service/auth';
 Vue.use(VueRouter);
 
 const Home = () => import('@/views/Home.vue');
@@ -17,6 +17,16 @@ const routes = [
 		component: Home,
 		alias: '/',
 		meta: { title: 'Inicio', layout: 'layout' },
+		beforeEnter: (to, from, next) => {
+			if (!isAuthenticated()) {
+				let oauthJWT = to.query.token;
+				if (oauthJWT) {
+					router.replace({ query: null });
+					setToken(oauthJWT);
+				}
+			}
+			next();
+		},
 	},
 	{
 		path: '/management',
@@ -59,8 +69,13 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-	if (to.name !== 'auth' && !isAuthenticated()) next({ name: 'auth' });
-	next();
+	if (to.name === 'home') {
+		next();
+	} else if (to.name !== 'auth' && !isAuthenticated()) {
+		next({ name: 'auth' });
+	} else {
+		next();
+	}
 });
 
 export default router;

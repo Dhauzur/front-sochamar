@@ -86,7 +86,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { isAuthenticated, setToken, logout } from '../service/auth';
+import { isAuthenticated, logout } from '../service/auth';
 import Logo from '../assets/logo';
 import Avatar from '@/components/ui/Avatar';
 export default {
@@ -118,17 +118,8 @@ export default {
 		}),
 	},
 	created() {
-		this.oauthJWT = this.$route.query.token;
-		if (this.oauthJWT) {
-			this.deleteQueryFromRoute();
-			setToken(this.oauthJWT);
+		if (isAuthenticated()) {
 			this.fetchProfile();
-			this.oauthJWT = '';
-		} else {
-			if (isAuthenticated()) {
-				setToken(localStorage.getItem('token'));
-				this.fetchProfile();
-			}
 		}
 		const mode = localStorage.getItem('mode');
 		if (mode === 'dark') {

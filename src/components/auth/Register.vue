@@ -42,7 +42,7 @@
 			@blur="$v.formData.password.$touch()"
 		/>
 		<v-radio-group
-			v-model="$v.formData.role.$modle"
+			v-model="$v.formData.role.$model"
 			hide-details
 			row
 			:error-messages="roleErrors"
@@ -53,7 +53,7 @@
 			<v-radio label="Persona" value="person"></v-radio>
 		</v-radio-group>
 		<div>
-			<p class="error--text text-left caption ma-2">{{ roleErrors }}</p>
+			<p class="error--text text-left caption ma-2">{{ roleErrors[0] }}</p>
 		</div>
 		<v-switch v-model="formData.analyst" color="primary" label="Analista"></v-switch>
 		<v-btn :loading="loading" block color="primary" small @click="onSubmit">
@@ -99,14 +99,14 @@ export default {
 			return errors;
 		},
 		roleErrors() {
-			let errors = '';
+			const errors = [];
 			if (!this.$v.formData.role.$dirty) return errors;
-			if (!this.$v.formData.role.required) errors = 'Selecciona tu rol';
+			!this.$v.formData.role.required && errors.push('Por favor seleccione');
 			return errors;
 		},
 		passwordErrors() {
 			const errors = [];
-			if (!this.$v.formData.name.$dirty) return errors;
+			if (!this.$v.formData.password.$dirty) return errors;
 			!this.$v.formData.password.required && errors.push('La contraseña es querida');
 			!this.$v.formData.password.maxLength && errors.push('Maximo 200 caracteres');
 			!this.$v.formData.password.minLength && errors.push('Minimo 3 caracteres');

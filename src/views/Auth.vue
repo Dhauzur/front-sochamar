@@ -162,8 +162,9 @@ export default {
 				this.$toasted.show('Usuario o contraseña incorrectos', {
 					type: 'error',
 				});
+			} finally {
+				this.loading = !this.loading;
 			}
-			this.loading = !this.loading;
 		},
 		...mapActions({
 			fetchProfile: 'User/fetchProfile',
