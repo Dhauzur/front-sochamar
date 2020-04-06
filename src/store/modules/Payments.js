@@ -51,9 +51,9 @@ const actions = {
 		}
 		commit('setLoadingSave', false);
 	},
-	async editPayment({ commit }, { payload, id }) {
+	async editPayment({ commit }, { comments, id }) {
 		try {
-			await fetch(`/payments/${id}`, { method: 'put', data: payload });
+			await fetch(`/payments/${id}`, { method: 'put', data: comments });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',

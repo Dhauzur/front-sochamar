@@ -1,55 +1,19 @@
 <template lang="html">
 	<v-container>
-		<v-card-title class="text-secondary">
-			Agregar nuevo
-		</v-card-title>
-		<v-row>
-			<v-col cols="12" md="7" class="mx-auto">
-				<v-row>
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model="$v.form.name.$model"
-							label="Nombre del turno"
-							placeholder="N-1"
-							outlined
-							dense
-							:error-messages="nameErrors"
-							@input="$v.form.name.$touch()"
-							@blur="$v.form.name.$touch()"
-						></v-text-field>
-					</v-col>
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model="$v.form.numberPassangerMax.$model"
-							label="Cant. máxima de personas"
-							outlined
-							dense
-							type="number"
-							placeholder="4"
-							:error-messages="maxPersonsErrors"
-							@input="$v.form.numberPassangerMax.$touch()"
-							@blur="$v.form.numberPassangerMax.$touch()"
-						></v-text-field>
-					</v-col>
-					<v-col cols="12" md="4" class="mt-2">
-						<v-btn small block color="primary" :loading="loading" @click="onsubmit()">
-							Guardar
-						</v-btn>
-					</v-col>
-				</v-row>
-			</v-col>
-		</v-row>
-		<v-divider />
-		<v-row v-if="loading">
-			<v-col cols="12" md="7"
-				><v-skeleton-loader class="mx-auto" type="table"></v-skeleton-loader
-			></v-col>
-		</v-row>
-		<v-row v-else>
-			<v-col cols="12" md="7" class="mx-auto">
-				<v-card-title>
-					Listado de turnos
-					<v-spacer></v-spacer>
+		<!-- header -->
+		<v-col cols="12">
+			<v-row justify="center">
+				<v-col cols="4">
+					<span class="title">Lista de turnos</span>
+				</v-col>
+			</v-row>
+			<v-row justify="space-between">
+				<v-col cols="12" md="2" class="text-left py-0">
+					<v-btn small color="accent" @click="dialog = true">
+						<v-icon>mdi-plus</v-icon>Agregar
+					</v-btn>
+				</v-col>
+				<v-col cols="12" md="3" class="py-0">
 					<v-text-field
 						v-model="filterPeriodWord"
 						dense
@@ -58,17 +22,22 @@
 						label="Filtrar"
 						hide-details
 					></v-text-field>
-				</v-card-title>
-				{{ loading }}
+				</v-col>
+			</v-row>
+		</v-col>
+		<v-row>
+			<v-col cols="12">
 				<v-data-table
 					disable-sort
-					item-key="name"
+					dense
+					item-key="id"
 					:loading="loading"
 					loading-text="Cargando... Por favor espere..."
 					:search="filterPeriodWord"
 					:headers="fields"
 					:items="periodsTable"
 					:items-per-page="5"
+					class="caption"
 				>
 					<template v-slot:item.actions="{ item }">
 						<v-btn fab x-small color="error" @click="deleteOne(item.id)">
@@ -78,6 +47,52 @@
 				</v-data-table>
 			</v-col>
 		</v-row>
+		<!-- dialog form -->
+		<v-dialog v-model="dialog" max-width="440px">
+			<v-card>
+				<v-card-title>
+					<span class="headline">Agregar nuevo</span>
+				</v-card-title>
+				<v-card-text>
+					<v-container>
+						<v-row>
+							<v-col cols="12">
+								<v-text-field
+									v-model="$v.form.name.$model"
+									label="Nombre del turno"
+									placeholder="N-1"
+									outlined
+									dense
+									:error-messages="nameErrors"
+									@input="$v.form.name.$touch()"
+									@blur="$v.form.name.$touch()"
+								></v-text-field>
+							</v-col>
+							<v-col cols="12">
+								<v-text-field
+									v-model="$v.form.numberPassangerMax.$model"
+									label="Cant. máxima de personas"
+									outlined
+									dense
+									type="number"
+									placeholder="4"
+									:error-messages="maxPersonsErrors"
+									@input="$v.form.numberPassangerMax.$touch()"
+									@blur="$v.form.numberPassangerMax.$touch()"
+								></v-text-field>
+							</v-col>
+						</v-row>
+					</v-container>
+				</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn color="primary" small text @click="closeDialog">Cerrar</v-btn>
+					<v-btn color="primary" small text :loading="loadingSave" @click="onsubmit()">
+						Guardar
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</v-container>
 </template>
 
@@ -91,12 +106,13 @@ export default {
 	mixins: [validationMixin],
 	data() {
 		return {
+			loadingSave: false,
+			dialog: false,
 			fields: [
 				{ value: 'name', text: 'Nombre del turno' },
 				{ value: 'numberPassangerMax', text: 'Cant. Max de personas' },
 				{ value: 'actions', text: 'Acción' },
 			],
-			errors: '',
 			form: {
 				name: '',
 				numberPassangerMax: '',
@@ -145,24 +161,28 @@ export default {
 		},
 	},
 	methods: {
-		onsubmit() {
+		async onsubmit() {
+			this.loadingSave = true;
 			// validations
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				this.errors = true;
-			} else {
-				this.createPeriod(this.form).then(() => {
-					this.clearInputs();
-					this.$v.$reset();
-					setTimeout(() => this.fetchLodgings(), 500);
-				});
+			if (!this.$v.$invalid) {
+				await this.createPeriod(this.form);
+				this.fetchLodgings();
+				this.loadingSave = false;
+				this.closeDialog();
 			}
 		},
+		closeDialog() {
+			this.dialog = false;
+			this.clearInputs();
+			this.$v.$reset();
+		},
 		deleteOne(id) {
-			this.deletePeriod({
-				id: id,
-				placeId: this.idPlace,
-			});
+			confirm('Estas seguro de que quieres eliminar este turno?') &&
+				this.deletePeriod({
+					id: id,
+					placeId: this.idPlace,
+				}).then(this.fetchLodgings());
 		},
 		clearInputs() {
 			this.form.name = '';

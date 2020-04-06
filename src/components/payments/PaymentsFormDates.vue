@@ -1,7 +1,7 @@
 <template>
 	<v-row>
 		<!-- mount -->
-		<v-col cols="12" sm="6" md="3">
+		<v-col cols="12">
 			<v-text-field
 				id="total"
 				v-model="$v.mount.$model"
@@ -10,14 +10,13 @@
 				label="Total"
 				dense
 				outlined
-				prepend-icon="mdi-cash-usd"
 				:error-messages="mountErrors"
 				@input="$v.mount.$touch()"
 				@blur="$v.mount.$touch()"
 			></v-text-field>
 		</v-col>
 		<!-- dates -->
-		<v-col cols="12" sm="6" md="3">
+		<v-col cols="12">
 			<v-menu
 				ref="menu"
 				v-model="menu"
@@ -31,10 +30,10 @@
 					<v-text-field
 						v-model="dates"
 						dense
+						readonly
 						clearable
 						outlined
 						label="Fecha de ingreso y salida"
-						prepend-icon="mdi-calendar"
 						:error-messages="datesErrors"
 						@input="$v.dates.$touch()"
 						@blur="$v.dates.$touch()"
@@ -52,25 +51,22 @@
 					scrollable
 				>
 					<v-spacer></v-spacer>
-					<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
+					<v-btn text color="primary" @click="menu = false">Cancelar</v-btn>
 					<v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
 				</v-date-picker>
 			</v-menu>
 		</v-col>
 		<!-- voucher -->
-		<v-col cols="12" sm="6" md="3">
+		<v-col cols="12">
 			<v-file-input
 				id="voucher"
 				ref="voucher"
 				v-model="voucher"
-				label="voucher"
+				label="Voucher"
 				dense
 				clearable
 				outlined
 				prepend-icon="mdi-paperclip"
-				:error-messages="voucherErrors"
-				@input="$v.voucher.$touch()"
-				@blur="$v.voucher.$touch()"
 			>
 				<template v-slot:selection="{ text }">
 					<v-chip small label color="secondary">
@@ -79,8 +75,14 @@
 				</template>
 			</v-file-input>
 		</v-col>
-		<v-col cols="12" sm="6" md="3">
-			<v-btn dark small color="primary" block class="mt-2" @click="submit">
+		<v-col cols="12">
+			<v-btn small text color="primary" @click="back">
+				regresar
+			</v-btn>
+			<v-btn small text color="primary" @click="close">
+				Cerrar
+			</v-btn>
+			<v-btn :loading="loading" text small color="primary" @click="submit">
 				Guardar
 			</v-btn>
 		</v-col>
@@ -96,20 +98,31 @@ import moment from 'moment';
 export default {
 	name: 'PaymentsForm',
 	mixins: [validationMixin],
+	props: {
+		idPlace: {
+			type: String,
+			required: true,
+		},
+		back: {
+			type: Function,
+			required: true,
+		},
+		close: {
+			type: Function,
+			required: true,
+		},
+	},
 	data() {
 		return {
 			dates: [],
 			menu: null,
 			text: '',
-			idPlace: this.$route.params.place,
-			form: new FormData(),
 			startDate: '',
 			endDate: '',
 			mount: '',
 			voucher: null,
 			voucherName: null,
 			comments: '',
-			errors: '',
 		};
 	},
 	computed: {
@@ -123,12 +136,6 @@ export default {
 			const errors = [];
 			if (!this.$v.dates.$dirty) return errors;
 			!this.$v.dates.required && errors.push('campo requerido');
-			return errors;
-		},
-		voucherErrors() {
-			const errors = [];
-			if (!this.$v.voucher.$dirty) return errors;
-			!this.$v.voucher.required && errors.push('campo requerido');
 			return errors;
 		},
 		setDateStart() {
@@ -149,16 +156,13 @@ export default {
 				return this.dates[1];
 			}
 		},
-		...mapGetters({ range: 'Lodging/rangeDatePayments' }),
+		...mapGetters({ range: 'Lodging/rangeDatePayments', loading: 'Payments/loadingSave' }),
 	},
 	validations: {
 		mount: {
 			required,
 		},
 		dates: {
-			required,
-		},
-		voucher: {
 			required,
 		},
 	},
@@ -169,23 +173,26 @@ export default {
 		},
 	},
 	methods: {
-		clearInputFile(input) {
-			this.$refs[input].reset();
+		clearInputs() {
+			this.mount = '';
+			this.dates = [];
 			this.voucher = null;
+			this.$v.$reset();
 		},
 		async submit() {
 			// validations
 			this.$v.$touch();
-			if (this.$v.$invalid) {
-				this.errors = true;
-			} else {
-				this.form.set('idPlace', this.idPlace);
-				this.form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
-				this.form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
-				this.form.set('mount', this.mount);
-				this.form.append('voucher', this.voucher);
-				await this.save(this.form);
+			if (!this.$v.$invalid) {
+				let form = new FormData();
+				form.set('idPlace', this.idPlace);
+				form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
+				form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
+				form.set('mount', this.mount);
+				form.set('voucher', this.voucher);
+				await this.save(form);
 				this.updatePayments(this.idPlace);
+				this.clearInputs();
+				this.close();
 			}
 		},
 		cutText(text) {

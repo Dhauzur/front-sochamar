@@ -143,7 +143,7 @@ const actions = {
 							group: l.group,
 							start: l.start,
 							end: l.end,
-							service: l.service[0],
+							days: l.days,
 							persons: l.persons,
 							place: state.place,
 						},

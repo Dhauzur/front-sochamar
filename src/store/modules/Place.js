@@ -77,7 +77,7 @@ const actions = {
 			commit('setMessage', toastMessage('success', 'Servicio creado'));
 			commit('addServiceToPlaceForService', service);
 			dispatch('fetchPlace');
-		} catch (error) {
+		} catch (e) {
 			commit('setMessage', toastMessage('error', 'no se permiten nombres repetidos'));
 		} finally {
 			commit('setLoading', false);

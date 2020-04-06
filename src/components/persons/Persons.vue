@@ -1,17 +1,19 @@
 <template>
 	<v-container>
 		<!-- list person -->
-		<v-row>
-			<v-col cols="2" class="text-left">
+		<v-row justify="center">
+			<v-col cols="4">
+				<span class="title">Listado de personas</span>
+			</v-col>
+		</v-row>
+		<v-row justify="space-between">
+			<v-col cols="2" class="text-left pb-0">
 				<v-btn small color="accent" @click="dialog = !dialog">
 					<v-icon>mdi-plus</v-icon>
 					Agregar
 				</v-btn>
 			</v-col>
-			<v-col cols="8">
-				<h5>Listado de personas</h5>
-			</v-col>
-			<v-col cols="2">
+			<v-col cols="2" class="pb-0">
 				<v-text-field
 					v-model="filteredWord"
 					outlined
@@ -20,6 +22,8 @@
 					@input="filter"
 				/>
 			</v-col>
+		</v-row>
+		<v-row>
 			<v-col v-if="Array.isArray(personsList) && personsList.length" cols="12">
 				<v-responsive class="overflow-y-auto" max-height="70vh">
 					<v-row>
