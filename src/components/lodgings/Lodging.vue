@@ -123,7 +123,18 @@
 					</v-sheet>
 				</v-bottom-sheet>
 				<!-- payments dialog -->
-				<template v-if="Boolean(place) && dialogPayments">
+
+				<v-bottom-sheet
+					v-if="dialogPayments"
+					v-model="dialogPayments"
+					inset
+					@click:outside="dialogPayments = false"
+				>
+					<v-sheet style="height: 75vh; overflow-y: auto;">
+						<Payments :id-place="place" />
+					</v-sheet>
+				</v-bottom-sheet>
+				<!-- <template v-if="Boolean(place) && dialogPayments">
 					<v-dialog v-model="dialogPayments" fullscreen>
 						<v-card>
 							<v-toolbar dark color="primary">
@@ -135,7 +146,7 @@
 							<Payments :id-place="place" />
 						</v-card>
 					</v-dialog>
-				</template>
+				</template> -->
 			</v-row>
 			<!-- timeline -->
 			<v-row>
