@@ -50,7 +50,9 @@ table {
 	border-spacing: 5px !important;
 }
 
-.fade-enter-active,
+.fade-enter-active {
+	transition: opacity 1.5s;
+}
 .fade-leave-active {
 	transition: opacity 0.5s;
 }
@@ -61,6 +63,7 @@ table {
 /* width */
 ::-webkit-scrollbar {
 	width: 4px;
+	height: 4px;
 }
 
 /* Track */
@@ -70,12 +73,12 @@ table {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-	background: transparent;
+	background: #818181d9;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: transparent;
+	background: #8181816e;
 }
 
 .pointer {
