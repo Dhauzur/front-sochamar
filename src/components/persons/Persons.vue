@@ -2,6 +2,11 @@
 	<v-container>
 		<!-- list person -->
 		<v-row justify="center">
+			<v-col cols="12">
+				<Timeline />
+			</v-col>
+		</v-row>
+		<v-row justify="center">
 			<v-col cols="4">
 				<span class="title">Listado de personas</span>
 			</v-col>
@@ -249,13 +254,17 @@
 import avatarDefault from '@/assets/default.png';
 import axios from 'axios';
 import PersonsList from '@/components/persons/List';
+import Timeline from '@/components/persons/Timeline';
 import { api_absolute } from '@/config/index.js';
 import { mapActions, mapGetters } from 'vuex';
 import { required, minLength } from 'vuelidate/lib/validators';
 import { validationMixin } from 'vuelidate';
 
 export default {
-	components: { PersonsList },
+	components: {
+		PersonsList,
+		Timeline,
+	},
 	mixins: [validationMixin],
 	data() {
 		return {

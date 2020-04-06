@@ -70,8 +70,8 @@ const mutations = {
 		let tempLodging = state.lodgingSelect;
 		let tempLodgings = state.lodgings;
 		state.lodgings = new DataSet([]);
-		const startDate = moment(value.dateStart).hours(15);
-		const endDate = moment(value.dateEnd).hours(12);
+		const startDate = moment(value.dateStart).hours(13);
+		const endDate = moment(value.dateEnd).hours(9);
 
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
@@ -119,9 +119,9 @@ const mutations = {
 		state.editMode = false;
 		let place = state.Places.find(c => c.value === state.place);
 		let verificate = true;
-		const startDate = moment().hours(15);
+		const startDate = moment().hours(13);
 		const endDate = moment()
-			.hours(12)
+			.hours(9)
 			.add(1, 'day');
 		const generatedDays = generateDaysArray(place, startDate, endDate);
 		state.lodgings.forEach(lod => {
@@ -298,8 +298,8 @@ const mutations = {
 						tempLodging.add({
 							id: lodging.id,
 							group: lodging.group,
-							start: moment(lodging.start).hours(15),
-							end: moment(lodging.end).hours(12),
+							start: moment(lodging.start).hours(13),
+							end: moment(lodging.end).hours(9),
 							content: place.text,
 							days: lodging.days,
 							place: lodging.place,
@@ -310,8 +310,8 @@ const mutations = {
 					tempLodging.add({
 						id: lodging.id,
 						group: lodging.group,
-						start: moment(lodging.start).hours(15),
-						end: moment(lodging.end).hours(12),
+						start: moment(lodging.start).hours(13),
+						end: moment(lodging.end).hours(9),
 						content: place.text,
 						days: lodging.days,
 						place: lodging.place,

@@ -149,7 +149,7 @@
 				</template> -->
 			</v-row>
 			<!-- timeline -->
-			<v-row>
+			<v-row class="mx-1">
 				<v-col v-if="place" cols="12">
 					<timeline
 						v-if="periods.length > 0 && lodgings.length > 0"
@@ -164,7 +164,7 @@
 					/>
 				</v-col>
 				<template v-for="(p, index) in places" v-else>
-					<v-col v-if="p.value" :key="index" class="timelineContent " cols="12">
+					<v-col v-if="p.value" :key="index" class="timelineContent mb-3" cols="12">
 						<h4 class="mb-2">{{ p.text }}</h4>
 						<timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
@@ -280,18 +280,7 @@ export default {
 				end: moment().add(14, 'day'),
 				zoomMin: 1000 * 60 * 60 * 24 * 7,
 				zoomMax: 1000 * 60 * 60 * 24 * 30,
-				hiddenDates: [
-					{
-						start: '2019-01-01 00:00:00',
-						end: '2019-01-01 06:00:00',
-						repeat: 'daily',
-					},
-					{
-						start: '2019-01-01 16:00:00',
-						end: '2019-01-01 24:00:00',
-						repeat: 'daily',
-					},
-				],
+
 				//preguntar que pasa aca
 				onUpdate: (item, callback) => {
 					if (this.place) {
@@ -321,9 +310,9 @@ export default {
 				//al hacer click en una parte del timeline, esta función actua similar a createOneLodging
 				onAdd: (item, callback) => {
 					if (this.place) {
-						let startDate = moment(item.start).hours(12);
+						let startDate = moment(item.start).hours(13);
 						let endDate = moment(item.start)
-							.hours(10)
+							.hours(9)
 							.add(1, 'day');
 						item.start = startDate;
 						item.end = endDate;
@@ -353,8 +342,8 @@ export default {
 				onMove: (item, callback) => {
 					if (this.place) {
 						let oldDays = item.days;
-						let startDate = moment(item.start).hours(12);
-						let endDate = moment(item.end).hours(10);
+						let startDate = moment(item.start).hours(13);
+						let endDate = moment(item.end).hours(9);
 						let newDaysArray = generateDaysArray(
 							this.selectedPlace,
 							startDate,
@@ -592,8 +581,8 @@ input {
 	border: none !important;
 }
 .vis-item {
-	background-color: rgba(194, 173, 247, 0.46);
-	color: var(--v-textColor) !important;
+	background-color: #dfd4f9cf;
+	/* color: var(--v-textColor) !important; */
 	box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.95);
 	border: none !important;
 	border-left: 4px solid #6a31ff !important;
