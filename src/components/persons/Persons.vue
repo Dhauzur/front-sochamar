@@ -56,6 +56,7 @@
 				:edit-mode="editMode"
 				:close="closeDialog"
 				:is-dialog="true"
+				:id-company="profile._id"
 				title="Agregar nuevo"
 			/>
 		</v-dialog>
@@ -86,6 +87,7 @@ export default {
 			}
 		},
 		...mapGetters({
+			profile: 'User/profile',
 			message: 'Persons/message',
 			personsList: 'Persons/persons',
 		}),
@@ -101,6 +103,9 @@ export default {
 				this.list = this.personsList;
 			}
 		},
+	},
+	mounted() {
+		this.getPersons(this.profile._id);
 	},
 	methods: {
 		closeDialog() {
@@ -120,11 +125,11 @@ export default {
 		},
 		deleteOne(id) {
 			confirm('Estas seguro de eliminarlo?') &&
-				this.deleteOnePerson(id).then(() => this.getAllPersons());
+				this.deleteOnePerson(id).then(() => this.getPersons(this.profile._id));
 		},
 		...mapActions({
 			deleteOnePerson: 'Persons/deleteOnePerson',
-			getAllPersons: 'Persons/fetchAllPersons',
+			getPersons: 'Persons/fetchPersonsCompany',
 		}),
 	},
 };

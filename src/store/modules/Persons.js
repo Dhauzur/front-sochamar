@@ -17,7 +17,19 @@ const getters = {
 };
 
 const actions = {
-	async fetchAllPersons({ commit }) {
+	async fetchPersonsCompany({ commit }, idCompany) {
+		try {
+			const response = await fetch(`/persons/${idCompany}`);
+			commit('setPersons', response.persons);
+		} catch (error) {
+			commit('setPersons', null);
+			commit('setMessage', {
+				type: 'error',
+				text: error.message,
+			});
+		}
+	},
+	async fetchPersons({ commit }) {
 		try {
 			const response = await fetch('/persons');
 			commit('setPersons', response.persons);

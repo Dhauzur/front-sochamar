@@ -442,7 +442,6 @@ export default {
 		this.fetchPlace();
 		this.fetchPeriods();
 		this.fetchLodgings();
-		this.fetchAllPersons();
 	},
 	methods: {
 		verifyOverlay(value) {
@@ -492,7 +491,6 @@ export default {
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
-			fetchAllPersons: 'Persons/fetchAllPersons',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			fetchPeriods: 'Lodging/fetchPeriods',
 			fetchPlace: 'Lodging/fetchPlace',

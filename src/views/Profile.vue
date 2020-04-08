@@ -283,6 +283,7 @@ export default {
 			data.idPerson = person._id;
 			data.lastName = person.lastName;
 			data.img = person.avatar;
+			delete data._id;
 			this.updateProfile(data).then(() => (this.person = person));
 		},
 		submitNewPassword() {

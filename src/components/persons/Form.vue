@@ -222,6 +222,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		idCompany: {
+			type: String,
+			default: null,
+		},
 	},
 	data() {
 		return {
@@ -284,6 +288,7 @@ export default {
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
 				payload.set('firstName', this.person.firstName.toLowerCase());
+				if (this.idCompany) payload.set('idCompany', this.idCompany);
 				if (this.person.lastName)
 					payload.set('lastName', this.person.lastName.toLowerCase());
 				if (this.person.age) payload.set('age', this.person.age.toString());
@@ -303,18 +308,21 @@ export default {
 						payload.append('documents', this.person.documents[index]);
 					}
 				}
+				/**
+				 * isDialog used when component is called from person dialog
+				 */
 				if (this.isDialog) {
 					if (this.editMode) {
 						this.editPerson({
 							payload,
 							id: this.person._id,
 						}).then(() => {
-							this.getAllPersons();
+							this.getPersons(this.idCompany);
 							this.closeDialog();
 						});
 					} else {
 						this.savePerson(payload).then(() => {
-							this.getAllPersons();
+							this.getPersons(this.idCompany);
 							this.closeDialog();
 						});
 					}
@@ -340,7 +348,7 @@ export default {
 			this.$v.$reset();
 		},
 		deleteOne(id) {
-			this.deleteOnePerson(id).then(() => this.getAllPersons());
+			this.deleteOnePerson(id).then(() => this.getPersons(this.idCompany));
 		},
 		cutText(text) {
 			const extencion = text.split('.').pop();
@@ -356,7 +364,7 @@ export default {
 		},
 		...mapActions({
 			editPerson: 'Persons/editPerson',
-			getAllPersons: 'Persons/fetchAllPersons',
+			getPersons: 'Persons/fetchPersonsCompany',
 			savePerson: 'Persons/savePerson',
 		}),
 	},
