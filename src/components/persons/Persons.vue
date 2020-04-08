@@ -7,14 +7,12 @@
 			</v-col>
 		</v-row>
 		<v-row justify="space-between">
-			<v-col cols="2" class="text-left pb-0">
-				<v-btn small color="accent" @click="dialog = !dialog">
-					<v-icon>mdi-plus</v-icon>
-					Agregar
-				</v-btn>
-				<v-select label="Standard"></v-select>
+			<v-col cols="12" md="2" class="text-left pb-0">
+				<v-col>
+					<RequestPopup :open="() => (dialog = !dialog)" />
+				</v-col>
 			</v-col>
-			<v-col cols="2" class="pb-0">
+			<v-col cols="12" md="2" class="pb-0">
 				<v-text-field
 					v-model="filteredWord"
 					outlined
@@ -69,7 +67,11 @@ import PersonsList from '@/components/persons/List';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-	components: { PersonsList, Form: () => import('@/components/persons/Form') },
+	components: {
+		PersonsList,
+		Form: () => import('@/components/persons/Form'),
+		RequestPopup: () => import('@/components/persons/RequestPopup'),
+	},
 	data() {
 		return {
 			filteredWord: '',
