@@ -5,6 +5,7 @@ import Lodging from './modules/lodging/';
 import Maintenance from './modules/Maintenance';
 import Payments from './modules/Payments';
 import Persons from './modules/Persons';
+import Person from './modules/person';
 import Place from './modules/Place';
 import Room from './modules/rooms';
 import User from './modules/user';
@@ -21,5 +22,6 @@ export default new Vuex.Store({
 		Place,
 		Room,
 		User,
+		Person,
 	},
 });
