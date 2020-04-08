@@ -12,6 +12,7 @@
 					<v-icon>mdi-plus</v-icon>
 					Agregar
 				</v-btn>
+				<v-select label="Standard"></v-select>
 			</v-col>
 			<v-col cols="2" class="pb-0">
 				<v-text-field

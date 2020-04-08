@@ -137,13 +137,17 @@
 						</v-list-item-group>
 					</v-list>
 				</v-col>
-				<v-col cols="12" md="10">
+				<v-col v-if="selected === 0" cols="12" md="10">
 					<Form
 						title="Completa tus datos"
 						:edit-mode="Boolean(person)"
 						:selected="userSelected"
 						:update-user="updateUser"
 					/>
+				</v-col>
+				<v-col v-if="selected === 2" cols="12" md="10">
+					<requests />
+					<small mt-5>*Solo puedes unirte a una compañia</small>
 				</v-col>
 			</v-row>
 		</template>
@@ -160,13 +164,14 @@ export default {
 	components: {
 		Avatar,
 		Form: () => import('@/components/persons/Form'),
+		Requests: () => import('@/components/persons/Requests'),
 	},
 	mixins: [validationMixin],
 	data() {
 		return {
 			person: null,
 			loadingInitial: true,
-			selected: null,
+			selected: 0,
 			items: [
 				{ title: 'Profile' },
 				{ title: 'Mensaje' },
