@@ -28,12 +28,18 @@
 							label="Correo electronico"
 							type="email"
 							hint="Ejemplo: correo@correo.com"
-							@click:append="sendRequest"
 						>
 							<template v-slot:append>
 								<v-tooltip bottom>
 									<template v-slot:activator="{ on }">
-										<v-btn :disabled="loading" small text fab color="success">
+										<v-btn
+											:disabled="loading"
+											small
+											text
+											fab
+											color="success"
+											@click.stop="submit"
+										>
 											<v-icon v-on="on">mdi-send</v-icon>
 										</v-btn>
 									</template>
@@ -59,10 +65,16 @@
 </template>
 
 <script>
+import { pathRequest } from '@/service/persons';
+
 export default {
 	props: {
 		open: {
 			type: Function,
+			required: true,
+		},
+		idProfile: {
+			type: String,
 			required: true,
 		},
 	},
@@ -74,10 +86,19 @@ export default {
 		};
 	},
 	methods: {
-		sendRequest() {
+		submit() {
 			this.loading = true;
-			console.log('sending...');
-			this.email = '';
+			pathRequest({ email: this.email, idProfile: this.idProfile })
+				.then(() => {
+					this.$toasted.show('Solicitud enviada', {
+						type: 'success',
+					});
+				})
+				.catch(error =>
+					this.$toasted.show(error.response.data, {
+						type: 'error',
+					})
+				);
 			this.loading = false;
 		},
 	},

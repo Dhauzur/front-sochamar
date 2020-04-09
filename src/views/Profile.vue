@@ -143,6 +143,7 @@
 						:edit-mode="Boolean(person)"
 						:selected="userSelected"
 						:update-user="updateUser"
+						:toast="toast"
 					/>
 				</v-col>
 				<v-col v-if="selected === 2" cols="12" md="10">
@@ -159,6 +160,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import Avatar from '@/components/ui/Avatar';
 import { minLength, maxLength, required } from 'vuelidate/lib/validators';
+import { getPerson } from '@/service/persons';
 
 export default {
 	components: {
@@ -231,9 +233,7 @@ export default {
 	},
 	watch: {
 		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
+			this.toast(newVal.text, newVal.type);
 		},
 	},
 	created() {
@@ -262,7 +262,7 @@ export default {
 		async initialFetch() {
 			const profile = await this.fetchProfile();
 			if (profile.idPerson) {
-				this.person = await this.fetchPerson(profile.idPerson);
+				this.person = await getPerson(profile.idPerson);
 			}
 			this.profileData = profile;
 			this.loadingInitial = !this.loadingInitial;
@@ -307,8 +307,12 @@ export default {
 			const avatar = this.setAvatarObject(this.avatar);
 			this.updateAvatar(avatar).then(this.clearUpload);
 		},
+		toast(type, text) {
+			this.$toasted.show(text, {
+				type: type,
+			});
+		},
 		...mapActions({
-			fetchPerson: 'Persons/fetchOnePerson',
 			fetchProfile: 'User/fetchProfile',
 			updateProfile: 'User/updateProfile',
 			updateAvatar: 'User/updateAvatar',

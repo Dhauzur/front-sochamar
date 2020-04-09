@@ -1,5 +1,5 @@
 <template>
-	<v-card elevation="24">
+	<v-card elevation="24" :loading="loading">
 		<v-card-title>
 			<span class="headline">{{ title }}</span>
 		</v-card-title>
@@ -208,12 +208,12 @@
 </template>
 
 <script>
-import avatarDefault from '@/assets/default.png';
 import axios from 'axios';
-import { api_absolute } from '@/config/index.js';
-import { mapActions, mapGetters } from 'vuex';
-import { required, minLength } from 'vuelidate/lib/validators';
+import avatarDefault from '@/assets/default.png';
 import { validationMixin } from 'vuelidate';
+import { required, minLength } from 'vuelidate/lib/validators';
+import { createPerson, putPerson } from '@/service/persons';
+import { api_absolute } from '@/config/index.js';
 
 export default {
 	mixins: [validationMixin],
@@ -247,9 +247,18 @@ export default {
 			type: String,
 			default: null,
 		},
+		getPersons: {
+			type: Function,
+			default: () => null,
+		},
+		toast: {
+			type: Function,
+			required: true,
+		},
 	},
 	data() {
 		return {
+			loading: false,
 			urlAvatar: avatarDefault,
 			isActive: false,
 			filteredWord: '',
@@ -272,9 +281,6 @@ export default {
 			!this.$v.person.firstName.required && errors.push('El nombre es querido');
 			return errors;
 		},
-		...mapGetters({
-			loading: 'Persons/loading',
-		}),
 	},
 	validations: {
 		person: {
@@ -309,6 +315,7 @@ export default {
 			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
+				this.loading = !this.loading;
 				payload.set('firstName', this.person.firstName.toLowerCase());
 				if (this.person.email) payload.set('email', this.person.email);
 				if (this.person.rut) payload.set('rut', this.person.rut);
@@ -337,29 +344,32 @@ export default {
 				 */
 				if (this.isDialog) {
 					if (this.editMode) {
-						this.editPerson({
-							payload,
-							id: this.person._id,
-						}).then(() => {
-							this.getPersons(this.idCompany);
-							this.closeDialog();
-						});
+						putPerson(payload, this.person._id)
+							.then(this.getPersons())
+							.then(this.toast('success', 'Actualizado exitosamente'))
+							.then(this.closeDialog())
+							.catch(error => this.toast('error', error.message));
 					} else {
-						this.savePerson(payload).then(() => {
-							this.getPersons(this.idCompany);
-							this.closeDialog();
-						});
+						createPerson(payload)
+							.then(this.getPersons())
+							.then(this.toast('success', 'Guardado exitosamente'))
+							.then(this.closeDialog())
+							.catch(error => this.toast('error', error.message));
 					}
 				} else {
 					if (this.editMode) {
-						this.editPerson({
-							payload,
-							id: this.person._id,
-						}).then(res => this.updateUser(res));
+						putPerson(payload, this.person._id)
+							.then(res => this.updateUser(res))
+							.then(this.toast('success', 'Actualizado exitosamente'))
+							.catch(error => this.toast('error', error.message));
 					} else {
-						this.savePerson(payload).then(res => this.updateUser(res));
+						createPerson(payload)
+							.then(res => this.updateUser(res))
+							.then(this.toast('success', 'Guardado exitosamente'))
+							.catch(error => this.toast('error', error.message));
 					}
 				}
+				this.loading = !this.loading;
 			}
 		},
 		closeDialog() {
@@ -370,9 +380,6 @@ export default {
 			this.urlAvatar = avatarDefault;
 			this.person = { firstName: '' };
 			this.$v.$reset();
-		},
-		deleteOne(id) {
-			this.deleteOnePerson(id).then(() => this.getPersons(this.idCompany));
 		},
 		cutText(text) {
 			const extencion = text.split('.').pop();
@@ -386,11 +393,6 @@ export default {
 			this.comunas = temp[0].comunas;
 			this.disableComunaInput = false;
 		},
-		...mapActions({
-			editPerson: 'Persons/editPerson',
-			getPersons: 'Persons/fetchPersonsCompany',
-			savePerson: 'Persons/savePerson',
-		}),
 	},
 };
 </script>

@@ -9,7 +9,7 @@
 		<v-row justify="space-between">
 			<v-col cols="12" md="2" class="text-left pb-0">
 				<v-col>
-					<RequestPopup :open="() => (dialog = !dialog)" />
+					<RequestPopup :id-profile="profile._id" :open="() => (dialog = !dialog)" />
 				</v-col>
 			</v-col>
 			<v-col cols="12" md="2" class="pb-0">
@@ -57,6 +57,8 @@
 				:is-dialog="true"
 				:id-company="profile._id"
 				title="Agregar nuevo"
+				:get-persons="getPersons"
+				:toast="toast"
 			/>
 		</v-dialog>
 	</v-container>
@@ -64,7 +66,8 @@
 
 <script>
 import PersonsList from '@/components/persons/List';
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
+import { getPersonsByCompany, deletePerson } from '@/service/persons';
 
 export default {
 	components: {
@@ -79,6 +82,7 @@ export default {
 			dialog: false,
 			editMode: false,
 			person: null,
+			personsList: [],
 		};
 	},
 	computed: {
@@ -91,16 +95,9 @@ export default {
 		},
 		...mapGetters({
 			profile: 'User/profile',
-			message: 'Persons/message',
-			personsList: 'Persons/persons',
 		}),
 	},
 	watch: {
-		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
-		},
 		personsList() {
 			if (this.filteredWord === '') {
 				this.list = this.personsList;
@@ -108,9 +105,17 @@ export default {
 		},
 	},
 	mounted() {
-		this.getPersons(this.profile._id);
+		this.getPersons();
 	},
 	methods: {
+		toast(type, text) {
+			this.$toasted.show(text, {
+				type: type,
+			});
+		},
+		getPersons() {
+			getPersonsByCompany(this.profile._id).then(list => (this.personsList = list));
+		},
 		closeDialog() {
 			this.editMode = false;
 			this.person = null;
@@ -128,12 +133,11 @@ export default {
 		},
 		deleteOne(id) {
 			confirm('Estas seguro de eliminarlo?') &&
-				this.deleteOnePerson(id).then(() => this.getPersons(this.profile._id));
+				deletePerson(id)
+					.then(this.getPersons())
+					.then(this.toast('success', 'Eliminado exitosamente'))
+					.catch(error => this.toast('error', error.message));
 		},
-		...mapActions({
-			deleteOnePerson: 'Persons/deleteOnePerson',
-			getPersons: 'Persons/fetchPersonsCompany',
-		}),
 	},
 };
 </script>
