@@ -173,8 +173,8 @@ export default {
 			loadingInitial: true,
 			selected: 0,
 			items: [
-				{ title: 'Profile' },
-				{ title: 'Mensaje' },
+				{ title: 'Perfil' },
+				{ title: 'Mensajes' },
 				{ title: 'Solicitudes' },
 				{ title: 'Leer politicas' },
 			],
@@ -205,7 +205,9 @@ export default {
 			return this.profile.role === 'person';
 		},
 		userSelected() {
-			return this.person ? this.person : { firstName: this.profile.name };
+			return this.person
+				? this.person
+				: { firstName: this.profile.name, email: this.profile.email };
 		},
 		lastnameErrors() {
 			const errors = [];

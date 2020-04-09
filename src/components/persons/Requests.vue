@@ -1,5 +1,5 @@
 <template>
-	<v-alert v-model="alert" type="primary" elevation="24" prominent border="left" colored-border>
+	<v-alert v-model="alert" elevation="24" prominent border="left" colored-border color="primary">
 		<v-row align="center">
 			<v-col class="grow">
 				La empresa Fulanito te ha enviado una solicitud para unirte a su grupo.

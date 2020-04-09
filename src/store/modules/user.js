@@ -26,8 +26,8 @@ const actions = {
 	async updateProfile({ commit }, data) {
 		commit('setLoading', true);
 		delete data.analyst;
-		delete data.img;
 		delete data._id;
+		delete data.email;
 		try {
 			const profile = await fetch('/user/profile', { method: 'put', data });
 			commit('setProfile', profile);
