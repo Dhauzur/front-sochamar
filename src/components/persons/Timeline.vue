@@ -5,70 +5,73 @@
   :options="options"
 />
 </template> -->
-	<div>
-		{{ personSelect }}
-		<v-autocomplete
-			v-model="personSelect"
-			:items="personsAutoComplete"
-			label="Selecione persona"
-			prepend-icon="mdi-account-arrow-right"
-		/>
-		<!-- <v-date-picker
-			v-model="dates"
-			no-title
-			range
-			locale="es"
-			:show-current="false"
-			scrollable
-		/> -->
-
-		<!-- <v-menu
-			ref="menu"
-			v-model="menu"
-			:close-on-content-click="false"
-			:return-value.sync="date"
-			transition="scale-transition"
-			offset-y
-			locale="es"
-			:show-current="false"
-			min-width="290px"
-		>
-			<template v-slot:activator="{ on }">
-				<v-text-field
-					v-model="date"
-					label="Picker in menu"
-					readonly
-					v-on="on"
-				></v-text-field>
-			</template>
-			<v-date-picker v-model="date" no-title locale="es" :show-current="false" scrollable>
-				<v-spacer></v-spacer>
-				<v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-				<v-btn text color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-			</v-date-picker>
-		</v-menu> -->
-		<v-menu
-			v-model="menu"
-			:close-on-content-click="false"
-			:nudge-right="40"
-			lazy
-			transition="scale-transition"
-			offset-y
-			full-width
-			min-width="290px"
-		>
-			<template v-slot:activator="{ on }">
-				<v-text-field
-					v-model="date"
-					label="Picker without buttons"
-					prepend-icon="event"
-					readonly
-					v-on="on"
-				></v-text-field>
-			</template>
-			<v-date-picker v-model="date" @input="menu = false"></v-date-picker>
-		</v-menu>
-	</div>
+	<v-row>
+		<v-col md="3">
+			<v-autocomplete
+				v-model="personSelect"
+				:items="personsAutoComplete"
+				label="Selecione persona"
+				outlined
+				dense
+				prepend-icon="mdi-account-arrow-right"
+			/>
+		</v-col>
+		<v-col md="2">
+			<v-menu
+				v-model="menu1"
+				:close-on-content-click="false"
+				:nudge-right="40"
+				transition="scale-transition"
+				offset-y
+				min-width="290px"
+			>
+				<template v-slot:activator="{ on }">
+					<v-text-field
+						v-model="date1"
+						label="Fecha de inicio"
+						prepend-icon="mdi-calendar-clock"
+						readonly
+						outlined
+						dense
+						v-on="on"
+					></v-text-field>
+				</template>
+				<v-date-picker v-model="date1" @input="menu1 = false"></v-date-picker>
+			</v-menu>
+		</v-col>
+		<v-col md="2">
+			<v-menu
+				v-model="menu2"
+				:close-on-content-click="false"
+				:nudge-right="40"
+				transition="scale-transition"
+				offset-y
+				min-width="290px"
+			>
+				<template v-slot:activator="{ on }">
+					<v-text-field
+						v-model="date2"
+						label="Fecha de inicio"
+						prepend-icon="mdi-calendar-clock"
+						readonly
+						outlined
+						dense
+						v-on="on"
+					></v-text-field>
+				</template>
+				<v-date-picker v-model="date2" @input="menu2 = false"></v-date-picker>
+			</v-menu>
+		</v-col>
+		<v-col md="2">
+			<v-select
+				dense
+				label="Selecione lugar"
+				outlined
+				:items="['soltero', 'casado']"
+			></v-select>
+		</v-col>
+		<v-col md="2"> </v-col>
+	</v-row>
 </template>
 
 <script>
@@ -78,9 +81,9 @@ export default {
 	data() {
 		return {
 			personSelect: null,
-			date: new Date().toISOString().substr(0, 10),
-			menu: false,
-			modal: false,
+			date1: null,
+			date2: null,
+			menu1: false,
 			menu2: false,
 		};
 	},
