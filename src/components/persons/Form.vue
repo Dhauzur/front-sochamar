@@ -16,7 +16,7 @@
 								class="pointer borderRadius"
 								max-width="130px"
 								:src="urlAvatar"
-								><div class="  textAvatar secondary">
+								><div class="textAvatar secondary">
 									Actualiza avatar
 								</div>
 							</v-img>
@@ -30,7 +30,7 @@
 						/>
 					</v-col>
 					<!-- firstName -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-text-field
 							v-model.trim="$v.person.firstName.$model"
 							outlined
@@ -42,7 +42,7 @@
 						/>
 					</v-col>
 					<!-- lastName -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-text-field
 							v-model.trim="person.lastName"
 							outlined
@@ -50,13 +50,24 @@
 							label="Apellido"
 						></v-text-field>
 					</v-col>
-					<!-- age -->
-					<v-col cols="12" md="2">
+					<!-- email -->
+					<v-col cols="12" md="4">
 						<v-text-field
-							v-model.number="person.age"
+							v-model.trim="person.email"
+							:disabled="!isDialog"
 							outlined
 							dense
-							label="Edad"
+							type="email"
+							label="Correo electronico"
+						></v-text-field>
+					</v-col>
+					<!-- rut -->
+					<v-col cols="12" md="4">
+						<v-text-field
+							v-model.trim="person.rut"
+							outlined
+							dense
+							label="Rut"
 							type="number"
 						></v-text-field>
 					</v-col>
@@ -70,8 +81,18 @@
 							:items="['soltero', 'casado']"
 						></v-select>
 					</v-col>
+					<!-- age -->
+					<v-col cols="12" md="4">
+						<v-text-field
+							v-model.number="person.age"
+							outlined
+							dense
+							label="Edad"
+							type="number"
+						></v-text-field>
+					</v-col>
 					<!-- birthdate -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-menu
 							ref="menu"
 							v-model="menu"
@@ -110,7 +131,7 @@
 						</v-menu>
 					</v-col>
 					<!-- phone -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-text-field
 							v-model="person.phone"
 							outlined
@@ -119,7 +140,7 @@
 						></v-text-field>
 					</v-col>
 					<!-- function -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-text-field
 							v-model="person.function"
 							outlined
@@ -128,7 +149,7 @@
 						></v-text-field>
 					</v-col>
 					<!-- appointment -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-text-field
 							v-model="person.appointment"
 							outlined
@@ -137,7 +158,7 @@
 						></v-text-field>
 					</v-col>
 					<!-- region -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-select
 							v-model="person.region"
 							label="Región"
@@ -148,7 +169,7 @@
 						></v-select>
 					</v-col>
 					<!-- comuna -->
-					<v-col cols="12" md="3">
+					<v-col cols="12" md="4">
 						<v-select
 							v-model="person.comuna"
 							label="Comuna"
@@ -160,7 +181,7 @@
 						></v-select>
 					</v-col>
 					<!-- documents -->
-					<v-col cols="12" md="6">
+					<v-col cols="12" offset-md="6" md="6">
 						<v-file-input
 							ref="document"
 							v-model="person.documents"
@@ -270,6 +291,7 @@ export default {
 	},
 	mounted() {
 		if (this.selected) this.person = this.selected;
+		this.person.avatar && (this.urlAvatar = this.person.avatar);
 		this.fetchRegions();
 	},
 	methods: {
@@ -288,6 +310,8 @@ export default {
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
 				payload.set('firstName', this.person.firstName.toLowerCase());
+				if (this.person.email) payload.set('email', this.person.email);
+				if (this.person.rut) payload.set('rut', this.person.rut);
 				if (this.idCompany) payload.set('idCompany', this.idCompany);
 				if (this.person.lastName)
 					payload.set('lastName', this.person.lastName.toLowerCase());
