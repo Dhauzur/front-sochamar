@@ -182,13 +182,13 @@
 			<v-row>
 				<v-col cols="12">
 					<v-row>
-						<v-col>
+						<v-col class="overflow-x-auto">
 							<v-switch
 								v-if="this.place && this.lodgingSelect"
 								v-model="viewPrices"
 								label="Ver precios"
 							></v-switch>
-							<div class="d-inline-flex overflow-x-auto pb-3 ">
+							<div class="d-inline-flex  pb-3 ">
 								<div
 									v-for="(day, dayIndex) in servicesTableDetails.days"
 									:key="dayIndex"
