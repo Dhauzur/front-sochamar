@@ -195,6 +195,7 @@
 									class="microCard  "
 									style="min-width: max-content;"
 								>
+									{{ day.date }}
 									<table>
 										<thead>
 											<tr>
