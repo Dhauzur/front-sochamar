@@ -1,9 +1,13 @@
 <template>
-	<!-- date lodgings -->
-	<b-form-group id="input-group-1" :label="label" label-for="input-1">
-		<b-form-input id="input-1" type="date" required :value="date" @change="onchange" />
-		<small class="text-danger">{{ error }}</small>
-	</b-form-group>
+	<v-text-field
+		id="input-1"
+		:label="label"
+		type="date"
+		required
+		:value="date"
+		:error-messages="error"
+		@change="onchange"
+	/>
 </template>
 
 <script>
@@ -17,7 +21,7 @@ export default {
 			required: false,
 			default: () => false,
 		},
-		isPassengerDate: {
+		isPersonDate: {
 			type: Boolean,
 			required: false,
 		},
@@ -58,7 +62,7 @@ export default {
 	},
 	methods: {
 		onchange(e) {
-			if (this.isPassengerDate) {
+			if (this.isPersonDate) {
 				this.error = '';
 				this.errorDate(false);
 				if (this.start) {

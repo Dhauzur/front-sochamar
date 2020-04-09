@@ -1,13 +1,13 @@
 <template>
-	<b-container id="nav">
-		<b-row
+	<v-container id="nav">
+		<v-row
 			class="justify-content-center overflow-auto"
 			style="max-height: 500px; overflow-y: auto;"
 		>
-			<b-col v-if="loading">
+			<v-col v-if="loading">
 				<Loading :msj="loading" />
-			</b-col>
-			<b-col v-else>
+			</v-col>
+			<v-col v-else>
 				<h5>Filtrar lugar de trabajos {{ totalFilter }}</h5>
 				<input
 					v-model="filterWord"
@@ -59,9 +59,11 @@
 						</tr>
 					</tbody>
 				</table>
-			</b-col>
-		</b-row>
-	</b-container>
+			</v-col>
+		</v-row>
+		<h1>Welcome</h1>
+		<h3>Home view</h3>
+	</v-container>
 </template>
 
 <script>

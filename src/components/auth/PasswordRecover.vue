@@ -1,42 +1,41 @@
 <template>
-	<div>
-		<h3 class="my-4">Recuperar Contraseña</h3>
-		<b-form @submit.prevent="handleSubmit">
-			<!--EMAIL-->
-			<b-form-group
-				id="password-recover"
-				label="Correo electronico:"
-				label-for="password-email"
-			>
-				<b-form-input
+	<v-card flat>
+		<Logo style="max-height: 30vh;" />
+		<v-card-subtitle>
+			Recuperar contraseña
+		</v-card-subtitle>
+		<v-card-text>
+			<v-form>
+				<v-text-field
 					id="password-email"
 					v-model.trim="email"
+					label="Correo Electronico"
 					type="email"
+					prepend-icon="mdi-account"
 					required
-					placeholder="Ingrese el correo"
-				></b-form-input>
-			</b-form-group>
-			<!--SUBMIT-->
-			<!--Aca esta el problema de espaciado con los botones-->
-			<b-form-row>
-				<b-col md="2">
-					<b-button variant="secondary" @click="disablePasswordRecover(false)">
-						Cancelar</b-button
-					>
-				</b-col>
-				<b-col md="6">
-					<b-button v-if="!loading" type="submit" variant="primary">
-						Enviar Recuperación</b-button
-					>
-				</b-col>
-			</b-form-row>
-		</b-form>
-	</div>
+				/>
+			</v-form>
+		</v-card-text>
+		<v-card-actions>
+			<v-btn text color="primary" small @click="disablePasswordRecover(false)">
+				Cancelar
+			</v-btn>
+			<v-spacer />
+			<v-btn :loading="loading" small color="primary" @click="handleSubmit">
+				Enviar Recuperación
+			</v-btn>
+		</v-card-actions>
+	</v-card>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Logo from '@/assets/logo';
+
 export default {
+	components: {
+		Logo,
+	},
 	props: {
 		disablePasswordRecover: {
 			type: Function,

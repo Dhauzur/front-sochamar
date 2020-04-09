@@ -23,7 +23,7 @@
 						fill="#34A853"
 					/></svg
 			></span>
-			<span class="google-button__text">Ingresa con Google</span>
+			<span class="google-button__text">Sign in with Google</span>
 		</button>
 	</div>
 </template>
@@ -46,28 +46,30 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 .google-button {
-	height: 40px;
-	border-width: 0;
+	display: inline-block;
 	background: white;
-	color: #737373;
+	color: #444;
+	width: 190px;
 	border-radius: 5px;
+	border: thin solid #888;
 	white-space: nowrap;
-	box-shadow: 1px 1px 0px 1px rgba(0, 0, 0, 0.05);
-	transition-property: background-color, box-shadow;
-	transition-duration: 150ms;
-	transition-timing-function: ease-in-out;
-	padding: 0;
+	box-shadow: none;
+	transition: box-shadow ease-in-out 0.6s;
+	outline: 0 !important;
 
 	&:focus,
 	&:hover {
-		box-shadow: 1px 4px 5px 1px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.75);
+		transition: box-shadow ease-in-out 0.6s;
+		outline: 0 !important;
 	}
 
 	&:active {
 		background-color: #e5e5e5;
 		box-shadow: none;
+		outline: 0 !important;
 		transition-duration: 10ms;
 	}
 }
@@ -75,7 +77,7 @@ export default {
 .google-button__icon {
 	display: inline-block;
 	vertical-align: middle;
-	margin: 8px 0 8px 8px;
+	margin: 10px 0 8px 8px;
 	width: 18px;
 	box-sizing: border-box;
 }
@@ -83,7 +85,7 @@ export default {
 .google-button__text {
 	display: inline-block;
 	vertical-align: middle;
-	padding: 0 24px;
+	padding: 0 10px;
 	font-size: 14px;
 	font-weight: bold;
 	font-family: 'Roboto', arial, sans-serif;

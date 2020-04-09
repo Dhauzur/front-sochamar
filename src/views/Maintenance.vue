@@ -1,7 +1,7 @@
 <template>
-	<b-container id="nav">
-		<b-row class="justify-content-center overflow-auto">
-			<b-col md="6">
+	<v-container id="nav">
+		<v-row class="justify-content-center overflow-auto">
+			<v-col md="6">
 				<b-form v-if="show" @submit="onSubmit" @reset="onReset">
 					<b-form-group
 						id="input-group-1"
@@ -124,14 +124,14 @@
 						q
 					}}</pre>
 				</b-card>
-			</b-col>
-		</b-row>
-	</b-container>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 export default {
 	data() {
@@ -167,7 +167,7 @@ export default {
 			data.append('workPlace', this.form.workPlace);
 			data.append('whatWasDone', this.form.whatWasDone);
 			data.append('ncamas', this.form.ncamas);
-			Axios({
+			axios({
 				method: 'POST',
 				headers: { 'content-type': 'application/x-www-form-urlencoded' },
 				data,

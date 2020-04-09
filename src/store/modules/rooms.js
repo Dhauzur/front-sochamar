@@ -1,91 +1,89 @@
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 import router from '@/router/index.js';
 
 const state = {
-	message: '',
-	roomSelected: null,
-	rooms: [],
 	filterRoomWord: '',
-	idCompany: '',
+	idPlace: '',
+	loading: false,
+	message: '',
+	rooms: null,
+	roomSelected: null,
 };
 
 const getters = {
-	idCompany: state => state.idCompany,
+	idPlace: state => state.idPlace,
+	loading: state => state.loading,
 	message: state => state.message,
 	roomSelected: state => state.roomSelected,
-	rooms: state => {
-		if (state.filterRoomWord)
-			return state.rooms.filter(c => c.name.includes(state.filterRoomWord));
-		else return state.rooms;
-	},
+	rooms: state => state.rooms,
 };
 
 const actions = {
-	async deleteRoom({ commit, dispatch }, { id, companyId }) {
+	async deleteRoom({ commit, dispatch }, { id, placeId }) {
 		try {
-			const response = await Axios.delete(api + '/rooms/one/' + id, { data: { companyId } });
+			const response = await axios.delete(`${api}/rooms/one/${id}`, { data: { placeId } });
 			const { name } = response.data;
 			commit('setMessage', {
 				type: 'success',
-				text: 'Habitación ' + name + ' eliminada ',
+				text: `Turno ${name} eliminado`,
 			});
-			dispatch('fetchRooms', companyId);
+			dispatch('fetchRooms', placeId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
-				text: 'Error al eliminar habitación',
+				text: 'Error al eliminar Turno',
 			});
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	async createRoom({ commit, dispatch }, room) {
 		try {
-			room.companyId = state.idCompany;
-			await Axios.post(api + '/rooms', room);
+			commit('setLoading', true);
+			room.placeId = state.idPlace;
+			await axios.post(api + '/rooms', room);
 			commit('setMessage', {
 				type: 'success',
-				text: 'Empresa creada ',
+				text: 'Habitacion creada ',
 			});
-			dispatch('fetchRooms', room.companyId);
+			dispatch('fetchRooms', room.placeId);
 		} catch (e) {
 			commit('setMessage', {
 				type: 'error',
-				text: 'Error al crear habitacion',
+				text: 'Error al crear Turno',
 			});
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
+		commit('setLoading', false);
 	},
-	async fetchRooms({ commit }, companyId) {
-		commit('setRooms', null);
+	async fetchRooms({ commit }, placeId) {
 		try {
-			const response = await Axios.get(api + '/rooms/' + companyId);
+			commit('setLoading', true);
+			commit('setRooms', null);
+			const response = await axios.get(`${api}/rooms/${placeId}`);
 			const { rooms } = response.data;
 			commit('setRooms', rooms);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Habitaciones descargadas',
-			});
 		} catch (e) {
 			commit('setRooms', null);
 			commit('setMessage', {
 				type: 'error',
-				text: 'Error al descargar habitaciones',
+				text: 'Error al descargar turnos',
 			});
 			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
+		commit('setLoading', false);
 	},
 };
 
 const mutations = {
-	setIdCompanyRoom(state, value) {
-		state.idCompany = value;
+	setLoading(state, value) {
+		state.loading = value;
+	},
+	setIdPlaceRoom(state, value) {
+		state.idPlace = value;
 	},
 	setMessage(state, value) {
 		state.message = value;
-	},
-	filterRoom(state, value) {
-		state.filterRoomWord = value;
 	},
 	selectRoom(state, value) {
 		state.roomSelected = state.rooms.find(c => c.id == value);

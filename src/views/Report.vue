@@ -1,61 +1,66 @@
 <template>
-	<b-container id="nav">
-		<b-row class="justify-content-center overflow-auto">
-			<b-col md="6">
-				<h4>Informes</h4>
-				<b-form v-if="show" @submit="onSubmit" @reset="onReset">
-					<b-form-group
-						id="input-group-1"
-						label="Miembro"
-						class="col-6"
-						label-for="input-member"
-					>
-						<b-form-select
-							id="input-member"
-							v-model="form.member"
-							:options="members"
-							required
-						/>
-					</b-form-group>
-					<div>
-						<b-form-textarea
-							id="textarea"
-							v-model="form.whatWasDone"
-							placeholder="Escriba aqui su informe..."
-							rows="3"
-							max-rows="6"
-							required
-						></b-form-textarea>
-					</div>
-					<b-button class="m-2" type="submit" variant="primary">Enviar</b-button>
-					<b-button class="m-2" type="reset" variant="danger">Borrar todo</b-button>
-				</b-form>
-			</b-col>
-			<b-col md="10">
-				<table class="table  table-hover mt-2">
-					<thead>
-						<tr>
-							<th>Fecha</th>
-							<th>Miembro</th>
-							<th>Detalle</th>
-						</tr>
-					</thead>
-					<tbody v-for="(r, index) in reports" :key="index">
-						<tr>
-							<td>{{ r.date }}</td>
-							<td>{{ r.member }}</td>
-							<td>{{ r.whatWasDone }}</td>
-						</tr>
-					</tbody>
-				</table>
-			</b-col>
-		</b-row>
-	</b-container>
+	<v-container>
+		<v-row justify="center">
+			<v-col cols="12" md="10" lg="8">
+				<v-card>
+					<v-card-title primary-title>
+						<h4>Informes</h4>
+					</v-card-title>
+					<v-card-text>
+						<v-form v-if="show" @submit="onSubmit" @reset="onReset">
+							<v-select
+								v-model="form.member"
+								:items="members"
+								dense
+								label="Selecione su nombre"
+								outlined
+							>
+							</v-select>
+							<div>
+								<v-textarea
+									id="textarea"
+									v-model="form.whatWasDone"
+									placeholder="Escriba aqui su informe..."
+									rows="1"
+									max-rows="6"
+									outlined
+									required
+								></v-textarea>
+							</div>
+							<v-btn class="m-2" type="reset" small text>Borrar todo</v-btn>
+							<v-btn class="m-2" type="submit" small color="accent">Enviar</v-btn>
+						</v-form>
+					</v-card-text>
+					<v-card-text>
+						<v-simple-table>
+							<template v-slot:default>
+								<thead>
+									<tr>
+										<th>Fecha</th>
+										<th>Miembro</th>
+										<th>Detalle</th>
+									</tr>
+								</thead>
+								<tbody v-for="(r, index) in reports" :key="index">
+									<tr>
+										<td>{{ formatTime(r.date) }}</td>
+										<td>{{ r.member }}</td>
+										<td>{{ r.whatWasDone }}</td>
+									</tr>
+								</tbody>
+							</template>
+						</v-simple-table>
+					</v-card-text>
+				</v-card>
+			</v-col>
+		</v-row>
+	</v-container>
 </template>
 
 <script>
 import { api } from '@/config/index.js';
-import Axios from 'axios';
+import axios from 'axios';
+import moment from 'moment';
 
 export default {
 	data() {
@@ -79,8 +84,15 @@ export default {
 		this.fetchReports();
 	},
 	methods: {
+		formatTime(d) {
+			moment.locale('es');
+			return moment(d)
+				.startOf('hour')
+				.fromNow();
+		},
 		fetchReports() {
-			Axios.get(api + '/reports')
+			axios
+				.get(api + '/reports')
 				.then(response => (this.reports = response.data.reports))
 				.catch(() => {
 					console.error('Error al descargar reportes');
@@ -91,7 +103,7 @@ export default {
 			const data = new URLSearchParams();
 			data.append('member', this.form.member);
 			data.append('whatWasDone', this.form.whatWasDone);
-			Axios({
+			axios({
 				method: 'POST',
 				headers: { 'content-type': 'application/x-www-form-urlencoded' },
 				data,
