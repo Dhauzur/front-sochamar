@@ -164,7 +164,7 @@
 					/>
 				</v-col>
 				<template v-for="(p, index) in places" v-else>
-					<v-col v-if="p.value" :key="index" class="timelineContent " cols="12">
+					<v-col v-if="p.value" :key="index" class="timelineContent mb-4 " cols="12">
 						<h4 class="mb-2">{{ p.text }}</h4>
 						<timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
