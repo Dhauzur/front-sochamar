@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- global appbar -->
-		<v-app-bar :flat="flatAppbar" app dense clipped-right>
+		<v-app-bar :flat="flatAppbar" app dense absolute hide-on-scroll>
 			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
 			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
 			<v-spacer></v-spacer>
@@ -17,6 +17,7 @@
 			mini-variant-width="62"
 			mobile-break-point="768"
 			color="secondary"
+			hide-on-scroll
 		>
 			<v-list> <Logo style="max-height: 80px;"/></v-list>
 			<v-divider></v-divider>

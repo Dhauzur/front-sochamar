@@ -2,12 +2,13 @@
 	<v-row>
 		<v-col cols="12" sm="6" md="4" lg="3">
 			<v-text-field
-				id="placeName"
 				v-model.trim="formData.name"
-				dense
 				outlined
-				rounded
+				dense
+				filled
+				append-icon=""
 				label="Nombre"
+				placeholder="Ej: Alimentación"
 				:error-messages="nameErrors"
 				@input="$v.formData.name.$touch()"
 				@blur="$v.formData.name.$touch()"
@@ -18,18 +19,20 @@
 				id="price"
 				v-model="formData.price"
 				type="number"
-				dense
 				outlined
-				rounded
+				dense
+				filled
+				append-icon=""
 				label="Precio"
+				placeholder="Ej: 5600"
 				:error-messages="priceErrors"
 				@input="$v.formData.price.$touch()"
 				@blur="$v.formData.price.$touch()"
 			></v-text-field>
 		</v-col>
 		<v-col cols="12" sm="6" md="3" lg="3">
-			<v-btn :loading="loading" block color="primary" rounded small @click="submit">
-				Guardar Servicio
+			<v-btn :loading="loading" color="accent" @click="submit">
+				<v-icon>mdi-plus</v-icon>Añadir Servicio
 			</v-btn>
 			<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>
 		</v-col>

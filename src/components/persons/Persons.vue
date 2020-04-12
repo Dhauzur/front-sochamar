@@ -13,7 +13,7 @@
 		</v-row>
 		<v-row justify="space-between">
 			<v-col cols="2" class="text-left pb-0">
-				<v-btn small color="accent" @click="dialog = !dialog">
+				<v-btn color="accent" @click="dialog = !dialog">
 					<v-icon>mdi-plus</v-icon>
 					Agregar
 				</v-btn>
@@ -22,6 +22,7 @@
 				<v-text-field
 					v-model="filteredWord"
 					outlined
+					filled
 					dense
 					label="Filtrar"
 					@input="filter"
@@ -95,6 +96,7 @@
 								<v-text-field
 									v-model.trim="$v.person.firstName.$model"
 									outlined
+									filled
 									dense
 									label="Nombre*"
 									:error-messages="nameErrors"
@@ -107,6 +109,7 @@
 								<v-text-field
 									v-model.trim="person.lastName"
 									outlined
+									filled
 									dense
 									label="Apellido"
 								></v-text-field>
@@ -116,6 +119,7 @@
 								<v-text-field
 									v-model.number="person.age"
 									outlined
+									filled
 									dense
 									label="Edad"
 									type="number"
@@ -126,6 +130,7 @@
 								<v-select
 									v-model="person.state"
 									outlined
+									filled
 									dense
 									label="Estado"
 									:items="['soltero', 'casado']"
@@ -148,6 +153,7 @@
 											label="Fecha de nacimiento"
 											readonly
 											outlined
+											filled
 											dense
 											v-on="on"
 										></v-text-field>
@@ -177,6 +183,7 @@
 								<v-text-field
 									v-model="person.phone"
 									outlined
+									filled
 									dense
 									label="Teléfono"
 								></v-text-field>
@@ -186,6 +193,7 @@
 								<v-text-field
 									v-model="person.function"
 									outlined
+									filled
 									dense
 									label="Función"
 								></v-text-field>
@@ -195,6 +203,7 @@
 								<v-text-field
 									v-model="person.appointment"
 									outlined
+									filled
 									dense
 									label="Cargo"
 								></v-text-field>
@@ -206,6 +215,7 @@
 									label="Región"
 									:items="regiones"
 									outlined
+									filled
 									dense
 									@change="setComunas"
 								></v-select>
@@ -217,6 +227,7 @@
 									label="Comuna"
 									:items="comunas"
 									outlined
+									filled
 									dense
 									:disabled="disableComunaInput"
 								></v-select>
@@ -229,6 +240,7 @@
 									clearable
 									multiple
 									outlined
+									filled
 									dense
 									label="Agrega documentos, max. 5"
 								>

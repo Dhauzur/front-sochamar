@@ -6,71 +6,56 @@
 />
 </template> -->
 	<v-row>
-		<v-col md="3">
+		<v-col cols="12" sm="6" md="3">
 			<v-autocomplete
 				v-model="personSelect"
 				:items="personsAutoComplete"
-				label="Selecione persona"
+				label="Persona"
 				outlined
+				filled
 				dense
-				prepend-icon="mdi-account-arrow-right"
+				append-icon="mdi-account-arrow-right"
 			/>
 		</v-col>
-		<v-col md="2">
-			<v-menu
-				v-model="menu1"
-				:close-on-content-click="false"
-				:nudge-right="40"
-				transition="scale-transition"
-				offset-y
-				min-width="290px"
-			>
-				<template v-slot:activator="{ on }">
-					<v-text-field
-						v-model="date1"
-						label="Fecha de inicio"
-						prepend-icon="mdi-calendar-clock"
-						readonly
-						outlined
-						dense
-						v-on="on"
-					></v-text-field>
-				</template>
-				<v-date-picker v-model="date1" @input="menu1 = false"></v-date-picker>
-			</v-menu>
-		</v-col>
-		<v-col md="2">
-			<v-menu
-				v-model="menu2"
-				:close-on-content-click="false"
-				:nudge-right="40"
-				transition="scale-transition"
-				offset-y
-				min-width="290px"
-			>
-				<template v-slot:activator="{ on }">
-					<v-text-field
-						v-model="date2"
-						label="Fecha de inicio"
-						prepend-icon="mdi-calendar-clock"
-						readonly
-						outlined
-						dense
-						v-on="on"
-					></v-text-field>
-				</template>
-				<v-date-picker v-model="date2" @input="menu2 = false"></v-date-picker>
-			</v-menu>
-		</v-col>
-		<v-col md="2">
-			<v-select
-				dense
-				label="Selecione lugar"
+		<v-col cols="12" sm="6" md="3">
+			<v-autocomplete
+				v-model="schedulePersonSelect"
+				:items="scheludePersons"
+				label="Programa"
 				outlined
-				:items="['soltero', 'casado']"
-			></v-select>
+				filled
+				dense
+				append-icon="mdi-ballot-recount-outline"
+			/>
 		</v-col>
-		<v-col md="2"> </v-col>
+
+		<v-col cols="12" sm="10" md="3">
+			<v-dialog ref="dialog" v-model="modal" width="290px">
+				<template v-slot:activator="{ on }">
+					<v-text-field
+						v-model="date"
+						label="Calendarización"
+						outlined
+						filled
+						dense
+						append-icon="mdi-calendar-clock"
+						readonly
+						v-on="on"
+					></v-text-field>
+				</template>
+				<v-date-picker v-model="date" range>
+					<v-spacer></v-spacer>
+					<v-btn text color="primary" @click="modal = false">Cancel</v-btn>
+					<v-btn text color="primary" @click="modal = false">OK</v-btn>
+				</v-date-picker>
+			</v-dialog>
+		</v-col>
+
+		<v-col cols="12" sm="auto">
+			<v-btn color="accent" block>
+				<v-icon>mdi-plus</v-icon>
+			</v-btn></v-col
+		>
 	</v-row>
 </template>
 
@@ -81,15 +66,15 @@ export default {
 	data() {
 		return {
 			personSelect: null,
-			date1: null,
-			date2: null,
-			menu1: false,
-			menu2: false,
+			schedulePersonSelect: null,
+			date: [],
+			modal: false,
 		};
 	},
 	computed: {
 		...mapGetters({
 			personsAutoComplete: 'Person/personsAutoComplete',
+			scheludePersons: 'Person/scheludePersons',
 		}),
 	},
 	created() {
@@ -98,6 +83,8 @@ export default {
 	methods: {
 		...mapMutations({
 			setPersons: 'Person/setPersons',
+			selectPerson: 'Person/selectPerson',
+			selectSchedulePerson: 'Person/selectSchedulePerson',
 		}),
 	},
 };

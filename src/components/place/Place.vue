@@ -2,16 +2,15 @@
 	<v-container>
 		<v-row class="justify-content-center">
 			<v-col md="12" lg="10" class="background-module pv-3">
-				<v-col cols="12" class="mv-3">
-					<h4 class="my-4">Gestión de <span style="color: orange">lugares</span></h4>
-				</v-col>
 				<v-row class="mv-3 text-left">
-					<v-col cols="12" class="mv-3"><h6>Agregar nuevo</h6></v-col>
 					<v-col cols="12" md lg="8">
-						<label for="name" class="mv-0"><small>Nombre</small></label>
 						<v-text-field
-							id="name"
 							v-model.trim="$v.form.name.$model"
+							outlined
+							dense
+							filled
+							append-icon=""
+							label="Nombre del lugar"
 							placeholder="Ej: Minera los pelambres"
 							:error-messages="nameErrors"
 							@input="$v.form.name.$touch()"
@@ -19,10 +18,13 @@
 						></v-text-field>
 					</v-col>
 					<v-col cols="12" md lg="4">
-						<label for="rut" class="mv-0"><small>RUT</small></label>
 						<v-text-field
-							id="rut"
 							v-model.trim="$v.form.rut.$model"
+							outlined
+							dense
+							filled
+							append-icon=""
+							label="RUT"
 							placeholder="Ej: 11.111.111-3	"
 							:error-messages="rutErrors"
 							@input="$v.form.rut.$touch()"
@@ -59,8 +61,8 @@
 				</v-row>
 				<v-row class="mv-5 text-left">
 					<v-col cols="12" md class="mt-3">
-						<v-btn block size="sm" class="col-6" @click="onsubmit()">
-							Guardar
+						<v-btn color="accent" @click="onsubmit()">
+							Finalizar creación de lugar
 						</v-btn>
 						<small v-if="errors" class="mt-2 d-block text-danger">
 							Debe llenar el formulario correctamente
