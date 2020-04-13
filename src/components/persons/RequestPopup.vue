@@ -25,6 +25,7 @@
 							color="accent"
 							outlined
 							dense
+							filled
 							label="Correo electronico"
 							type="email"
 							hint="Ejemplo: correo@correo.com"

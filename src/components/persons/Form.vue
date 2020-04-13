@@ -33,6 +33,7 @@
 					<v-col cols="12" md="4">
 						<v-text-field
 							v-model.trim="$v.person.firstName.$model"
+							filled
 							outlined
 							dense
 							label="Nombre*"
@@ -45,6 +46,7 @@
 					<v-col cols="12" md="4">
 						<v-text-field
 							v-model.trim="person.lastName"
+							filled
 							outlined
 							dense
 							label="Apellido"
@@ -57,6 +59,7 @@
 							:disabled="!isDialog"
 							outlined
 							dense
+							filled
 							type="email"
 							label="Correo electronico"
 						></v-text-field>
@@ -67,6 +70,7 @@
 							v-model.trim="person.rut"
 							outlined
 							dense
+							filled
 							label="Rut"
 							type="number"
 						></v-text-field>
@@ -75,6 +79,7 @@
 					<v-col cols="12" md="4">
 						<v-select
 							v-model="person.state"
+							filled
 							outlined
 							dense
 							label="Estado"
@@ -85,6 +90,7 @@
 					<v-col cols="12" md="4">
 						<v-text-field
 							v-model.number="person.age"
+							filled
 							outlined
 							dense
 							label="Edad"
@@ -109,6 +115,7 @@
 									readonly
 									outlined
 									dense
+									filled
 									v-on="on"
 								></v-text-field>
 							</template>
@@ -136,6 +143,7 @@
 							v-model="person.phone"
 							outlined
 							dense
+							filled
 							label="Teléfono"
 						></v-text-field>
 					</v-col>
@@ -145,6 +153,7 @@
 							v-model="person.function"
 							outlined
 							dense
+							filled
 							label="Función"
 						></v-text-field>
 					</v-col>
@@ -154,6 +163,7 @@
 							v-model="person.appointment"
 							outlined
 							dense
+							filled
 							label="Cargo"
 						></v-text-field>
 					</v-col>
@@ -165,6 +175,7 @@
 							:items="regiones"
 							outlined
 							dense
+							filled
 							@change="setComunas"
 						></v-select>
 					</v-col>
@@ -177,6 +188,7 @@
 							outlined
 							eager
 							dense
+							filled
 							:disabled="disableComunaInput"
 						></v-select>
 					</v-col>
@@ -189,6 +201,7 @@
 							multiple
 							outlined
 							dense
+							filled
 							label="Agrega documentos, max. 5"
 						>
 						</v-file-input>
