@@ -72,7 +72,6 @@
 							dense
 							filled
 							label="Rut"
-							type="number"
 						></v-text-field>
 					</v-col>
 					<!-- state -->
