@@ -66,7 +66,7 @@ const getPerson = async id => {
 };
 
 /**
- * Update person person by id
+ * Update person by id
  * @param {Object} data
  * @param {string} id
  * @returns {Object} person
