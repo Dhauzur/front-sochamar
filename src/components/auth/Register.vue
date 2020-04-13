@@ -7,6 +7,7 @@
 			placeholder="Ej: Mauro Pérez"
 			label="Nombre"
 			dense
+			filled
 			outlined
 			required
 			:error-messages="nameErrors"
@@ -21,6 +22,7 @@
 			placeholder="Ej: mauro@prueba.cl"
 			label="Correo Electronico"
 			dense
+			filled
 			outlined
 			required
 			:error-messages="emailErrors"
@@ -34,6 +36,7 @@
 			type="password"
 			label="Contraseña"
 			dense
+			filled
 			outlined
 			required
 			hide-details

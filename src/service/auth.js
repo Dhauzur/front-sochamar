@@ -3,10 +3,10 @@ import fetch from '@/service/fetch';
 /**
  * Login user
  * @param {Object} data
+ * @returns {Object}
  */
 const login = async data => {
-	const url = '/auth/login';
-	const response = await fetch(url, {
+	const response = await fetch('/auth/login', {
 		method: 'post',
 		data,
 	});
@@ -17,10 +17,10 @@ const login = async data => {
 /**
  * register user
  * @param {Object} data
+ * @returns {Object}
  */
 const register = async data => {
-	const url = '/auth/register';
-	const response = await fetch(url, {
+	const response = await fetch('/auth/register', {
 		method: 'post',
 		data,
 	});
@@ -31,11 +31,11 @@ const register = async data => {
 /**
  * Update password
  * @param {Object} data
+ * @returns {Object}
  */
 const updatePassword = async (token, password) => {
-	const url = '/auth/user/password';
 	setToken(token);
-	const response = await fetch(url, {
+	const response = await fetch('/auth/user/password', {
 		method: 'put',
 		data: password,
 	});
@@ -46,10 +46,10 @@ const updatePassword = async (token, password) => {
 /**
  * Recovery password
  * @param {Object} data
+ * @returns {Object}
  */
 const requestPasswordRecoverEmail = async data => {
-	const url = '/auth/send/passwordRecover';
-	const response = await fetch(url, {
+	const response = await fetch('/auth/send/passwordRecover', {
 		method: 'put',
 		data,
 	});
@@ -90,12 +90,12 @@ const logout = () => {
 };
 
 export {
-	login,
-	register,
-	updatePassword,
-	requestPasswordRecoverEmail,
-	isAuthenticated,
 	getToken,
-	setToken,
+	isAuthenticated,
+	login,
 	logout,
+	register,
+	requestPasswordRecoverEmail,
+	setToken,
+	updatePassword,
 };

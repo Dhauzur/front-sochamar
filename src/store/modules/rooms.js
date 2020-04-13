@@ -20,11 +20,10 @@ const getters = {
 const actions = {
 	async deleteRoom({ commit, dispatch }, { id, placeId }) {
 		try {
-			const response = await fetch(`/rooms/one/${id}`, {
+			const { name } = await fetch(`/rooms/one/${id}`, {
 				method: 'delete',
 				data: { placeId },
 			});
-			const { name } = response;
 			commit('setMessage', {
 				type: 'success',
 				text: `Turno ${name} eliminado`,

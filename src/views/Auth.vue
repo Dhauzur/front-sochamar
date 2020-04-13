@@ -32,7 +32,7 @@
 					<v-col cols="12">
 						<span class="white--text headline mx-auto">PHLAIN</span>
 					</v-col>
-					<v-col cols="8">
+					<v-col cols="10">
 						<v-list-item v-for="(item, i) in checkList" :key="i">
 							<v-icon color="success">mdi-check-bold</v-icon>
 							<span class="ml-2 white--text subtitle-2">
@@ -59,6 +59,7 @@
 											name="login"
 											prepend-icon="mdi-account"
 											dense
+											filled
 											outlined
 											type="text"
 											required
@@ -71,6 +72,7 @@
 											name="password"
 											prepend-icon="mdi-lock"
 											dense
+											filled
 											outlined
 											:type="showPassword ? 'text' : 'password'"
 											required
@@ -139,10 +141,14 @@ export default {
 			passwordRecover: false,
 			step: 1,
 			checkList: [
-				{ text: 'Administra trabajadores, empresas, hospedajes' },
-				{ text: 'Gestion personas que se hospedaran' },
-				{ text: 'Gestion de pagos de hospedajes' },
-				{ text: 'Recordatorios sms para tus trabajadores' },
+				{
+					text:
+						'Configuración de turnos: Full time, part time, subidas, bajadas, vacaciones, ausencias, etc',
+				},
+				{ text: 'Administración de contratos, documentos, checklist de faenas' },
+				{ text: 'Gestión estadías, alimentación y hospedajes de trabajadores' },
+				{ text: 'Gestión de pagos de residenciales' },
+				{ text: 'Notificación SMS para tus trabajadores' },
 			],
 		};
 	},

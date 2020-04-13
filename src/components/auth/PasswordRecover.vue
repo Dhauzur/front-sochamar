@@ -6,6 +6,7 @@
 				v-model.trim="email"
 				outlined
 				dense
+				filled
 				label="Correo Electronico"
 				type="email"
 				prepend-icon="mdi-account"

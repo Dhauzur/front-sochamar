@@ -2,8 +2,8 @@
 	<v-alert v-model="alert" elevation="24" prominent border="left" colored-border color="primary">
 		<v-row align="center">
 			<v-col class="grow">
-				<span class="success--text">{{ item.name }}</span> te ha enviado una solicitud para
-				unirte a su grupo.
+				<span class="success--text">{{ item.name }}</span> te envió una solicitud para que
+				te sumes a su equipo.
 			</v-col>
 			<v-col class="shrink">
 				<v-btn fab x-small color="success" @click="accept(item.idCompany)">
