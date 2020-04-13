@@ -9,7 +9,7 @@
 		<v-row justify="space-between">
 			<v-col cols="12" md="2" class="text-left pb-0">
 				<v-col>
-					<RequestPopup :id-profile="profile._id" :open="() => (dialog = !dialog)" />
+					<RequestPopup :profile="profile" :open="() => (dialog = !dialog)" />
 				</v-col>
 			</v-col>
 			<v-col cols="12" md="2" class="pb-0">

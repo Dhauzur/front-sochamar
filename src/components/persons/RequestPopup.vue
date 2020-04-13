@@ -73,8 +73,8 @@ export default {
 			type: Function,
 			required: true,
 		},
-		idProfile: {
-			type: String,
+		profile: {
+			type: Object,
 			required: true,
 		},
 	},
@@ -88,11 +88,16 @@ export default {
 	methods: {
 		submit() {
 			this.loading = true;
-			pathRequest({ email: this.email, idProfile: this.idProfile })
+			pathRequest({
+				email: this.email,
+				company: `${this.profile.name} ${this.profile.lastName && this.profile.lastName}`,
+				idProfile: this.profile._id,
+			})
 				.then(() => {
 					this.$toasted.show('Solicitud enviada', {
 						type: 'success',
 					});
+					this.email = '';
 				})
 				.catch(error =>
 					this.$toasted.show(error.response.data, {

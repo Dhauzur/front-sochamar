@@ -147,8 +147,15 @@
 					/>
 				</v-col>
 				<v-col v-if="selected === 2" cols="12" md="10">
-					<requests />
-					<small mt-5>*Solo puedes unirte a una compañia</small>
+					<template v-if="hasRequest">
+						<div v-for="(item, i) in person.request" :key="i">
+							<requests :item="item" :person="person" :toast="toast" />
+						</div>
+						<small mt-5>*Solo puedes unirte a una compañia</small>
+					</template>
+					<template v-else>
+						<small mt-5>No tienes solicitudes</small>
+					</template>
 				</v-col>
 			</v-row>
 		</template>
@@ -160,7 +167,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import Avatar from '@/components/ui/Avatar';
 import { minLength, maxLength, required } from 'vuelidate/lib/validators';
-import { getPerson } from '@/service/persons';
+import { getPerson, createPerson } from '@/service/persons';
 
 export default {
 	components: {
@@ -197,6 +204,13 @@ export default {
 		};
 	},
 	computed: {
+		hasRequest() {
+			return (
+				Boolean(this.person) &&
+				Array.isArray(this.person.request) &&
+				this.person.request.length
+			);
+		},
 		avatarMessage() {
 			return this.profileData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
 		},
@@ -233,7 +247,9 @@ export default {
 	},
 	watch: {
 		message(newVal) {
-			this.toast(newVal.text, newVal.type);
+			if (this.isAdmin) {
+				this.toast(newVal.type, newVal.text);
+			}
 		},
 	},
 	created() {
@@ -263,6 +279,10 @@ export default {
 			const profile = await this.fetchProfile();
 			if (profile.idPerson) {
 				this.person = await getPerson(profile.idPerson);
+			} else {
+				createPerson({ firstName: profile.name, email: profile.email }).then(res =>
+					this.updateUser(res)
+				);
 			}
 			this.profileData = profile;
 			this.loadingInitial = !this.loadingInitial;
@@ -309,7 +329,7 @@ export default {
 		},
 		toast(type, text) {
 			this.$toasted.show(text, {
-				type: type,
+				type,
 			});
 		},
 		...mapActions({

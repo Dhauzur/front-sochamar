@@ -1,5 +1,5 @@
 <template>
-	<v-card elevation="24" :loading="loading">
+	<v-card elevation="24">
 		<v-card-title>
 			<span class="headline">{{ title }}</span>
 		</v-card-title>
@@ -200,7 +200,7 @@
 		<v-card-actions>
 			<v-spacer></v-spacer>
 			<v-btn v-if="isDialog" text @click="closeDialog">Cerrar</v-btn>
-			<v-btn :loading="loading" color="primary" text @click="submit">
+			<v-btn :loading="saving" :disabled="saving" color="primary" text @click="submit">
 				Guardar
 			</v-btn>
 		</v-card-actions>
@@ -258,7 +258,7 @@ export default {
 	},
 	data() {
 		return {
-			loading: false,
+			saving: false,
 			urlAvatar: avatarDefault,
 			isActive: false,
 			filteredWord: '',
@@ -311,65 +311,37 @@ export default {
 			this.regiones = this.comunasRegiones.map(item => item.region);
 		},
 		submit() {
-			let payload = new FormData();
-			// validations
 			this.$v.$touch();
 			if (!this.$v.$invalid) {
-				this.loading = !this.loading;
-				payload.set('firstName', this.person.firstName.toLowerCase());
-				if (this.person.email) payload.set('email', this.person.email);
-				if (this.person.rut) payload.set('rut', this.person.rut);
-				if (this.idCompany) payload.set('idCompany', this.idCompany);
-				if (this.person.lastName)
-					payload.set('lastName', this.person.lastName.toLowerCase());
-				if (this.person.age) payload.set('age', this.person.age.toString());
-				if (this.person.birthdate)
-					payload.set('birthdate', this.person.birthdate.toLowerCase());
-				if (this.person.appointment)
-					payload.set('appointment', this.person.appointment.toLowerCase());
-				if (this.person.function)
-					payload.set('function', this.person.function.toLowerCase());
-				if (this.person.state) payload.set('state', this.person.state.toLowerCase());
-				if (this.person.phone) payload.set('phone', this.person.phone.toLowerCase());
-				if (this.person.region) payload.set('region', this.person.region);
-				if (this.person.comuna) payload.set('comuna', this.person.comuna);
-				if (this.person.avatar) payload.append('avatar', this.person.avatar);
-				if (this.person.documents) {
-					for (const index in this.person.documents) {
-						payload.append('documents', this.person.documents[index]);
-					}
-				}
-				/**
-				 * isDialog used when component is called from person dialog
-				 */
+				this.saving = true;
+				this.person.idCompany = this.idCompany;
 				if (this.isDialog) {
 					if (this.editMode) {
-						putPerson(payload, this.person._id)
-							.then(this.getPersons())
-							.then(this.toast('success', 'Actualizado exitosamente'))
-							.then(this.closeDialog())
+						putPerson(this.person, this.person._id)
+							.then(() => {
+								this.getPersons();
+								this.toast('success', 'Actualizado exitosamente');
+								this.closeDialog();
+							})
 							.catch(error => this.toast('error', error.message));
 					} else {
-						createPerson(payload)
-							.then(this.getPersons())
-							.then(this.toast('success', 'Guardado exitosamente'))
-							.then(this.closeDialog())
+						createPerson(this.person)
+							.then(() => {
+								this.getPersons();
+								this.toast('success', 'Guardado exitosamente');
+								this.closeDialog();
+							})
 							.catch(error => this.toast('error', error.message));
 					}
 				} else {
-					if (this.editMode) {
-						putPerson(payload, this.person._id)
-							.then(res => this.updateUser(res))
-							.then(this.toast('success', 'Actualizado exitosamente'))
-							.catch(error => this.toast('error', error.message));
-					} else {
-						createPerson(payload)
-							.then(res => this.updateUser(res))
-							.then(this.toast('success', 'Guardado exitosamente'))
-							.catch(error => this.toast('error', error.message));
-					}
+					putPerson(this.person, this.person._id)
+						.then(res => {
+							this.updateUser(res);
+							this.toast('success', 'Actualizado exitosamente');
+						})
+						.catch(error => this.toast('error', error.message));
 				}
-				this.loading = !this.loading;
+				this.saving = false;
 			}
 		},
 		closeDialog() {
