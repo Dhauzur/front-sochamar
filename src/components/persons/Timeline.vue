@@ -1,12 +1,6 @@
 <template lang="html">
-	<!-- <timeline
-  class="timelineContent"    :groups="periods"
-  :items="lodgings"
-  :options="options"
-/>
-</template> -->
 	<v-row>
-		<v-col cols="12" sm="6" md="3">
+		<v-col cols="12" sm="6" md="4">
 			<v-autocomplete
 				v-model="personSelect"
 				:items="personsAutoComplete"
@@ -14,19 +8,35 @@
 				outlined
 				filled
 				dense
+				return-object
 				append-icon="mdi-account-arrow-right"
 			/>
 		</v-col>
-		<v-col cols="12" sm="6" md="3">
-			<v-autocomplete
+		<v-col cols="12" sm="6" md="3" class="d-inline-flex">
+			<v-text-field
 				v-model="schedulePersonSelect"
-				:items="scheludePersons"
-				label="Programa"
 				outlined
 				filled
-				dense
 				append-icon="mdi-ballot-recount-outline"
-			/>
+				dense
+				label="Programa"
+			>
+				<!-- <template v-slot:append>
+					<v-btn v-if="schedulePersonSelect" icon class="mr-0 ml-2 mb-1">
+						<v-icon>mdi-plus</v-icon>
+					</v-btn>
+				</template> -->
+				<template v-slot:no-data>
+					<v-list-tile>
+						<span class="subheading">Create</span>
+						<!-- :color="`${colors[nonce - 1]} lighten-3`" -->
+						<v-chip label small>
+							{{ schedulePersonSelect }}
+						</v-chip>
+					</v-list-tile>
+				</template>
+			</v-text-field>
+			<!-- <v-btn text icon class="ml-2" color="accent"> </v-btn> -->
 		</v-col>
 
 		<v-col cols="12" sm="10" md="3">
@@ -52,10 +62,16 @@
 		</v-col>
 
 		<v-col cols="12" sm="auto">
-			<v-btn color="accent" block>
-				<v-icon>mdi-plus</v-icon>
-			</v-btn></v-col
+			<v-btn color="accent" block> <v-icon>mdi-plus</v-icon>Ingresar </v-btn></v-col
 		>
+		<v-col cols="12">
+			<!-- <timeline
+				class="timelineContent"
+				:groups="periods"
+				:items="lodgings"
+				:options="options"
+			/> -->
+		</v-col>
 	</v-row>
 </template>
 

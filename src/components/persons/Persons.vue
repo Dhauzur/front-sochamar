@@ -15,7 +15,7 @@
 			<v-col cols="2" class="text-left pb-0">
 				<v-btn color="accent" @click="dialog = !dialog">
 					<v-icon>mdi-plus</v-icon>
-					Agregar
+					Crear nueva persona
 				</v-btn>
 			</v-col>
 			<v-col cols="2" class="pb-0">
