@@ -322,26 +322,37 @@ export default {
 								this.getPersons();
 								this.toast('success', 'Actualizado exitosamente');
 								this.closeDialog();
+								this.saving = false;
 							})
-							.catch(error => this.toast('error', error.message));
+							.catch(error => {
+								this.toast('error', error.message);
+								this.saving = false;
+							});
 					} else {
 						createPerson(this.person)
 							.then(() => {
 								this.getPersons();
 								this.toast('success', 'Guardado exitosamente');
 								this.closeDialog();
+								this.saving = false;
 							})
-							.catch(error => this.toast('error', error.message));
+							.catch(error => {
+								this.toast('error', error.message);
+								this.saving = false;
+							});
 					}
 				} else {
 					putPerson(this.person, this.person._id)
 						.then(res => {
 							this.updateUser(res);
 							this.toast('success', 'Actualizado exitosamente');
+							this.saving = false;
 						})
-						.catch(error => this.toast('error', error.message));
+						.catch(error => {
+							this.toast('error', error.message);
+							this.saving = false;
+						});
 				}
-				this.saving = false;
 			}
 		},
 		closeDialog() {
