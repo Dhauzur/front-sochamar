@@ -24,7 +24,7 @@ const _setFormData = data => {
 	if (data.avatar) payload.append('avatar', data.avatar);
 	if (data.documents) {
 		for (const index in data.documents) {
-			payload.append('documents', data.documents[index]);
+			if (!data.documents[index].url) payload.append('documents', data.documents[index]);
 		}
 	}
 	return payload;
