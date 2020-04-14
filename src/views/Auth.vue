@@ -51,34 +51,38 @@
 						<v-window v-model="step">
 							<v-window-item :value="1">
 								<v-card flat>
-									<v-card-text>
-										<v-text-field
-											id="email-input"
-											v-model.trim="loginData.email"
-											label="Correo electronico"
-											name="login"
-											prepend-icon="mdi-account"
-											dense
-											filled
-											outlined
-											type="text"
-											required
-										/>
-										<v-text-field
-											id="password-input"
-											v-model.trim="loginData.password"
-											:append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-											label="Contraseña"
-											name="password"
-											prepend-icon="mdi-lock"
-											dense
-											filled
-											outlined
-											:type="showPassword ? 'text' : 'password'"
-											required
-											@click:append="showPassword = !showPassword"
-										/>
-									</v-card-text>
+									<v-form>
+										<v-card-text>
+											<v-text-field
+												id="email-input"
+												v-model.trim="loginData.email"
+												label="Correo electronico"
+												name="login"
+												prepend-icon="mdi-account"
+												dense
+												filled
+												outlined
+												type="text"
+												required
+											/>
+											<v-text-field
+												id="password-input"
+												v-model.trim="loginData.password"
+												:append-icon="
+													showPassword ? 'mdi-eye' : 'mdi-eye-off'
+												"
+												label="Contraseña"
+												name="password"
+												prepend-icon="mdi-lock"
+												dense
+												filled
+												outlined
+												:type="showPassword ? 'text' : 'password'"
+												required
+												@click:append="showPassword = !showPassword"
+											/>
+										</v-card-text>
+									</v-form>
 									<v-card-actions>
 										<v-spacer />
 										<v-btn

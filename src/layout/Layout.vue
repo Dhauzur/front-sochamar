@@ -5,9 +5,22 @@
 			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
 			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
 			<v-spacer></v-spacer>
-			<v-btn icon @click="toggleTheme">
-				<v-icon>mdi-theme-light-dark</v-icon>
-			</v-btn>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<v-btn icon v-on="on" @click="toggleTheme">
+						<v-icon>mdi-theme-light-dark</v-icon>
+					</v-btn>
+				</template>
+				<span>Activar o desactivar modo oscuro</span>
+			</v-tooltip>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<v-btn icon v-on="on" @click="quit">
+						<v-icon v-on="on">mdi-logout</v-icon>
+					</v-btn>
+				</template>
+				<span>Salir</span>
+			</v-tooltip>
 			<span class="hidden-sm-and-down">{{ fullName }}</span>
 		</v-app-bar>
 		<v-navigation-drawer
