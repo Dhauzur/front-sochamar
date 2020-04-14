@@ -306,10 +306,13 @@ export default {
 			}
 		},
 		updateUser(person) {
-			let data = { ...this.profile };
-			data.idPerson = person._id;
-			data.lastName = person.lastName;
-			data.img = person.avatar;
+			let data = {
+				...this.profile,
+				idPerson: person._id,
+				name: person.firstName,
+				lastName: person.lastName,
+				img: person.avatar,
+			};
 			delete data._id;
 			this.updateProfile(data).then(() => (this.person = person));
 		},
