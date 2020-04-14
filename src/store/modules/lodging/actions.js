@@ -52,10 +52,6 @@ const actions = {
 			const response = await axios.get(`${api}/place`);
 			commit('setLoading', false);
 			commit('setPlaces', response.data.place);
-			commit('setMessage', {
-				type: 'success',
-				text: 'lugares descargados',
-			});
 		} catch (error) {
 			commit('setPlaces', null);
 			commit('setMessage', {
@@ -76,10 +72,6 @@ const actions = {
 			const response = await axios.get(api + '/lodgings');
 			commit('setLoading', false);
 			commit('setLodgings', response.data.lodgings);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Hospedajes descargados ',
-			});
 		} catch (error) {
 			commit('setLodgings', null);
 			commit('setMessage', {
@@ -99,10 +91,6 @@ const actions = {
 			const response = await axios.get(`${api}/periods/${placeId ? placeId : null}`);
 			const { periods } = response.data;
 			commit('setPeriods', periods);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Habitaciones descargadas',
-			});
 			commit('setLoading', false);
 		} catch (e) {
 			commit('setPeriods', null);

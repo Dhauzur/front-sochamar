@@ -117,10 +117,6 @@ const actions = {
 		try {
 			const response = await axios.get(`${api}/place`);
 			const { place } = response.data;
-			commit('setMessage', {
-				type: 'success',
-				text: 'Lugares descargados',
-			});
 			commit('setPlaces', place);
 		} catch (e) {
 			commit('setPlaces', null);

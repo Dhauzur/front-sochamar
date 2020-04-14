@@ -69,7 +69,6 @@ const actions = {
 				type: 'error',
 				text: 'Error al descargar turnos',
 			});
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 		commit('setLoading', false);
 	},
