@@ -184,7 +184,7 @@
 					<v-row>
 						<v-col class="overflow-x-auto">
 							<v-switch
-								v-if="this.place && this.lodgingSelect"
+								v-if="place && lodgingSelect"
 								v-model="viewPrices"
 								label="Ver precios"
 							></v-switch>
@@ -362,27 +362,27 @@ export default {
 				},
 				onMove: (item, callback) => {
 					if (this.place) {
+						let oldDays = item.days;
+						let startDate = moment(item.start).hours(12);
+						let endDate = moment(item.end).hours(10);
+						let newDaysArray = generateDaysArray(
+							this.selectedPlace,
+							startDate,
+							endDate
+						);
+						let saveOldDaysServices = (oldDays, newDays) => {
+							oldDays.forEach(oldDay => {
+								let foundIndex = newDays.findIndex(
+									newDay => newDay.date === oldDay.date
+								);
+								if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
+							});
+						};
+						saveOldDaysServices(oldDays, newDaysArray);
+						item.days = newDaysArray;
+						item.start = startDate;
+						item.end = endDate;
 						if (this.verifyOverlay(item)) {
-							let oldDays = item.days;
-							let startDate = moment(item.start).hours(12);
-							let endDate = moment(item.end).hours(10);
-							let newDaysArray = generateDaysArray(
-								this.selectedPlace,
-								startDate,
-								endDate
-							);
-							let saveOldDaysServices = (oldDays, newDays) => {
-								oldDays.forEach(oldDay => {
-									let foundIndex = newDays.findIndex(
-										newDay => newDay.date === oldDay.date
-									);
-									if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
-								});
-							};
-							saveOldDaysServices(oldDays, newDaysArray);
-							item.days = newDaysArray;
-							item.start = startDate;
-							item.end = endDate;
 							this.setModeEdit(true);
 							callback(item);
 						} else {
