@@ -94,8 +94,10 @@ export default {
 			axios
 				.get(api + '/reports')
 				.then(response => (this.reports = response.data.reports))
-				.catch(() => {
-					console.error('Error al descargar reportes');
+				.catch(error => {
+					this.$toasted.show(error.message, {
+						type: 'error',
+					});
 				});
 		},
 		onSubmit(evt) {
@@ -115,7 +117,9 @@ export default {
 					this.fetchReports();
 				})
 				.catch(error => {
-					console.error('Error al subir ' + error);
+					this.$toasted.show(error.message, {
+						type: 'error',
+					});
 				});
 		},
 

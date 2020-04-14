@@ -5,9 +5,22 @@
 			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
 			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
 			<v-spacer></v-spacer>
-			<v-btn icon @click="toggleTheme">
-				<v-icon>mdi-theme-light-dark</v-icon>
-			</v-btn>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<v-btn icon v-on="on" @click="toggleTheme">
+						<v-icon>mdi-theme-light-dark</v-icon>
+					</v-btn>
+				</template>
+				<span>Activar o desactivar modo oscuro</span>
+			</v-tooltip>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<v-btn icon v-on="on" @click="quit">
+						<v-icon v-on="on">mdi-logout</v-icon>
+					</v-btn>
+				</template>
+				<span>Salir</span>
+			</v-tooltip>
 			<span class="hidden-sm-and-down">{{ fullName }}</span>
 		</v-app-bar>
 		<v-navigation-drawer
@@ -18,9 +31,11 @@
 			mobile-break-point="768"
 			color="secondary"
 		>
-			<v-list> <Logo style="max-height: 80px;"/></v-list>
+			<v-list>
+				<Logo style="max-height: 80px;" />
+			</v-list>
 			<v-divider></v-divider>
-			<v-list nav dense>
+			<v-list v-if="isAdmin" nav dense>
 				<v-list-item active-class="accent--text" link to="/">
 					<v-tooltip bottom>
 						<template v-slot:activator="{ on }">
@@ -67,7 +82,7 @@
 								<v-list-item link to="/profile">
 									<span>Perfil</span>
 								</v-list-item>
-								<v-list-item link @click="logout">
+								<v-list-item link @click="quit">
 									<span>Salir</span>
 								</v-list-item>
 							</v-list>
@@ -83,7 +98,8 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+import { isAuthenticated, logout } from '../service/auth';
 import Logo from '../assets/logo';
 import Avatar from '@/components/ui/Avatar';
 export default {
@@ -107,23 +123,16 @@ export default {
 			if (this.profile.name) return this.profile.name + ' ' + this.profile.lastName;
 			return '';
 		},
+		isAdmin() {
+			return this.profile.role === 'admin';
+		},
 		...mapGetters({
-			isLogged: 'Auth/isLogged',
 			profile: 'User/profile',
 		}),
 	},
 	created() {
-		this.oauthJWT = this.$route.query.token;
-		if (this.oauthJWT) {
-			this.deleteQueryFromRoute();
-			this.setToken(this.oauthJWT);
+		if (isAuthenticated()) {
 			this.fetchProfile();
-			this.oauthJWT = '';
-		} else {
-			if (this.isLogged) {
-				this.setToken(localStorage.getItem('token'));
-				this.fetchProfile();
-			}
 		}
 		const mode = localStorage.getItem('mode');
 		if (mode === 'dark') {
@@ -143,7 +152,10 @@ export default {
 		deleteQueryFromRoute() {
 			this.$router.replace({ query: null });
 		},
-		...mapMutations({ logout: 'Auth/logout', setToken: 'Auth/setToken' }),
+		async quit() {
+			await logout();
+			this.$router.replace({ name: 'auth' });
+		},
 		...mapActions({ fetchProfile: 'User/fetchProfile' }),
 	},
 };

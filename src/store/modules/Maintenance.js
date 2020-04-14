@@ -1,5 +1,4 @@
-import { api } from '@/config/index.js';
-import axios from 'axios';
+import fetch from '@/service/fetch';
 import moments from 'moment';
 
 const state = {
@@ -55,12 +54,14 @@ const actions = {
 	async fetchActivities({ commit }) {
 		try {
 			commit('setLoading', 'Cargando actividades...');
-			const response = await axios.get(`${api}/activities`);
+			const response = await fetch(`/activities`);
 			commit('setLoading', '');
-			commit('setActivities', response.data);
+			commit('setActivities', response);
 			return true;
 		} catch (error) {
-			console.error('Error al intentar hacer la descarga');
+			this.$toasted.show(error.message, {
+				type: 'error',
+			});
 		}
 	},
 };

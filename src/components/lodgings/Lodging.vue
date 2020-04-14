@@ -184,7 +184,7 @@
 					<v-row>
 						<v-col class="overflow-x-auto">
 							<v-switch
-								v-if="this.place && this.lodgingSelect"
+								v-if="place && lodgingSelect"
 								v-model="viewPrices"
 								label="Ver precios"
 							></v-switch>
@@ -443,7 +443,6 @@ export default {
 		this.fetchPlace();
 		this.fetchPeriods();
 		this.fetchLodgings();
-		this.fetchAllPersons();
 	},
 	methods: {
 		verifyOverlay(value) {
@@ -493,7 +492,6 @@ export default {
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
-			fetchAllPersons: 'Persons/fetchAllPersons',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			fetchPeriods: 'Lodging/fetchPeriods',
 			fetchPlace: 'Lodging/fetchPlace',
