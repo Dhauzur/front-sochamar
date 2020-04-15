@@ -273,6 +273,7 @@ export default {
 			viewPrices: false,
 			dialogPeriods: false,
 			dialogPayments: false,
+			onMovingNotificationControl: true,
 			sheet: false,
 			serviceSelected: 'todos los servicios',
 			options: {
@@ -307,8 +308,16 @@ export default {
 				onMoving: (item, callback) => {
 					this.setModeEdit(false);
 					if (this.place) {
-						if (this.verifyOverlay(item)) callback(item);
-						else this.$toasted.show('Existe un alojamiento para esas fechas');
+						//With onMovingNotificationControl we handle the notification spam problem
+						if (this.verifyOverlay(item)) {
+							callback(item);
+							this.onMovingNotificationControl = true;
+						} else {
+							if (this.onMovingNotificationControl) {
+								this.$toasted.show('Existe un alojamiento para esas fechas');
+								this.onMovingNotificationControl = false;
+							}
+						}
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 				//Esta funcion hace trigger cuando removemos un lodging de la timeline
@@ -376,7 +385,9 @@ export default {
 						if (this.verifyOverlay(item)) {
 							this.setModeEdit(true);
 							callback(item);
-						} else this.$toasted.show('Existe un alojamiento para esas fechas');
+						} else {
+							this.$toasted.show('Existe un alojamiento para esas fechas');
+						}
 					} else this.$toasted.show('Selecione una entidad primero');
 				},
 			},
