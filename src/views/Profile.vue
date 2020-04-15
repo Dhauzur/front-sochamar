@@ -146,6 +146,9 @@
 						:toast="toast"
 					/>
 				</v-col>
+				<v-col v-if="selected === 1" cols="12" md="10">
+					<messages />
+				</v-col>
 				<v-col v-if="selected === 2" cols="12" md="10">
 					<template v-if="hasRequest">
 						<div v-for="(item, i) in person.request" :key="i">
@@ -173,6 +176,7 @@ export default {
 	components: {
 		Avatar,
 		Form: () => import('@/components/persons/Form'),
+		Messages: () => import('@/components/persons/Messages'),
 		Requests: () => import('@/components/persons/Requests'),
 	},
 	mixins: [validationMixin],
