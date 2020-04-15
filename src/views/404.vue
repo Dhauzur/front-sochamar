@@ -7,7 +7,7 @@
 						<v-col class="grow">Page not found.</v-col>
 						<v-col class="shrink">
 							<v-btn color="secondary" rounded small @click="() => $router.back()">
-								regresar
+								Regresar
 							</v-btn>
 						</v-col>
 					</v-row>
