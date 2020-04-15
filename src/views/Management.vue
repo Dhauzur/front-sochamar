@@ -29,8 +29,7 @@ export default {
 	},
 	computed: {
 		items() {
-			const tabs = ['Actividades', 'Lugares', 'Personas'];
-			return tabs;
+			return ['Actividades', 'Lugares', 'Personas'];
 		},
 		...mapGetters({
 			place: 'Lodging/place',

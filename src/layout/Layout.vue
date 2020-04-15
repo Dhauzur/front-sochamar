@@ -12,17 +12,17 @@
 				</template>
 				<span>Phlain</span>
 			</v-tooltip>
-			<v-btn class="ma-2" to="/management" text>
+			<v-btn v-if="isAdmin" class="ma-2" to="/management" text>
 				Administrar
 			</v-btn>
-			<v-btn class="ma-2" text to="/reports">
+			<v-btn v-if="isAdmin" class="ma-2" text to="/reports">
 				Enviar informes
 			</v-btn>
 			<v-spacer></v-spacer>
 			<v-btn class="ma-1" text icon @click="toggleTheme">
 				<v-icon>mdi-theme-light-dark</v-icon>
 			</v-btn>
-			<v-btn class="ma-1" fab text to="/profile">
+			<v-btn v-if="isAdmin" class="ma-1" fab text to="/profile">
 				<v-icon>mdi-cog-outline</v-icon>
 			</v-btn>
 			<v-btn text @click="quit">Cerrar sesión</v-btn>
@@ -64,7 +64,7 @@
 			</v-list>
 			<template v-slot:append>
 				<v-list>
-					<v-list-item active-class="accent--text" link to="/profile">
+					<v-list-item v-if="isAdmin" active-class="accent--text" link to="/profile">
 						<v-icon>mdi-cog-outline</v-icon>
 						<v-list-item-title>Perfil</v-list-item-title>
 					</v-list-item>
@@ -100,7 +100,7 @@ export default {
 	},
 	computed: {
 		flatAppbar() {
-			return this.$route.name === 'management';
+			return this.$route.name === 'management' || this.$route.name === 'profile';
 		},
 		fullName() {
 			if (this.profile.name) return this.profile.name + ' ' + this.profile.lastName;

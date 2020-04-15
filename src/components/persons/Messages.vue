@@ -9,13 +9,7 @@
 						:justify="item.from === 'Yo' ? 'end' : 'start'"
 					>
 						<v-col cols="6" class="pt-0">
-							<v-alert
-								text
-								class="p-0 text-left"
-								type="info"
-								prominent
-								icon="mdi-chevron-double-right"
-							>
+							<v-alert text class="p-0 text-left" color="info" prominent>
 								<span class="black--text title">{{ item.from }}: </span>
 								<span>{{ item.text }}</span>
 								<div class="overline text-right">4:33pm</div>
