@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import { isAuthenticated, setToken } from '@/service/auth';
 Vue.use(VueRouter);
 
 const Home = () => import('@/views/Home.vue');
 const Management = () => import('@/views/Management.vue');
-const Login = () => import('@/views/Login');
+const Auth = () => import('@/views/Auth');
 const PasswordReset = () => import('@/views/PasswordReset');
-const Register = () => import('@/views/Register');
 const Report = () => import('@/views/Report.vue');
 const Profile = () => import('@/views/Profile');
 
@@ -17,6 +17,16 @@ const routes = [
 		component: Home,
 		alias: '/',
 		meta: { title: 'Inicio', layout: 'layout' },
+		beforeEnter: (to, from, next) => {
+			if (!isAuthenticated()) {
+				let oauthJWT = to.query.token;
+				if (oauthJWT) {
+					router.replace({ query: null });
+					setToken(oauthJWT);
+				}
+			}
+			next();
+		},
 	},
 	{
 		path: '/management',
@@ -43,14 +53,9 @@ const routes = [
 		meta: { title: 'Perfil', layout: 'layout' },
 	},
 	{
-		path: '/login',
-		name: 'login',
-		component: Login,
-	},
-	{
-		path: '/register',
-		name: 'register',
-		component: Register,
+		path: '/auth',
+		name: 'auth',
+		component: Auth,
 	},
 	{
 		path: '*',
@@ -61,6 +66,16 @@ const routes = [
 
 const router = new VueRouter({
 	routes,
+});
+
+router.beforeEach((to, from, next) => {
+	if (to.name === 'home') {
+		next();
+	} else if (to.name !== 'auth' && !isAuthenticated()) {
+		next({ name: 'auth' });
+	} else {
+		next();
+	}
 });
 
 export default router;

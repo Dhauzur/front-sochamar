@@ -1,6 +1,4 @@
-import { api } from '@/config/index.js';
-import axios from 'axios';
-import router from '@/router/index.js';
+import fetch from '@/service/fetch';
 
 const state = {
 	filterRoomWord: '',
@@ -22,37 +20,37 @@ const getters = {
 const actions = {
 	async deleteRoom({ commit, dispatch }, { id, placeId }) {
 		try {
-			const response = await axios.delete(`${api}/rooms/one/${id}`, { data: { placeId } });
-			const { name } = response.data;
+			const { name } = await fetch(`/rooms/one/${id}`, {
+				method: 'delete',
+				data: { placeId },
+			});
 			commit('setMessage', {
 				type: 'success',
 				text: `Turno ${name} eliminado`,
 			});
 			dispatch('fetchRooms', placeId);
-		} catch (e) {
+		} catch (error) {
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al eliminar Turno',
 			});
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	async createRoom({ commit, dispatch }, room) {
 		try {
 			commit('setLoading', true);
 			room.placeId = state.idPlace;
-			await axios.post(api + '/rooms', room);
+			await fetch('/rooms', { method: 'post', data: room });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Habitacion creada ',
 			});
 			dispatch('fetchRooms', room.placeId);
-		} catch (e) {
+		} catch (error) {
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al crear Turno',
 			});
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 		commit('setLoading', false);
 	},
@@ -60,10 +58,10 @@ const actions = {
 		try {
 			commit('setLoading', true);
 			commit('setRooms', null);
-			const response = await axios.get(`${api}/rooms/${placeId}`);
-			const { rooms } = response.data;
+			const response = await fetch(`/rooms/${placeId}`);
+			const { rooms } = response;
 			commit('setRooms', rooms);
-		} catch (e) {
+		} catch (error) {
 			commit('setRooms', null);
 			commit('setMessage', {
 				type: 'error',
