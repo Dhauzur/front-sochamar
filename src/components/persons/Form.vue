@@ -33,6 +33,7 @@
 					<v-col cols="12" md="4">
 						<v-text-field
 							v-model.trim="$v.person.firstName.$model"
+							:disabled="editMode"
 							filled
 							outlined
 							dense
