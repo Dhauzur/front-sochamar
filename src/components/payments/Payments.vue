@@ -108,6 +108,7 @@
 							<v-radio-group v-model="visible" row>
 								<v-radio label="Agregar pago por alojamiento" value="1"> </v-radio>
 								<v-radio label="Agregar pago por fecha" value="2"></v-radio>
+								<v-radio label="Agregar pago por cuenta" value="3"></v-radio>
 							</v-radio-group>
 							<v-btn
 								small
@@ -135,6 +136,12 @@
 								:back="() => (stepper = 1)"
 								:close="closeDialog"
 							/>
+							<payments-form-account
+								v-if="visible == 3"
+								:id-place="idPlace"
+								:back="() => (stepper = 1)"
+								:close="closeDialog"
+							/>
 						</v-stepper-content>
 					</v-stepper-items>
 				</v-stepper>
@@ -147,6 +154,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
+import PaymentsFormAccount from '@/components/payments/PaymentsFormAccount';
 import moment from 'moment';
 
 export default {
@@ -154,6 +162,7 @@ export default {
 	components: {
 		PaymentsFormDates,
 		PaymentsFormLodging,
+		PaymentsFormAccount,
 	},
 	data() {
 		return {
