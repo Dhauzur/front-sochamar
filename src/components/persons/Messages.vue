@@ -2,21 +2,25 @@
 	<v-sheet elevation="24">
 		<v-container>
 			<v-row>
-				<v-col id="scrolling" cols="12" style="height: 350px; overflow: auto">
+				<!-- messages -->
+				<v-col cols="12" style="height: 350px; overflow: auto">
 					<v-row
 						v-for="(item, i) in message"
 						:key="i"
-						:justify="item.from === 'Yo' ? 'end' : 'start'"
+						:justify="item.sender === sender ? 'end' : 'start'"
 					>
 						<v-col cols="6" class="pt-0">
 							<v-alert text class="p-0 text-left" color="info" prominent>
-								<span class="black--text title">{{ item.from }}: </span>
-								<span>{{ item.text }}</span>
-								<div class="overline text-right">4:33pm</div>
+								<div class="black--text title">{{ item.sender }}</div>
+								<span>{{ item.content }}</span>
+								<div class="overline text-right">
+									{{ formatTime(item.createAt) }}
+								</div>
 							</v-alert>
 						</v-col>
 					</v-row>
 				</v-col>
+				<!-- input text -->
 				<v-col cols="12">
 					<form @submit.prevent="setMessage">
 						<v-text-field
@@ -48,26 +52,45 @@
 </template>
 
 <script>
+import { pathConversation } from '@/service/persons';
+import moment from 'moment';
+
 export default {
+	props: {
+		person: {
+			type: Object,
+			required: true,
+		},
+		sender: {
+			type: String,
+			required: true,
+		},
+	},
 	data() {
 		return {
-			message: [
-				{
-					text: `Lorem ipsum dolor sit amet consectetur, adipisicing elit.`,
-					from: 'Yo',
-				},
-				{
-					text: `Lorem ipsum dolor sit amet consectetur, adipisicing elit.`,
-					from: 'Admin',
-				},
-			],
+			message: [],
 			text: '',
 		};
 	},
+	created() {
+		this.message = this.person.conversation;
+	},
 	methods: {
 		setMessage() {
-			this.message.push({ text: this.text, from: 'Yo' });
-			this.text = '';
+			const data = {
+				id: this.person._id,
+				conversation: { sender: this.sender, content: this.text, createAt: moment() },
+			};
+			pathConversation(data).then(res => {
+				this.message = res;
+				this.text = '';
+			});
+		},
+		setConversation(participant) {
+			console.log(participant);
+		},
+		formatTime(time) {
+			return moment(time).format('LLL');
 		},
 	},
 };

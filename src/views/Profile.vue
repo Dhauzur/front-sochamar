@@ -121,16 +121,25 @@
 							:toast="toast"
 						/>
 					</template>
-					<template v-if="tab === 1"><messages /></template>
+					<template v-if="tab === 1">
+						<template v-if="person.idCompany">
+							<messages :person="person" :sender="person.firstName" />
+						</template>
+						<template v-else>
+							<small class="overline">
+								Regresa luego cuando te hayas sumado a un equipo.
+							</small>
+						</template>
+					</template>
 					<template v-if="tab === 2">
 						<template v-if="hasRequest">
 							<div v-for="(item, i) in person.request" :key="i">
 								<requests :item="item" :person="person" :toast="toast" />
 							</div>
-							<small mt-5>*Solo puedes unirte a una compañia</small>
+							<small class="mt-5">*Solo puedes unirte a una compañia</small>
 						</template>
 						<template v-else>
-							<small mt-5>No tienes solicitudes</small>
+							<small class="mt-5">No tienes solicitudes</small>
 						</template>
 					</template>
 				</v-container>
