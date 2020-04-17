@@ -53,7 +53,7 @@ const actions = {
 	},
 	async editPayment({ commit }, { comments, id }) {
 		try {
-			await fetch(`/payments/${id}`, { method: 'put', data: comments });
+			await fetch(`/payments/${id}`, { method: 'put', data: { comments } });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',
