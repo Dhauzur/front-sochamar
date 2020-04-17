@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<v-app-bar dense>
-			<v-tabs v-model="tab" color="accent">
+			<v-tabs v-model="tab" color="accent" centered>
 				<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
 			</v-tabs>
 		</v-app-bar>
@@ -29,8 +29,7 @@ export default {
 	},
 	computed: {
 		items() {
-			const tabs = ['Actividades', 'Lugares', 'Personas'];
-			return tabs;
+			return ['Actividades', 'Lugares', 'Personas'];
 		},
 		...mapGetters({
 			place: 'Lodging/place',
