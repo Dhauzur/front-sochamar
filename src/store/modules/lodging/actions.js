@@ -48,10 +48,6 @@ const actions = {
 			const response = await fetch(`/place`);
 			commit('setLoading', false);
 			commit('setPlaces', response.place);
-			commit('setMessage', {
-				type: 'success',
-				text: 'lugares descargados',
-			});
 		} catch (error) {
 			commit('setPlaces', null);
 			commit('setMessage', {
@@ -71,10 +67,6 @@ const actions = {
 			const res = await fetch('/lodgings');
 			commit('setLoading', false);
 			commit('setLodgings', res.lodgings);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Hospedajes descargados ',
-			});
 		} catch (error) {
 			commit('setLodgings', null);
 			commit('setMessage', {
@@ -93,10 +85,6 @@ const actions = {
 			const response = await fetch(`/periods/${placeId ? placeId : null}`);
 			const { periods } = response;
 			commit('setPeriods', periods);
-			commit('setMessage', {
-				type: 'success',
-				text: 'Habitaciones descargadas',
-			});
 			commit('setLoading', false);
 		} catch (error) {
 			commit('setPeriods', null);

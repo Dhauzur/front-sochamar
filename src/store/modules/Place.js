@@ -116,10 +116,6 @@ const actions = {
 		try {
 			const response = await fetch(`/place`);
 			const { place } = response;
-			commit('setMessage', {
-				type: 'success',
-				text: 'Lugares descargados',
-			});
 			commit('setPlaces', place);
 		} catch (e) {
 			commit('setPlaces', null);
