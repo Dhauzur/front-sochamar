@@ -123,7 +123,7 @@
 					</template>
 					<template v-if="tab === 1">
 						<template v-if="person.idCompany">
-							<messages :person="person" :sender="person.firstName" />
+							<messages :id="person._id" :sender="person.firstName" />
 						</template>
 						<template v-else>
 							<small class="overline">
@@ -134,12 +134,17 @@
 					<template v-if="tab === 2">
 						<template v-if="hasRequest">
 							<div v-for="(item, i) in person.request" :key="i">
-								<requests :item="item" :person="person" :toast="toast" />
+								<requests
+									:item="item"
+									:person="person"
+									:toast="toast"
+									:update-person="updatePerson"
+								/>
 							</div>
-							<small class="mt-5">*Solo puedes unirte a una compañia</small>
+							<small class="overline">*Solo puedes unirte a una compañia</small>
 						</template>
 						<template v-else>
-							<small class="mt-5">No tienes solicitudes</small>
+							<small class="overline">No tienes solicitudes</small>
 						</template>
 					</template>
 				</v-container>
@@ -270,6 +275,9 @@ export default {
 				}
 			this.profileData = profile;
 			this.loadingInitial = !this.loadingInitial;
+		},
+		updatePerson(data) {
+			this.person = data;
 		},
 		setAvatarObject(file) {
 			const avatar = new FormData();

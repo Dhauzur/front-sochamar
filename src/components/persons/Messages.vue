@@ -52,12 +52,12 @@
 </template>
 
 <script>
-import { pathConversation } from '@/service/persons';
+import { pathConversation, getPerson } from '@/service/persons';
 import moment from 'moment';
 
 export default {
 	props: {
-		person: {
+		id: {
 			type: Object,
 			required: true,
 		},
@@ -68,12 +68,16 @@ export default {
 	},
 	data() {
 		return {
+			person: null,
 			message: [],
 			text: '',
 		};
 	},
 	created() {
-		this.message = this.person.conversation;
+		getPerson(this.id).then(person => {
+			this.person = person;
+			this.message = this.person.conversation;
+		});
 	},
 	methods: {
 		setMessage() {
