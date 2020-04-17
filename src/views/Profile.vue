@@ -112,41 +112,45 @@
 					</v-tabs>
 				</v-app-bar>
 				<v-container>
-					<template v-if="tab === 0">
-						<Form
-							title="Completa tus datos"
-							:edit-mode="Boolean(person)"
-							:selected="userSelected"
-							:update-user="updateUser"
-							:toast="toast"
-						/>
-					</template>
-					<template v-if="tab === 1">
-						<template v-if="person.idCompany">
-							<messages :id="person._id" :sender="person.firstName" />
-						</template>
-						<template v-else>
-							<small class="overline">
-								Regresa luego cuando te hayas sumado a un equipo.
-							</small>
-						</template>
-					</template>
-					<template v-if="tab === 2">
-						<template v-if="hasRequest">
-							<div v-for="(item, i) in person.request" :key="i">
-								<requests
-									:item="item"
-									:person="person"
-									:toast="toast"
-									:update-person="updatePerson"
-								/>
-							</div>
-							<small class="overline">*Solo puedes unirte a una compañia</small>
-						</template>
-						<template v-else>
-							<small class="overline">No tienes solicitudes</small>
-						</template>
-					</template>
+					<v-row justify="center">
+						<v-col v-if="tab === 0" cols="12">
+							<Form
+								title="Completa tus datos"
+								:edit-mode="Boolean(person)"
+								:selected="userSelected"
+								:update-user="updateUser"
+								:toast="toast"
+							/>
+						</v-col>
+						<v-col v-if="tab === 1" cols="12" sm="6" md="5" class="p-0">
+							<template v-if="person.idCompany">
+								<v-sheet elevation="24" height="calc(100vh - 140px)">
+									<messages :id="person._id" :sender="person.firstName" />
+								</v-sheet>
+							</template>
+							<template v-else>
+								<small class="overline">
+									Regresa luego cuando te hayas sumado a un equipo.
+								</small>
+							</template>
+						</v-col>
+						<v-col v-if="tab === 2" cols="12">
+							<template v-if="hasRequest">
+								<div v-for="(item, i) in person.request" :key="i">
+									<requests
+										:item="item"
+										:person="person"
+										:toast="toast"
+										:update-person="updatePerson"
+									/>
+								</div>
+								<small class="overline">*Solo puedes unirte a una compañia</small>
+							</template>
+							<template v-else>
+								<small class="overline">No tienes solicitudes</small>
+							</template>
+						</v-col>
+					</v-row>
 				</v-container>
 			</v-row>
 		</template>

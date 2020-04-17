@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- global appbar desktop-->
-		<v-app-bar :flat="flatAppbar" app clipped-right dark class="appBar bg">
+		<v-app-bar :flat="flatAppbar" app clipped-right dark class="appBar bg" absolute>
 			<v-tooltip bottom>
 				<template v-slot:activator="{ on }">
 					<router-link to="/" v-on="on">
@@ -29,12 +29,12 @@
 		</v-app-bar>
 		<!-- global appbar/drawer mobile -->
 		<v-app-bar
+			absolute
 			:flat="flatAppbar"
 			app
 			clipped-right
-			color="accent"
+			class="hidden-sm-and-up mx-auto appBarMobile"
 			dark
-			class="hidden-sm-and-up mx-auto"
 		>
 			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
 			<router-link to="/" class="mx-auto">
@@ -147,6 +147,15 @@ export default {
 <style lang="scss" scoped>
 .appBar {
 	font-family: roboto;
+}
+
+.appBarMobile {
+	background: linear-gradient(
+		90deg,
+		rgba(213, 47, 143, 0.861782212885154) 27%,
+		rgba(255, 255, 255, 1) 50%,
+		rgba(106, 49, 255, 0.870185574229691) 80%
+	);
 }
 
 .bg {
