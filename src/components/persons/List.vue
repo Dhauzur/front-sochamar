@@ -15,6 +15,9 @@
 						</v-list-item-title>
 					</v-list-item-content>
 					<v-list-item-action>
+						<v-btn icon @click.stop="chat(item)">
+							<v-icon color="primary">mdi-chat</v-icon>
+						</v-btn>
 						<v-btn icon @click.stop="deleteOne(item._id)">
 							<v-icon color="error">mdi-delete</v-icon>
 						</v-btn>
@@ -62,6 +65,10 @@ export default {
 		},
 		item: {
 			type: Object,
+			required: true,
+		},
+		chat: {
+			type: Function,
 			required: true,
 		},
 	},

@@ -17,6 +17,5 @@ export default new Vuex.Store({
 		Place,
 		Room,
 		User,
-		Person,
 	},
 });

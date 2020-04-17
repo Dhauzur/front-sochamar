@@ -90,7 +90,7 @@ export default {
 		submit() {
 			this.loading = true;
 			pathRequest({
-				email: this.email,
+				email: this.email.toLowerCase(),
 				company: `${this.profile.name} ${this.profile.lastName && this.profile.lastName}`,
 				idProfile: this.profile._id,
 			})

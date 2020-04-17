@@ -1,93 +1,76 @@
 <template>
 	<div>
-		<!-- global appbar -->
-		<v-app-bar :flat="flatAppbar" app dense absolute hide-on-scroll>
-			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
-			<v-toolbar-title>{{ $route.meta.title }}</v-toolbar-title>
+		<!-- global appbar desktop-->
+		<v-app-bar :flat="flatAppbar" app clipped-right dark class="appBar bg" absolute>
+			<v-tooltip bottom>
+				<template v-slot:activator="{ on }">
+					<router-link to="/" v-on="on">
+						<v-avatar color="transparent" size="57">
+							<Logo style="max-height: 70px;" />
+						</v-avatar>
+					</router-link>
+				</template>
+				<span>Phlain</span>
+			</v-tooltip>
+			<v-btn v-if="isAdmin" class="ma-2" to="/management" text>
+				Administrar
+			</v-btn>
+			<v-btn v-if="isAdmin" class="ma-2" text to="/reports">
+				Enviar informes
+			</v-btn>
 			<v-spacer></v-spacer>
-			<v-tooltip bottom>
-				<template v-slot:activator="{ on }">
-					<v-btn icon v-on="on" @click="toggleTheme">
-						<v-icon>mdi-theme-light-dark</v-icon>
-					</v-btn>
-				</template>
-				<span>Activar o desactivar modo oscuro</span>
-			</v-tooltip>
-			<v-tooltip bottom>
-				<template v-slot:activator="{ on }">
-					<v-btn icon v-on="on" @click="quit">
-						<v-icon v-on="on">mdi-logout</v-icon>
-					</v-btn>
-				</template>
-				<span>Salir</span>
-			</v-tooltip>
-			<span class="hidden-sm-and-down">{{ fullName }}</span>
+			<v-btn class="ma-1" text icon @click="toggleTheme">
+				<v-icon>mdi-theme-light-dark</v-icon>
+			</v-btn>
+			<v-btn v-if="isAdmin" class="ma-1" fab text to="/profile">
+				<v-icon>mdi-cog-outline</v-icon>
+			</v-btn>
+			<v-btn text @click="quit">Cerrar sesión</v-btn>
 		</v-app-bar>
-		<v-navigation-drawer
-			v-model="drawer"
+		<!-- global appbar/drawer mobile -->
+		<v-app-bar
+			absolute
+			:flat="flatAppbar"
 			app
-			mini-variant
-			mini-variant-width="62"
-			mobile-break-point="768"
-			color="secondary"
-			hide-on-scroll
+			clipped-right
+			class="hidden-sm-and-up mx-auto appBarMobile"
+			dark
 		>
+			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
+			<router-link to="/" class="mx-auto">
+				<v-avatar color="transparent">
+					<Logo style="max-height: 80px;" />
+				</v-avatar>
+			</router-link>
+		</v-app-bar>
+		<v-navigation-drawer v-model="drawer" app color="secondary" disable-resize-watcher>
 			<v-list>
 				<Logo style="max-height: 80px;" />
 			</v-list>
 			<v-divider></v-divider>
 			<v-list v-if="isAdmin" nav dense>
 				<v-list-item active-class="accent--text" link to="/">
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-icon v-on="on">mdi-home</v-icon>
-						</template>
-						<span>Inicio</span>
-					</v-tooltip>
+					<v-icon>mdi-home</v-icon>
 					<v-list-item-title>Inicio</v-list-item-title>
 				</v-list-item>
 				<v-list-item active-class="accent--text" link to="/management">
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-icon v-on="on">mdi-widgets</v-icon>
-						</template>
-						<span>Administrar actividades</span>
-					</v-tooltip>
+					<v-icon>mdi-widgets</v-icon>
 					<v-list-item-title>Administrar</v-list-item-title>
 				</v-list-item>
 				<v-list-item active-class="accent--text" link to="/reports">
-					<v-tooltip bottom>
-						<template v-slot:activator="{ on }">
-							<v-icon v-on="on">mdi-file-settings</v-icon>
-						</template>
-						<span>Enviar informes</span>
-					</v-tooltip>
+					<v-icon>mdi-file-settings</v-icon>
 					<v-list-item-title>Enviar informes</v-list-item-title>
 				</v-list-item>
 			</v-list>
 			<template v-slot:append>
 				<v-list>
-					<v-list-item class="px-2">
-						<v-menu bottom left>
-							<template v-slot:activator="{ on }">
-								<div v-on="on">
-									<avatar
-										icon
-										:name="profile.name"
-										:last-name="profile.lastName"
-										:url="profile.img"
-									/>
-								</div>
-							</template>
-							<v-list>
-								<v-list-item link to="/profile">
-									<span>Perfil</span>
-								</v-list-item>
-								<v-list-item link @click="quit">
-									<span>Salir</span>
-								</v-list-item>
-							</v-list>
-						</v-menu>
+					<v-list-item v-if="isAdmin" active-class="accent--text" link to="/profile">
+						<v-icon>mdi-cog-outline</v-icon>
+						<v-list-item-title>Perfil</v-list-item-title>
+					</v-list-item>
+					<v-list-item active-class="accent--text" @click="quit">
+						<v-icon>mdi-logout</v-icon>
+						<v-list-item-title>Cerrar sesión</v-list-item-title>
 					</v-list-item>
 				</v-list>
 			</template>
@@ -102,23 +85,22 @@
 import { mapGetters, mapActions } from 'vuex';
 import { isAuthenticated, logout } from '../service/auth';
 import Logo from '../assets/logo';
-import Avatar from '@/components/ui/Avatar';
+
 export default {
 	name: 'Layout',
 	components: {
 		Logo,
-		Avatar,
 	},
 	data() {
 		return {
 			oauthJWT: '',
-			drawer: true,
+			drawer: false,
 			showAvatar: false,
 		};
 	},
 	computed: {
 		flatAppbar() {
-			return this.$route.name === 'management';
+			return this.$route.name === 'management' || this.$route.name === 'profile';
 		},
 		fullName() {
 			if (this.profile.name) return this.profile.name + ' ' + this.profile.lastName;
@@ -161,3 +143,27 @@ export default {
 	},
 };
 </script>
+
+<style lang="scss" scoped>
+.appBar {
+	font-family: roboto;
+}
+
+.appBarMobile {
+	background: linear-gradient(
+		90deg,
+		rgba(213, 47, 143, 0.861782212885154) 27%,
+		rgba(255, 255, 255, 1) 50%,
+		rgba(106, 49, 255, 0.870185574229691) 80%
+	);
+}
+
+.bg {
+	background: linear-gradient(
+		90deg,
+		#ffffff 0%,
+		rgba(213, 47, 143, 0.861782212885154) 20%,
+		rgba(106, 49, 255, 0.8701855742296919) 100%
+	);
+}
+</style>
