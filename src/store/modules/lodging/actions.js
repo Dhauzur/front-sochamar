@@ -158,6 +158,21 @@ const actions = {
 			});
 		}
 	},
+	async deletePeriod({ commit, dispatch }, { id, placeId }) {
+		try {
+			await fetch(`/periods/one/${id}`, { method: 'delete', data: { placeId } });
+			commit('setMessage', {
+				type: 'success',
+				text: `Turno eliminado`,
+			});
+			dispatch('fetchPeriods', placeId);
+		} catch (e) {
+			commit('setMessage', {
+				type: 'error',
+				text: 'Error al eliminar Turno',
+			});
+		}
+	},
 };
 
 export default actions;
