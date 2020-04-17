@@ -1,6 +1,4 @@
-import { api } from '@/config/index.js';
-import axios from 'axios';
-import router from '@/router/index.js';
+import fetch from '@/service/fetch';
 import { toastMessage } from '@/utils/toast/messages';
 
 const state = {
@@ -34,53 +32,53 @@ const getters = {
 const actions = {
 	async deletePlace({ commit, dispatch }, id) {
 		try {
-			await axios.delete(`${api}/place/one/${id}`).then(response => {
+			await fetch(`/place/one/${id}`, { method: 'delete' }).then(response => {
 				commit('setMessage', {
 					type: 'success',
-					text: 'Lugar ' + response.data.delete + ' eliminada ',
+					text: 'Lugar ' + response.delete + ' eliminada ',
 				});
-				if (response.data.lodgins)
+				if (response.lodgins)
 					commit('setMessage', {
 						type: 'info',
-						text: response.data.lodgins + ' hospedajes asociados eliminados ',
+						text: response.lodgins + ' hospedajes asociados eliminados ',
 					});
 			});
 			dispatch('fetchPlace');
-		} catch (e) {
+		} catch (error) {
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al eliminar lugar',
 			});
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	async createPlace({ commit, dispatch }, place) {
 		try {
-			await axios.post(`${api}/place`, place);
+			await fetch(`/place`, { method: 'post', data: place });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Empresa creada ',
 			});
 			dispatch('fetchPlace');
-		} catch (e) {
+		} catch (error) {
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al crear lugar',
 			});
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	async createService({ commit, dispatch }, { payload, placeId }) {
 		commit('setLoading', true);
 		try {
-			const response = await axios.post(`${api}/place/${placeId}/service`, payload);
-			const { service } = response.data;
+			const response = await fetch(`/place/${placeId}/service`, {
+				method: 'post',
+				data: payload,
+			});
+			const { service } = response;
 			commit('setMessage', toastMessage('success', 'Servicio creado'));
 			commit('addServiceToPlaceForService', service);
 			dispatch('fetchPlace');
 		} catch (e) {
 			commit('setMessage', toastMessage('error', 'no se permiten nombres repetidos'));
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		} finally {
 			commit('setLoading', false);
 		}
@@ -89,12 +87,14 @@ const actions = {
 		commit('setLoading', true);
 		try {
 			const serviceId = payload._id;
-			await axios.put(`${api}/place/${placeId}/service/${serviceId}`, payload);
+			await fetch(`/place/${placeId}/service/${serviceId}`, {
+				method: 'put',
+				data: payload,
+			});
 			commit('setMessage', toastMessage('success', 'Servicio Actualizado'));
 			dispatch('fetchPlace');
-		} catch (e) {
+		} catch (error) {
 			commit('setMessage', toastMessage('error', 'error al actulizar servicio'));
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		} finally {
 			commit('setLoading', false);
 		}
@@ -102,12 +102,11 @@ const actions = {
 	async deleteService({ commit, dispatch }, { serviceId, placeId }) {
 		commit('setLoading', true);
 		try {
-			await axios.delete(`${api}/place/${placeId}/service/${serviceId}`);
+			await fetch(`/place/${placeId}/service/${serviceId}`, { method: 'delete' });
 			commit('setMessage', toastMessage('success', 'Servicio Borrado con exito'));
 			dispatch('fetchPlace');
-		} catch (e) {
+		} catch (error) {
 			commit('setMessage', toastMessage('error', 'error al borrar Servicio'));
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		} finally {
 			commit('setLoading', false);
 		}
@@ -115,8 +114,8 @@ const actions = {
 	async fetchPlace({ commit }) {
 		commit('setPlaces', null);
 		try {
-			const response = await axios.get(`${api}/place`);
-			const { place } = response.data;
+			const response = await fetch(`/place`);
+			const { place } = response;
 			commit('setPlaces', place);
 		} catch (e) {
 			commit('setPlaces', null);
@@ -124,20 +123,18 @@ const actions = {
 				type: 'error',
 				text: 'Error al descargar lugares',
 			});
-			if (e.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 	async fetchOnePlace({ commit }, id) {
 		try {
-			const response = await axios.get(`${api}/place/${id}`);
-			commit('setPlace', response.data.place);
+			const response = await fetch(`/place/${id}`);
+			commit('setPlace', response.place);
 		} catch (error) {
 			commit('setPlace', null);
 			commit('setMessage', {
 				type: 'error',
 				text: 'Error al descargar lugar',
 			});
-			if (error.message == 'Request failed with status code 401') router.push('/login');
 		}
 	},
 };

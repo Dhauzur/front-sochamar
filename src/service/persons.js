@@ -115,6 +115,10 @@ const deleteAllPersons = async () => {
 	return response;
 };
 
+const generatePdfReport = async () => {
+	return await fetch('/persons/reports/pdf', { method: 'get', responseType: 'arraybuffer' });
+};
+
 export {
 	createPerson,
 	pathRequest,
@@ -123,4 +127,5 @@ export {
 	putPerson,
 	deletePerson,
 	deleteAllPersons,
+	generatePdfReport,
 };

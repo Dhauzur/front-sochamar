@@ -1,6 +1,7 @@
 <template>
 	<v-container>
 		<!-- list person -->
+		<v-btn @click="generateReport"> Generar reporte</v-btn>
 		<v-row justify="center">
 			<v-col cols="4">
 				<span class="title">Listado de personas</span>
@@ -67,8 +68,7 @@
 <script>
 import PersonsList from '@/components/persons/List';
 import { mapGetters } from 'vuex';
-import { getPersonsByCompany, deletePerson } from '@/service/persons';
-
+import { getPersonsByCompany, deletePerson, generatePdfReport } from '@/service/persons';
 export default {
 	components: {
 		PersonsList,
@@ -137,6 +137,14 @@ export default {
 					.then(this.getPersons())
 					.then(this.toast('success', 'Eliminado exitosamente'))
 					.catch(error => this.toast('error', error.message));
+		},
+		async generateReport() {
+			const pdf = await generatePdfReport();
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'personas.pdf';
+			link.click();
 		},
 	},
 };

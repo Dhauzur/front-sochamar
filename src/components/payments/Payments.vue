@@ -3,6 +3,7 @@
 		<v-row>
 			<!-- header -->
 			<v-col cols="12">
+				<v-btn @click="generateReport"> Generar reporte</v-btn>
 				<v-row justify="center">
 					<v-col cols="4">
 						<span class="title">Lista de Pagos</span>
@@ -147,6 +148,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
+import { generatePdfReport } from '@/service/payments';
 import moment from 'moment';
 
 export default {
@@ -226,6 +228,14 @@ export default {
 			this.edit({ comments: temp, id: item._id })
 				.then((this.newComment = ''))
 				.then(this.fetchPayments(this.idPlace));
+		},
+		async generateReport() {
+			const pdf = await generatePdfReport();
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'pagos.pdf';
+			link.click();
 		},
 		...mapActions({
 			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
