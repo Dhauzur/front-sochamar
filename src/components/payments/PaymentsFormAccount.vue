@@ -67,6 +67,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import { required } from 'vuelidate/lib/validators';
+import moment from 'moment';
 
 export default {
 	name: 'PaymentsForm',
@@ -94,6 +95,10 @@ export default {
 			voucher: null,
 			voucherName: null,
 			comments: '',
+			setDateStart: moment().format('YYYY-MM-DD'),
+			setDateEnd: moment()
+				.add(30, 'd')
+				.format('YYYY-MM-DD'),
 		};
 	},
 	computed: {
@@ -133,6 +138,8 @@ export default {
 				let form = new FormData();
 				form.set('idPlace', this.idPlace);
 				form.set('account', this.account);
+				form.set('startDate', this.setDateStart);
+				form.set('endDate', this.setDateEnd);
 				form.set('mount', this.mount);
 				form.set('voucher', this.voucher);
 				await this.save(form);
