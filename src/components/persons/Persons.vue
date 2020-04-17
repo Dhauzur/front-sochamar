@@ -94,6 +94,7 @@ export default {
 		Form: () => import('@/components/persons/Form'),
 		RequestPopup: () => import('@/components/persons/RequestPopup'),
 		Messages: () => import('@/components/persons/Messages'),
+		Timeline: () => import('@/components/persons/Timeline'),
 	},
 	data() {
 		return {
