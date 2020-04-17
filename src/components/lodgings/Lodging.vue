@@ -164,7 +164,7 @@
 					/>
 				</v-col>
 				<template v-for="(p, index) in places" v-else>
-					<v-col v-if="p.value" :key="index" class="timelineContent mb-3" cols="12">
+					<v-col v-if="p.value" :key="index" class="timelineContent mb-4 " cols="12">
 						<h4 class="mb-2">{{ p.text }}</h4>
 						<timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
@@ -184,7 +184,7 @@
 					<v-row>
 						<v-col class="overflow-x-auto">
 							<v-switch
-								v-if="this.place && this.lodgingSelect"
+								v-if="place && lodgingSelect"
 								v-model="viewPrices"
 								label="Ver precios"
 							></v-switch>
@@ -195,6 +195,7 @@
 									class="microCard  "
 									style="min-width: max-content;"
 								>
+									{{ day.date }}
 									<table>
 										<thead>
 											<tr>
@@ -431,7 +432,6 @@ export default {
 		this.fetchPlace();
 		this.fetchPeriods();
 		this.fetchLodgings();
-		this.fetchAllPersons();
 	},
 	methods: {
 		verifyOverlay(value) {
@@ -481,7 +481,6 @@ export default {
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',
-			fetchAllPersons: 'Persons/fetchAllPersons',
 			fetchLodgings: 'Lodging/fetchLodgings',
 			fetchPeriods: 'Lodging/fetchPeriods',
 			fetchPlace: 'Lodging/fetchPlace',

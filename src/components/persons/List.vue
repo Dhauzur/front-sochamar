@@ -20,8 +20,8 @@
 						</v-btn>
 						<v-menu v-if="item.documents.length" offset-y open-on-hover>
 							<template v-slot:activator="{ on }">
-								<v-btn icon large>
-									<v-icon color="primary" large v-on.stop="on">
+								<v-btn icon large v-on.stop="on">
+									<v-icon color="primary" large>
 										mdi-folder-download
 									</v-icon>
 								</v-btn>
