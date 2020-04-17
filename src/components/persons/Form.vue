@@ -213,7 +213,14 @@
 		<v-card-actions>
 			<v-spacer></v-spacer>
 			<v-btn v-if="isDialog" text @click="closeDialog">Cerrar</v-btn>
-			<v-btn :loading="saving" :disabled="saving" color="primary" text @click="submit">
+			<v-btn
+				x-large
+				:loading="saving"
+				:disabled="saving"
+				color="primary"
+				text
+				@click="submit"
+			>
 				Guardar
 			</v-btn>
 		</v-card-actions>

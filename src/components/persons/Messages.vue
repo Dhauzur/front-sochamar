@@ -4,21 +4,32 @@
 			<v-row>
 				<!-- messages -->
 				<v-col cols="12" style="height: 350px; overflow: auto">
-					<v-row
-						v-for="(item, i) in message"
-						:key="i"
-						:justify="item.sender === sender ? 'end' : 'start'"
-					>
-						<v-col cols="6" class="pt-0">
-							<v-alert text class="p-0 text-left" color="info" prominent>
-								<div class="black--text title">{{ item.sender }}</div>
-								<span>{{ item.content }}</span>
-								<div class="overline text-right">
-									{{ formatTime(item.createAt) }}
-								</div>
-							</v-alert>
-						</v-col>
-					</v-row>
+					<template v-if="message.length">
+						<v-row
+							v-for="(item, i) in message"
+							:key="i"
+							:justify="item.sender === sender ? 'end' : 'start'"
+						>
+							<v-col cols="6" class="pt-0">
+								<v-alert text class="p-0 text-left" color="info" prominent>
+									<div class="black--text title">{{ item.sender }}</div>
+									<span>{{ item.content }}</span>
+									<div class="overline text-right">
+										{{ formatTime(item.createAt) }}
+									</div>
+								</v-alert>
+							</v-col>
+						</v-row>
+					</template>
+					<template v-else>
+						<v-row justify="center" align="center" style="height:100%">
+							<v-col cols="12" sm="9" md="6" lg="4" class="pt-0">
+								<v-alert color="primary">
+									Comienza una conversación
+								</v-alert>
+							</v-col>
+						</v-row>
+					</template>
 				</v-col>
 				<!-- input text -->
 				<v-col cols="12">
@@ -58,8 +69,8 @@ import moment from 'moment';
 export default {
 	props: {
 		id: {
-			type: Object,
-			required: true,
+			type: String,
+			default: '',
 		},
 		sender: {
 			type: String,
@@ -76,7 +87,8 @@ export default {
 	created() {
 		getPerson(this.id).then(person => {
 			this.person = person;
-			this.message = this.person.conversation;
+			if (Array.isArray(person.conversation) && person.conversation.length)
+				this.message = person.conversation;
 		});
 	},
 	methods: {
