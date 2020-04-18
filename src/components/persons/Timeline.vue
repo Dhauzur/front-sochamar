@@ -12,33 +12,35 @@
 				append-icon="mdi-account-arrow-right"
 			/>
 		</v-col>
-		<v-col cols="12" sm="6" md="3" class="d-inline-flex">
+		<v-col cols="12" sm="6" md="3">
 			<v-combobox
 				v-model="schedulePersonSelect"
 				outlined
 				filled
-				:items="['dsfsdfsd', 'ddddd']"
+				:items="itemsSchedule"
 				append-icon="mdi-ballot-recount-outline"
 				dense
 				cache-items
 				label="Programa"
-			>
-				<!-- <template v-slot:append>
-					<v-btn v-if="schedulePersonSelect" icon class="mr-0 ml-2 mb-1">
-						<v-icon>mdi-plus</v-icon>
-					</v-btn>
-				</template> -->
-				<template v-slot:selection="{ item, index }">
-					<v-chip v-if="index === 0">
-						<span>{{ item }}</span>
-						<span class=" btn"> DDD+ </span>
-					</v-chip>
-					<span v-if="index === 1" class="grey--text caption"
-						>(+{{ value.length - 1 }} others)</span
+			/>
+			<div v-if="!verifyExistProgram && schedulePersonSelect">
+				<v-chip label small color="blue lighten-3" class="mb-2">
+					<span>
+						{{ schedulePersonSelect }}
+						<v-icon class=" ml-2" small @click="addSchedule()">mdi-plus</v-icon></span
 					>
-				</template>
-			</v-combobox>
-			<!-- <v-btn text icon class="ml-2" color="accent"> </v-btn> -->
+				</v-chip>
+			</div>
+			<div v-if="verifyExistProgram && schedulePersonSelect" class="">
+				<v-chip label small color="red lighten-3" class="mb-2">
+					<span>
+						{{ schedulePersonSelect }}
+						<v-icon color="error" class=" ml-2" small @click="subSchedule()"
+							>mdi-delete</v-icon
+						>
+					</span>
+				</v-chip>
+			</div>
 		</v-col>
 
 		<v-col cols="12" sm="10" md="3">
@@ -87,9 +89,24 @@ export default {
 			schedulePersonSelect: null,
 			date: [],
 			modal: false,
+			itemsSchedule: [
+				{ id: 0, text: 'Subida' },
+				{ id: 1, text: 'Bajada' },
+			],
 		};
 	},
 	computed: {
+		verifyExistProgram() {
+			let verify = false;
+			if (this.schedulePersonSelect != null)
+				if (this.schedulePersonSelect.text != undefined) verify = true;
+			// if (this.schedulePersonSelect.text != undefined)
+			// 	this.itemsSchedule.forEach(item => {
+			// 		console.log(item.text, this.schedulePersonSelect);
+			// 		if (item.text == this.schedulePersonSelect) verify = true;
+			// 	});
+			return verify;
+		},
 		...mapGetters({
 			personsAutoComplete: 'Person/personsAutoComplete',
 			scheludePersons: 'Person/scheludePersons',
@@ -99,6 +116,13 @@ export default {
 		this.setPersons(this.$store.getters['Persons/persons']);
 	},
 	methods: {
+		subSchedule() {},
+		addSchedule() {
+			this.itemsSchedule.push({
+				id: this.itemsSchedule.length + 1,
+				text: this.schedulePersonSelect,
+			});
+		},
 		...mapMutations({
 			setPersons: 'Person/setPersons',
 			selectPerson: 'Person/selectPerson',
