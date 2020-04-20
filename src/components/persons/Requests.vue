@@ -48,8 +48,10 @@ export default {
 	},
 	methods: {
 		accept(idCompany) {
-			let person = { ...this.person };
-			putPerson({ ...person, idCompany }, this.person._id).then(res => {
+			if (this.person.idCompany) {
+				return this.toast('info', 'Ya perteneces a un equipo');
+			}
+			putPerson({ ...this.person, idCompany }, this.person._id).then(res => {
 				this.updatePerson(res);
 				this.remove(idCompany);
 				this.toast('info', 'Solicitud Aceptada');
