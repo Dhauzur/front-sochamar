@@ -10,8 +10,8 @@
 			<v-card-title primary-title>
 				Agregar persona
 				<v-spacer></v-spacer>
-				<v-btn fab small color="error" @click="menu = false">
-					<v-icon>mdi-close</v-icon>
+				<v-btn small icon text @click="menu = false">
+					<v-icon color="error">mdi-close</v-icon>
 				</v-btn>
 			</v-card-title>
 			<v-divider></v-divider>
@@ -54,7 +54,7 @@
 					</v-col>
 					<v-col cols="12">Agregala tu mismo.</v-col>
 					<v-col>
-						<v-btn block small color="accent" @click="open">
+						<v-btn block small color="accent" @click="close">
 							<v-icon>mdi-plus</v-icon>
 							Agregar
 						</v-btn>
@@ -70,9 +70,13 @@ import { pathRequest } from '@/service/persons';
 
 export default {
 	props: {
-		open: {
+		close: {
 			type: Function,
 			required: true,
+		},
+		persons: {
+			type: Array,
+			default: () => [],
 		},
 		profile: {
 			type: Object,
@@ -89,8 +93,16 @@ export default {
 	methods: {
 		submit() {
 			this.loading = true;
+			this.email = this.email.toLowerCase();
+			if (this.persons.some(person => person.email === this.email)) {
+				this.loading = false;
+				return this.$toasted.show('Ya se encuentra entre tus contactos', {
+					type: 'info',
+				});
+			}
+
 			pathRequest({
-				email: this.email.toLowerCase(),
+				email: this.email,
 				company: `${this.profile.name} ${this.profile.lastName && this.profile.lastName}`,
 				idProfile: this.profile._id,
 			})
@@ -99,6 +111,7 @@ export default {
 						type: 'success',
 					});
 					this.email = '';
+					this.close();
 				})
 				.catch(error =>
 					this.$toasted.show(error.response.data, {

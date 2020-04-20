@@ -2,22 +2,25 @@
 	<v-container style="height: calc(100vh - 140px)">
 		<!-- list person -->
 		<v-row justify="center">
-			<v-col cols="4">
+			<v-col cols="12" md="4">
 				<span class="title">Listado de personas</span>
 			</v-col>
 		</v-row>
 		<v-row justify="space-between">
-			<v-col cols="12" md="2" class="text-left pb-0">
-				<v-col>
-					<RequestPopup :profile="profile" :open="() => (dialog = !dialog)" />
-				</v-col>
+			<v-col cols="6" md="2" class="text-left pb-0">
+				<RequestPopup
+					:profile="profile"
+					:close="() => (dialog = !dialog)"
+					:persons="personsList"
+				/>
 			</v-col>
-			<v-col cols="12" md="2" class="pb-0">
+			<v-col cols="6" md="2" class="pb-0">
 				<v-text-field
 					v-model="filteredWord"
 					outlined
 					dense
-					label="Filtrar"
+					label="Buscar"
+					append-icon="mdi-magnify"
 					@input="filter"
 				/>
 			</v-col>
@@ -41,11 +44,7 @@
 				</v-responsive>
 			</v-col>
 			<v-col v-else cols="12">
-				<v-card color="secondary" flat>
-					<v-card-text>
-						No hay personas agregadas...
-					</v-card-text>
-				</v-card>
+				<p class="overline">No hay personas agregadas...</p>
 			</v-col>
 		</v-row>
 		<!-- chat drawer -->
