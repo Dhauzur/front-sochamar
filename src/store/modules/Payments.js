@@ -75,7 +75,9 @@ const actions = {
 	},
 	async deleteOnePayment({ commit }, id) {
 		try {
+			commit('setLoading', true);
 			await fetch(`/payments/${id}`, { method: 'delete' });
+			commit('deletePayment', id);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Eliminado datos de pago',
@@ -86,12 +88,17 @@ const actions = {
 				text: error.message,
 			});
 		}
+		commit('setLoading', false);
 	},
 };
 
 const mutations = {
 	setPayments(state, value) {
 		state.payments = value;
+	},
+	deletePayment(state, value) {
+		let index = state.payments.findIndex(payment => payment._id == value);
+		state.payments.splice(index, 1);
 	},
 	setMessage(state, value) {
 		state.message = value;

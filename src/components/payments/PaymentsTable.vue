@@ -52,7 +52,6 @@
 										label="Comentario"
 										single-line
 										counter
-										autofocus
 									></v-text-field>
 								</template>
 							</v-edit-dialog>
@@ -69,6 +68,18 @@
 					</template>
 				</v-data-table>
 			</v-col>
+			<!-- Alert dialog -->
+			<v-dialog v-model="dialog" persistent max-width="290">
+				<v-card>
+					<v-card-title class="headline">Eliminar pago</v-card-title>
+					<v-card-text>¿Estas seguro de que quieres eliminar este pago?</v-card-text>
+					<v-card-actions>
+						<v-spacer></v-spacer>
+						<v-btn color="primary" text @click="dialog = false">Cancelar</v-btn>
+						<v-btn color="primary" text @click="deletePayment">Aceptar</v-btn>
+					</v-card-actions>
+				</v-card>
+			</v-dialog>
 		</v-row>
 	</v-container>
 </template>
@@ -95,6 +106,8 @@ export default {
 			index: '',
 			itemFiltered: [],
 			visible: null,
+			dialog: false,
+			idPaymentDelete: null,
 		};
 	},
 	computed: {
@@ -104,7 +117,6 @@ export default {
 			loading: 'Payments/loading',
 			message: 'Payments/message',
 			paymentsType: 'Payments/paymentsType',
-			//payments: 'Payments/payments',
 		}),
 	},
 	watch: {
@@ -116,14 +128,18 @@ export default {
 	},
 	created() {
 		moment.locale('es');
-		this.fetchOnePlace(this.idPlace);
 		this.fetchLodgingsForPlace(this.idPlace);
 		this.fetchPayments(this.idPlace);
 	},
 	methods: {
 		async deleteItem(id) {
-			(await confirm('Estas seguro de que quieres eliminar este pago?')) && this.delete(id);
-			this.fetchPayments(this.idPlace);
+			this.dialog = true;
+			this.idPaymentDelete = id;
+		},
+		async deletePayment() {
+			const id = this.idPaymentDelete;
+			this.dialog = false;
+			await this.delete(id);
 		},
 		formatStartDate(item) {
 			return moment(item.startDate).format('LL');
@@ -140,7 +156,6 @@ export default {
 		},
 		...mapActions({
 			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
-			fetchOnePlace: 'Place/fetchOnePlace',
 			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
 			delete: 'Payments/deleteOnePayment',
 			edit: 'Payments/editPayment',
@@ -148,5 +163,3 @@ export default {
 	},
 };
 </script>
-
-<style></style>

@@ -27,70 +27,7 @@
 				</v-row>
 			</v-col>
 			<!-- table -->
-			<v-col cols="12" class="mx-auto">
-				<v-data-table
-					dense
-					loading-text="Cargando... por favor espere"
-					no-data-text="No hay pagos"
-					:loading="loading"
-					:search="wordForFilter"
-					:headers="fields"
-					:items="payments"
-					:items-per-page="5"
-					item-key="_id"
-					class="caption"
-				>
-					<template v-slot:item.startDate="props">
-						<span>{{ formatStartDate(props.item) }}</span>
-					</template>
-					<template v-slot:item.endDate="props">
-						<span>{{ formatEndDate(props.item) }}</span>
-					</template>
-					<template v-slot:item.mount="{ item }">
-						<span class="success--text">$ {{ item.mount }}</span>
-					</template>
-					<template v-slot:item.voucher="props">
-						<v-btn text :href="props.item.voucher.url" small>
-							{{ props.item.voucher.name }}
-						</v-btn>
-					</template>
-					<template v-slot:item.comments="props">
-						<small
-							v-for="(element, i) in props.item.comments"
-							:key="i"
-							class="text-lowercase d-block"
-						>
-							{{ element }}
-						</small>
-					</template>
-					<template v-slot:item.actions="{ item }">
-						<span style="display: inline-block !important">
-							<v-edit-dialog @save="saveComment(item)">
-								<v-btn fab color="success" x-small>
-									<v-icon>mdi-comment-plus</v-icon>
-								</v-btn>
-								<template v-slot:input>
-									<v-text-field
-										v-model="newComment"
-										label="Comentario"
-										single-line
-										counter
-									></v-text-field>
-								</template>
-							</v-edit-dialog>
-						</span>
-						<v-btn
-							x-small
-							fab
-							color="error"
-							class="mr-2 ml-2"
-							@click="deleteItem(item._id)"
-						>
-							<v-icon>mdi-delete</v-icon>
-						</v-btn>
-					</template>
-				</v-data-table>
-			</v-col>
+			<payments-table :word-filter="wordForFilter"></payments-table>
 			<!-- dialog steeper form -->
 			<v-dialog v-model="dialog" max-width="440" persistent>
 				<v-stepper v-model="stepper" class="elevation-12">
@@ -151,11 +88,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
 import PaymentsFormAccount from '@/components/payments/PaymentsFormAccount';
-import moment from 'moment';
+import PaymentsTable from '@/components/payments/PaymentsTable';
 
 export default {
 	name: 'Payments',
@@ -163,6 +100,7 @@ export default {
 		PaymentsFormDates,
 		PaymentsFormLodging,
 		PaymentsFormAccount,
+		PaymentsTable,
 	},
 	data() {
 		return {
@@ -176,48 +114,17 @@ export default {
 			],
 			stepper: 1,
 			dialog: false,
-			newComment: '',
 			selected: {},
-			index: '',
 			wordForFilter: '',
-			itemFiltered: [],
 			visible: null,
 		};
 	},
 	computed: {
 		...mapGetters({
-			countLodgings: 'Lodging/countLogingsPlace',
 			idPlace: 'Lodging/place',
-			loading: 'Payments/loading',
-			lodgings: 'Lodging/lodgingsPlace',
-			message: 'Payments/message',
-			payments: 'Payments/payments',
 		}),
 	},
-	watch: {
-		message(newVal) {
-			this.$toasted.show(newVal.text, {
-				type: newVal.type,
-			});
-		},
-	},
-	created() {
-		moment.locale('es');
-		this.fetchOnePlace(this.idPlace);
-		this.fetchLodgingsForPlace(this.idPlace);
-		this.fetchPayments(this.idPlace);
-	},
 	methods: {
-		async deleteItem(id) {
-			(await confirm('Estas seguro de que quieres eliminar este pago?')) && this.delete(id);
-			this.fetchPayments(this.idPlace);
-		},
-		formatStartDate(item) {
-			return moment(item.startDate).format('LL');
-		},
-		formatEndDate(item) {
-			return moment(item.endDate).format('LL');
-		},
 		closeDialog() {
 			this.dialog = false;
 			this.stepper = 1;
@@ -229,20 +136,6 @@ export default {
 			close();
 			this.$refs.selectableTable.clearSelected();
 		},
-		saveComment(item) {
-			const date = moment().format('YYYY-MM-DD hh:mm');
-			const temp = [...item.comments, `${date}: ${this.newComment}`];
-			this.edit({ comments: temp, id: item._id })
-				.then((this.newComment = ''))
-				.then(this.fetchPayments(this.idPlace));
-		},
-		...mapActions({
-			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
-			fetchOnePlace: 'Place/fetchOnePlace',
-			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
-			delete: 'Payments/deleteOnePayment',
-			edit: 'Payments/editPayment',
-		}),
 	},
 };
 </script>
