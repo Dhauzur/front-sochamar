@@ -1,5 +1,5 @@
 <template>
-	<v-alert v-model="alert" elevation="24" prominent border="left" colored-border color="primary">
+	<v-alert v-model="alert" prominent text border="left" colored-border color="primary">
 		<v-row align="center">
 			<v-col class="grow">
 				<span class="success--text">{{ item.name }}</span> te envió una solicitud para que

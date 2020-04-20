@@ -122,33 +122,59 @@
 								:toast="toast"
 							/>
 						</v-col>
-						<v-col v-if="tab === 1" cols="12" sm="6" md="5" class="p-0">
-							<template v-if="person.idCompany">
-								<v-sheet elevation="24" height="calc(100vh - 140px)">
-									<messages :id="person._id" :sender="person.firstName" />
-								</v-sheet>
-							</template>
-							<template v-else>
-								<small class="overline">
-									Regresa luego cuando te hayas sumado a un equipo.
-								</small>
-							</template>
-						</v-col>
-						<v-col v-if="tab === 2" cols="12">
-							<template v-if="hasRequest">
-								<div v-for="(item, i) in person.request" :key="i">
-									<requests
-										:item="item"
-										:person="person"
-										:toast="toast"
-										:update-person="updatePerson"
-									/>
-								</div>
-								<small class="overline">*Solo puedes unirte a una compañia</small>
-							</template>
-							<template v-else>
-								<small class="overline">No tienes solicitudes</small>
-							</template>
+						<v-col v-if="tab === 1" cols="12" class="p-0">
+							<v-row>
+								<v-col cols="8">
+									<v-row>
+										<v-col cols="12">
+											<v-card flat>
+												<v-card-text>
+													Actualmente perteneces al equipo
+													{{ person.name }}
+												</v-card-text>
+												<v-card-actions>
+													<v-spacer />
+													<v-btn color="error" text small>
+														Salir del equipo
+													</v-btn>
+												</v-card-actions>
+											</v-card>
+										</v-col>
+										<v-col cols="12">
+											<template v-if="hasRequest">
+												<div v-for="(item, i) in person.request" :key="i">
+													<requests
+														:item="item"
+														:person="person"
+														:toast="toast"
+														:update-person="updatePerson"
+													/>
+												</div>
+												<small class="overline">
+													*Solo puedes unirte a una compañia
+												</small>
+											</template>
+											<template v-else>
+												<small class="overline">
+													No tienes solicitudes
+												</small>
+											</template>
+										</v-col>
+									</v-row>
+								</v-col>
+								<v-col cols="4">
+									<template v-if="person.idCompany">
+										<v-card height="calc(100vh - 140px)">
+											<messages :id="person._id" :sender="person.firstName" />
+										</v-card>
+									</template>
+									<template v-else>
+										<small class="overline">
+											Regresa luego cuando te hayas sumado a un equipo.
+										</small>
+									</template>
+								</v-col>
+							</v-row>
 						</v-col>
 					</v-row>
 				</v-container>
@@ -178,7 +204,7 @@ export default {
 			person: null,
 			loadingInitial: true,
 			selected: 0,
-			items: ['Perfil', 'Mensajes', 'Solicitudes', 'Leer politicas'],
+			items: ['Perfil', 'Mi equipo', 'Leer politicas'],
 			avatar: null,
 			loadingUpload: false,
 			profileData: {

@@ -23,13 +23,12 @@
 					</v-row>
 				</template>
 				<template v-else>
-					<v-row justify="center" align="center" style="height:100%">
-						<v-col cols="10" class="pt-0">
-							<v-alert color="info">
-								Comienza una conversación
-							</v-alert>
-						</v-col>
-					</v-row>
+					<v-overlay :value="overlay" absolute :opacity="0.8">
+						Comienza una conversación
+						<v-btn icon @click="overlay = false">
+							<v-icon>mdi-close</v-icon>
+						</v-btn>
+					</v-overlay>
 				</template>
 			</v-col>
 		</v-row>
@@ -81,6 +80,7 @@ export default {
 	},
 	data() {
 		return {
+			overlay: true,
 			person: null,
 			message: [],
 			text: '',
@@ -89,8 +89,10 @@ export default {
 	created() {
 		getPerson(this.id).then(person => {
 			this.person = person;
-			if (Array.isArray(person.conversation) && person.conversation.length)
+			if (Array.isArray(person.conversation) && person.conversation.length) {
+				this.overlay = false;
 				this.message = person.conversation;
+			}
 		});
 	},
 	methods: {
