@@ -93,6 +93,7 @@ export default {
 			lodgingSelected: null,
 			mount: '',
 			voucher: null,
+			paymentType: 'lodging',
 		};
 	},
 	computed: {
@@ -164,6 +165,7 @@ export default {
 				let form = new FormData();
 				form.set('idPlace', this.idPlace);
 				form.set('idLodging', this.lodgingSelected.id);
+				form.set('paymentType', this.paymentType);
 				form.set('startDate', this.lodgingSelected.start);
 				form.set('endDate', this.lodgingSelected.end);
 				form.set('mount', this.mount);

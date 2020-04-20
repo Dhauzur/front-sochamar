@@ -122,7 +122,7 @@ export default {
 			mount: '',
 			voucher: null,
 			voucherName: null,
-			comments: '',
+			paymentType: 'byDates',
 		};
 	},
 	computed: {
@@ -185,6 +185,7 @@ export default {
 			if (!this.$v.$invalid) {
 				let form = new FormData();
 				form.set('idPlace', this.idPlace);
+				form.set('paymentType', this.paymentType);
 				form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
 				form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
 				form.set('mount', this.mount);

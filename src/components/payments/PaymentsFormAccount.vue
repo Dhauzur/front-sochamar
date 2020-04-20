@@ -127,7 +127,7 @@ export default {
 	methods: {
 		clearInputs() {
 			this.mount = '';
-			this.account = [];
+			this.account = '';
 			this.voucher = null;
 			this.$v.$reset();
 		},
@@ -137,7 +137,7 @@ export default {
 			if (!this.$v.$invalid) {
 				let form = new FormData();
 				form.set('idPlace', this.idPlace);
-				form.set('account', this.account);
+				form.set('paymentType', this.account);
 				form.set('startDate', this.setDateStart);
 				form.set('endDate', this.setDateEnd);
 				form.set('mount', this.mount);
