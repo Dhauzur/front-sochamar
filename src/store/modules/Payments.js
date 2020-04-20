@@ -5,7 +5,6 @@ const state = {
 	payments: [],
 	loading: false,
 	loadingSave: false,
-	paymentsAccount: [],
 };
 
 const getters = {

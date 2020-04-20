@@ -1,20 +1,5 @@
 <template>
 	<v-row>
-		<!-- mount -->
-		<v-col cols="12">
-			<v-text-field
-				id="total"
-				v-model="$v.mount.$model"
-				type="number"
-				placeholder="Ej: 10000"
-				label="Total"
-				dense
-				outlined
-				:error-messages="mountErrors"
-				@input="$v.mount.$touch()"
-				@blur="$v.mount.$touch()"
-			></v-text-field>
-		</v-col>
 		<!-- dates -->
 		<v-col cols="12">
 			<v-menu
@@ -55,6 +40,21 @@
 					<v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
 				</v-date-picker>
 			</v-menu>
+		</v-col>
+		<!-- mount -->
+		<v-col cols="12">
+			<v-text-field
+				id="total"
+				v-model="$v.mount.$model"
+				type="number"
+				placeholder="Ej: 10000"
+				label="Total"
+				dense
+				outlined
+				:error-messages="mountErrors"
+				@input="$v.mount.$touch()"
+				@blur="$v.mount.$touch()"
+			></v-text-field>
 		</v-col>
 		<!-- voucher -->
 		<v-col cols="12">

@@ -52,6 +52,7 @@
 										label="Comentario"
 										single-line
 										counter
+										autofocus
 									></v-text-field>
 								</template>
 							</v-edit-dialog>
