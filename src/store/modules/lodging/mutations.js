@@ -266,6 +266,7 @@ const mutations = {
 		setTimeout(() => (state.periods = dataSet), 1);
 	},
 	setRangeDate(state, value) {
+		console.log(value);
 		state.rangeDate = value;
 	},
 	setRangeDatePayments(state, value) {

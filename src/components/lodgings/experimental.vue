@@ -1,27 +1,36 @@
 <template lang="html">
 	<v-row>
-		<v-col cols="12" class="overflow-x-auto">
-			<table>
-				<div class="d-inline-flex  pb-3 ">
-					<div v-for="(date, id) in rangeDateTable" :key="id" class="itemNull">
-						{{ date.numberDay }}
-					</div>
-				</div>
-				<div
-					v-for="(lodging, lodIndex) in lodgings"
-					:key="lodIndex"
-					class="d-inline-flex  pb-3 "
-				>
-					<div v-for="(date, id) in rangeDateTable" :key="id" class="itemNull">
-						<template v-for="(day, idDay) in lodging.days">
-							<span v-if="day.date == date.numberDay" :key="idDay">{{
-								day.services[0].quantity
-							}}</span>
-						</template>
-					</div>
-				</div>
-			</table>
+		<v-col cols="3" md="2" class="overflow-x-auto" style="margin-top: 48px;">
+			<div v-for="(lodging, lodIndex) in lodgings" :key="lodIndex" class="itemPerson mb-1">
+				{{ lodging.group }}
+			</div>
 		</v-col>
+		<v-col cols="6" md="8" class="overflow-x-auto">
+			<div class="d-inline-flex  pb-1 ">
+				<div v-for="(date, id) in rangeDateTable" :key="id" class="itemMonthHead">
+					<div v-if="date.nameDay == '01'" class="nameMonth">
+						{{ convertDate(date.numberDay) }}
+					</div>
+				</div>
+			</div>
+			<div class="d-inline-flex  pb-1 ">
+				<div v-for="(date, id) in rangeDateTable" :key="id" class="itemDateHead">
+					{{ date.nameDay }}
+				</div>
+			</div>
+			<div v-for="(lodging, lodIndex) in lodgings" :key="lodIndex" class="d-inline-flex ">
+				<div v-for="(date, id) in rangeDateTable" :key="id" class="itemEmpty">
+					<template v-for="(day, idDay) in lodging.days">
+						<div
+							v-if="day.date == date.numberDay"
+							:key="idDay"
+							:class="{ itemUsed: day.date == date.numberDay }"
+						></div>
+					</template>
+				</div>
+			</div>
+		</v-col>
+		<v-col cols="3" md="2">sdfsdf </v-col>
 		<v-col cols="12">
 			<v-row class="d-inline-flex  pb-3 ">
 				<v-col
@@ -46,7 +55,7 @@
 										<td>
 											<input
 												:id="day.date + day.services[serviceIndex]"
-												:value="service.quantity"
+												v-model="service.quantity"
 												type="number"
 												class="inputService"
 											/>
@@ -81,7 +90,7 @@ export default {
 						.format('DD-MM-YY'),
 					nameDay: moment(this.rangeDate.start)
 						.add(i, 'day')
-						.format('DD-MM-YY'),
+						.format('DD'),
 				});
 			return dates;
 		},
@@ -92,11 +101,16 @@ export default {
 	},
 	created() {
 		this.setRangeDate({
-			start: moment(),
-			end: moment().add(15, 'day'),
+			start: moment().date(1),
+			end: moment()
+				.date(0)
+				.add(1, 'M'),
 		});
 	},
 	methods: {
+		convertDate(value) {
+			return moment(value).format('dddd MMMM YYYY');
+		},
 		// ...mapActions({
 		// }),
 		...mapMutations({
@@ -106,12 +120,46 @@ export default {
 };
 </script>
 
-<style lang="css" scoped>
-.itemNull {
-	height: 100px !important;
-	width: 100px !important;
-	margin-right: 10px;
-	margin-bottom: 5px;
-	background-color: red;
+<style lang="scss" scoped>
+.itemPerson {
+	height: 20px;
+	width: 300px;
+	background-color: #8080801c;
+	border-right: 1px solid white;
+	text-align: left;
+	padding-left: 5px;
+}
+.itemMonthHead {
+	height: 20px;
+	width: 30px;
+	background-color: transparent;
+}
+.nameMonth {
+	width: 300px;
+	text-align: left;
+}
+.itemEmpty,
+.itemDateHead,
+.itemUsed,
+.itemPerson {
+	border-radius: 3px;
+}
+.itemUsed {
+	width: calc(100% + 1px);
+	height: 100%;
+	background-color: #a786fd;
+	border-right: 1px solid #a786fd;
+}
+.itemEmpty,
+.itemDateHead {
+	height: 20px;
+	width: 30px;
+	background-color: #8080801c;
+	border-right: 1px solid white;
+}
+
+.itemDateHead {
+	background-color: #6a31ff;
+	color: white;
 }
 </style>
