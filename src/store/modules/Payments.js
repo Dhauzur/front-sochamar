@@ -5,6 +5,7 @@ const state = {
 	payments: [],
 	loading: false,
 	loadingSave: false,
+	paymentsAccount: [],
 };
 
 const getters = {
@@ -12,6 +13,14 @@ const getters = {
 	payments: state => state.payments,
 	loading: state => state.loading,
 	loadingSave: state => state.loadingSave,
+	paymentsType: state => {
+		const typePayment = state.payments;
+		for (const element of typePayment) {
+			if (element.paymentType == 'lodging') element.paymentType = 'Pago por alojamiento';
+			if (element.paymentType == 'byDates') element.paymentType = 'Pago por fecha';
+		}
+		return typePayment;
+	},
 };
 
 const actions = {
