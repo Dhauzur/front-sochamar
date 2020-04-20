@@ -10,7 +10,7 @@
 			<v-col cols="6" md="2" class="text-left pb-0">
 				<RequestPopup
 					:profile="profile"
-					:close="() => (dialog = !dialog)"
+					:close="() => (popup = !popup)"
 					:persons="personsList"
 				/>
 			</v-col>
@@ -61,17 +61,19 @@
 			</v-navigation-drawer>
 		</template>
 		<!-- dialog Form-->
-		<v-dialog v-if="dialog" v-model="dialog" persistent max-width="800px">
-			<Form
-				:selected="person"
-				:edit-mode="editMode"
-				:close="closeDialog"
-				:is-dialog="true"
-				:id-company="profile._id"
-				title="Agregar nuevo"
-				:get-persons="getPersons"
-				:toast="toast"
-			/>
+		<v-dialog v-model="dialogForm" persistent max-width="800px">
+			<template v-if="dialogForm">
+				<Form
+					:selected="person"
+					:edit-mode="editMode"
+					:close="closeDialog"
+					:is-dialog="true"
+					:id-company="profile._id"
+					title="Agregar nuevo"
+					:get-persons="getPersons"
+					:toast="toast"
+				/>
+			</template>
 		</v-dialog>
 	</v-container>
 </template>
@@ -93,7 +95,8 @@ export default {
 			drawer: false,
 			filteredWord: '',
 			list: [],
-			dialog: false,
+			dialogForm: false,
+			popup: false,
 			editMode: false,
 			person: null,
 			personsList: [],
@@ -142,13 +145,13 @@ export default {
 		closeDialog() {
 			this.editMode = false;
 			this.person = null;
-			this.dialog = false;
+			this.dialogForm = false;
 		},
 		editPerson(person) {
 			this.drawer = false;
 			this.editMode = true;
 			this.person = person;
-			this.dialog = true;
+			this.dialogForm = true;
 		},
 		filter() {
 			this.list = this.personsList.filter(person => {
