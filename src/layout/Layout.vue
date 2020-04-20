@@ -5,7 +5,7 @@
 			<v-tooltip bottom>
 				<template v-slot:activator="{ on }">
 					<router-link to="/" v-on="on">
-						<v-avatar color="transparent" size="57">
+						<v-avatar tile color="transparent" size="57">
 							<Logo style="max-height: 70px;" />
 						</v-avatar>
 					</router-link>

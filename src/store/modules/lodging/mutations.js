@@ -78,21 +78,19 @@ const mutations = {
 			start: startDate,
 			end: endDate,
 		});
-
-		const oldDays = state.lodgingSelect.days;
 		//en base a los nuevos rangos de fecha, creamos un arreglo de dias
 		const newDaysArray = generateDaysArray(this.selectedPlace, startDate, endDate);
 		//Con el nuevo arreglo de dias generados, buscamos si existe un fecha que corresponda a un dia viejo
 		//si existe un match entre ellos, la posicion del dia nuevo asignara al dia viejo.
 		//Con esto logramos preservar la data existente si yo quisiera extender el lodging hacia la derecha o izquierda.
-		const saveOldDaysServices = (oldDays, newDays) => {
-			oldDays.forEach(oldDay => {
+		const saveOldDaysServices = newDays => {
+			state.lodgingSelect.days.forEach(oldDay => {
 				const foundIndex = newDays.findIndex(newDay => newDay.date === oldDay.date);
 				if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
 			});
 		};
-		saveOldDaysServices(oldDays, newDaysArray);
-
+		saveOldDaysServices(newDaysArray);
+		console.log('2??');
 		tempLodgings.update({
 			id: state.lodgingSelect.id,
 			days: newDaysArray,
@@ -261,6 +259,7 @@ const mutations = {
 				content: period.name,
 				numberPassangerMax: period.numberPassangerMax,
 				place: period.place,
+				treeLevel: 1,
 			};
 		});
 		dataSet.add(mappedValues);

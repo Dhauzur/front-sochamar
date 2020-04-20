@@ -23,6 +23,7 @@
 						:value="place"
 						:items="places"
 						dense
+						filled
 						label="Selecione lugar"
 						outlined
 						@change="setPlace"
@@ -30,10 +31,10 @@
 					</v-select>
 				</v-col>
 				<!-- activity button -->
-				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="place" cols="12" sm="2" md="auto">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
 						<template v-slot:activator="{ on }">
-							<v-btn color="accent" block small @click="createOneLodging()" v-on="on">
+							<v-btn color="accent" block @click="createOneLodging()" v-on="on">
 								<v-icon>mdi-plus</v-icon><span>Actividad</span>
 							</v-btn>
 						</template>
@@ -41,13 +42,12 @@
 					</v-tooltip>
 				</v-col>
 				<!-- periods buttons -->
-				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="place" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
 								color="accent"
-								small
 								v-on="on"
 								@click.stop="dialogPeriods = true"
 							>
@@ -58,13 +58,12 @@
 					</v-tooltip>
 				</v-col>
 				<!-- payments buttons -->
-				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="place" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
 								color="accent"
-								small
 								v-on="on"
 								@click.stop="dialogPayments = true"
 							>
@@ -75,13 +74,12 @@
 					</v-tooltip>
 				</v-col>
 				<!-- edit buttons -->
-				<v-col v-if="lodgingSelect" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="lodgingSelect" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
 								color="accent"
-								small
 								v-on="on"
 								@click.stop="setBottomSheet({ action: true, lodging: null })"
 							>
@@ -92,10 +90,10 @@
 					</v-tooltip>
 				</v-col>
 				<!-- save buttons -->
-				<v-col v-if="getMirrorLodging || editMode" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="getMirrorLodging || editMode" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom class="mr-2">
 						<template v-slot:activator="{ on }">
-							<v-btn color="success" small @click="saveLodgings()" v-on="on">
+							<v-btn color="success" @click="saveLodgings()" v-on="on">
 								<v-icon>mdi-content-save</v-icon><span>Guardar</span>
 							</v-btn>
 						</template>
@@ -150,25 +148,29 @@
 			</v-row>
 			<!-- timeline -->
 			<v-row class="mx-1">
-				<v-col v-if="place" cols="12">
-					<timeline
-						v-if="periods.length > 0 && lodgings.length > 0"
-						class="timelineContent"
-						:events="['rangechanged', 'click', 'doubleClick']"
-						:groups="periods"
-						:items="lodgings"
-						:options="options"
-						@click="enableEdit"
-						@rangechanged="rangechanged"
-						@double-click="setBottomSheet({ action: true, lodging: null })"
-					/>
+				<v-col v-if="place" cols="12" class="px-0">
+					<Experimental />
+					<transition name="fade">
+						<timeline
+							v-if="periods.length > 0 && lodgings.length > 0"
+							:class="{ timelineModeLight: theme, timelineModeDark: !theme }"
+							:events="['rangechanged', 'click', 'doubleClick']"
+							:groups="periods"
+							:items="lodgings"
+							:options="options"
+							@click="enableEdit"
+							@rangechanged="rangechanged"
+							@double-click="setBottomSheet({ action: true, lodging: null })"
+						/>
+					</transition>
 				</v-col>
 				<template v-for="(p, index) in places" v-else>
-					<v-col v-if="p.value" :key="index" class="timelineContent mb-4 " cols="12">
+					<v-col v-if="p.value" :key="index" class="px-0 mb-4 " cols="12">
 						<h4 class="mb-2">{{ p.text }}</h4>
 						<timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
 							:events="['rangechanged', 'click', 'doubleClick']"
+							:class="{ timelineModeLight: theme, timelineModeDark: !theme }"
 							:groups="periodAllPlace(p.value)"
 							:items="lodgingsAllPlace(p.value)"
 							:options="options"
@@ -182,7 +184,7 @@
 			<v-row>
 				<v-col cols="12">
 					<v-row>
-						<v-col class="overflow-x-auto">
+						<v-col cols="12" class="overflow-x-auto">
 							<v-switch
 								v-if="place && lodgingSelect"
 								v-model="viewPrices"
@@ -201,7 +203,6 @@
 											<tr>
 												<th>Servicio</th>
 												<th>Cantidad</th>
-												<th>Subtotal</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -230,12 +231,14 @@
 															)
 														"
 													/>
+
+													<div>
+														${{ service.price * service.quantity }}
+													</div>
 												</td>
-												<td>{{ service.price * service.quantity }}</td>
 											</tr>
 											<tr>
-												<td></td>
-												<td>Total</td>
+												<td>Subtotal</td>
 												<td>
 													<b>{{ day.dayTotal }} </b>
 												</td>
@@ -266,10 +269,13 @@ export default {
 		EditLodging: () => import('@/components/lodgings/EditLodging'),
 		Periods: () => import('@/components/periods/Periods'),
 		Payments: () => import('@/components/payments/Payments'),
+		Experimental: () => import('@/components/lodgings/experimental'),
 		Timeline,
 	},
 	data() {
 		return {
+			dateLodgingSelect: [],
+			modalDateLodgingSelect: false,
 			viewPrices: false,
 			dialogPeriods: false,
 			dialogPayments: false,
@@ -383,6 +389,9 @@ export default {
 		};
 	},
 	computed: {
+		theme() {
+			return localStorage.getItem('mode');
+		},
 		servicesTableDetails() {
 			if (this.place && this.lodgingSelect) {
 				let lodging = this.lodgings.get(this.lodgingSelect.id);
@@ -424,6 +433,12 @@ export default {
 			});
 		},
 		lodgingSelect() {
+			if (this.lodgingSelect) {
+				let datePicker = [];
+				datePicker.push(moment(this.lodgingSelect.start).format('YYYY-MM-DD'));
+				datePicker.push(moment(this.lodgingSelect.end).format('YYYY-MM-DD'));
+				this.dateLodgingSelect = datePicker;
+			}
 			if (
 				this.lodgingSelect &&
 				Array.isArray(this.lodgingSelect.persons) &&
@@ -445,6 +460,14 @@ export default {
 		this.fetchLodgings();
 	},
 	methods: {
+		// updateLodgingSelect() {
+		// 	if (this.verifyOverlay(this.lodgingSelect)) {
+		// 		this.setModeEdit(true);
+		// 		this.);
+		// 	} else {
+		// 		this.$toasted.show('Existe un alojamiento para esas fechas');
+		// 	}
+		// },
 		verifyOverlay(value) {
 			let verificate = true;
 			this.lodgings.forEach(lod => {
@@ -498,6 +521,7 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
+			dateChange: 'Lodging/dateChange',
 			setBottomSheet: 'Lodging/setBottomSheet',
 			subDaysServices: 'Lodging/subDaysServices',
 			addDaysServices: 'Lodging/addDaysServices',
@@ -532,36 +556,24 @@ export default {
 }
 .microCard {
 	border-radius: 10px;
-	border: 1px solid rgba(255, 255, 255, 0.12);
 	background-color: transparent;
-	/* background: linear-gradient(
-		115deg,
-		rgba(210, 141, 181, 0.22) 0%,
-		rgba(194, 173, 247, 0.16) 100%
-	); */
-	margin: 5px;
+	margin-right: 10px;
 	padding: 5px;
-	box-shadow: 0px 1px 10px -2px rgba(0, 0, 0, 0.75);
-}
-.timelineContent:hover {
-	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
-	transition: all ease-in-out 0.5s;
-}
-.timelineContent {
-	background-color: transparent;
-	/* background: linear-gradient(90deg, rgba(106, 49, 255, 0.07) 0%, rgba(213, 47, 143, 0.18) 100%); */
-	padding: 10px;
-	border-radius: 10px;
-	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
-	transition: all ease-in-out 0.5s;
+	box-shadow: 0px 1px 5px -2px rgba(0, 0, 0, 0.75);
 }
 
 .vis-selected {
 	background-color: #6a31ff !important;
-	color: white !important;
 	transition: all ease-in-out 0.3s;
-	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
 }
+
+/* .vis-time-axis .vis-text,
+.vis-label,
+.vis-inner,
+.vis-time-axis .vis-text.vis-saturday,
+.vis-time-axis .vis-text.vis-sunday {
+} */
+
 .vis-time-axis .vis-text,
 .vis-label,
 .vis-inner,
@@ -591,11 +603,10 @@ input {
 	border: none !important;
 }
 .vis-item {
-	background-color: #dfd4f9cf;
-	/* color: var(--v-textColor) !important; */
-	box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.95);
+	background-color: #6a30ffcc;
+	box-shadow: 0px 0px 5px -2px rgba(0, 0, 0, 0.95);
 	border: none !important;
 	border-left: 4px solid #6a31ff !important;
-	transition: all ease-in-out 0.3s;
+	transition: all ease-in-out 0.2s;
 }
 </style>
