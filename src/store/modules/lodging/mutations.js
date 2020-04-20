@@ -286,50 +286,7 @@ const mutations = {
 		state.countLogingsPlace = value;
 	},
 	setLodgings(state, values) {
-		let tempLodging = state.lodgings;
-		state.editMode = false;
-		state.lodgings = new DataSet([]);
-		if (values) {
-			tempLodging = new DataSet([]);
-			const evaluateLodgingPush = (lodging, place) => {
-				if (state.place) {
-					if (state.place === lodging.place)
-						tempLodging.add({
-							id: lodging.id,
-							group: lodging.group,
-							start: moment(lodging.start).hours(13),
-							end: moment(lodging.end).hours(9),
-							content: place.text,
-							days: lodging.days,
-							place: lodging.place,
-							persons: lodging.persons,
-							mountTotal: lodging.mountTotal,
-						});
-				} else {
-					tempLodging.add({
-						id: lodging.id,
-						group: lodging.group,
-						start: moment(lodging.start).hours(13),
-						end: moment(lodging.end).hours(9),
-						content: place.text,
-						days: lodging.days,
-						place: lodging.place,
-						persons: lodging.persons,
-						mountTotal: lodging.mountTotal,
-					});
-				}
-			};
-			values.forEach(v => {
-				let place = state.Places.find(c => c.value == v.place);
-				/*Necesitamos seguir corriendo esta funcion aun si place es undefined
-				 * si es undefined, entonces creamos un objeto basico con la propiedad text.
-				 * Con esto evitamos el mensaje de 'place.text' is undefined en la interfaz de usuario*/
-				if (!place) place = { text: '' };
-				evaluateLodgingPush(v, place);
-			});
-			state.lodgings = tempLodging;
-			state.mirrorLodging = JSON.stringify(tempLodging);
-		} else state.lodgings = new DataSet([]);
+		state.lodgings = values;
 	},
 	setSelectedPlace(state) {
 		state.selectedPlace = state.Places.find(place => place.value === state.place);

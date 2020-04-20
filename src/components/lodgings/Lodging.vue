@@ -148,8 +148,10 @@
 			</v-row>
 			<!-- timeline -->
 			<v-row class="mx-1">
-				<v-col v-if="place" cols="12" class="px-0">
+				<v-col cols="12">
 					<Experimental />
+				</v-col>
+				<!--<v-col v-if="place" cols="12" class="px-0">
 					<transition name="fade">
 						<timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
@@ -179,7 +181,7 @@
 							@double-click="setBottomSheet({ action: true, lodging: null })"
 						/>
 					</v-col>
-				</template>
+				</template>-->
 			</v-row>
 			<v-row>
 				<v-col cols="12">
@@ -257,7 +259,6 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
-import { Timeline } from 'vue2vis';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import { generateDaysArray } from '../../utils/lodging/daysArray';
@@ -270,7 +271,6 @@ export default {
 		Periods: () => import('@/components/periods/Periods'),
 		Payments: () => import('@/components/payments/Payments'),
 		Experimental: () => import('@/components/lodgings/experimental'),
-		Timeline,
 	},
 	data() {
 		return {
