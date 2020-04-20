@@ -143,6 +143,7 @@ import moment from 'moment';
 import Rooms from '@/components/rooms/Rooms';
 import { mapMutations, mapGetters, mapActions } from 'vuex';
 import { Timeline } from 'vue2vis';
+import { getPersonsByCompany } from '@/service/persons';
 
 export default {
 	name: 'EditLodgings',
@@ -152,6 +153,7 @@ export default {
 	},
 	data() {
 		return {
+			persons: [],
 			overlay: true,
 			componentReady: false,
 			tab: 0,
@@ -260,12 +262,12 @@ export default {
 			}));
 		},
 		...mapGetters({
+			profile: 'User/profile',
 			idPlace: 'Lodging/place',
 			lodgings: 'Lodging/lodgings',
 			rooms: 'Room/rooms',
 			lodgingPersons: 'Lodging/lodgingPersons',
 			lodgingSelect: 'Lodging/lodgingSelect',
-			persons: 'Persons/persons',
 			loadingRooms: 'Room/loading',
 		}),
 	},
@@ -282,9 +284,10 @@ export default {
 		},
 	},
 	mounted() {
+		getPersonsByCompany(this.profile._id).then(response => (this.persons = response));
+		this.fetchRooms(this.idPlace);
 		this.overlay = true;
 		this.setDateIntheState();
-		this.fetchRooms(this.idPlace);
 		setTimeout(() => (this.componentReady = true), 800);
 	},
 	methods: {
