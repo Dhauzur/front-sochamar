@@ -64,6 +64,10 @@
 			</v-list>
 			<template v-slot:append>
 				<v-list>
+					<v-list-item active-class="accent--text" link @click="toggleTheme">
+						<v-icon>mdi-theme-light-dark</v-icon>
+						<v-list-item-title>Tema</v-list-item-title>
+					</v-list-item>
 					<v-list-item v-if="isAdmin" active-class="accent--text" link to="/profile">
 						<v-icon>mdi-cog-outline</v-icon>
 						<v-list-item-title>Perfil</v-list-item-title>
