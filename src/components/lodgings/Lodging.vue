@@ -29,6 +29,12 @@
 					>
 					</v-select>
 				</v-col>
+				<!-- export pdf button -->
+				<v-col cols="12" sm="2" md="auto" class="mt-2">
+					<v-btn block color="accent" small @click="exportToPdf">
+						<span>Exportar pdf</span>
+					</v-btn>
+				</v-col>
 				<!-- activity button -->
 				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
@@ -258,6 +264,7 @@ import { Timeline } from 'vue2vis';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import { generateDaysArray } from '../../utils/lodging/daysArray';
+import { generatePdfReport } from '@/service/lodgings';
 
 let moment = extendMoment(Moment);
 
@@ -500,6 +507,14 @@ export default {
 					end: moment(payload.end),
 				});
 			}
+		},
+		async exportToPdf() {
+			const pdf = await generatePdfReport(this.place);
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'hospedajes.pdf';
+			link.click();
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',

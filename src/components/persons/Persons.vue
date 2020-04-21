@@ -1,7 +1,6 @@
 <template>
 	<v-container>
 		<!-- list person -->
-		<v-btn @click="generateReport"> Generar reporte</v-btn>
 		<v-row justify="center">
 			<v-col cols="4">
 				<span class="title">Listado de personas</span>
@@ -12,6 +11,11 @@
 				<v-col>
 					<RequestPopup :profile="profile" :open="() => (dialog = !dialog)" />
 				</v-col>
+			</v-col>
+			<v-col cols="12" md="2" class="text-left pb-0">
+				<v-btn block color="accent" small @click="exportToPdf">
+					<span>Exportar pdf</span>
+				</v-btn>
 			</v-col>
 			<v-col cols="12" md="2" class="pb-0">
 				<v-text-field
@@ -138,7 +142,7 @@ export default {
 					.then(this.toast('success', 'Eliminado exitosamente'))
 					.catch(error => this.toast('error', error.message));
 		},
-		async generateReport() {
+		async exportToPdf() {
 			const pdf = await generatePdfReport();
 			let blob = new Blob([pdf], { type: 'application/pdf' });
 			let link = document.createElement('a');

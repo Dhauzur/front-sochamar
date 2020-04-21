@@ -3,7 +3,6 @@
 		<v-row>
 			<!-- header -->
 			<v-col cols="12">
-				<v-btn @click="generateReport"> Generar reporte</v-btn>
 				<v-row justify="center">
 					<v-col cols="4">
 						<span class="title">Lista de Pagos</span>
@@ -15,6 +14,12 @@
 							<v-icon>mdi-plus</v-icon>Agregar
 						</v-btn>
 					</v-col>
+					<v-col cols="12" md="2" class="text-left py-0">
+						<v-btn small color="accent" @click="exportToPdf"
+							><span>Exportar pdf</span>
+						</v-btn>
+					</v-col>
+
 					<v-col cols="12" md="3" class="py-0">
 						<v-text-field
 							v-model="wordForFilter"
@@ -229,7 +234,7 @@ export default {
 				.then((this.newComment = ''))
 				.then(this.fetchPayments(this.idPlace));
 		},
-		async generateReport() {
+		async exportToPdf() {
 			const pdf = await generatePdfReport();
 			let blob = new Blob([pdf], { type: 'application/pdf' });
 			let link = document.createElement('a');
