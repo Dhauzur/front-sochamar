@@ -235,7 +235,7 @@ export default {
 				.then(this.fetchPayments(this.idPlace));
 		},
 		async exportToPdf() {
-			const pdf = await generatePdfReport();
+			const pdf = await generatePdfReport(this.idPlace);
 			let blob = new Blob([pdf], { type: 'application/pdf' });
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
