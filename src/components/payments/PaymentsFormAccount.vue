@@ -1,45 +1,19 @@
 <template>
 	<v-row>
-		<!-- dates -->
+		<!-- Account -->
 		<v-col cols="12">
-			<v-menu
-				ref="menu"
-				v-model="menu"
-				:close-on-content-click="false"
-				:return-value.sync="dates"
-				transition="scale-transition"
-				offset-y
-				min-width="290px"
-			>
-				<template v-slot:activator="{ on }">
-					<v-text-field
-						v-model="dates"
-						dense
-						readonly
-						clearable
-						outlined
-						label="Fecha de ingreso y salida"
-						:error-messages="datesErrors"
-						@input="$v.dates.$touch()"
-						@blur="$v.dates.$touch()"
-						v-on="on"
-					></v-text-field>
-				</template>
-				<v-date-picker
-					v-model="dates"
-					outlined
-					range
-					locale="es"
-					:min="startDate"
-					:max="endDate"
-					no-title
-					scrollable
-				>
-					<v-spacer></v-spacer>
-					<v-btn text color="primary" @click="menu = false">Cancelar</v-btn>
-					<v-btn text color="primary" @click="$refs.menu.save(dates)">OK</v-btn>
-				</v-date-picker>
-			</v-menu>
+			<v-text-field
+				id="cuenta"
+				v-model="$v.account.$model"
+				type="text"
+				placeholder="Nombre de cuenta"
+				label="Cuenta"
+				dense
+				outlined
+				:error-messages="accountErrors"
+				@input="$v.account.$touch()"
+				@blur="$v.account.$touch()"
+			></v-text-field>
 		</v-col>
 		<!-- mount -->
 		<v-col cols="12">
@@ -114,15 +88,17 @@ export default {
 	},
 	data() {
 		return {
-			dates: [],
+			account: '',
 			menu: null,
 			text: '',
-			startDate: '',
-			endDate: '',
 			mount: '',
 			voucher: null,
 			voucherName: null,
-			paymentType: 'byDates',
+			comments: '',
+			setDateStart: moment().format('YYYY-MM-DD'),
+			setDateEnd: moment()
+				.add(30, 'd')
+				.format('YYYY-MM-DD'),
 		};
 	},
 	computed: {
@@ -132,50 +108,26 @@ export default {
 			!this.$v.mount.required && errors.push('El monto es querido');
 			return errors;
 		},
-		datesErrors() {
+		accountErrors() {
 			const errors = [];
-			if (!this.$v.dates.$dirty) return errors;
-			!this.$v.dates.required && errors.push('campo requerido');
+			if (!this.$v.account.$dirty) return errors;
+			!this.$v.account.required && errors.push('nombre requerido');
 			return errors;
 		},
-		setDateStart() {
-			// set startdate from array dates
-			if (moment(this.dates[0]).isBefore(moment(this.dates[1]))) {
-				return this.dates[0];
-			} else {
-				moment(this.dates[1]).isBefore(moment(this.dates[0]));
-				return this.dates[1];
-			}
-		},
-		setDateEnd() {
-			// set enddate from array dates
-			if (moment(this.dates[0]).isAfter(moment(this.dates[1]))) {
-				return this.dates[0];
-			} else {
-				moment(this.dates[1]).isAfter(moment(this.dates[0]));
-				return this.dates[1];
-			}
-		},
-		...mapGetters({ range: 'Lodging/rangeDatePayments', loading: 'Payments/loadingSave' }),
+		...mapGetters({ loading: 'Payments/loadingSave' }),
 	},
 	validations: {
 		mount: {
 			required,
 		},
-		dates: {
+		account: {
 			required,
-		},
-	},
-	watch: {
-		range() {
-			this.startDate = this.range.startDate;
-			this.endDate = this.range.endDate;
 		},
 	},
 	methods: {
 		clearInputs() {
 			this.mount = '';
-			this.dates = [];
+			this.account = '';
 			this.voucher = null;
 			this.$v.$reset();
 		},
@@ -185,9 +137,9 @@ export default {
 			if (!this.$v.$invalid) {
 				let form = new FormData();
 				form.set('idPlace', this.idPlace);
-				form.set('paymentType', this.paymentType);
-				form.set('startDate', moment(this.setDateStart).format('YYYY-MM-DD'));
-				form.set('endDate', moment(this.setDateEnd).format('YYYY-MM-DD'));
+				form.set('paymentType', this.account);
+				form.set('startDate', this.setDateStart);
+				form.set('endDate', this.setDateEnd);
 				form.set('mount', this.mount);
 				form.set('voucher', this.voucher);
 				await this.save(form);
@@ -195,13 +147,6 @@ export default {
 				this.clearInputs();
 				this.close();
 			}
-		},
-		cutText(text) {
-			const extencion = text.split('.').pop();
-			if (text.length > 10) {
-				return `${text.split('.')[0].substr(0, 10)}...${extencion}`;
-			}
-			return text;
 		},
 		...mapActions({
 			save: 'Payments/savePayment',

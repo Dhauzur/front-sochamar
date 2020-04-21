@@ -91,7 +91,7 @@
 								dense
 								outlined
 								label="Nueva contraseña"
-								:error-messages="lastnameErrors"
+								:error-messages="newPasswordErrors"
 								@input="$v.securityData.newPassword.$touch()"
 								@blur="$v.securityData.newPassword.$touch()"
 							></v-text-field>
@@ -229,6 +229,13 @@ export default {
 			if (!this.$v.profileData.name.$dirty) return errors;
 			!this.$v.profileData.name.minLength && errors.push('Minimo 5 Caracteres');
 			!this.$v.profileData.name.maxLength && errors.push('Maximo 100 Caracteres');
+			return errors;
+		},
+		newPasswordErrors() {
+			const errors = [];
+			if (!this.$v.securityData.newPassword.$dirty) return errors;
+			!this.$v.securityData.newPassword.minLength && errors.push('Minimo 5 Caracteres');
+			!this.$v.securityData.newPassword.maxLength && errors.push('Maximo 100 Caracteres');
 			return errors;
 		},
 		...mapGetters({

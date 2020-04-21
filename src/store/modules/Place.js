@@ -6,7 +6,6 @@ const state = {
 	placeSelected: null,
 	places: [],
 	filterPlaceWord: '',
-	place: {},
 	loading: false,
 	placeForService: {},
 };
@@ -14,7 +13,6 @@ const state = {
 const getters = {
 	message: state => state.message,
 	placeSelected: state => state.placeSelected,
-	place: state => state.place,
 	places: state => {
 		if (state.filterPlaceWord)
 			return state.places.filter(place => {
@@ -125,18 +123,6 @@ const actions = {
 			});
 		}
 	},
-	async fetchOnePlace({ commit }, id) {
-		try {
-			const response = await fetch(`/place/${id}`);
-			commit('setPlace', response.place);
-		} catch (error) {
-			commit('setPlace', null);
-			commit('setMessage', {
-				type: 'error',
-				text: 'Error al descargar lugar',
-			});
-		}
-	},
 };
 
 const mutations = {
@@ -149,9 +135,6 @@ const mutations = {
 	},
 	selectPlace(state, value) {
 		state.placeSelected = state.places.find(c => c.id == value);
-	},
-	setPlace(state, value) {
-		state.place = value;
 	},
 	setPlaceForServices(state, value) {
 		state.placeForService = value;
