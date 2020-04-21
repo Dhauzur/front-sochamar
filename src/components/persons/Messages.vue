@@ -24,9 +24,10 @@
 				</template>
 				<template v-else>
 					<v-overlay :value="overlay" absolute :opacity="0.8">
-						Comienza una conversación
-						<v-btn icon @click="overlay = false">
-							<v-icon>mdi-close</v-icon>
+						<v-icon x-large>mdi-email-alert-outline</v-icon>
+						<div>¡No tienes mensajes!</div>
+						<v-btn small class="ma-2" color="primary" @click="overlay = false">
+							Inicia una conversacion
 						</v-btn>
 					</v-overlay>
 				</template>

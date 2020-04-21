@@ -54,7 +54,7 @@
 					</v-col>
 					<v-col cols="12">Agregala tu mismo.</v-col>
 					<v-col>
-						<v-btn block small color="accent" @click="close">
+						<v-btn block small color="accent" @click="openForm">
 							<v-icon>mdi-plus</v-icon>
 							Agregar
 						</v-btn>
@@ -71,6 +71,10 @@ import { pathRequest } from '@/service/persons';
 export default {
 	props: {
 		close: {
+			type: Function,
+			required: true,
+		},
+		openForm: {
 			type: Function,
 			required: true,
 		},

@@ -91,6 +91,7 @@ const pathRequest = async data => {
 			newRequest: data.idProfile,
 			companyName: data.company,
 			cancel: data.cancel,
+			unsubscribe: data.unsubscribe,
 		},
 	});
 	return response;

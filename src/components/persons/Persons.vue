@@ -11,6 +11,7 @@
 				<RequestPopup
 					:profile="profile"
 					:close="() => (popup = !popup)"
+					:open-form="openFormFrontPopup"
 					:persons="personsList"
 				/>
 			</v-col>
@@ -69,7 +70,6 @@
 					:close="closeDialog"
 					:is-dialog="true"
 					:id-company="profile._id"
-					title="Agregar nuevo"
 					:get-persons="getPersons"
 					:toast="toast"
 				/>
@@ -130,6 +130,10 @@ export default {
 		this.getPersons();
 	},
 	methods: {
+		openFormFrontPopup() {
+			this.dialogForm = true;
+			this.popup = false;
+		},
 		chat(item) {
 			this.drawer = !this.drawer;
 			this.person = item;

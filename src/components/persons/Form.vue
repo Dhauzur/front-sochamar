@@ -1,230 +1,470 @@
 <template>
-	<v-card elevation="24">
-		<v-card-title>
-			<span class="headline">{{ title }}</span>
-		</v-card-title>
-		<v-card-text>
-			<v-container>
-				<v-row justify="center">
-					<!-- avatar -->
-					<v-col cols="12">
-						<label for="avatar" class="d-flex justify-center">
-							<v-img
-								v-bind="mainProps"
-								rounded="circle"
-								alt="avatar"
-								class="pointer borderRadius"
-								max-width="130px"
-								:src="urlAvatar"
-								><div class="textAvatar secondary">
-									Actualiza avatar
-								</div>
-							</v-img>
-						</label>
-						<v-file-input
-							id="avatar"
-							ref="avatar"
-							class="pointer d-none"
-							accept="image/jpeg, image/png, image/gif, image/jpg"
-							@change="setAvatar"
-						/>
-					</v-col>
-					<!-- firstName -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model.trim="$v.person.firstName.$model"
-							:disabled="editMode"
-							filled
-							outlined
-							dense
-							label="Nombre*"
-							:error-messages="nameErrors"
-							@input="$v.person.firstName.$touch()"
-							@blur="$v.person.firstName.$touch()"
-						/>
-					</v-col>
-					<!-- lastName -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model.trim="person.lastName"
-							filled
-							outlined
-							dense
-							label="Apellido"
-						></v-text-field>
-					</v-col>
-					<!-- email -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model.trim="person.email"
-							:disabled="!isDialog"
-							outlined
-							dense
-							filled
-							type="email"
-							label="Correo electronico"
-						></v-text-field>
-					</v-col>
-					<!-- rut -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model.trim="person.rut"
-							outlined
-							dense
-							filled
-							label="Rut"
-						></v-text-field>
-					</v-col>
-					<!-- state -->
-					<v-col cols="12" md="4">
-						<v-select
-							v-model="person.state"
-							filled
-							outlined
-							dense
-							label="Estado"
-							:items="['soltero', 'casado']"
-						></v-select>
-					</v-col>
-					<!-- age -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model.number="person.age"
-							filled
-							outlined
-							dense
-							label="Edad"
-							type="number"
-						></v-text-field>
-					</v-col>
-					<!-- birthdate -->
-					<v-col cols="12" md="4">
-						<v-menu
-							ref="menu"
-							v-model="menu"
-							:close-on-content-click="false"
-							:return-value.sync="person.birthdate"
-							transition="scale-transition"
-							offset-y
-							min-width="290px"
-						>
-							<template v-slot:activator="{ on }">
-								<v-text-field
-									v-model="person.birthdate"
-									label="Fecha de nacimiento"
-									readonly
-									outlined
-									dense
-									filled
-									v-on="on"
-								></v-text-field>
-							</template>
-							<v-date-picker
-								v-model="person.birthdate"
-								no-title
-								scrollable
-								locale="es"
-								:show-current="false"
+	<div>
+		<v-stepper v-if="isDialog" v-model="stepper" class="elevation-12">
+			<v-stepper-header>
+				<v-stepper-step :complete="stepper > 1" step="1">
+					Datos
+				</v-stepper-step>
+				<v-divider></v-divider>
+				<v-stepper-step :complete="stepper > 2" step="2">
+					Contacto
+				</v-stepper-step>
+				<v-divider></v-divider>
+				<v-stepper-step :complete="stepper > 3" step="3">
+					Rol y documentos
+				</v-stepper-step>
+			</v-stepper-header>
+			<v-stepper-items>
+				<v-stepper-content step="1">
+					<v-row>
+						<!-- firstName -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="$v.person.firstName.$model"
+								:disabled="editMode"
+								filled
+								outlined
+								dense
+								label="Nombre*"
+								:error-messages="nameErrors"
+								@input="$v.person.firstName.$touch()"
+								@blur="$v.person.firstName.$touch()"
+							/>
+						</v-col>
+						<!-- lastName -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="person.lastName"
+								filled
+								outlined
+								dense
+								label="Apellido"
+							></v-text-field>
+						</v-col>
+						<!-- email -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="person.email"
+								:disabled="!isDialog"
+								outlined
+								dense
+								filled
+								type="email"
+								label="Correo electronico"
+							></v-text-field>
+						</v-col>
+						<!-- rut -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="person.rut"
+								outlined
+								dense
+								filled
+								label="Rut"
+							></v-text-field>
+						</v-col>
+						<!-- state -->
+						<v-col cols="12" md="4">
+							<v-select
+								v-model="person.state"
+								filled
+								outlined
+								dense
+								label="Estado"
+								:items="['soltero', 'casado']"
+							></v-select>
+						</v-col>
+						<!-- age -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.number="person.age"
+								filled
+								outlined
+								dense
+								label="Edad"
+								type="number"
+							></v-text-field>
+						</v-col>
+						<!-- birthdate -->
+						<v-col cols="4">
+							<v-menu
+								ref="menu"
+								v-model="menu"
+								:close-on-content-click="false"
+								:return-value.sync="person.birthdate"
+								transition="scale-transition"
+								offset-y
+								min-width="290px"
 							>
-								<v-spacer></v-spacer>
-								<v-btn text color="primary" @click="menu = false">Cerrar</v-btn>
-								<v-btn
-									text
-									color="primary"
-									@click="$refs.menu.save(person.birthdate)"
-									>ok</v-btn
+								<template v-slot:activator="{ on }">
+									<v-text-field
+										v-model="person.birthdate"
+										label="Fecha de nacimiento"
+										readonly
+										outlined
+										dense
+										filled
+										v-on="on"
+									></v-text-field>
+								</template>
+								<v-date-picker
+									v-model="person.birthdate"
+									no-title
+									scrollable
+									locale="es"
+									:show-current="false"
 								>
-							</v-date-picker>
-						</v-menu>
-					</v-col>
-					<!-- phone -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model="person.phone"
-							outlined
-							dense
-							filled
-							label="Teléfono"
-						></v-text-field>
-					</v-col>
-					<!-- function -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model="person.function"
-							outlined
-							dense
-							filled
-							label="Función"
-						></v-text-field>
-					</v-col>
-					<!-- appointment -->
-					<v-col cols="12" md="4">
-						<v-text-field
-							v-model="person.appointment"
-							outlined
-							dense
-							filled
-							label="Cargo"
-						></v-text-field>
-					</v-col>
-					<!-- region -->
-					<v-col cols="12" md="4">
-						<v-select
-							v-model="person.region"
-							label="Región"
-							:items="regiones"
-							outlined
-							dense
-							filled
-							@change="setComunas"
-						></v-select>
-					</v-col>
-					<!-- comuna -->
-					<v-col cols="12" md="4">
-						<v-select
-							v-model="person.comuna"
-							label="Comuna"
-							:items="comunas"
-							outlined
-							eager
-							dense
-							filled
-							:disabled="disableComunaInput"
-						></v-select>
-					</v-col>
-					<!-- documents -->
-					<v-col cols="12" offset-md="6" md="6">
-						<v-file-input
-							ref="document"
-							v-model="person.documents"
-							clearable
-							multiple
-							outlined
-							dense
-							filled
-							label="Agrega documentos, max. 5"
-						>
-						</v-file-input>
-					</v-col>
-				</v-row>
-				<small>*Campo requerido</small>
-			</v-container>
-		</v-card-text>
-		<v-card-actions>
-			<v-spacer></v-spacer>
-			<v-btn v-if="isDialog" text @click="closeDialog">Cerrar</v-btn>
-			<v-btn
-				x-large
-				:loading="saving"
-				:disabled="saving"
-				color="primary"
-				text
-				@click="submit"
-			>
-				Guardar
-			</v-btn>
-		</v-card-actions>
-	</v-card>
+									<v-spacer></v-spacer>
+									<v-btn text color="primary" @click="menu = false">Cerrar</v-btn>
+									<v-btn
+										text
+										color="primary"
+										@click="$refs.menu.save(person.birthdate)"
+										>ok</v-btn
+									>
+								</v-date-picker>
+							</v-menu>
+						</v-col>
+						<v-col cols="12">
+							<v-btn class="ma-2" small text @click="closeDialog">
+								Cancelar
+							</v-btn>
+							<v-btn class="ma-2" small color="primary" @click="stepper = 2">
+								Continuar
+							</v-btn>
+							<v-btn class="ma-2" small color="success" @click="submit">
+								<v-icon>mdi-content-save</v-icon><span>Guardar</span>
+							</v-btn>
+						</v-col>
+					</v-row>
+				</v-stepper-content>
+				<v-stepper-content step="2">
+					<v-row>
+						<!-- phone -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model="person.phone"
+								outlined
+								dense
+								filled
+								label="Teléfono"
+							></v-text-field>
+						</v-col>
+						<!-- region -->
+						<v-col cols="12" md="4">
+							<v-select
+								v-model="person.region"
+								label="Región"
+								:items="regiones"
+								outlined
+								dense
+								filled
+								@change="setComunas"
+							></v-select>
+						</v-col>
+						<!-- comuna -->
+						<v-col cols="12" md="4">
+							<v-select
+								v-model="person.comuna"
+								label="Comuna"
+								:items="comunas"
+								outlined
+								eager
+								dense
+								filled
+								:disabled="disableComunaInput"
+							></v-select>
+						</v-col>
+						<v-col cols="12">
+							<v-btn class="ma-2" small text @click="closeDialog">
+								Cancelar
+							</v-btn>
+							<v-btn class="ma-2" small color="primary" @click="stepper = 3">
+								Continuar
+							</v-btn>
+							<v-btn class="ma-2" small color="success" @click="submit">
+								<v-icon>mdi-content-save</v-icon><span>Guardar</span>
+							</v-btn>
+						</v-col>
+					</v-row>
+				</v-stepper-content>
+				<v-stepper-content step="3">
+					<v-row>
+						<!-- function -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model="person.function"
+								outlined
+								dense
+								filled
+								label="Función"
+							></v-text-field>
+						</v-col>
+						<!-- appointment -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model="person.appointment"
+								outlined
+								dense
+								filled
+								label="Cargo"
+							></v-text-field>
+						</v-col>
+						<!-- documents -->
+						<v-col cols="12" md="4">
+							<v-file-input
+								ref="document"
+								v-model="person.documents"
+								clearable
+								multiple
+								outlined
+								dense
+								filled
+								label="Agrega documentos, max. 5"
+							>
+							</v-file-input>
+						</v-col>
+						<v-col cols="12">
+							<v-btn small text @click="closeDialog">
+								Cancelar
+							</v-btn>
+							<v-btn small color="success" @click="submit">
+								<v-icon>mdi-content-save</v-icon><span>Guardar</span>
+							</v-btn>
+						</v-col>
+					</v-row>
+				</v-stepper-content>
+			</v-stepper-items>
+		</v-stepper>
+		<v-card v-else outlined>
+			<v-card-text>
+				<v-container>
+					<v-row justify="start">
+						<!-- avatar -->
+						<v-col cols="12">
+							<label for="avatar" class="d-flex justify-center">
+								<v-img
+									v-bind="mainProps"
+									rounded="circle"
+									alt="avatar"
+									class="pointer borderRadius"
+									max-width="130px"
+									:src="urlAvatar"
+									><div class="textAvatar secondary">
+										Actualiza avatar
+									</div>
+								</v-img>
+							</label>
+							<v-file-input
+								id="avatar"
+								ref="avatar"
+								class="pointer d-none"
+								accept="image/jpeg, image/png, image/gif, image/jpg"
+								@change="setAvatar"
+							/>
+						</v-col>
+						<v-col cols="12" class="text-left">
+							<p class="headline">Datos personales</p>
+						</v-col>
+						<!-- firstName -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="$v.person.firstName.$model"
+								:disabled="editMode"
+								filled
+								outlined
+								dense
+								label="Nombre*"
+								:error-messages="nameErrors"
+								@input="$v.person.firstName.$touch()"
+								@blur="$v.person.firstName.$touch()"
+							/>
+						</v-col>
+						<!-- lastName -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="person.lastName"
+								filled
+								outlined
+								dense
+								label="Apellido"
+							></v-text-field>
+						</v-col>
+						<!-- email -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="person.email"
+								:disabled="!isDialog"
+								outlined
+								dense
+								filled
+								type="email"
+								label="Correo electronico"
+							></v-text-field>
+						</v-col>
+						<!-- rut -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.trim="person.rut"
+								outlined
+								dense
+								filled
+								label="Rut"
+							></v-text-field>
+						</v-col>
+						<!-- state -->
+						<v-col cols="12" md="4">
+							<v-select
+								v-model="person.state"
+								filled
+								outlined
+								dense
+								label="Estado"
+								:items="['soltero', 'casado']"
+							></v-select>
+						</v-col>
+						<!-- age -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model.number="person.age"
+								filled
+								outlined
+								dense
+								label="Edad"
+								type="number"
+							></v-text-field>
+						</v-col>
+						<!-- birthdate -->
+						<v-col cols="4">
+							<v-menu
+								ref="menu"
+								v-model="menu"
+								:close-on-content-click="false"
+								:return-value.sync="person.birthdate"
+								transition="scale-transition"
+								offset-y
+								min-width="290px"
+							>
+								<template v-slot:activator="{ on }">
+									<v-text-field
+										v-model="person.birthdate"
+										label="Fecha de nacimiento"
+										readonly
+										outlined
+										dense
+										filled
+										v-on="on"
+									></v-text-field>
+								</template>
+								<v-date-picker
+									v-model="person.birthdate"
+									no-title
+									scrollable
+									locale="es"
+									:show-current="false"
+								>
+									<v-spacer></v-spacer>
+									<v-btn text color="primary" @click="menu = false">Cerrar</v-btn>
+									<v-btn
+										text
+										color="primary"
+										@click="$refs.menu.save(person.birthdate)"
+										>ok</v-btn
+									>
+								</v-date-picker>
+							</v-menu>
+						</v-col>
+						<v-col cols="12" class="text-left">
+							<p class="headline">Contacto y ubicación</p>
+						</v-col>
+						<!-- phone -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model="person.phone"
+								outlined
+								dense
+								filled
+								label="Teléfono"
+							></v-text-field>
+						</v-col>
+						<!-- region -->
+						<v-col cols="12" md="4">
+							<v-select
+								v-model="person.region"
+								label="Región"
+								:items="regiones"
+								outlined
+								dense
+								filled
+								@change="setComunas"
+							></v-select>
+						</v-col>
+						<!-- comuna -->
+						<v-col cols="12" md="4">
+							<v-select
+								v-model="person.comuna"
+								label="Comuna"
+								:items="comunas"
+								outlined
+								eager
+								dense
+								filled
+								:disabled="disableComunaInput"
+							></v-select>
+						</v-col>
+						<v-col cols="12" class="text-left">
+							<p class="headline">Rol</p>
+						</v-col>
+						<!-- function -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model="person.function"
+								outlined
+								dense
+								filled
+								label="Función"
+							></v-text-field>
+						</v-col>
+						<!-- appointment -->
+						<v-col cols="12" md="4">
+							<v-text-field
+								v-model="person.appointment"
+								outlined
+								dense
+								filled
+								label="Cargo"
+							></v-text-field>
+						</v-col>
+						<v-col cols="12" class="text-left">
+							<p class="headline">Documentos</p>
+						</v-col>
+						<!-- documents -->
+						<v-col cols="12" md="6">
+							<v-file-input
+								ref="document"
+								v-model="person.documents"
+								clearable
+								multiple
+								outlined
+								dense
+								filled
+								label="Agrega documentos, max. 5"
+							>
+							</v-file-input>
+						</v-col>
+					</v-row>
+					<small>*Campo requerido</small>
+				</v-container>
+			</v-card-text>
+			<v-card-actions>
+				<v-spacer></v-spacer>
+				<v-btn v-if="isDialog" text @click="closeDialog">Cerrar</v-btn>
+				<v-btn small :loading="saving" :disabled="saving" color="primary" @click="submit">
+					<v-icon>mdi-content-save</v-icon><span>Guardar</span>
+				</v-btn>
+			</v-card-actions>
+		</v-card>
+	</div>
 </template>
 
 <script>
@@ -255,10 +495,6 @@ export default {
 			type: Function,
 			default: () => {},
 		},
-		title: {
-			type: String,
-			required: true,
-		},
 		isDialog: {
 			type: Boolean,
 			default: false,
@@ -278,6 +514,7 @@ export default {
 	},
 	data() {
 		return {
+			stepper: 1,
 			saving: false,
 			urlAvatar: avatarDefault,
 			isActive: false,
