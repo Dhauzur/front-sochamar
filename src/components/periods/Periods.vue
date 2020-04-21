@@ -168,11 +168,8 @@ export default {
 			if (!this.$v.$invalid) {
 				await this.createPeriod(this.form);
 				this.fetchLodgings();
-				this.loadingSave = false;
 				this.closeDialog();
 			}
-			//agrego esta linea ya que apretar el botton guardar sin ingresar nada en los campos
-			//el loadingSave queda true y no se sale.
 			this.loadingSave = false;
 		},
 		closeDialog() {
