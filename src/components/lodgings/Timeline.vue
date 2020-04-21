@@ -1,7 +1,7 @@
 <template lang="html">
 	<v-row>
 		<v-col cols="3" md="2" class="overflow-x-auto" style="margin-top: 48px;">
-			<div v-for="(lodging, lodIndex) in lodgings" :key="lodIndex" class="itemPerson mb-1">
+			<div v-for="(lodging, lodIndex) in items" :key="lodIndex" class="itemPerson mb-1">
 				{{ lodging.group }}
 			</div>
 		</v-col>
@@ -18,7 +18,7 @@
 					{{ date.nameDay }}
 				</div>
 			</div>
-			<div v-for="(lodging, lodIndex) in lodgings" :key="lodIndex" class="d-inline-flex ">
+			<div v-for="(lodging, lodIndex) in items" :key="lodIndex" class="d-inline-flex ">
 				<div v-for="(date, id) in rangeDateTable" :key="id" class="itemEmpty">
 					<template v-for="(day, idDay) in lodging.days">
 						<div
@@ -78,6 +78,12 @@ import { extendMoment } from 'moment-range';
 
 let moment = extendMoment(Moment);
 export default {
+	props: {
+		items: {
+			type: Array,
+			required: true,
+		},
+	},
 	computed: {
 		rangeDateTable() {
 			var dates = [];
@@ -95,7 +101,6 @@ export default {
 			return dates;
 		},
 		...mapGetters({
-			lodgings: 'Lodging/lodgings',
 			rangeDate: 'Lodging/rangeDate',
 		}),
 	},

@@ -1,4 +1,3 @@
-import { DataSet } from 'vue2vis';
 import moment from 'moment';
 import { generateDaysArray } from '@/utils/lodging/daysArray';
 import { dayTotal } from '@/utils/lodging/dayTotal';
@@ -6,10 +5,8 @@ import { dayTotal } from '@/utils/lodging/dayTotal';
 const mutations = {
 	setBottomSheet(state, value) {
 		if (value.action && state.place && value.lodging) {
-			setTimeout(() => {
-				state.lodgingSelect = state.lodgings.get(value.lodging);
-				state.bottomSheet = true;
-			}, 1000);
+			state.lodgingSelect = state.lodgings.filter(lod => lod.id == value.lodging);
+			state.bottomSheet = true;
 		} else state.bottomSheet = true;
 		if (!value.action) state.bottomSheet = false;
 	},
@@ -21,9 +18,8 @@ const mutations = {
 	},
 	addPersonsLodging(state, value) {
 		state.lodgingPersons.push(value);
-		state.lodgings.update({
-			id: state.lodgingSelect.id,
-			persons: state.lodgingPersons,
+		state.lodgings = state.lodgings.forEach(lod => {
+			if (lod.id == state.lodgingSelect.id) lod.persons = state.lodgingPersons;
 		});
 	},
 	updatePersonsLodging(state, value) {
@@ -35,75 +31,55 @@ const mutations = {
 			dateEnd: value.end,
 			name: value.content,
 		};
-		state.lodgings.update({
-			id: state.lodgingSelect.id,
-			persons: state.lodgingPersons,
+		state.lodgings = state.lodgings.forEach(lod => {
+			if (lod.id == state.lodgingSelect.id) lod.persons = state.lodgingPersons;
 		});
 	},
 	removeLodgingPersons(state, value) {
 		state.lodgingPersons.splice(value, 1);
-		state.lodgings.update({
-			id: state.lodgingSelect.id,
-			persons: state.lodgingPersons,
+		state.lodgings = state.lodgings.forEach(lod => {
+			if (lod.id == state.lodgingSelect.id) lod.persons = state.lodgingPersons;
 		});
 	},
 	setUpdatingService(state, value) {
 		state.updatingService = value;
 	},
 	addLodging(state, value) {
-		if (!state.lodgings.get(value.id)) state.lodgings.add(value);
+		if (!state.lodgings.filter(lod => lod.id == value.id)) state.lodgings.push(value);
 	},
 	setMirrorLodging(state, value) {
 		state.mirrorLodging = value;
 	},
 	setDeletLodging(state, value) {
-		let tempLodgings = state.lodgings;
 		state.editMode = false;
 		state.lodgingSelect = null;
-		state.lodgings = new DataSet([]);
-		tempLodgings.remove(value.id);
-		state.lodgings = tempLodgings;
-		state.mirrorLodging = JSON.stringify(state.lodgings);
+		state.lodgings = state.lodgings.filter(lod => lod.id != value.id);
+		state.mirrorLodging = state.lodgings;
 	},
-	//Esto pasa al editar el lodging
 	dateChange(state, value) {
-		let tempLodging = state.lodgingSelect;
-		let tempLodgings = state.lodgings;
-		state.lodgings = new DataSet([]);
 		const startDate = moment(value.dateStart).hours(13);
 		const endDate = moment(value.dateEnd).hours(9);
-
-		tempLodgings.update({
-			id: state.lodgingSelect.id,
-			start: startDate,
-			end: endDate,
+		state.lodgings = state.lodgings.forEach(lod => {
+			if (lod.id == state.lodgingSelect.id) {
+				lod.start = startDate;
+				lod.end = endDate;
+			}
 		});
-		//en base a los nuevos rangos de fecha, creamos un arreglo de dias
 		const newDaysArray = generateDaysArray(this.selectedPlace, startDate, endDate);
-		//Con el nuevo arreglo de dias generados, buscamos si existe un fecha que corresponda a un dia viejo
-		//si existe un match entre ellos, la posicion del dia nuevo asignara al dia viejo.
-		//Con esto logramos preservar la data existente si yo quisiera extender el lodging hacia la derecha o izquierda.
-		const saveOldDaysServices = newDays => {
-			state.lodgingSelect.days.forEach(oldDay => {
-				const foundIndex = newDays.findIndex(newDay => newDay.date === oldDay.date);
-				if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
-			});
-		};
-		saveOldDaysServices(newDaysArray);
-		console.log('2??');
-		tempLodgings.update({
-			id: state.lodgingSelect.id,
-			days: newDaysArray,
+		state.lodgingSelect.days.forEach(oldDay => {
+			const foundIndex = newDaysArray.findIndex(newDay => newDay.date === oldDay.date);
+			if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
 		});
-		tempLodging.start = startDate;
-		tempLodging.end = endDate;
-		tempLodging.daysservice = newDaysArray;
-		state.lodgingSelect = tempLodging;
-		state.lodgings = tempLodgings;
+		state.lodgings = state.lodgings.forEach(lod => {
+			if (lod.id == state.lodgingSelect.id) lod.days = newDaysArray;
+		});
+		state.lodgingSelect.start = startDate;
+		state.lodgingSelect.end = endDate;
+		state.lodgingSelect.daysservice = newDaysArray;
 	},
 	setLodgingSelect(state, value) {
-		if (state.lodgings.get(value)) {
-			state.lodgingSelect = state.lodgings.get(value);
+		if (state.lodgings.filter(lod => lod.id == value)) {
+			state.lodgingSelect = state.lodgings.filter(lod => lod.id == value);
 		}
 	},
 	setLoading(state, value) {
@@ -115,49 +91,18 @@ const mutations = {
 	},
 	createOneLodging(state) {
 		state.editMode = false;
-		let place = state.Places.find(c => c.value === state.place);
-		let verificate = true;
 		const startDate = moment().hours(13);
 		const endDate = moment()
 			.hours(9)
 			.add(1, 'day');
-		const generatedDays = generateDaysArray(place, startDate, endDate);
-		state.lodgings.forEach(lod => {
-			if (
-				lod.group == state.periods.getIds()[0] &&
-				moment().isSameOrAfter(moment(lod.start)) &&
-				moment()
-					.add(1, 'day')
-					.isSameOrBefore(moment(lod.end))
-			)
-				verificate = false;
+		state.lodgings.add({
+			group: state.periods[0].id,
+			start: startDate,
+			end: endDate,
+			content: state.placeName,
+			days: generateDaysArray(state.place, startDate, endDate),
+			place: state.place,
 		});
-		if (verificate) {
-			if (place.text === 'Turismo') {
-				state.lodgings.add({
-					group: state.periods.getIds()[0],
-					start: startDate,
-					end: endDate,
-					content: state.placeName,
-					days: generatedDays,
-					place: state.place,
-				});
-			} else {
-				state.lodgings.add({
-					group: state.periods.getIds()[0],
-					start: startDate,
-					end: endDate,
-					content: state.placeName,
-					days: generatedDays,
-					place: state.place,
-				});
-			}
-		} else {
-			state.message = {
-				type: 'default',
-				text: 'Existe un alojamiento para esas fechas ',
-			};
-		}
 	},
 	setPlaceLodging(state, value) {
 		state.place = value;
@@ -266,7 +211,6 @@ const mutations = {
 		setTimeout(() => (state.periods = dataSet), 1);
 	},
 	setRangeDate(state, value) {
-		console.log(value);
 		state.rangeDate = value;
 	},
 	setRangeDatePayments(state, value) {

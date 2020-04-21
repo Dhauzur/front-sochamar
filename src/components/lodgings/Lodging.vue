@@ -148,28 +148,18 @@
 			</v-row>
 			<!-- timeline -->
 			<v-row class="mx-1">
-				<v-col cols="12">
-					<Experimental />
-				</v-col>
-				<!--<v-col v-if="place" cols="12" class="px-0">
+				<v-col v-if="place" cols="12" class="px-0">
 					<transition name="fade">
-						<timeline
+						<Timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
-							:class="{ timelineModeLight: theme, timelineModeDark: !theme }"
-							:events="['rangechanged', 'click', 'doubleClick']"
-							:groups="periods"
 							:items="lodgings"
-							:options="options"
-							@click="enableEdit"
-							@rangechanged="rangechanged"
-							@double-click="setBottomSheet({ action: true, lodging: null })"
 						/>
 					</transition>
 				</v-col>
-				<template v-for="(p, index) in places" v-else>
+				<!-- <template v-for="(p, index) in places" v-else>
 					<v-col v-if="p.value" :key="index" class="px-0 mb-4 " cols="12">
 						<h4 class="mb-2">{{ p.text }}</h4>
-						<timeline
+						<Timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
 							:events="['rangechanged', 'click', 'doubleClick']"
 							:class="{ timelineModeLight: theme, timelineModeDark: !theme }"
@@ -181,7 +171,7 @@
 							@double-click="setBottomSheet({ action: true, lodging: null })"
 						/>
 					</v-col>
-				</template>-->
+				</template> -->
 			</v-row>
 			<v-row>
 				<v-col cols="12">
@@ -261,7 +251,6 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
-import { generateDaysArray } from '../../utils/lodging/daysArray';
 
 let moment = extendMoment(Moment);
 
@@ -270,7 +259,7 @@ export default {
 		EditLodging: () => import('@/components/lodgings/EditLodging'),
 		Periods: () => import('@/components/periods/Periods'),
 		Payments: () => import('@/components/payments/Payments'),
-		Experimental: () => import('@/components/lodgings/experimental'),
+		Timeline: () => import('@/components/lodgings/Timeline'),
 	},
 	data() {
 		return {
@@ -282,110 +271,6 @@ export default {
 			onMovingNotificationControl: true,
 			sheet: false,
 			serviceSelected: 'todos los servicios',
-			options: {
-				editable: true,
-				start: moment(),
-				end: moment().add(14, 'day'),
-				zoomMin: 1000 * 60 * 60 * 24 * 7,
-				zoomMax: 1000 * 60 * 60 * 24 * 30,
-
-				//preguntar que pasa aca
-				onUpdate: (item, callback) => {
-					if (this.place) {
-						this.setModeEdit(true);
-						if (this.verifyOverlay(item)) {
-							callback(item);
-							/*this.updateService(item);*/
-						} else this.$toasted.show('Existe un alojamiento para esas fechas');
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				//Esta funcion hace trigger cuando estamos moviendo el lodging, nos sirve para verificar el overlay
-				onMoving: (item, callback) => {
-					this.setModeEdit(false);
-					if (this.place) {
-						//With onMovingNotificationControl we handle the notification spam problem
-						if (this.verifyOverlay(item)) {
-							callback(item);
-							this.onMovingNotificationControl = true;
-						} else {
-							if (this.onMovingNotificationControl) {
-								this.$toasted.show('Existe un alojamiento para esas fechas');
-								this.onMovingNotificationControl = false;
-							}
-						}
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				//Esta funcion hace trigger cuando removemos un lodging de la timeline
-				onRemove: (item, callback) => {
-					if (this.lodgings.length > 1 && this.place) {
-						this.setModeEdit(false);
-						this.deleteLodging(item);
-						callback(item);
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				//al hacer click en una parte del timeline, esta función actua similar a createOneLodging
-				onAdd: (item, callback) => {
-					if (this.place) {
-						let startDate = moment(item.start).hours(13);
-						let endDate = moment(item.start)
-							.hours(9)
-							.add(1, 'day');
-						item.start = startDate;
-						item.end = endDate;
-						if (this.verifyOverlay(item)) {
-							this.setModeEdit(false);
-							let place = this.places.find(c => c.value === this.place);
-							let generatedDays = generateDaysArray(place, startDate, endDate);
-							item.content = place.text;
-							if (place != 'Turismo') item.days = generatedDays;
-							else item.days = generatedDays;
-							let setTimeStamp = () => {
-								let timestamp = new Date().getTime().toString(16);
-								timestamp +
-									'xxxxxxxxxxxxxxxx'
-										.replace(/[x]/g, function() {
-											return ((Math.random() * 16) | 0).toString(16);
-										})
-										.toLowerCase();
-								return timestamp;
-							};
-							item.id = setTimeStamp();
-							this.addLodging(item);
-							if (!this.lodgings.get(item.id)) callback(item);
-						} else this.$toasted.show('Existe un alojamiento para esas fechas');
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				onMove: (item, callback) => {
-					if (this.place) {
-						let oldDays = item.days;
-						let startDate = moment(item.start).hours(13);
-						let endDate = moment(item.end).hours(9);
-						let newDaysArray = generateDaysArray(
-							this.selectedPlace,
-							startDate,
-							endDate
-						);
-						let saveOldDaysServices = (oldDays, newDays) => {
-							oldDays.forEach(oldDay => {
-								let foundIndex = newDays.findIndex(
-									newDay => newDay.date === oldDay.date
-								);
-								if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
-							});
-						};
-						saveOldDaysServices(oldDays, newDaysArray);
-						item.days = newDaysArray;
-						item.start = startDate;
-						item.end = endDate;
-						if (this.verifyOverlay(item)) {
-							this.setModeEdit(true);
-							callback(item);
-						} else {
-							this.$toasted.show('Existe un alojamiento para esas fechas');
-						}
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-			},
 		};
 	},
 	computed: {
