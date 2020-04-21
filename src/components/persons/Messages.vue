@@ -107,9 +107,6 @@ export default {
 				this.text = '';
 			});
 		},
-		setConversation(participant) {
-			console.log(participant);
-		},
 		formatTime(time) {
 			return moment(time).format('LLL');
 		},
