@@ -247,7 +247,7 @@ export default {
 			link.click();
 		},
 		async exportToCsv() {
-			const csv = await generateCsvReport();
+			const csv = await generateCsvReport(this.idPlace);
 			let blob = new Blob([csv], { type: 'text/csv' });
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
