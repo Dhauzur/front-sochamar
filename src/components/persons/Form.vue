@@ -250,7 +250,7 @@
 									class="pointer borderRadius"
 									max-width="130px"
 									:src="urlAvatar"
-									><div class="textAvatar secondary">
+									><div class="textAvatar success">
 										Actualiza avatar
 									</div>
 								</v-img>

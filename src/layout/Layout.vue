@@ -43,36 +43,36 @@
 				</v-avatar>
 			</router-link>
 		</v-app-bar>
-		<v-navigation-drawer v-model="drawer" app color="secondary" disable-resize-watcher>
+		<v-navigation-drawer v-model="drawer" app disable-resize-watcher>
 			<v-list>
 				<Logo style="max-height: 80px;" />
 			</v-list>
 			<v-divider></v-divider>
 			<v-list v-if="isAdmin" nav dense>
-				<v-list-item active-class="accent--text" link to="/">
+				<v-list-item active-class="primary--text" link to="/">
 					<v-icon>mdi-home</v-icon>
 					<v-list-item-title>Inicio</v-list-item-title>
 				</v-list-item>
-				<v-list-item active-class="accent--text" link to="/management">
+				<v-list-item active-class="primary--text" link to="/management">
 					<v-icon>mdi-widgets</v-icon>
 					<v-list-item-title>Administrar</v-list-item-title>
 				</v-list-item>
-				<v-list-item active-class="accent--text" link to="/reports">
+				<v-list-item active-class="primary--text" link to="/reports">
 					<v-icon>mdi-file-settings</v-icon>
 					<v-list-item-title>Enviar informes</v-list-item-title>
 				</v-list-item>
 			</v-list>
 			<template v-slot:append>
 				<v-list>
-					<v-list-item active-class="accent--text" link @click="toggleTheme">
+					<v-list-item active-class="primary--text" link @click="toggleTheme">
 						<v-icon>mdi-theme-light-dark</v-icon>
 						<v-list-item-title>Tema</v-list-item-title>
 					</v-list-item>
-					<v-list-item v-if="isAdmin" active-class="accent--text" link to="/profile">
+					<v-list-item v-if="isAdmin" active-class="primary--text" link to="/profile">
 						<v-icon>mdi-cog-outline</v-icon>
 						<v-list-item-title>Perfil</v-list-item-title>
 					</v-list-item>
-					<v-list-item active-class="accent--text" @click="quit">
+					<v-list-item active-class="primary--text" @click="quit">
 						<v-icon>mdi-logout</v-icon>
 						<v-list-item-title>Cerrar sesión</v-list-item-title>
 					</v-list-item>

@@ -1,7 +1,7 @@
 <template>
 	<v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-x>
 		<template v-slot:activator="{ on }">
-			<v-btn small color="accent" block dark v-on="on">
+			<v-btn small color="primary" block dark v-on="on">
 				<v-icon>mdi-plus</v-icon>
 				Nuevo
 			</v-btn>
@@ -22,7 +22,7 @@
 						<v-text-field
 							v-model.trim="email"
 							:loading="loading"
-							color="accent"
+							color="primary"
 							outlined
 							dense
 							filled
@@ -54,7 +54,7 @@
 					</v-col>
 					<v-col cols="12">Agregala tu mismo.</v-col>
 					<v-col>
-						<v-btn block small color="accent" @click="openForm">
+						<v-btn block small color="primary" @click="openForm">
 							<v-icon>mdi-plus</v-icon>
 							Agregar
 						</v-btn>

@@ -1,5 +1,5 @@
 <template>
-	<v-alert color="accent" border="bottom" elevation="4" colored-border class="pa-0 ma-0 pointer">
+	<v-alert color="primary" border="bottom" elevation="4" colored-border class="pa-0 ma-0 pointer">
 		<v-list three-line>
 			<template>
 				<v-list-item :key="item.title">

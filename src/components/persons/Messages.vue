@@ -40,7 +40,7 @@
 					<v-text-field
 						v-model="text"
 						hide-details
-						color="accent"
+						color="primary"
 						outlined
 						dense
 						filled
