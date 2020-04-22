@@ -14,7 +14,7 @@
 					:loading="loading"
 					:search="wordFilter"
 					:headers="fields"
-					:items="paymentsListTable"
+					:items="paymentsList"
 					:items-per-page="5"
 					item-key="_id"
 					class="caption"
