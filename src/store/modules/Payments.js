@@ -5,6 +5,7 @@ const state = {
 	payments: [],
 	loading: false,
 	loadingSave: false,
+	paymentsForMonth: [],
 };
 
 const getters = {
@@ -19,6 +20,16 @@ const getters = {
 			if (element.paymentType == 'byDates') element.paymentType = 'Pago por fecha';
 		}
 		return typePayment;
+	},
+	paymentsForMonth: state => {
+		const arrayMonth = [];
+		const paymentsMonth = state.payments;
+		for (const element of paymentsMonth) {
+			const sliceMonth = element.startDate.slice(0, 7);
+			arrayMonth.push(sliceMonth);
+		}
+		const removeDuplicates = [...new Set(arrayMonth)];
+		return removeDuplicates;
 	},
 };
 
