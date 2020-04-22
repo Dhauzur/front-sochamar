@@ -115,12 +115,18 @@ const deleteAllPersons = async () => {
 	return response;
 };
 
-const generatePdfReport = async () => {
-	return await fetch('/persons/reports/pdf', { method: 'get', responseType: 'arraybuffer' });
+const generatePdfReport = async companyId => {
+	return await fetch(`/persons/${companyId}/reports/pdf`, {
+		method: 'get',
+		responseType: 'arraybuffer',
+	});
 };
 
-const generateCsvReport = async () => {
-	return await fetch('/persons/reports/csv', { method: 'get', responseType: 'arraybuffer' });
+const generateCsvReport = async companyId => {
+	return await fetch(`/persons/${companyId}/reports/csv`, {
+		method: 'get',
+		responseType: 'arraybuffer',
+	});
 };
 
 export {

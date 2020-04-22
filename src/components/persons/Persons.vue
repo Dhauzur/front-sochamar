@@ -153,16 +153,15 @@ export default {
 					.catch(error => this.toast('error', error.message));
 		},
 		async exportToPdf() {
-			const pdf = await generatePdfReport();
+			const pdf = await generatePdfReport(this.profile._id);
 			let blob = new Blob([pdf], { type: 'application/pdf' });
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
 			link.download = 'personas.pdf';
 			link.click();
 		},
-
 		async exportToCsv() {
-			const csv = await generateCsvReport();
+			const csv = await generateCsvReport(this.profile._id);
 			let blob = new Blob([csv], { type: 'text/csv' });
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
