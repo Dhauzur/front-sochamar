@@ -119,6 +119,10 @@ const generatePdfReport = async () => {
 	return await fetch('/persons/reports/pdf', { method: 'get', responseType: 'arraybuffer' });
 };
 
+const generateCsvReport = async () => {
+	return await fetch('/persons/reports/csv', { method: 'get', responseType: 'arraybuffer' });
+};
+
 export {
 	createPerson,
 	pathRequest,
@@ -128,4 +132,5 @@ export {
 	deletePerson,
 	deleteAllPersons,
 	generatePdfReport,
+	generateCsvReport,
 };

@@ -17,6 +17,11 @@
 					<span>Exportar pdf</span>
 				</v-btn>
 			</v-col>
+			<v-col cols="12" md="2" class="text-left pb-0">
+				<v-btn block color="accent" small @click="exportToCsv">
+					<span>Exportar csv</span>
+				</v-btn>
+			</v-col>
 			<v-col cols="12" md="2" class="pb-0">
 				<v-text-field
 					v-model="filteredWord"
@@ -72,7 +77,12 @@
 <script>
 import PersonsList from '@/components/persons/List';
 import { mapGetters } from 'vuex';
-import { getPersonsByCompany, deletePerson, generatePdfReport } from '@/service/persons';
+import {
+	getPersonsByCompany,
+	deletePerson,
+	generatePdfReport,
+	generateCsvReport,
+} from '@/service/persons';
 export default {
 	components: {
 		PersonsList,
@@ -148,6 +158,15 @@ export default {
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
 			link.download = 'personas.pdf';
+			link.click();
+		},
+
+		async exportToCsv() {
+			const csv = await generateCsvReport();
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'personas.csv';
 			link.click();
 		},
 	},

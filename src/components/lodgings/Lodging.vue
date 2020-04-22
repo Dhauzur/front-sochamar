@@ -35,6 +35,12 @@
 						<span>Exportar pdf</span>
 					</v-btn>
 				</v-col>
+				<!-- export csv button -->
+				<v-col cols="12" sm="2" md="auto" class="mt-2">
+					<v-btn block color="accent" small @click="exportToCsv">
+						<span>Exportar csv</span>
+					</v-btn>
+				</v-col>
 				<!-- activity button -->
 				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
@@ -264,7 +270,7 @@ import { Timeline } from 'vue2vis';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import { generateDaysArray } from '../../utils/lodging/daysArray';
-import { generatePdfReport } from '@/service/lodgings';
+import { generatePdfReport, generateCsvReport } from '@/service/lodgings';
 
 let moment = extendMoment(Moment);
 
@@ -514,6 +520,14 @@ export default {
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
 			link.download = 'hospedajes.pdf';
+			link.click();
+		},
+		async exportToCsv() {
+			const csv = await generateCsvReport(this.place);
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'hospedajes.csv';
 			link.click();
 		},
 		...mapActions({

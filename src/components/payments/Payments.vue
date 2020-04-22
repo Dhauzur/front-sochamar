@@ -19,7 +19,11 @@
 							><span>Exportar pdf</span>
 						</v-btn>
 					</v-col>
-
+					<v-col cols="12" md="2" class="text-left py-0">
+						<v-btn small color="accent" @click="exportToCsv"
+							><span>Exportar csv</span>
+						</v-btn>
+					</v-col>
 					<v-col cols="12" md="3" class="py-0">
 						<v-text-field
 							v-model="wordForFilter"
@@ -153,7 +157,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
-import { generatePdfReport } from '@/service/payments';
+import { generatePdfReport, generateCsvReport } from '@/service/payments';
 import moment from 'moment';
 
 export default {
@@ -240,6 +244,14 @@ export default {
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
 			link.download = 'pagos.pdf';
+			link.click();
+		},
+		async exportToCsv() {
+			const csv = await generateCsvReport();
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'pagos.csv';
 			link.click();
 		},
 		...mapActions({
