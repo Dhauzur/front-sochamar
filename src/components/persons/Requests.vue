@@ -63,7 +63,8 @@ export default {
 				email: this.person.email,
 				idProfile: item.idCompany,
 				cancel: true,
-			}).then(() => {
+			}).then(res => {
+				this.updatePerson(res);
 				this.alert = false;
 			});
 		},
