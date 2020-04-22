@@ -1,13 +1,9 @@
 const getters = {
 	periodAllPlace: state => place => {
-		return state.periods.get({
-			filter: item => item.place == place,
-		});
+		return state.periods.filter(period => period.place == place);
 	},
 	lodgingsAllPlace: state => place => {
-		return state.lodgings.get({
-			filter: item => item.place == place,
-		});
+		return state.lodgings.filter(lod => lod.place == place);
 	},
 	bottomSheet: state => state.bottomSheet,
 	message: state => state.message,
@@ -23,21 +19,10 @@ const getters = {
 	countLogingsPlace: state => state.countLogingsPlace,
 	rangeDate: state => state.rangeDate,
 	periods: state => state.periods,
-	places: state => state.Places,
+	places: state => state.places,
 	place: state => state.place,
-	periodsTable: state => {
-		var periods = [];
-		if (state.periods)
-			state.periods.forEach(v => {
-				periods.push({
-					id: v.id,
-					name: v.content,
-					numberPassangerMax: v.numberPassangerMax,
-				});
-			});
-		return periods;
-	},
-	placeName: state => state.Places.find(c => c.value == state.place).text,
+	periodsTable: state => state.periods,
+	placeName: state => state.places.filter(place => place.value == state.place).text,
 	selectedPlace: state => state.selectedPlace,
 	servicesComboBox: state => state.servicesComboBox,
 };

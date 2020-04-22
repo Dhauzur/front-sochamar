@@ -40,6 +40,13 @@ export default {
 // 	}
 // }
 
+.bgLight {
+	background: linear-gradient(90deg, white, #6a31ff17 50%, #6a31ff0a 100%);
+}
+
+.bgDark {
+	background: linear-gradient(90deg, black, #6a31ff17 50%, #6a31ff0a 100%);
+}
 td {
 	// border: none !important;
 	padding: 1px !important;

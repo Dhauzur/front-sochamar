@@ -1,5 +1,3 @@
-import { DataSet } from 'vue2vis';
-
 const state = {
 	message: '',
 	updatingService: null,
@@ -7,9 +5,9 @@ const state = {
 	lodgingSelect: null,
 	loading: false,
 	editMode: false,
-	lodgings: new DataSet([]),
-	periods: new DataSet([]),
-	Places: [],
+	lodgings: [],
+	periods: [],
+	places: [],
 	lodgingPersons: [],
 	place: null,
 	rangeDatePayments: {},

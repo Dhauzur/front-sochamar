@@ -1,7 +1,14 @@
 <template>
 	<div>
 		<!-- global appbar desktop-->
-		<v-app-bar :flat="flatAppbar" app clipped-right dark class="appBar bg" absolute>
+		<v-app-bar
+			:flat="flatAppbar"
+			app
+			clipped-right
+			class="appBar "
+			:class="{ bgDark: $vuetify.theme.isDark, bgLight: !$vuetify.theme.isDark }"
+			absolute
+		>
 			<v-tooltip bottom>
 				<template v-slot:activator="{ on }">
 					<router-link to="/" v-on="on">
@@ -12,20 +19,20 @@
 				</template>
 				<span>Phlain</span>
 			</v-tooltip>
-			<v-btn v-if="isAdmin" class="ma-2" to="/management" text>
+			<v-btn v-if="isAdmin" class="ma-2 accent--text" to="/management" text>
 				Administrar
 			</v-btn>
-			<v-btn v-if="isAdmin" class="ma-2" text to="/reports">
+			<v-btn v-if="isAdmin" class="ma-2 accent--text" text to="/reports">
 				Enviar informes
 			</v-btn>
 			<v-spacer></v-spacer>
-			<v-btn class="ma-1" text icon @click="toggleTheme">
+			<v-btn class="ma-1 accent--text" text icon @click="toggleTheme">
 				<v-icon>mdi-theme-light-dark</v-icon>
 			</v-btn>
-			<v-btn v-if="isAdmin" class="ma-1" fab text to="/profile">
+			<v-btn v-if="isAdmin" class="ma-1 accent--text" fab text to="/profile">
 				<v-icon>mdi-cog-outline</v-icon>
 			</v-btn>
-			<v-btn text @click="quit">Cerrar sesión</v-btn>
+			<v-btn text class="accent--text" @click="quit">Cerrar sesión</v-btn>
 		</v-app-bar>
 		<!-- global appbar/drawer mobile -->
 		<v-app-bar
@@ -155,15 +162,6 @@ export default {
 		rgba(213, 47, 143, 0.861782212885154) 27%,
 		rgba(255, 255, 255, 1) 50%,
 		rgba(106, 49, 255, 0.870185574229691) 80%
-	);
-}
-
-.bg {
-	background: linear-gradient(
-		90deg,
-		#ffffff 0%,
-		rgba(213, 47, 143, 0.861782212885154) 20%,
-		rgba(106, 49, 255, 0.8701855742296919) 100%
 	);
 }
 </style>

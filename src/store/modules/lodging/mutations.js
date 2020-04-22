@@ -108,8 +108,8 @@ const mutations = {
 		state.place = value;
 	},
 	setPlaces(state, values) {
-		let Places = [];
-		Places.push({
+		let places = [];
+		places.push({
 			value: null,
 			text: 'Todas los lugares',
 		});
@@ -122,93 +122,76 @@ const mutations = {
 					services: v.services,
 				};
 			});
-			Places.push(...mapValues);
+			places.push(...mapValues);
 		}
-		state.Places = Places;
+		state.places = places;
 	},
 	updateActualService(state, { inputValue, lodgingId, dayIndex, serviceIndex }) {
-		let foundLodging = state.lodgings.get({
-			filter: item => item.id === lodgingId,
-		});
-		//BUG CON FALTA DE EXPLICACION: Por referenciacion de arrays, el value se replicaba en el resto del array days
-		//Para evitar esta replicacion, se utilizo stringify - parse. Se sugiere volver a verificar funcionamiento erroneo
+		let foundLodging = state.lodgings.filter(lod => lod.id == lodgingId);
 		let dayString = JSON.stringify(foundLodging[0].days[dayIndex]);
 		let day = JSON.parse(dayString);
 		day.services[serviceIndex].quantity = inputValue;
 		foundLodging[0].days[dayIndex].services = day.services;
 		foundLodging[0].days[dayIndex].dayTotal = dayTotal(foundLodging[0].days[dayIndex].services);
-		state.lodgings.update({
-			id: lodgingId,
-			days: foundLodging[0].days,
+		state.lodgings = state.lodgings.forEach(lod => {
+			if (lod.id == lodgingId) lod.days = foundLodging[0].days;
 		});
 	},
-	subDaysServices(state, { serviceName, lodgingId }) {
-		const foundLodging = state.lodgings.get({
-			filter: item => item.id === lodgingId,
-		});
-		if (serviceName === 'todos los servicios') {
-			foundLodging[0].days.forEach(day => {
-				day.services.forEach(service => {
-					service.quantity = service.quantity - 1;
-					if (service.quantity < 0) service.quantity = 0;
-					day.dayTotal = dayTotal(day.services);
-				});
-			});
-		} else {
-			foundLodging[0].days.forEach(day => {
-				day.services.forEach(service => {
-					if (service.name === serviceName) {
-						service.quantity = service.quantity - 1;
-						if (service.quantity < 0) service.quantity = 0;
-						day.dayTotal = dayTotal(day.services);
-					}
-				});
-			});
-		}
-	},
-	addDaysServices(state, { serviceName, lodgingId, lodgingGroup }) {
-		const numberPassangerMax = state.periods.get(lodgingGroup).numberPassangerMax;
-		const foundLodging = state.lodgings.get({
-			filter: item => item.id === lodgingId,
-		});
-		if (serviceName === 'todos los servicios') {
-			foundLodging[0].days.forEach(day => {
-				day.services.forEach(service => {
-					service.quantity = service.quantity + 1;
-					if (service.quantity == null) service.quantity = 0;
-					if (service.quantity >= numberPassangerMax)
-						service.quantity = numberPassangerMax;
-					day.dayTotal = dayTotal(day.services);
-				});
-			});
-		} else {
-			foundLodging[0].days.forEach(day => {
-				day.services.forEach(service => {
-					if (service.name === serviceName) {
-						service.quantity = service.quantity + 1;
-						if (service.quantity == null) service.quantity = 0;
-						if (service.quantity >= numberPassangerMax)
-							service.quantity = numberPassangerMax;
-						day.dayTotal = dayTotal(day.services);
-					}
-				});
-			});
-		}
-	},
+	// subDaysServices(state, { serviceName, lodgingId }) {
+	// 	const foundLodging = state.lodgings.get({
+	// 		filter: item => item.id === lodgingId,
+	// 	});
+	// 	if (serviceName === 'todos los servicios') {
+	// 		foundLodging[0].days.forEach(day => {
+	// 			day.services.forEach(service => {
+	// 				service.quantity = service.quantity - 1;
+	// 				if (service.quantity < 0) service.quantity = 0;
+	// 				day.dayTotal = dayTotal(day.services);
+	// 			});
+	// 		});
+	// 	} else {
+	// 		foundLodging[0].days.forEach(day => {
+	// 			day.services.forEach(service => {
+	// 				if (service.name === serviceName) {
+	// 					service.quantity = service.quantity - 1;
+	// 					if (service.quantity < 0) service.quantity = 0;
+	// 					day.dayTotal = dayTotal(day.services);
+	// 				}
+	// 			});
+	// 		});
+	// 	}
+	// },
+	// addDaysServices(state, { serviceName, lodgingId, lodgingGroup }) {
+	// 	const numberPassangerMax = state.periods.get(lodgingGroup).numberPassangerMax;
+	// 	const foundLodging = state.lodgings.get({
+	// 		filter: item => item.id === lodgingId,
+	// 	});
+	// 	if (serviceName === 'todos los servicios') {
+	// 		foundLodging[0].days.forEach(day => {
+	// 			day.services.forEach(service => {
+	// 				service.quantity = service.quantity + 1;
+	// 				if (service.quantity == null) service.quantity = 0;
+	// 				if (service.quantity >= numberPassangerMax)
+	// 					service.quantity = numberPassangerMax;
+	// 				day.dayTotal = dayTotal(day.services);
+	// 			});
+	// 		});
+	// 	} else {
+	// 		foundLodging[0].days.forEach(day => {
+	// 			day.services.forEach(service => {
+	// 				if (service.name === serviceName) {
+	// 					service.quantity = service.quantity + 1;
+	// 					if (service.quantity == null) service.quantity = 0;
+	// 					if (service.quantity >= numberPassangerMax)
+	// 						service.quantity = numberPassangerMax;
+	// 					day.dayTotal = dayTotal(day.services);
+	// 				}
+	// 			});
+	// 		});
+	// 	}
+	// },
 	setPeriods(state, values) {
-		state.periods = new DataSet([]);
-		const dataSet = new DataSet([]);
-		const mappedValues = values.map(period => {
-			return {
-				id: period._id,
-				content: period.name,
-				numberPassangerMax: period.numberPassangerMax,
-				place: period.place,
-				treeLevel: 1,
-			};
-		});
-		dataSet.add(mappedValues);
-		setTimeout(() => (state.periods = dataSet), 1);
+		state.periods = values;
 	},
 	setRangeDate(state, value) {
 		state.rangeDate = value;
