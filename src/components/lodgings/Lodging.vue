@@ -20,7 +20,7 @@
 				<!-- select place  -->
 				<v-col cols="12" md="3">
 					<v-select
-						:value="place"
+						v-model="selectPlace"
 						:items="places"
 						dense
 						filled
@@ -31,7 +31,7 @@
 					</v-select>
 				</v-col>
 				<!-- activity button -->
-				<v-col v-if="place" cols="12" sm="2" md="auto">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn color="accent" block @click="createOneLodging()" v-on="on">
@@ -42,7 +42,7 @@
 					</v-tooltip>
 				</v-col>
 				<!-- periods buttons -->
-				<v-col v-if="place" cols="12" sm="2" md="auto">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
@@ -58,7 +58,7 @@
 					</v-tooltip>
 				</v-col>
 				<!-- payments buttons -->
-				<v-col v-if="place" cols="12" sm="2" md="auto">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
@@ -74,7 +74,7 @@
 					</v-tooltip>
 				</v-col>
 				<!-- edit buttons -->
-				<v-col v-if="lodgingSelect" cols="12" sm="2" md="auto">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
@@ -102,22 +102,23 @@
 				</v-col>
 				<!-- periods dialog -->
 				<v-bottom-sheet
-					v-if="lodgingSelect"
+					v-if="selectedPlace"
 					v-model="bottomSheet"
 					inset
 					@click:outside="setBottomSheet(false)"
 				>
 					<v-sheet style="height: 75vh">
-						<edit-lodging :lodgings="lodgings" :id-place="place" />
+						<edit-lodging :lodgings="lodgings" :id-place="selectedPlace.value" />
 					</v-sheet>
 				</v-bottom-sheet>
 				<v-bottom-sheet
+					v-if="selectedPlace"
 					v-model="dialogPeriods"
 					inset
 					@click:outside="dialogPeriods = false"
 				>
 					<v-sheet style="height: 75vh">
-						<Periods :id-place="place" />
+						<Periods :id-place="selectedPlace.value" />
 					</v-sheet>
 				</v-bottom-sheet>
 				<!-- payments dialog -->
@@ -129,7 +130,7 @@
 					@click:outside="dialogPayments = false"
 				>
 					<v-sheet style="height: 75vh; overflow-y: auto;">
-						<Payments :id-place="place" />
+						<Payments :id-place="selectedPlace.value" />
 					</v-sheet>
 				</v-bottom-sheet>
 				<!-- <template v-if="Boolean(place) && dialogPayments">
@@ -141,14 +142,14 @@
 								</v-btn>
 								<v-toolbar-title>Gestion de Pagos</v-toolbar-title>
 							</v-toolbar>
-							<Payments :id-place="place" />
+							<Payments :id-place="selectedPlace" />
 						</v-card>
 					</v-dialog>
 				</template> -->
 			</v-row>
 			<!-- timeline -->
 			<v-row class="mx-1">
-				<v-col v-if="place" cols="12" class="px-0">
+				<v-col v-if="selectedPlace" cols="12" class="px-0">
 					<transition name="fade">
 						<Timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
@@ -178,7 +179,7 @@
 					<v-row>
 						<v-col cols="12" class="overflow-x-auto">
 							<v-switch
-								v-if="place && lodgingSelect"
+								v-if="selectedPlace && lodgingSelect"
 								v-model="viewPrices"
 								label="Ver precios"
 							></v-switch>
@@ -263,6 +264,7 @@ export default {
 	},
 	data() {
 		return {
+			selectPlace: null,
 			dateLodgingSelect: [],
 			modalDateLodgingSelect: false,
 			viewPrices: false,
@@ -278,23 +280,17 @@ export default {
 			return localStorage.getItem('mode');
 		},
 		servicesTableDetails() {
-			if (this.place && this.lodgingSelect) {
+			if (this.selectedPlace && this.lodgingSelect) {
 				let lodging = this.lodgings.get(this.lodgingSelect.id);
 				return lodging;
 			} else return 'Debe selecionar un lugar y lodging para ver data';
 		},
 		getMirrorLodging() {
-			let copy = JSON.stringify(this.lodgings);
-			if (copy === this.mirrorLodging) return false;
+			if (this.lodgings === this.mirrorLodging) return false;
 			else return true;
-		},
-		prices() {
-			if (this.place) return this.places.find(c => c.value == this.place);
-			else return [];
 		},
 		...mapGetters({
 			periodAllPlace: 'Lodging/periodAllPlace',
-			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
 			bottomSheet: 'Lodging/bottomSheet',
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',
@@ -303,7 +299,6 @@ export default {
 			message: 'Lodging/message',
 			mirrorLodging: 'Lodging/mirrorLodging',
 			periods: 'Lodging/periods',
-			place: 'Lodging/place',
 			places: 'Lodging/places',
 			rangeDate: 'Lodging/rangeDate',
 			updatingService: 'Lodging/updatingService',
@@ -366,12 +361,12 @@ export default {
 			});
 			return verificate;
 		},
-		setPlace(payload) {
-			this.setPlaceLodging(payload);
+		setPlace(place) {
 			this.setModeEdit(false);
-			this.setSelectedPlace();
+			console.log(place);
+			this.setSelectedPlace(place);
 			this.setServicesComboBox();
-			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
+			this.fetchPeriods().then(() => this.fetchLodgings());
 		},
 		detectServiceQuantityChange(payload, lodgingId, dayIndex, serviceIndex) {
 			let inputValue = parseInt(payload.target.value);
@@ -385,7 +380,7 @@ export default {
 			this.updateActualService({ inputValue, lodgingId, dayIndex, serviceIndex });
 		},
 		enableEdit(payload) {
-			if (this.place && payload.item) {
+			if (this.selectedPlace && payload.item) {
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
@@ -406,6 +401,7 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
+			setSelectedPlace: 'Lodging/setSelectedPlace',
 			dateChange: 'Lodging/dateChange',
 			setBottomSheet: 'Lodging/setBottomSheet',
 			subDaysServices: 'Lodging/subDaysServices',
@@ -418,7 +414,6 @@ export default {
 			setPlaceLodging: 'Lodging/setPlaceLodging',
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
-			setSelectedPlace: 'Lodging/setSelectedPlace',
 			setServicesComboBox: 'Lodging/setServicesComboBox',
 			updateActualService: 'Lodging/updateActualService',
 		}),

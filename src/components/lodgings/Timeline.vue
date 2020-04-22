@@ -14,17 +14,32 @@
 				</div>
 			</div>
 			<div class="d-inline-flex  pb-1 ">
-				<div v-for="(date, id) in rangeDateTable" :key="id" class="itemDateHead">
+				<div
+					v-for="(date, id) in rangeDateTable"
+					:key="id"
+					class="itemDateHead"
+					:class="{
+						itemDateHeadBorderDark: $vuetify.theme.isDark,
+						itemDateHeadBorderLigth: !$vuetify.theme.isDark,
+					}"
+				>
 					{{ date.nameDay }}
 				</div>
 			</div>
 			<div v-for="(lodging, lodIndex) in items" :key="lodIndex" class="d-inline-flex ">
-				<div v-for="(date, id) in rangeDateTable" :key="id" class="itemEmpty">
+				<div
+					v-for="(date, id) in rangeDateTable"
+					:key="id"
+					:class="{
+						itemDateHeadBorderDark: $vuetify.theme.isDark,
+						itemDateHeadBorderLigth: !$vuetify.theme.isDark,
+					}"
+					class="itemEmpty"
+				>
 					<template v-for="(day, idDay) in lodging.days">
 						<div
-							v-if="day.date == date.numberDay"
 							:key="idDay"
-							:class="{ itemUsed: day.date == date.numberDay }"
+							:class="{ itemUsed: compareDates(day.date, date.numberDay) }"
 						></div>
 					</template>
 				</div>
@@ -34,7 +49,7 @@
 		<v-col cols="12">
 			<v-row class="d-inline-flex  pb-3 ">
 				<v-col
-					v-for="(lodging, lodIndex) in lodgings"
+					v-for="(lodging, lodIndex) in items"
 					:key="lodIndex"
 					cols="12"
 					class="overflow-x-auto microCard"
@@ -93,7 +108,7 @@ export default {
 				dates.push({
 					numberDay: moment(this.rangeDate.start)
 						.add(i, 'day')
-						.format('DD-MM-YY'),
+						.format('YYYY-MM-DD'),
 					nameDay: moment(this.rangeDate.start)
 						.add(i, 'day')
 						.format('DD'),
@@ -109,12 +124,15 @@ export default {
 			start: moment().date(1),
 			end: moment()
 				.date(0)
-				.add(1, 'M'),
+				.add(3, 'M'),
 		});
 	},
 	methods: {
+		compareDates(valueLodging, valueDate) {
+			return valueLodging == moment(valueDate).format('DD-MM-YY');
+		},
 		convertDate(value) {
-			return moment(value).format('dddd MMMM YYYY');
+			return moment(value).format('MMMM YYYY');
 		},
 		// ...mapActions({
 		// }),
@@ -160,6 +178,14 @@ export default {
 	height: 20px;
 	width: 30px;
 	background-color: #8080801c;
+	border-right: 1px solid white;
+}
+
+.itemDateHeadBorderDark {
+	border-right: 1px solid black;
+}
+
+.itemDateHeadBorderLigth {
 	border-right: 1px solid white;
 }
 

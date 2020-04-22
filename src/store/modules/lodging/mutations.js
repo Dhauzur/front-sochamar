@@ -4,7 +4,7 @@ import { dayTotal } from '@/utils/lodging/dayTotal';
 
 const mutations = {
 	setBottomSheet(state, value) {
-		if (value.action && state.place && value.lodging) {
+		if (value.action && state.selectedPlace && value.lodging) {
 			state.lodgingSelect = state.lodgings.filter(lod => lod.id == value.lodging);
 			state.bottomSheet = true;
 		} else state.bottomSheet = true;
@@ -65,7 +65,7 @@ const mutations = {
 				lod.end = endDate;
 			}
 		});
-		const newDaysArray = generateDaysArray(this.selectedPlace, startDate, endDate);
+		const newDaysArray = generateDaysArray(this.selectedPlace.value, startDate, endDate);
 		state.lodgingSelect.days.forEach(oldDay => {
 			const foundIndex = newDaysArray.findIndex(newDay => newDay.date === oldDay.date);
 			if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
@@ -99,13 +99,10 @@ const mutations = {
 			group: state.periods[0].id,
 			start: startDate,
 			end: endDate,
-			content: state.placeName,
-			days: generateDaysArray(state.place, startDate, endDate),
-			place: state.place,
+			content: state.selectedPlaceName,
+			days: generateDaysArray(state.selectedPlace.value, startDate, endDate),
+			place: state.selectedPlace.value,
 		});
-	},
-	setPlaceLodging(state, value) {
-		state.place = value;
 	},
 	setPlaces(state, values) {
 		let places = [];
@@ -207,17 +204,14 @@ const mutations = {
 		});
 		state.rangeDatePayments = { startDate: min, endDate: max };
 	},
-	setLodgingsPlace(state, value) {
-		state.lodgingsPlace = value;
-	},
 	setcountLogingsPlace(state, value) {
 		state.countLogingsPlace = value;
 	},
 	setLodgings(state, values) {
 		state.lodgings = values;
 	},
-	setSelectedPlace(state) {
-		state.selectedPlace = state.Places.find(place => place.value === state.place);
+	setSelectedPlace(state, value) {
+		state.selectedPlace = state.places.find(place => place.value === value);
 	},
 	setServicesComboBox(state) {
 		const allServicesObject = {

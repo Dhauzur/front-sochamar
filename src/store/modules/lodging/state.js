@@ -9,7 +9,6 @@ const state = {
 	periods: [],
 	places: [],
 	lodgingPersons: [],
-	place: null,
 	rangeDatePayments: {},
 	lodgingsPlace: [],
 	countLogingsPlace: 0,
@@ -17,7 +16,7 @@ const state = {
 		start: null,
 		end: null,
 	},
-	selectedPlace: {},
+	selectedPlace: null,
 	servicesComboBox: [],
 	bottomSheet: false,
 };
