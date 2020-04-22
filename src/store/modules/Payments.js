@@ -12,6 +12,14 @@ const getters = {
 	payments: state => state.payments,
 	loading: state => state.loading,
 	loadingSave: state => state.loadingSave,
+	paymentsType: state => {
+		const typePayment = state.payments;
+		for (const element of typePayment) {
+			if (element.paymentType == 'lodging') element.paymentType = 'Pago por alojamiento';
+			if (element.paymentType == 'byDates') element.paymentType = 'Pago por fecha';
+		}
+		return typePayment;
+	},
 };
 
 const actions = {
@@ -53,7 +61,7 @@ const actions = {
 	},
 	async editPayment({ commit }, { comments, id }) {
 		try {
-			await fetch(`/payments/${id}`, { method: 'put', data: comments });
+			await fetch(`/payments/${id}`, { method: 'put', data: { comments } });
 			commit('setMessage', {
 				type: 'success',
 				text: 'Actualizado exitosamente',
@@ -67,7 +75,9 @@ const actions = {
 	},
 	async deleteOnePayment({ commit }, id) {
 		try {
+			commit('setLoading', true);
 			await fetch(`/payments/${id}`, { method: 'delete' });
+			commit('deletePayment', id);
 			commit('setMessage', {
 				type: 'success',
 				text: 'Eliminado datos de pago',
@@ -78,12 +88,17 @@ const actions = {
 				text: error.message,
 			});
 		}
+		commit('setLoading', false);
 	},
 };
 
 const mutations = {
 	setPayments(state, value) {
 		state.payments = value;
+	},
+	deletePayment(state, value) {
+		let index = state.payments.findIndex(payment => payment._id == value);
+		state.payments.splice(index, 1);
 	},
 	setMessage(state, value) {
 		state.message = value;
