@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import moment from 'moment';
 export default {
 	name: 'PaymentsTable',
@@ -117,14 +117,6 @@ export default {
 			dialog: false,
 			idPaymentDelete: null,
 		};
-	},
-	computed: {
-		...mapGetters({
-			//countLodgings: 'Lodging/countLogingsPlace',
-			//loading: 'Payments/loading',
-			//message: 'Payments/message',
-			//paymentsType: 'Payments/paymentsType',
-		}),
 	},
 	watch: {
 		message(newVal) {
