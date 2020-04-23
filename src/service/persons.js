@@ -128,7 +128,8 @@ const deleteAllPersons = async () => {
 	const response = await fetch(`/persons/delete/all`, { method: 'delete' });
 	return response;
 };
-
+/*get the pdf from the api response*/
+/*arrayBuffer option prevents damaged file conversion in blob*/
 const generatePdfReport = async companyId => {
 	return await fetch(`/persons/${companyId}/reports/pdf`, {
 		method: 'get',
@@ -136,6 +137,8 @@ const generatePdfReport = async companyId => {
 	});
 };
 
+/*get the csv from the api response*/
+/*arrayBuffer option prevents damaged file conversion in blob*/
 const generateCsvReport = async companyId => {
 	return await fetch(`/persons/${companyId}/reports/csv`, {
 		method: 'get',
