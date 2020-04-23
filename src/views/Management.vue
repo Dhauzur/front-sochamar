@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<v-app-bar dense>
-			<v-tabs v-model="tab" color="accent" centered>
+			<v-tabs v-model="tab" color="primary" centered>
 				<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
 			</v-tabs>
 		</v-app-bar>

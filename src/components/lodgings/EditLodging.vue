@@ -11,7 +11,7 @@
 						<!-- @todo remove dialog changeDate -->
 						<v-dialog v-model="dialogChangeDate" width="290px">
 							<template v-slot:activator="{ on }">
-								<v-btn small color="accent" class="ma-2 d-none" v-on="on">
+								<v-btn small color="primary" class="ma-2 d-none" v-on="on">
 									Cambiar fecha del hospedaje
 								</v-btn>
 							</template>
@@ -51,14 +51,17 @@
 									<v-stepper-content step="1">
 										<v-autocomplete
 											v-model="personSelected"
-											solo
 											:items="personFormatted"
 											:filter="customFilter"
+											outlined
+											dense
+											filled
 											color="white"
 											item-value="data"
 											item-text="search"
 											label="Buscar persona"
 											clearable
+											no-data-text="No hay personas"
 										></v-autocomplete>
 										<v-btn
 											:disabled="Boolean(!personSelected)"

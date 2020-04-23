@@ -33,7 +33,13 @@
 				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
 						<template v-slot:activator="{ on }">
-							<v-btn color="accent" block small @click="createOneLodging()" v-on="on">
+							<v-btn
+								color="primary"
+								block
+								small
+								@click="createOneLodging()"
+								v-on="on"
+							>
 								<v-icon>mdi-plus</v-icon><span>Actividad</span>
 							</v-btn>
 						</template>
@@ -46,7 +52,7 @@
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="accent"
+								color="primary"
 								small
 								v-on="on"
 								@click.stop="dialogPeriods = true"
@@ -63,7 +69,7 @@
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="accent"
+								color="primary"
 								small
 								v-on="on"
 								@click.stop="dialogPayments = true"
@@ -80,7 +86,7 @@
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="accent"
+								color="primary"
 								small
 								v-on="on"
 								@click.stop="setBottomSheet({ action: true, lodging: null })"

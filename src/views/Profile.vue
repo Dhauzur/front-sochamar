@@ -107,48 +107,65 @@
 			</v-row>
 			<v-row v-if="isPerson">
 				<v-app-bar dense>
-					<v-tabs v-model="tab" color="accent" centered>
+					<v-tabs v-model="tab" color="primary" centered>
 						<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
 					</v-tabs>
 				</v-app-bar>
 				<v-container>
 					<v-row justify="center">
-						<v-col v-if="tab === 0" cols="12">
+						<v-col v-if="tab === 0" cols="12" lg="8" xl="6">
 							<Form
-								title="Completa tus datos"
 								:edit-mode="Boolean(person)"
 								:selected="userSelected"
 								:update-user="updateUser"
 								:toast="toast"
 							/>
 						</v-col>
-						<v-col v-if="tab === 1" cols="12" sm="6" md="5" class="p-0">
-							<template v-if="person.idCompany">
-								<v-sheet elevation="24" height="calc(100vh - 140px)">
-									<messages :id="person._id" :sender="person.firstName" />
-								</v-sheet>
-							</template>
-							<template v-else>
-								<small class="overline">
-									Regresa luego cuando te hayas sumado a un equipo.
-								</small>
-							</template>
-						</v-col>
-						<v-col v-if="tab === 2" cols="12">
-							<template v-if="hasRequest">
-								<div v-for="(item, i) in person.request" :key="i">
-									<requests
-										:item="item"
-										:person="person"
-										:toast="toast"
-										:update-person="updatePerson"
-									/>
-								</div>
-								<small class="overline">*Solo puedes unirte a una compañia</small>
-							</template>
-							<template v-else>
-								<small class="overline">No tienes solicitudes</small>
-							</template>
+						<v-col v-if="tab === 1" cols="12" class="p-0">
+							<v-row justify="center">
+								<v-col cols="12" sm="8" md="6" xl="5">
+									<v-card outlined>
+										<template v-if="hasIdCompany">
+											<v-card-text>
+												Actualmente perteneces a un equipo
+												<v-btn
+													text
+													color="error"
+													small
+													@click="unsubscribe"
+												>
+													Salir del equipo
+												</v-btn>
+											</v-card-text>
+											<v-card-text v-if="hasIdCompany" class="overline">
+												*Solo puedes unirte a un equipo
+											</v-card-text>
+										</template>
+										<v-divider v-if="hasIdCompany && hasRequest" class="mx-4" />
+										<v-card-text v-if="hasRequest">
+											<div v-for="(item, i) in person.request" :key="i">
+												<requests
+													:item="item"
+													:person="person"
+													:toast="toast"
+													:update-person="updatePerson"
+												/>
+											</div>
+										</v-card-text>
+										<v-card-text
+											v-if="!hasRequest && !hasIdCompany"
+											class="overline"
+										>
+											*Ahora no tienes solicitudes para unirte a un equipo
+										</v-card-text>
+									</v-card>
+								</v-col>
+								<v-col v-if="hasIdCompany" cols="12" sm="8" md="4" xl="3">
+									<v-card outlined height="calc(100vh - 140px)">
+										<messages :id="person._id" :sender="person.firstName" />
+									</v-card>
+								</v-col>
+							</v-row>
 						</v-col>
 					</v-row>
 				</v-container>
@@ -162,7 +179,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { validationMixin } from 'vuelidate';
 import Avatar from '@/components/ui/Avatar';
 import { minLength, maxLength, required } from 'vuelidate/lib/validators';
-import { getPerson, createPerson } from '@/service/persons';
+import { getPerson, createPerson, pathRequest } from '@/service/persons';
 
 export default {
 	components: {
@@ -178,7 +195,7 @@ export default {
 			person: null,
 			loadingInitial: true,
 			selected: 0,
-			items: ['Perfil', 'Mensajes', 'Solicitudes', 'Leer politicas'],
+			items: ['Perfil', 'Mi equipo', 'Leer politicas'],
 			avatar: null,
 			loadingUpload: false,
 			profileData: {
@@ -202,6 +219,9 @@ export default {
 				Array.isArray(this.person.request) &&
 				this.person.request.length
 			);
+		},
+		hasIdCompany() {
+			return this.person.idCompany;
 		},
 		avatarMessage() {
 			return this.profileData.img.length > 0 ? 'Cambiar avatar' : 'Subir avatar';
@@ -307,6 +327,11 @@ export default {
 				this.profileErrors = false;
 				this.updateProfile(this.profileData).then(this.clearUpload);
 			}
+		},
+		unsubscribe() {
+			let data = { email: this.person.email, unsubscribe: true };
+			confirm('Estas seguro de que quieres salirte del equipo?') &&
+				pathRequest(data).then(response => (this.person = response.person));
 		},
 		updateUser(person) {
 			let data = {

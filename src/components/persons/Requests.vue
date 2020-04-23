@@ -1,5 +1,5 @@
 <template>
-	<v-alert v-model="alert" elevation="24" prominent border="left" colored-border color="primary">
+	<v-alert v-model="alert" prominent text>
 		<v-row align="center">
 			<v-col class="grow">
 				<span class="success--text">{{ item.name }}</span> te envió una solicitud para que
@@ -48,8 +48,10 @@ export default {
 	},
 	methods: {
 		accept(idCompany) {
-			let person = { ...this.person };
-			putPerson({ ...person, idCompany }, this.person._id).then(res => {
+			if (this.person.idCompany) {
+				return this.toast('info', 'Ya perteneces a un equipo');
+			}
+			putPerson({ ...this.person, idCompany }, this.person._id).then(res => {
 				this.updatePerson(res);
 				this.remove(idCompany);
 				this.toast('info', 'Solicitud Aceptada');
@@ -61,7 +63,8 @@ export default {
 				email: this.person.email,
 				idProfile: item.idCompany,
 				cancel: true,
-			}).then(() => {
+			}).then(res => {
+				this.updatePerson(res);
 				this.alert = false;
 			});
 		},
