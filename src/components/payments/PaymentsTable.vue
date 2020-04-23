@@ -1,6 +1,11 @@
 <template>
 	<v-container>
 		<v-row>
+			<v-col cols="12" class="pa-0 mx-auto"
+				><p class="text-capitalize">
+					Pagos registrados en {{ formatTittle(title) }} del {{ formatTittleYear(title) }}
+				</p></v-col
+			>
 			<v-col cols="12" class="mx-auto">
 				<v-data-table
 					dense
@@ -9,7 +14,7 @@
 					:loading="loading"
 					:search="wordFilter"
 					:headers="fields"
-					:items="paymentsType"
+					:items="paymentsList"
 					:items-per-page="5"
 					item-key="_id"
 					class="caption"
@@ -85,11 +90,17 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import moment from 'moment';
 export default {
 	name: 'PaymentsTable',
-	props: { wordFilter: { type: String, default: '' } },
+	props: {
+		wordFilter: { type: String, default: '' },
+		paymentsList: { type: Array, default: () => [] },
+		idPlace: { type: String, required: true },
+		loading: { type: Boolean },
+		title: { type: String, default: '' },
+	},
 	data() {
 		return {
 			fields: [
@@ -102,22 +113,10 @@ export default {
 				{ value: 'actions', text: 'Acción' },
 			],
 			newComment: '',
-			selected: {},
-			index: '',
-			itemFiltered: [],
-			visible: null,
+			visible: true,
 			dialog: false,
 			idPaymentDelete: null,
 		};
-	},
-	computed: {
-		...mapGetters({
-			countLodgings: 'Lodging/countLogingsPlace',
-			idPlace: 'Lodging/place',
-			loading: 'Payments/loading',
-			message: 'Payments/message',
-			paymentsType: 'Payments/paymentsType',
-		}),
 	},
 	watch: {
 		message(newVal) {
@@ -128,8 +127,6 @@ export default {
 	},
 	created() {
 		moment.locale('es');
-		this.fetchLodgingsForPlace(this.idPlace);
-		this.fetchPayments(this.idPlace);
 	},
 	methods: {
 		async deleteItem(id) {
@@ -146,6 +143,12 @@ export default {
 		},
 		formatEndDate(item) {
 			return moment(item.endDate).format('LL');
+		},
+		formatTittle(item) {
+			return moment(item).format('MMMM');
+		},
+		formatTittleYear(item) {
+			return moment(item).format('YYYY');
 		},
 		async saveComment(item) {
 			const date = moment().format('YYYY-MM-DD hh:mm');
