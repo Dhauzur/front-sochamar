@@ -2,15 +2,18 @@
 	<v-container style="height: calc(100vh - 140px)">
 		<!-- list person -->
 		<v-row justify="center">
-			<v-col cols="4">
+			<v-col cols="12" md="4">
 				<span class="title">Listado de personas</span>
 			</v-col>
 		</v-row>
 		<v-row justify="space-between">
-			<v-col cols="12" md="2" class="text-left pb-0">
-				<v-col>
-					<RequestPopup :profile="profile" :open="() => (dialog = !dialog)" />
-				</v-col>
+			<v-col cols="6" md="2" class="text-left pb-0">
+				<RequestPopup
+					:profile="profile"
+					:close="() => (popup = !popup)"
+					:open-form="openFormFrontPopup"
+					:persons="personsList"
+				/>
 			</v-col>
 			<v-col cols="12" md="2" class="text-left pb-0">
 				<v-btn block color="accent" small @click="exportToPdf">
@@ -27,7 +30,8 @@
 					v-model="filteredWord"
 					outlined
 					dense
-					label="Filtrar"
+					label="Buscar"
+					append-icon="mdi-magnify"
 					@input="filter"
 				/>
 			</v-col>
@@ -51,11 +55,7 @@
 				</v-responsive>
 			</v-col>
 			<v-col v-else cols="12">
-				<v-card color="secondary" flat>
-					<v-card-text>
-						No hay personas agregadas...
-					</v-card-text>
-				</v-card>
+				<p class="overline">No hay personas agregadas...</p>
 			</v-col>
 		</v-row>
 		<!-- chat drawer -->
@@ -72,17 +72,18 @@
 			</v-navigation-drawer>
 		</template>
 		<!-- dialog Form-->
-		<v-dialog v-if="dialog" v-model="dialog" persistent max-width="800px">
-			<Form
-				:selected="person"
-				:edit-mode="editMode"
-				:close="closeDialog"
-				:is-dialog="true"
-				:id-company="profile._id"
-				title="Agregar nuevo"
-				:get-persons="getPersons"
-				:toast="toast"
-			/>
+		<v-dialog v-model="dialogForm" persistent max-width="800px">
+			<template v-if="dialogForm">
+				<Form
+					:selected="person"
+					:edit-mode="editMode"
+					:close="closeDialog"
+					:is-dialog="true"
+					:id-company="profile._id"
+					:get-persons="getPersons"
+					:toast="toast"
+				/>
+			</template>
 		</v-dialog>
 	</v-container>
 </template>
@@ -108,7 +109,8 @@ export default {
 			drawer: false,
 			filteredWord: '',
 			list: [],
-			dialog: false,
+			dialogForm: false,
+			popup: false,
 			editMode: false,
 			person: null,
 			personsList: [],
@@ -142,6 +144,10 @@ export default {
 		this.getPersons();
 	},
 	methods: {
+		openFormFrontPopup() {
+			this.dialogForm = true;
+			this.popup = false;
+		},
 		chat(item) {
 			this.drawer = !this.drawer;
 			this.person = item;
@@ -157,13 +163,13 @@ export default {
 		closeDialog() {
 			this.editMode = false;
 			this.person = null;
-			this.dialog = false;
+			this.dialogForm = false;
 		},
 		editPerson(person) {
 			this.drawer = false;
 			this.editMode = true;
 			this.person = person;
-			this.dialog = true;
+			this.dialogForm = true;
 		},
 		filter() {
 			this.list = this.personsList.filter(person => {

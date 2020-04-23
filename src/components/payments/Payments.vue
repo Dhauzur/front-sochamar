@@ -10,7 +10,7 @@
 				</v-row>
 				<v-row justify="space-between">
 					<v-col cols="12" md="2" class="text-left py-0">
-						<v-btn small color="accent" @click="dialog = true">
+						<v-btn small color="primary" @click="dialog = true">
 							<v-icon>mdi-plus</v-icon>Agregar
 						</v-btn>
 					</v-col>
