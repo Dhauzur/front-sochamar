@@ -15,7 +15,17 @@
 					:persons="personsList"
 				/>
 			</v-col>
-			<v-col cols="6" md="2" class="pb-0">
+			<v-col cols="12" md="2" class="text-left pb-0">
+				<v-btn block color="accent" small @click="exportToPdf">
+					<span>Exportar pdf</span>
+				</v-btn>
+			</v-col>
+			<v-col cols="12" md="2" class="text-left pb-0">
+				<v-btn block color="accent" small @click="exportToCsv">
+					<span>Exportar csv</span>
+				</v-btn>
+			</v-col>
+			<v-col cols="12" md="2" class="pb-0">
 				<v-text-field
 					v-model="filteredWord"
 					outlined
@@ -81,8 +91,12 @@
 <script>
 import PersonsList from '@/components/persons/List';
 import { mapGetters } from 'vuex';
-import { getPersonsByCompany, deletePerson } from '@/service/persons';
-
+import {
+	getPersonsByCompany,
+	deletePerson,
+	generatePdfReport,
+	generateCsvReport,
+} from '@/service/persons';
 export default {
 	components: {
 		PersonsList,
@@ -168,6 +182,22 @@ export default {
 					.then(this.getPersons())
 					.then(this.toast('success', 'Eliminado exitosamente'))
 					.catch(error => this.toast('error', error.message));
+		},
+		async exportToPdf() {
+			const pdf = await generatePdfReport(this.profile._id);
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'personas.pdf';
+			link.click();
+		},
+		async exportToCsv() {
+			const csv = await generateCsvReport(this.profile._id);
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'personas.csv';
+			link.click();
 		},
 	},
 };

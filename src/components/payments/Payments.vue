@@ -14,6 +14,16 @@
 							<v-icon>mdi-plus</v-icon>Agregar
 						</v-btn>
 					</v-col>
+					<v-col cols="12" md="2" class="text-left py-0">
+						<v-btn small color="accent" @click="exportToPdf"
+							><span>Exportar pdf</span>
+						</v-btn>
+					</v-col>
+					<v-col cols="12" md="2" class="text-left py-0">
+						<v-btn small color="accent" @click="exportToCsv"
+							><span>Exportar csv</span>
+						</v-btn>
+					</v-col>
 					<v-col cols="12" md="3" class="py-0">
 						<v-text-field
 							v-model="wordForFilter"
@@ -102,6 +112,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
+import { generatePdfReport, generateCsvReport } from '@/service/payments';
+import moment from 'moment';
 import PaymentsFormAccount from '@/components/payments/PaymentsFormAccount';
 import PaymentsTable from '@/components/payments/PaymentsTable';
 
@@ -159,6 +171,29 @@ export default {
 			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
 			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
 		}),
+		saveComment(item) {
+			const date = moment().format('YYYY-MM-DD hh:mm');
+			const temp = [...item.comments, `${date}: ${this.newComment}`];
+			this.edit({ comments: temp, id: item._id })
+				.then((this.newComment = ''))
+				.then(this.fetchPayments(this.idPlace));
+		},
+		async exportToPdf() {
+			const pdf = await generatePdfReport(this.idPlace);
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'pagos.pdf';
+			link.click();
+		},
+		async exportToCsv() {
+			const csv = await generateCsvReport(this.idPlace);
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'pagos.csv';
+			link.click();
+		},
 	},
 };
 </script>
