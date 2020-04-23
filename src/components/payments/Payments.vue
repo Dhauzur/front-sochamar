@@ -126,6 +126,7 @@ export default {
 			loading: 'Payments/loading',
 			message: 'Payments/message',
 			paymentsForMonth: 'Payments/paymentsForMonth',
+			groupPayments: 'Payments/groupPayments',
 		}),
 	},
 	watch: {
