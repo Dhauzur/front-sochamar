@@ -1,5 +1,5 @@
 <template>
-	<v-container>
+	<v-container style="height: calc(100vh - 140px)">
 		<!-- list person -->
 		<v-row justify="center">
 			<v-col cols="4">
@@ -45,7 +45,7 @@
 							xl="3"
 							@click="editPerson(item)"
 						>
-							<persons-list :delete-one="deleteOne" :item="item" />
+							<persons-list :delete-one="deleteOne" :item="item" :chat="chat" />
 						</v-col>
 					</v-row>
 				</v-responsive>
@@ -58,6 +58,19 @@
 				</v-card>
 			</v-col>
 		</v-row>
+		<!-- chat drawer -->
+		<template v-if="person">
+			<v-navigation-drawer v-model="drawer" temporary right absolute>
+				<template v-slot:prepend>
+					<v-btn x-large text @click="drawer = false">
+						Cerrar
+						<v-icon color="primary">mdi-close</v-icon>
+					</v-btn>
+				</template>
+				<v-divider></v-divider>
+				<messages :id="person._id" :sender="profile.name" />
+			</v-navigation-drawer>
+		</template>
 		<!-- dialog Form-->
 		<v-dialog v-if="dialog" v-model="dialog" persistent max-width="800px">
 			<Form
@@ -88,9 +101,11 @@ export default {
 		PersonsList,
 		Form: () => import('@/components/persons/Form'),
 		RequestPopup: () => import('@/components/persons/RequestPopup'),
+		Messages: () => import('@/components/persons/Messages'),
 	},
 	data() {
 		return {
+			drawer: false,
 			filteredWord: '',
 			list: [],
 			dialog: false,
@@ -117,11 +132,20 @@ export default {
 				this.list = this.personsList;
 			}
 		},
+		drawer(newVal) {
+			if (newVal === false) {
+				this.person = null;
+			}
+		},
 	},
 	mounted() {
 		this.getPersons();
 	},
 	methods: {
+		chat(item) {
+			this.drawer = !this.drawer;
+			this.person = item;
+		},
 		toast(type, text) {
 			this.$toasted.show(text, {
 				type: type,
@@ -136,6 +160,7 @@ export default {
 			this.dialog = false;
 		},
 		editPerson(person) {
+			this.drawer = false;
 			this.editMode = true;
 			this.person = person;
 			this.dialog = true;

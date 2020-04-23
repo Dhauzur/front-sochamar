@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid>
+	<div>
 		<template v-if="loadingInitial">
 			<v-sheet elevation="24">
 				<v-skeleton-loader
@@ -72,7 +72,7 @@
 						</v-card-text>
 						<v-card-actions>
 							<v-spacer></v-spacer>
-							<v-btn :loading="loading" text color="primary" @click="submitForm">
+							<v-btn :loading="loading" color="primary" @click="submitForm">
 								Actualizar
 							</v-btn>
 						</v-card-actions>
@@ -91,18 +91,14 @@
 								dense
 								outlined
 								label="Nueva contraseña"
-								:error-messages="lastnameErrors"
+								:error-messages="newPasswordErrors"
 								@input="$v.securityData.newPassword.$touch()"
 								@blur="$v.securityData.newPassword.$touch()"
 							></v-text-field>
 						</v-card-text>
 						<v-card-actions>
 							<v-spacer></v-spacer>
-							<v-btn
-								:disabled="loading"
-								text
-								color="primary"
-								@click="submitNewPassword"
+							<v-btn :disabled="loading" color="primary" @click="submitNewPassword"
 								>Actualizar contraseña
 							</v-btn>
 						</v-card-actions>
@@ -110,56 +106,55 @@
 				</v-col>
 			</v-row>
 			<v-row v-if="isPerson">
-				<v-col cols="12" md="2">
-					<v-list dense nav flat elevation="24" height="100%">
-						<v-list-item>
-							<v-list-item-content>
-								<v-list-item-title class="title">
-									<avatar
-										:name="profile.name"
-										:last-name="profile.lastName"
-										:url="profile.img"
-										:loading="loadingUpload"
+				<v-app-bar dense>
+					<v-tabs v-model="tab" color="accent" centered>
+						<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
+					</v-tabs>
+				</v-app-bar>
+				<v-container>
+					<v-row justify="center">
+						<v-col v-if="tab === 0" cols="12">
+							<Form
+								title="Completa tus datos"
+								:edit-mode="Boolean(person)"
+								:selected="userSelected"
+								:update-user="updateUser"
+								:toast="toast"
+							/>
+						</v-col>
+						<v-col v-if="tab === 1" cols="12" sm="6" md="5" class="p-0">
+							<template v-if="person.idCompany">
+								<v-sheet elevation="24" height="calc(100vh - 140px)">
+									<messages :id="person._id" :sender="person.firstName" />
+								</v-sheet>
+							</template>
+							<template v-else>
+								<small class="overline">
+									Regresa luego cuando te hayas sumado a un equipo.
+								</small>
+							</template>
+						</v-col>
+						<v-col v-if="tab === 2" cols="12">
+							<template v-if="hasRequest">
+								<div v-for="(item, i) in person.request" :key="i">
+									<requests
+										:item="item"
+										:person="person"
+										:toast="toast"
+										:update-person="updatePerson"
 									/>
-								</v-list-item-title>
-								<v-list-item-subtitle>
-									{{ profile.name }} {{ profile.lastName && profile.lastName }}
-								</v-list-item-subtitle>
-							</v-list-item-content>
-						</v-list-item>
-						<v-divider></v-divider>
-						<v-list-item-group v-model="selected" color="primary">
-							<v-list-item v-for="item in items" :key="item.title" link>
-								<v-list-item-content>
-									<v-list-item-title>{{ item.title }}</v-list-item-title>
-								</v-list-item-content>
-							</v-list-item>
-						</v-list-item-group>
-					</v-list>
-				</v-col>
-				<v-col v-if="selected === 0" cols="12" md="10">
-					<Form
-						title="Completa tus datos"
-						:edit-mode="Boolean(person)"
-						:selected="userSelected"
-						:update-user="updateUser"
-						:toast="toast"
-					/>
-				</v-col>
-				<v-col v-if="selected === 2" cols="12" md="10">
-					<template v-if="hasRequest">
-						<div v-for="(item, i) in person.request" :key="i">
-							<requests :item="item" :person="person" :toast="toast" />
-						</div>
-						<small mt-5>*Solo puedes unirte a una compañia</small>
-					</template>
-					<template v-else>
-						<small mt-5>No tienes solicitudes</small>
-					</template>
-				</v-col>
+								</div>
+								<small class="overline">*Solo puedes unirte a una compañia</small>
+							</template>
+							<template v-else>
+								<small class="overline">No tienes solicitudes</small>
+							</template>
+						</v-col>
+					</v-row>
+				</v-container>
 			</v-row>
 		</template>
-	</v-container>
+	</div>
 </template>
 
 <script>
@@ -173,20 +168,17 @@ export default {
 	components: {
 		Avatar,
 		Form: () => import('@/components/persons/Form'),
+		Messages: () => import('@/components/persons/Messages'),
 		Requests: () => import('@/components/persons/Requests'),
 	},
 	mixins: [validationMixin],
 	data() {
 		return {
+			tab: null,
 			person: null,
 			loadingInitial: true,
 			selected: 0,
-			items: [
-				{ title: 'Perfil' },
-				{ title: 'Mensajes' },
-				{ title: 'Solicitudes' },
-				{ title: 'Leer politicas' },
-			],
+			items: ['Perfil', 'Mensajes', 'Solicitudes', 'Leer politicas'],
 			avatar: null,
 			loadingUpload: false,
 			profileData: {
@@ -239,6 +231,13 @@ export default {
 			!this.$v.profileData.name.maxLength && errors.push('Maximo 100 Caracteres');
 			return errors;
 		},
+		newPasswordErrors() {
+			const errors = [];
+			if (!this.$v.securityData.newPassword.$dirty) return errors;
+			!this.$v.securityData.newPassword.minLength && errors.push('Minimo 5 Caracteres');
+			!this.$v.securityData.newPassword.maxLength && errors.push('Maximo 100 Caracteres');
+			return errors;
+		},
 		...mapGetters({
 			profile: 'User/profile',
 			message: 'User/message',
@@ -277,15 +276,19 @@ export default {
 	methods: {
 		async initialFetch() {
 			const profile = await this.fetchProfile();
-			if (profile.idPerson) {
-				this.person = await getPerson(profile.idPerson);
-			} else {
-				createPerson({ firstName: profile.name, email: profile.email }).then(res =>
-					this.updateUser(res)
-				);
-			}
+			if (profile.role === 'person')
+				if (profile.idPerson) {
+					this.person = await getPerson(profile.idPerson);
+				} else {
+					createPerson({ firstName: profile.name, email: profile.email }).then(res =>
+						this.updateUser(res)
+					);
+				}
 			this.profileData = profile;
 			this.loadingInitial = !this.loadingInitial;
+		},
+		updatePerson(data) {
+			this.person = data;
 		},
 		setAvatarObject(file) {
 			const avatar = new FormData();

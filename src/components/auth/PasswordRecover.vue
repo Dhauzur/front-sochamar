@@ -45,7 +45,7 @@ export default {
 		async onSubmit() {
 			try {
 				this.loading = !this.loading;
-				await requestPasswordRecoverEmail(this.email);
+				await requestPasswordRecoverEmail(this.email.toLowerCase());
 				this.disablePasswordRecover(false);
 				this.$toasted.show('Correo de recuperación enviado con exito', {
 					type: 'success',

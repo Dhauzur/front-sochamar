@@ -97,6 +97,20 @@ const pathRequest = async data => {
 };
 
 /**
+ * Update person conversation
+ * endpoint conversation handler
+ * @param {Object} data
+ * @returns {Object} response
+ */
+const pathConversation = async data => {
+	const response = await fetch('/person/patchConversation', {
+		method: 'patch',
+		data,
+	});
+	return response.person.conversation;
+};
+
+/**
  * Delete person
  * @param {string} id
  * @returns {Object} response
@@ -139,4 +153,5 @@ export {
 	deleteAllPersons,
 	generatePdfReport,
 	generateCsvReport,
+	pathConversation,
 };

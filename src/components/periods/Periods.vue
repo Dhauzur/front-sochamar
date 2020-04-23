@@ -168,9 +168,9 @@ export default {
 			if (!this.$v.$invalid) {
 				await this.createPeriod(this.form);
 				this.fetchLodgings();
-				this.loadingSave = false;
 				this.closeDialog();
 			}
+			this.loadingSave = false;
 		},
 		closeDialog() {
 			this.dialog = false;
