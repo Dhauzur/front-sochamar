@@ -96,7 +96,7 @@ export default {
 	name: 'PaymentsTable',
 	props: {
 		wordFilter: { type: String, default: '' },
-		paymentsList: { type: Object, default: () => {} },
+		paymentsList: { type: Array, default: () => [] },
 		idPlace: { type: String, required: true },
 		loading: { type: Boolean },
 		title: { type: String, default: '' },
@@ -113,13 +113,9 @@ export default {
 				{ value: 'actions', text: 'Acción' },
 			],
 			newComment: '',
-			selected: {},
-			index: '',
-			itemFiltered: [],
-			visible: null,
+			visible: true,
 			dialog: false,
 			idPaymentDelete: null,
-			paymentsListTable: [],
 		};
 	},
 	computed: {
@@ -139,9 +135,6 @@ export default {
 	},
 	created() {
 		moment.locale('es');
-		this.paymentsListTable.push(this.paymentsList);
-		// this.fetchLodgingsForPlace(this.idPlace);
-		//this.fetchPayments(this.idPlace);
 	},
 	methods: {
 		async deleteItem(id) {

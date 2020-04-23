@@ -136,10 +136,8 @@ export default {
 		},
 		...mapGetters({
 			loading: 'Payments/loadingSave',
-			place: 'Lodging/place',
 			payments: 'Payments/payments',
 			message: 'Payments/message',
-			countLodgings: 'Lodging/countLogingsPlace',
 			lodgings: 'Lodging/lodgingsPlace',
 		}),
 	},

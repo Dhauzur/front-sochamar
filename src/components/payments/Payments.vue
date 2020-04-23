@@ -27,15 +27,18 @@
 				</v-row>
 			</v-col>
 			<!-- table -->
-			<payments-table
-				v-for="(item, index) in paymentsForMonth"
-				:key="index"
-				:payments-list="groupPayments[index]"
-				:title="item"
-				:word-filter="wordForFilter"
-				:id-place="idPlace"
-				:loading="loading"
-			></payments-table>
+			<v-col v-if="paymentsForMonth.length <= 0" cols="12">No posee pagos</v-col>
+			<template v-else>
+				<payments-table
+					v-for="(item, index) in paymentsForMonth"
+					:key="index"
+					:payments-list="groupPayments[index]"
+					:title="item"
+					:word-filter="wordForFilter"
+					:id-place="selectedPlace.value"
+					:loading="loading"
+				></payments-table>
+			</template>
 			<!-- dialog steeper form -->
 			<v-dialog v-model="dialog" max-width="440" persistent>
 				<v-stepper v-model="stepper" class="elevation-12">
@@ -71,19 +74,19 @@
 						<v-stepper-content step="2">
 							<payments-form-lodging
 								v-if="visible == 1"
-								:id-place="idPlace"
+								:id-place="selectedPlace.value"
 								:back="() => (stepper = 1)"
 								:close="closeDialog"
 							/>
 							<payments-form-dates
 								v-if="visible == 2"
-								:id-place="idPlace"
+								:id-place="selectedPlace.value"
 								:back="() => (stepper = 1)"
 								:close="closeDialog"
 							/>
 							<payments-form-account
 								v-if="visible == 3"
-								:id-place="idPlace"
+								:id-place="selectedPlace.value"
 								:back="() => (stepper = 1)"
 								:close="closeDialog"
 							/>
@@ -121,7 +124,7 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			idPlace: 'Lodging/place',
+			selectedPlace: 'Lodging/selectedPlace',
 			paymentsType: 'Payments/paymentsType',
 			loading: 'Payments/loading',
 			message: 'Payments/message',
@@ -137,8 +140,8 @@ export default {
 		},
 	},
 	created() {
-		this.fetchLodgingsForPlace(this.idPlace);
-		this.fetchPayments(this.idPlace);
+		this.fetchLodgingsForPlace(this.selectedPlace.value);
+		this.fetchPayments(this.selectedPlace.value);
 	},
 	methods: {
 		closeDialog() {

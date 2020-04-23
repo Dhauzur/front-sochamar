@@ -22,34 +22,27 @@ const getters = {
 		return typePayment;
 	},
 	paymentsForMonth: state => {
-		const arrayMonth = [];
 		const paymentsMonth = state.payments;
-		for (const element of paymentsMonth) {
-			const sliceMonth = element.startDate.slice(0, 7);
-			arrayMonth.push(sliceMonth);
-		}
+		const arrayMonth = paymentsMonth.map(payment => payment.startDate.slice(0, 7));
 		const removeDuplicates = [...new Set(arrayMonth)];
 		return removeDuplicates;
 	},
 	groupPayments: state => {
 		const initialValue = {};
 		const paymentsMonth = state.payments;
-		const dateArrg = myArray => {
+		const paymentsByGroupMonth = arrayPayments => {
 			return Object.values(
-				myArray.reduce((result, value) => {
-					// Create new group
+				arrayPayments.reduce((result, value) => {
 					const sliceMonth = value.startDate.slice(0, 7);
-
 					if (!result[sliceMonth]) {
 						result[sliceMonth] = [];
 					}
-					// Append to group
 					result[sliceMonth].push(value);
 					return result;
 				}, initialValue)
 			);
 		};
-		return dateArrg(paymentsMonth);
+		return paymentsByGroupMonth(paymentsMonth);
 	},
 };
 
