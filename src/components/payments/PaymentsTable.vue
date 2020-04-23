@@ -3,7 +3,7 @@
 		<v-row>
 			<v-col cols="12" class="pa-0 mx-auto"
 				><p class="text-capitalize">
-					Pagos registrados en {{ formatTittle(title) }}
+					Pagos registrados en {{ formatTittle(title) }} del {{ formatTittleYear(title) }}
 				</p></v-col
 			>
 			<v-col cols="12" class="mx-auto">
@@ -161,6 +161,9 @@ export default {
 		},
 		formatTittle(item) {
 			return moment(item).format('MMMM');
+		},
+		formatTittleYear(item) {
+			return moment(item).format('YYYY');
 		},
 		async saveComment(item) {
 			const date = moment().format('YYYY-MM-DD hh:mm');

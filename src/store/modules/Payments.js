@@ -32,54 +32,24 @@ const getters = {
 		return removeDuplicates;
 	},
 	groupPayments: state => {
-		//const initialValue = {};
-		//const prueba = ['2020-04', '2020-05-11', '2020-06'];
+		const initialValue = {};
 		const paymentsMonth = state.payments;
-		//const arrayMonth = [];
-		// const group = state.payments.reduce((accumulator, item) => {
-		// 	accumulator[item.startDate] = [...(accumulator[item.startDate] || []), item];
-		// 	return accumulator;
-		// }, initialValue);
-
-		// const groupBy = (OurArray, property) => {
-		// 	return OurArray.reduce((accumulator, object) => {
-		// 		const key = object[property];
-		// 		// using ternary operator to make it shorter but in this case it is not necessary as it might look complicated
-		// 		!accumulator[key] ? (accumulator[key] = []) : accumulator[key].push(object);
-		// 		return accumulator;
-		// 	}, initialValue);
-		// };
-		// let groupedPeople;
-		// for (const iterator of prueba) {
-		// 	groupedPeople = groupBy(paymentsMonth, iterator);
-		// 	//arrayMonth.push(groupedPeople);
-		// }
 		const dateArrg = myArray => {
 			return Object.values(
 				myArray.reduce((result, value) => {
 					// Create new group
-					if (!result[value.startDate]) {
-						result[value.startDate] = [];
+					const sliceMonth = value.startDate.slice(0, 7);
+
+					if (!result[sliceMonth]) {
+						result[sliceMonth] = [];
 					}
 					// Append to group
-					result[value.startDate].push(value);
+					result[sliceMonth].push(value);
 					return result;
-				}, {})
+				}, initialValue)
 			);
 		};
 		return dateArrg(paymentsMonth);
-		// var dateArr = Object.values(
-		// 	paymentsMonth.reduce((result, value) => {
-		// 		// Create new group
-		// 		if (!result[value.startDate]) {
-		// 			result[value.startDate] = [];
-		// 		}
-		// 		// Append to group
-		// 		result[value.startDate].push(value);
-		// 		return result;
-		// 	}, {})
-		// );
-		// return dateArr;
 	},
 };
 

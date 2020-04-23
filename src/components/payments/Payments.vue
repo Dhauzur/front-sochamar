@@ -30,7 +30,7 @@
 			<payments-table
 				v-for="(item, index) in paymentsForMonth"
 				:key="index"
-				:payments-list="paymentsType"
+				:payments-list="groupPayments[index]"
 				:title="item"
 				:word-filter="wordForFilter"
 				:id-place="idPlace"
