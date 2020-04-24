@@ -1,13 +1,11 @@
 const getters = {
-	periodAllPlace: state => place => {
-		return state.periods.get({
-			filter: item => item.place == place,
-		});
-	},
-	lodgingsAllPlace: state => place => {
-		return state.lodgings.get({
-			filter: item => item.place == place,
-		});
+	// periodAllPlace: state => {
+	// 	return state.periods.filter(period => period.place == selectedPlace.value);
+	// },
+	lodgings: state => {
+		if (state.selectedPlace)
+			return state.lodgings.filter(lod => lod.place == state.selectedPlace.value);
+		else return state.lodgings;
 	},
 	bottomSheet: state => state.bottomSheet,
 	message: state => state.message,
@@ -17,27 +15,13 @@ const getters = {
 	lodgingSelect: state => state.lodgingSelect,
 	loading: state => state.loading,
 	editMode: state => state.editMode,
-	lodgings: state => state.lodgings,
 	rangeDatePayments: state => state.rangeDatePayments,
 	lodgingsPlace: state => state.lodgingsPlace,
 	countLogingsPlace: state => state.countLogingsPlace,
 	rangeDate: state => state.rangeDate,
 	periods: state => state.periods,
-	places: state => state.Places,
-	place: state => state.place,
-	periodsTable: state => {
-		var periods = [];
-		if (state.periods)
-			state.periods.forEach(v => {
-				periods.push({
-					id: v.id,
-					name: v.content,
-					numberPassangerMax: v.numberPassangerMax,
-				});
-			});
-		return periods;
-	},
-	placeName: state => state.Places.find(c => c.value == state.place).text,
+	places: state => state.places,
+	periodsTable: state => state.periods,
 	selectedPlace: state => state.selectedPlace,
 	servicesComboBox: state => state.servicesComboBox,
 };

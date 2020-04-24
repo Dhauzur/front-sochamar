@@ -31,6 +31,22 @@ export default {
 	line-height: 1.2;
 }
 
+// .timelineModeLight {
+// 	background-color: #eeedef61;
+// 	border-bottom: 3px solid #cacaca;
+// 	padding: 20px;
+// 	border-radius: 20px 20px 0px 0px;
+// 	& .vis-item {
+// 	}
+// }
+
+.bgLight {
+	background: linear-gradient(90deg, white, #6a31ff17 50%, #6a31ff0a 100%);
+}
+
+.bgDark {
+	background: linear-gradient(90deg, black, #6a31ff17 50%, #6a31ff0a 100%);
+}
 td {
 	// border: none !important;
 	padding: 1px !important;
@@ -51,10 +67,10 @@ table {
 }
 
 .fade-enter-active {
-	transition: opacity 1.5s;
+	transition: opacity 0.3s;
 }
 .fade-leave-active {
-	transition: opacity 0.5s;
+	transition: opacity 0.3s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
 	opacity: 0;

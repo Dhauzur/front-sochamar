@@ -2,7 +2,12 @@
 	<v-container style="height: calc(100vh - 140px)">
 		<!-- list person -->
 		<v-row justify="center">
-			<v-col cols="12" md="4">
+			<v-col cols="12">
+				<Timeline />
+			</v-col>
+		</v-row>
+		<v-row justify="center">
+			<v-col cols="4">
 				<span class="title">Listado de personas</span>
 			</v-col>
 		</v-row>
@@ -29,6 +34,7 @@
 				<v-text-field
 					v-model="filteredWord"
 					outlined
+					filled
 					dense
 					label="Buscar"
 					append-icon="mdi-magnify"
@@ -103,6 +109,7 @@ export default {
 		Form: () => import('@/components/persons/Form'),
 		RequestPopup: () => import('@/components/persons/RequestPopup'),
 		Messages: () => import('@/components/persons/Messages'),
+		Timeline: () => import('@/components/persons/Timeline'),
 	},
 	data() {
 		return {

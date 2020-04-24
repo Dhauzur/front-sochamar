@@ -20,9 +20,10 @@
 				<!-- select place  -->
 				<v-col cols="12" md="3">
 					<v-select
-						:value="place"
+						v-model="selectPlace"
 						:items="places"
 						dense
+						filled
 						label="Selecione lugar"
 						outlined
 						@change="setPlace"
@@ -42,16 +43,10 @@
 					</v-btn>
 				</v-col>
 				<!-- activity button -->
-				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
 						<template v-slot:activator="{ on }">
-							<v-btn
-								color="primary"
-								block
-								small
-								@click="createOneLodging()"
-								v-on="on"
-							>
+							<v-btn color="accent" block @click="createOneLodging()" v-on="on">
 								<v-icon>mdi-plus</v-icon><span>Actividad</span>
 							</v-btn>
 						</template>
@@ -59,13 +54,12 @@
 					</v-tooltip>
 				</v-col>
 				<!-- periods buttons -->
-				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="primary"
-								small
+								color="accent"
 								v-on="on"
 								@click.stop="dialogPeriods = true"
 							>
@@ -76,13 +70,12 @@
 					</v-tooltip>
 				</v-col>
 				<!-- payments buttons -->
-				<v-col v-if="place" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="primary"
-								small
+								color="accent"
 								v-on="on"
 								@click.stop="dialogPayments = true"
 							>
@@ -93,13 +86,12 @@
 					</v-tooltip>
 				</v-col>
 				<!-- edit buttons -->
-				<v-col v-if="lodgingSelect" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="primary"
-								small
+								color="accent"
 								v-on="on"
 								@click.stop="setBottomSheet({ action: true, lodging: null })"
 							>
@@ -110,10 +102,10 @@
 					</v-tooltip>
 				</v-col>
 				<!-- save buttons -->
-				<v-col v-if="getMirrorLodging || editMode" cols="12" sm="2" md="auto" class="mt-2">
+				<v-col v-if="getMirrorLodging || editMode" cols="12" sm="2" md="auto">
 					<v-tooltip attach bottom class="mr-2">
 						<template v-slot:activator="{ on }">
-							<v-btn color="success" small @click="saveLodgings()" v-on="on">
+							<v-btn color="success" @click="saveLodgings()" v-on="on">
 								<v-icon>mdi-content-save</v-icon><span>Guardar</span>
 							</v-btn>
 						</template>
@@ -122,22 +114,23 @@
 				</v-col>
 				<!-- periods dialog -->
 				<v-bottom-sheet
-					v-if="lodgingSelect"
+					v-if="selectedPlace"
 					v-model="bottomSheet"
 					inset
 					@click:outside="setBottomSheet(false)"
 				>
 					<v-sheet style="height: 75vh">
-						<edit-lodging :lodgings="lodgings" :id-place="place" />
+						<edit-lodging :lodgings="lodgings" :id-place="selectedPlace.value" />
 					</v-sheet>
 				</v-bottom-sheet>
 				<v-bottom-sheet
+					v-if="selectedPlace"
 					v-model="dialogPeriods"
 					inset
 					@click:outside="dialogPeriods = false"
 				>
 					<v-sheet style="height: 75vh">
-						<Periods :id-place="place" />
+						<Periods :id-place="selectedPlace.value" />
 					</v-sheet>
 				</v-bottom-sheet>
 				<!-- payments dialog -->
@@ -149,7 +142,7 @@
 					@click:outside="dialogPayments = false"
 				>
 					<v-sheet style="height: 75vh; overflow-y: auto;">
-						<Payments :id-place="place" />
+						<Payments :id-place="selectedPlace.value" />
 					</v-sheet>
 				</v-bottom-sheet>
 				<!-- <template v-if="Boolean(place) && dialogPayments">
@@ -161,32 +154,28 @@
 								</v-btn>
 								<v-toolbar-title>Gestion de Pagos</v-toolbar-title>
 							</v-toolbar>
-							<Payments :id-place="place" />
+							<Payments :id-place="selectedPlace" />
 						</v-card>
 					</v-dialog>
 				</template> -->
 			</v-row>
 			<!-- timeline -->
-			<v-row>
-				<v-col v-if="place" cols="12">
-					<timeline
-						v-if="periods.length > 0 && lodgings.length > 0"
-						class="timelineContent"
-						:events="['rangechanged', 'click', 'doubleClick']"
-						:groups="periods"
-						:items="lodgings"
-						:options="options"
-						@click="enableEdit"
-						@rangechanged="rangechanged"
-						@double-click="setBottomSheet({ action: true, lodging: null })"
-					/>
+			<v-row class="mx-1">
+				<v-col v-if="selectedPlace" cols="12" class="px-0">
+					<transition name="fade">
+						<Timeline
+							v-if="periods.length > 0 && lodgings.length > 0"
+							:items="lodgings"
+						/>
+					</transition>
 				</v-col>
-				<template v-for="(p, index) in places" v-else>
-					<v-col v-if="p.value" :key="index" class="timelineContent mb-4 " cols="12">
+				<!-- <template v-for="(p, index) in places" v-else>
+					<v-col v-if="p.value" :key="index" class="px-0 mb-4 " cols="12">
 						<h4 class="mb-2">{{ p.text }}</h4>
-						<timeline
+						<Timeline
 							v-if="periods.length > 0 && lodgings.length > 0"
 							:events="['rangechanged', 'click', 'doubleClick']"
+							:class="{ timelineModeLight: theme, timelineModeDark: !theme }"
 							:groups="periodAllPlace(p.value)"
 							:items="lodgingsAllPlace(p.value)"
 							:options="options"
@@ -195,14 +184,14 @@
 							@double-click="setBottomSheet({ action: true, lodging: null })"
 						/>
 					</v-col>
-				</template>
+				</template> -->
 			</v-row>
 			<v-row>
 				<v-col cols="12">
 					<v-row>
-						<v-col class="overflow-x-auto">
+						<v-col cols="12" class="overflow-x-auto">
 							<v-switch
-								v-if="place && lodgingSelect"
+								v-if="selectedPlace && lodgingSelect"
 								v-model="viewPrices"
 								label="Ver precios"
 							></v-switch>
@@ -219,7 +208,6 @@
 											<tr>
 												<th>Servicio</th>
 												<th>Cantidad</th>
-												<th>Subtotal</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -248,12 +236,14 @@
 															)
 														"
 													/>
+
+													<div>
+														${{ service.price * service.quantity }}
+													</div>
 												</td>
-												<td>{{ service.price * service.quantity }}</td>
 											</tr>
 											<tr>
-												<td></td>
-												<td>Total</td>
+												<td>Subtotal</td>
 												<td>
 													<b>{{ day.dayTotal }} </b>
 												</td>
@@ -272,10 +262,8 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex';
-import { Timeline } from 'vue2vis';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
-import { generateDaysArray } from '../../utils/lodging/daysArray';
 import { generatePdfReport, generateCsvReport } from '@/service/lodgings';
 
 let moment = extendMoment(Moment);
@@ -285,152 +273,37 @@ export default {
 		EditLodging: () => import('@/components/lodgings/EditLodging'),
 		Periods: () => import('@/components/periods/Periods'),
 		Payments: () => import('@/components/payments/Payments'),
-		Timeline,
+		Timeline: () => import('@/components/lodgings/Timeline'),
 	},
 	data() {
 		return {
+			selectPlace: null,
+			dateLodgingSelect: [],
+			modalDateLodgingSelect: false,
 			viewPrices: false,
 			dialogPeriods: false,
 			dialogPayments: false,
 			onMovingNotificationControl: true,
 			sheet: false,
 			serviceSelected: 'todos los servicios',
-			options: {
-				editable: true,
-				start: moment(),
-				end: moment().add(14, 'day'),
-				zoomMin: 1000 * 60 * 60 * 24 * 7,
-				zoomMax: 1000 * 60 * 60 * 24 * 30,
-				hiddenDates: [
-					{
-						start: '2019-01-01 00:00:00',
-						end: '2019-01-01 06:00:00',
-						repeat: 'daily',
-					},
-					{
-						start: '2019-01-01 16:00:00',
-						end: '2019-01-01 24:00:00',
-						repeat: 'daily',
-					},
-				],
-				//preguntar que pasa aca
-				onUpdate: (item, callback) => {
-					if (this.place) {
-						this.setModeEdit(true);
-						if (this.verifyOverlay(item)) {
-							callback(item);
-							/*this.updateService(item);*/
-						} else this.$toasted.show('Existe un alojamiento para esas fechas');
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				//Esta funcion hace trigger cuando estamos moviendo el lodging, nos sirve para verificar el overlay
-				onMoving: (item, callback) => {
-					this.setModeEdit(false);
-					if (this.place) {
-						//With onMovingNotificationControl we handle the notification spam problem
-						if (this.verifyOverlay(item)) {
-							callback(item);
-							this.onMovingNotificationControl = true;
-						} else {
-							if (this.onMovingNotificationControl) {
-								this.$toasted.show('Existe un alojamiento para esas fechas');
-								this.onMovingNotificationControl = false;
-							}
-						}
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				//Esta funcion hace trigger cuando removemos un lodging de la timeline
-				onRemove: (item, callback) => {
-					if (this.lodgings.length > 1 && this.place) {
-						this.setModeEdit(false);
-						this.deleteLodging(item);
-						callback(item);
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				//al hacer click en una parte del timeline, esta función actua similar a createOneLodging
-				onAdd: (item, callback) => {
-					if (this.place) {
-						let startDate = moment(item.start).hours(12);
-						let endDate = moment(item.start)
-							.hours(10)
-							.add(1, 'day');
-						item.start = startDate;
-						item.end = endDate;
-						if (this.verifyOverlay(item)) {
-							this.setModeEdit(false);
-							let place = this.places.find(c => c.value === this.place);
-							let generatedDays = generateDaysArray(place, startDate, endDate);
-							item.content = place.text;
-							if (place != 'Turismo') item.days = generatedDays;
-							else item.days = generatedDays;
-							let setTimeStamp = () => {
-								let timestamp = new Date().getTime().toString(16);
-								timestamp +
-									'xxxxxxxxxxxxxxxx'
-										.replace(/[x]/g, function() {
-											return ((Math.random() * 16) | 0).toString(16);
-										})
-										.toLowerCase();
-								return timestamp;
-							};
-							item.id = setTimeStamp();
-							this.addLodging(item);
-							if (!this.lodgings.get(item.id)) callback(item);
-						} else this.$toasted.show('Existe un alojamiento para esas fechas');
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-				onMove: (item, callback) => {
-					if (this.place) {
-						let oldDays = item.days;
-						let startDate = moment(item.start).hours(12);
-						let endDate = moment(item.end).hours(10);
-						let newDaysArray = generateDaysArray(
-							this.selectedPlace,
-							startDate,
-							endDate
-						);
-						let saveOldDaysServices = (oldDays, newDays) => {
-							oldDays.forEach(oldDay => {
-								let foundIndex = newDays.findIndex(
-									newDay => newDay.date === oldDay.date
-								);
-								if (foundIndex >= 0) newDaysArray[foundIndex] = oldDay;
-							});
-						};
-						saveOldDaysServices(oldDays, newDaysArray);
-						item.days = newDaysArray;
-						item.start = startDate;
-						item.end = endDate;
-						if (this.verifyOverlay(item)) {
-							this.setModeEdit(true);
-							callback(item);
-						} else {
-							this.$toasted.show('Existe un alojamiento para esas fechas');
-						}
-					} else this.$toasted.show('Selecione una entidad primero');
-				},
-			},
 		};
 	},
 	computed: {
+		theme() {
+			return localStorage.getItem('mode');
+		},
 		servicesTableDetails() {
-			if (this.place && this.lodgingSelect) {
+			if (this.selectedPlace && this.lodgingSelect) {
 				let lodging = this.lodgings.get(this.lodgingSelect.id);
 				return lodging;
 			} else return 'Debe selecionar un lugar y lodging para ver data';
 		},
 		getMirrorLodging() {
-			let copy = JSON.stringify(this.lodgings);
-			if (copy === this.mirrorLodging) return false;
+			if (this.lodgings === this.mirrorLodging) return false;
 			else return true;
-		},
-		prices() {
-			if (this.place) return this.places.find(c => c.value == this.place);
-			else return [];
 		},
 		...mapGetters({
 			periodAllPlace: 'Lodging/periodAllPlace',
-			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
 			bottomSheet: 'Lodging/bottomSheet',
 			editMode: 'Lodging/editMode',
 			loading: 'Lodging/loading',
@@ -439,7 +312,6 @@ export default {
 			message: 'Lodging/message',
 			mirrorLodging: 'Lodging/mirrorLodging',
 			periods: 'Lodging/periods',
-			place: 'Lodging/place',
 			places: 'Lodging/places',
 			rangeDate: 'Lodging/rangeDate',
 			updatingService: 'Lodging/updatingService',
@@ -454,6 +326,12 @@ export default {
 			});
 		},
 		lodgingSelect() {
+			if (this.lodgingSelect) {
+				let datePicker = [];
+				datePicker.push(moment(this.lodgingSelect.start).format('YYYY-MM-DD'));
+				datePicker.push(moment(this.lodgingSelect.end).format('YYYY-MM-DD'));
+				this.dateLodgingSelect = datePicker;
+			}
 			if (
 				this.lodgingSelect &&
 				Array.isArray(this.lodgingSelect.persons) &&
@@ -475,6 +353,14 @@ export default {
 		this.fetchLodgings();
 	},
 	methods: {
+		// updateLodgingSelect() {
+		// 	if (this.verifyOverlay(this.lodgingSelect)) {
+		// 		this.setModeEdit(true);
+		// 		this.);
+		// 	} else {
+		// 		this.$toasted.show('Existe un alojamiento para esas fechas');
+		// 	}
+		// },
 		verifyOverlay(value) {
 			let verificate = true;
 			this.lodgings.forEach(lod => {
@@ -488,12 +374,12 @@ export default {
 			});
 			return verificate;
 		},
-		setPlace(payload) {
-			this.setPlaceLodging(payload);
+		setPlace(place) {
 			this.setModeEdit(false);
-			this.setSelectedPlace();
+			console.log(place);
+			this.setSelectedPlace(place);
 			this.setServicesComboBox();
-			this.fetchPeriods(this.place).then(() => this.fetchLodgings());
+			this.fetchPeriods().then(() => this.fetchLodgings());
 		},
 		detectServiceQuantityChange(payload, lodgingId, dayIndex, serviceIndex) {
 			let inputValue = parseInt(payload.target.value);
@@ -507,7 +393,7 @@ export default {
 			this.updateActualService({ inputValue, lodgingId, dayIndex, serviceIndex });
 		},
 		enableEdit(payload) {
-			if (this.place && payload.item) {
+			if (this.selectedPlace && payload.item) {
 				this.setLodgingSelect(payload.item);
 				this.setModeEdit(true);
 			} else this.setModeEdit(false);
@@ -544,6 +430,8 @@ export default {
 			saveLodgings: 'Lodging/saveLodgings',
 		}),
 		...mapMutations({
+			setSelectedPlace: 'Lodging/setSelectedPlace',
+			dateChange: 'Lodging/dateChange',
 			setBottomSheet: 'Lodging/setBottomSheet',
 			subDaysServices: 'Lodging/subDaysServices',
 			addDaysServices: 'Lodging/addDaysServices',
@@ -555,7 +443,6 @@ export default {
 			setPlaceLodging: 'Lodging/setPlaceLodging',
 			setRangeDate: 'Lodging/setRangeDate',
 			updateService: 'Lodging/updateService',
-			setSelectedPlace: 'Lodging/setSelectedPlace',
 			setServicesComboBox: 'Lodging/setServicesComboBox',
 			updateActualService: 'Lodging/updateActualService',
 		}),
@@ -578,36 +465,24 @@ export default {
 }
 .microCard {
 	border-radius: 10px;
-	border: 1px solid rgba(255, 255, 255, 0.12);
 	background-color: transparent;
-	/* background: linear-gradient(
-		115deg,
-		rgba(210, 141, 181, 0.22) 0%,
-		rgba(194, 173, 247, 0.16) 100%
-	); */
-	margin: 5px;
+	margin-right: 10px;
 	padding: 5px;
-	box-shadow: 0px 1px 10px -2px rgba(0, 0, 0, 0.75);
-}
-.timelineContent:hover {
-	box-shadow: 0px 3px 13px 2px rgba(0, 0, 0, 0.75);
-	transition: all ease-in-out 0.5s;
-}
-.timelineContent {
-	background-color: transparent;
-	/* background: linear-gradient(90deg, rgba(106, 49, 255, 0.07) 0%, rgba(213, 47, 143, 0.18) 100%); */
-	padding: 10px;
-	border-radius: 10px;
-	box-shadow: 0px 3px 15px 2px rgba(0, 0, 0, 0.2);
-	transition: all ease-in-out 0.5s;
+	box-shadow: 0px 1px 5px -2px rgba(0, 0, 0, 0.75);
 }
 
 .vis-selected {
 	background-color: #6a31ff !important;
-	color: white !important;
 	transition: all ease-in-out 0.3s;
-	/* box-shadow: 0px 0px 8px 2px rgba(0, 0, 0, 0.75); */
 }
+
+/* .vis-time-axis .vis-text,
+.vis-label,
+.vis-inner,
+.vis-time-axis .vis-text.vis-saturday,
+.vis-time-axis .vis-text.vis-sunday {
+} */
+
 .vis-time-axis .vis-text,
 .vis-label,
 .vis-inner,
@@ -637,11 +512,10 @@ input {
 	border: none !important;
 }
 .vis-item {
-	background-color: rgba(194, 173, 247, 0.46);
-	color: var(--v-textColor) !important;
-	box-shadow: 0px 0px 10px -2px rgba(0, 0, 0, 0.95);
+	background-color: #6a30ffcc;
+	box-shadow: 0px 0px 5px -2px rgba(0, 0, 0, 0.95);
 	border: none !important;
 	border-left: 4px solid #6a31ff !important;
-	transition: all ease-in-out 0.3s;
+	transition: all ease-in-out 0.2s;
 }
 </style>

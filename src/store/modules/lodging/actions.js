@@ -3,7 +3,7 @@ import fetch from '@/service/fetch';
 const actions = {
 	async createPeriod({ state, commit, dispatch }, period) {
 		try {
-			period.placeId = state.place;
+			period.placeId = state.selectedPlace.value;
 			await fetch('/periods', { method: 'post', data: period });
 			commit('setMessage', {
 				type: 'success',
@@ -78,11 +78,13 @@ const actions = {
 	/**
 	 * get all periods
 	 */
-	async fetchPeriods({ commit }, placeId) {
+	async fetchPeriods({ state, commit }) {
 		// commit('setLoading', true);
 
 		try {
-			const response = await fetch(`/periods/${placeId ? placeId : null}`);
+			const response = await fetch(
+				`/periods/${state.selectedPlace ? state.selectedPlace.value : null}`
+			);
 			const { periods } = response;
 			commit('setPeriods', periods);
 			commit('setLoading', false);
@@ -98,20 +100,20 @@ const actions = {
 	/**
 	 * get lodgings for place
 	 */
-	async fetchLodgingsForPlace({ commit }, id) {
-		try {
-			const response = await fetch(`/lodgings/place/${id}`);
-			commit('setLodgingsPlace', response.lodgings);
-			commit('setRangeDatePayments', response.lodgings);
-			commit('setcountLogingsPlace', response.count);
-		} catch (error) {
-			commit('setLodgingsPlace', null);
-			commit('setMessage', {
-				type: 'error',
-				text: 'Fetch lodgings ' + error,
-			});
-		}
-	},
+	// async fetchLodgingsForPlace({ commit }, id) {
+	// 	try {
+	// 		const response = await fetch(`/lodgings/place/${id}`);
+	// 		commit('setLodgingsPlace', response.lodgings);
+	// 		commit('setRangeDatePayments', response.lodgings);
+	// 		commit('setcountLogingsPlace', response.count);
+	// 	} catch (error) {
+	// 		commit('setLodgingsPlace', null);
+	// 		commit('setMessage', {
+	// 			type: 'error',
+	// 			text: 'Fetch lodgings ' + error,
+	// 		});
+	// 	}
+	// },
 	/**
 	 * Guarda un hospedaje que no este almacenado o que es diferente
 	 * A lo que existe en la base de datos.
@@ -120,7 +122,7 @@ const actions = {
 		try {
 			commit('setModeEdit', false);
 			commit('setLoading', 'Creando hospedajes...');
-			let mirrorLodging = JSON.parse(state.mirrorLodging);
+			let mirrorLodging = state.mirrorLodging;
 			state.lodgings.forEach((l, id) => {
 				//Si es diferente o si no existe
 				if (mirrorLodging._data[id] != l || !mirrorLodging[id]) {
@@ -135,7 +137,7 @@ const actions = {
 							persons: l.persons,
 							place: state.place,
 						},
-					}).then(() => (state.mirrorLodging = JSON.stringify(state.lodgings)));
+					}).then(() => (state.mirrorLodging = state.lodgings));
 				}
 			});
 			commit('setLoading', false);
