@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import moment from 'moment';
 export default {
 	name: 'PaymentsTable',
@@ -98,7 +98,6 @@ export default {
 		wordFilter: { type: String, default: '' },
 		paymentsList: { type: Array, default: () => [] },
 		idPlace: { type: String, required: true },
-		loading: { type: Boolean },
 		title: { type: String, default: '' },
 	},
 	data() {
@@ -117,6 +116,11 @@ export default {
 			dialog: false,
 			idPaymentDelete: null,
 		};
+	},
+	computed: {
+		...mapGetters({
+			loading: 'Payments/loading',
+		}),
 	},
 	watch: {
 		message(newVal) {
@@ -158,7 +162,6 @@ export default {
 			await this.fetchPayments(this.idPlace);
 		},
 		...mapActions({
-			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
 			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
 			delete: 'Payments/deleteOnePayment',
 			edit: 'Payments/editPayment',
