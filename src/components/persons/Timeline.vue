@@ -66,7 +66,7 @@
 		</v-col>
 
 		<v-col cols="12" sm="auto">
-			<v-btn color="accent" block> <v-icon>mdi-plus</v-icon>Ingresar </v-btn></v-col
+			<v-btn color="primary" block> <v-icon>mdi-plus</v-icon>Ingresar </v-btn></v-col
 		>
 		<v-col cols="12">
 			<!-- <timeline
