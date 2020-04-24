@@ -14,6 +14,12 @@
 		</v-col>
 		<!-- export pdf button -->
 		<v-col cols="12" sm="2" md="auto" class="mt-2">
+			<v-btn outlined block color="primary" small @click="setSeeTimeline">
+				<span>Ver timeline</span>
+			</v-btn>
+		</v-col>
+		<!-- export pdf button -->
+		<v-col cols="12" sm="2" md="auto" class="mt-2">
 			<v-btn outlined block color="primary" small @click="exportToPdf">
 				<span>Exportar pdf</span>
 			</v-btn>
@@ -122,6 +128,7 @@ export default {
 		...mapMutations({
 			setServicesComboBox: 'Lodging/setServicesComboBox',
 			setSelectedPlace: 'Lodging/setSelectedPlace',
+			setSeeTimeline: 'Lodging/setSeeTimeline',
 		}),
 	},
 };

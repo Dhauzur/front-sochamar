@@ -16,6 +16,7 @@ const state = {
 		start: null,
 		end: null,
 	},
+	seeTimeline: false,
 	selectedPlace: null,
 	servicesComboBox: [],
 	bottomSheet: false,

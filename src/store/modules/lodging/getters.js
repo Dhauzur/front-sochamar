@@ -24,6 +24,7 @@ const getters = {
 	periodsTable: state => state.periods,
 	selectedPlace: state => state.selectedPlace,
 	servicesComboBox: state => state.servicesComboBox,
+	seeTimeline: state => state.seeTimeline,
 };
 
 export default getters;

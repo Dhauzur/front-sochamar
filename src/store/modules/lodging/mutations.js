@@ -80,6 +80,9 @@ const mutations = {
 	setLodgingSelect(state, value) {
 		state.lodgingSelect = value;
 	},
+	setSeeTimeline(state) {
+		state.seeTimeline = !state.seeTimeline;
+	},
 	setLoading(state, value) {
 		state.loading = value;
 	},
