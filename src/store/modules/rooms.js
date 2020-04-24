@@ -5,7 +5,7 @@ const state = {
 	idPlace: '',
 	loading: false,
 	message: '',
-	rooms: null,
+	rooms: [],
 	roomSelected: null,
 };
 

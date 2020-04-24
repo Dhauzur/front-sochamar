@@ -18,4 +18,33 @@ const generateCsvReport = async placeId => {
 	});
 };
 
-export { generatePdfReport, generateCsvReport };
+/**
+ * create new lodging
+ * @param {Object} data to save
+ * @return lodging
+ */
+const createLodging = async data => {
+	const response = await fetch(`/lodging`, {
+		method: 'post',
+		data,
+	});
+
+	return response;
+};
+
+/**
+ * update lodging
+ * @param {id} id lodging
+ * @param {data} data to update
+ * @return lodging
+ */
+const updateLodging = async (id, data) => {
+	const response = await fetch(`/lodging/:id`, {
+		method: 'put',
+		data,
+	});
+
+	return response;
+};
+
+export { generatePdfReport, generateCsvReport, createLodging, updateLodging };

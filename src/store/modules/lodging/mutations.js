@@ -78,9 +78,7 @@ const mutations = {
 		state.lodgingSelect.daysservice = newDaysArray;
 	},
 	setLodgingSelect(state, value) {
-		if (state.lodgings.filter(lod => lod.id == value)) {
-			state.lodgingSelect = state.lodgings.filter(lod => lod.id == value);
-		}
+		state.lodgingSelect = value;
 	},
 	setLoading(state, value) {
 		state.loading = value;

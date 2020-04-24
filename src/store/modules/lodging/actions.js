@@ -1,4 +1,5 @@
 import fetch from '@/service/fetch';
+import { createLodging } from '@/service/lodgings';
 
 const actions = {
 	async createPeriod({ state, commit, dispatch }, period) {
@@ -63,9 +64,10 @@ const actions = {
 		try {
 			commit('setLoading', 'Cargando hospedajes...');
 			commit('setModeEdit', false);
-			commit('setLodgings', null);
+			commit('setLodgings', []);
 			const res = await fetch('/lodgings');
 			commit('setLoading', false);
+			commit('setcountLogingsPlace', res.length);
 			commit('setLodgings', res.lodgings);
 		} catch (error) {
 			commit('setLodgings', null);
@@ -115,31 +117,15 @@ const actions = {
 	// 	}
 	// },
 	/**
-	 * Guarda un hospedaje que no este almacenado o que es diferente
-	 * A lo que existe en la base de datos.
+	 * Create new lodging
+	 * @param {Object} data to save
 	 */
-	async saveLodgings({ state, commit }) {
+	async createLodging({ commit }, data) {
 		try {
 			commit('setModeEdit', false);
 			commit('setLoading', 'Creando hospedajes...');
-			let mirrorLodging = state.mirrorLodging;
-			state.lodgings.forEach((l, id) => {
-				//Si es diferente o si no existe
-				if (mirrorLodging._data[id] != l || !mirrorLodging[id]) {
-					fetch('/lodging', {
-						method: 'post',
-						data: {
-							id: l.id,
-							group: l.group,
-							start: l.start,
-							end: l.end,
-							days: l.days,
-							persons: l.persons,
-							place: state.place,
-						},
-					}).then(() => (state.mirrorLodging = state.lodgings));
-				}
-			});
+			const response = await createLodging(data);
+			commit('setLodging', response);
 			commit('setLoading', false);
 		} catch (error) {
 			commit('setMessage', {

@@ -23,7 +23,7 @@ import { mapGetters } from 'vuex';
 
 export default {
 	components: {
-		Lodgings: () => import('@/components/lodgings/Lodging'),
+		Lodgings: () => import('@/components/lodgings/Lodging2'),
 		Place: () => import('@/components/place/Place'),
 		Persons: () => import('@/components/persons/Persons'),
 	},
