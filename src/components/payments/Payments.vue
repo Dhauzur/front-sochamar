@@ -15,12 +15,12 @@
 						</v-btn>
 					</v-col>
 					<v-col cols="4" md="3" sm="4" class="px-0">
-						<v-btn small color="accent" @click="exportToPdf"
+						<v-btn small color="accent" @click="exportByFormat('pdf')"
 							><span>Exportar pdf</span>
 						</v-btn>
 					</v-col>
 					<v-col cols="4" md="3" sm="4" class="px-0">
-						<v-btn small color="accent" @click="exportToCsv"
+						<v-btn small color="accent" @click="exportByFormat('csv')"
 							><span>Exportar csv</span>
 						</v-btn>
 					</v-col>
@@ -46,7 +46,6 @@
 					:title="item"
 					:word-filter="wordForFilter"
 					:id-place="selectedPlace.value"
-					:loading="loading"
 				></payments-table>
 			</template>
 			<!-- dialog steeper form -->
@@ -112,7 +111,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
-import { generatePdfReport, generateCsvReport } from '@/service/payments';
+import { generatePdfReport, generateCsvReport, generateFormatReport } from '@/service/payments';
 import moment from 'moment';
 import PaymentsFormAccount from '@/components/payments/PaymentsFormAccount';
 import PaymentsTable from '@/components/payments/PaymentsTable';
@@ -138,7 +137,6 @@ export default {
 		...mapGetters({
 			selectedPlace: 'Lodging/selectedPlace',
 			paymentsType: 'Payments/paymentsType',
-			loading: 'Payments/loading',
 			message: 'Payments/message',
 			paymentsForMonth: 'Payments/paymentsForMonth',
 			groupPaymentsByMonth: 'Payments/groupPaymentsByMonth',
@@ -152,7 +150,6 @@ export default {
 		},
 	},
 	created() {
-		//this.fetchLodgingsForPlace(this.selectedPlace.value);
 		this.fetchPayments(this.selectedPlace.value);
 	},
 	methods: {
@@ -168,7 +165,6 @@ export default {
 			this.$refs.selectableTable.clearSelected();
 		},
 		...mapActions({
-			//fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
 			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
 		}),
 		saveComment(item) {
@@ -192,6 +188,19 @@ export default {
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
 			link.download = 'pagos.csv';
+			link.click();
+		},
+		async exportByFormat(format) {
+			const exportFormat = await generateFormatReport(this.idPlace, format);
+			let blob;
+			if (format == 'csv') {
+				blob = new Blob([exportFormat], { type: 'text/csv' });
+			} else {
+				blob = new Blob([exportFormat], { type: 'application/pdf' });
+			}
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = `pagos.${format}`;
 			link.click();
 		},
 	},

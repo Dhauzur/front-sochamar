@@ -138,7 +138,7 @@ export default {
 			loading: 'Payments/loadingSave',
 			payments: 'Payments/payments',
 			message: 'Payments/message',
-			lodgings: 'Lodging/lodgingsPlace',
+			lodgings: 'Lodging/lodgings',
 		}),
 	},
 	validations: {

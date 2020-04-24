@@ -17,5 +17,11 @@ const generateCsvReport = async placeId => {
 		responseType: 'arraybuffer',
 	});
 };
+const generateFormatReport = async (placeId, format) => {
+	return await fetch(`/payments/${placeId}/reports/${format}`, {
+		method: 'get',
+		responseType: 'arraybuffer',
+	});
+};
 
-export { generatePdfReport, generateCsvReport };
+export { generatePdfReport, generateCsvReport, generateFormatReport };
