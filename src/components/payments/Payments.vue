@@ -4,27 +4,27 @@
 			<!-- header -->
 			<v-col cols="12">
 				<v-row justify="center">
-					<v-col cols="4">
+					<v-col cols="12">
 						<span class="title">Lista de Pagos</span>
 					</v-col>
 				</v-row>
 				<v-row justify="space-between">
-					<v-col cols="12" md="2" class="text-left py-0">
+					<v-col cols="4" md="3" sm="4" class="px-0">
 						<v-btn small color="primary" @click="dialog = true">
 							<v-icon>mdi-plus</v-icon>Agregar
 						</v-btn>
 					</v-col>
-					<v-col cols="12" md="2" class="text-left py-0">
+					<v-col cols="4" md="3" sm="4" class="px-0">
 						<v-btn small color="accent" @click="exportToPdf"
 							><span>Exportar pdf</span>
 						</v-btn>
 					</v-col>
-					<v-col cols="12" md="2" class="text-left py-0">
+					<v-col cols="4" md="3" sm="4" class="px-0">
 						<v-btn small color="accent" @click="exportToCsv"
 							><span>Exportar csv</span>
 						</v-btn>
 					</v-col>
-					<v-col cols="12" md="3" class="py-0">
+					<v-col cols="12" md="3" class="py-1">
 						<v-text-field
 							v-model="wordForFilter"
 							dense
@@ -42,7 +42,7 @@
 				<payments-table
 					v-for="(item, index) in paymentsForMonth"
 					:key="index"
-					:payments-list="groupPayments[index]"
+					:payments-list="groupPaymentsByMonth[index]"
 					:title="item"
 					:word-filter="wordForFilter"
 					:id-place="selectedPlace.value"
@@ -141,7 +141,7 @@ export default {
 			loading: 'Payments/loading',
 			message: 'Payments/message',
 			paymentsForMonth: 'Payments/paymentsForMonth',
-			groupPayments: 'Payments/groupPayments',
+			groupPaymentsByMonth: 'Payments/groupPaymentsByMonth',
 		}),
 	},
 	watch: {
@@ -152,7 +152,7 @@ export default {
 		},
 	},
 	created() {
-		this.fetchLodgingsForPlace(this.selectedPlace.value);
+		//this.fetchLodgingsForPlace(this.selectedPlace.value);
 		this.fetchPayments(this.selectedPlace.value);
 	},
 	methods: {
@@ -168,7 +168,7 @@ export default {
 			this.$refs.selectableTable.clearSelected();
 		},
 		...mapActions({
-			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
+			//fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
 			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
 		}),
 		saveComment(item) {

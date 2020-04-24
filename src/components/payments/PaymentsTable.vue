@@ -158,7 +158,6 @@ export default {
 			await this.fetchPayments(this.idPlace);
 		},
 		...mapActions({
-			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
 			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
 			delete: 'Payments/deleteOnePayment',
 			edit: 'Payments/editPayment',
