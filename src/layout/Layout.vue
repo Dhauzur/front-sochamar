@@ -5,7 +5,7 @@
 			:flat="flatAppbar"
 			app
 			clipped-right
-			class="appBar "
+			class="appBar"
 			:class="{ bgDark: $vuetify.theme.isDark, bgLight: !$vuetify.theme.isDark }"
 			absolute
 		>
@@ -19,20 +19,20 @@
 				</template>
 				<span>Phlain</span>
 			</v-tooltip>
-			<v-btn v-if="isAdmin" class="ma-2 accent--text" to="/management" text>
+			<v-btn v-if="isAdmin" class="ma-2 primary--text" to="/management" text>
 				Administrar
 			</v-btn>
-			<v-btn v-if="isAdmin" class="ma-2 accent--text" text to="/reports">
+			<v-btn v-if="isAdmin" class="ma-2 primary--text" text to="/reports">
 				Enviar informes
 			</v-btn>
 			<v-spacer></v-spacer>
-			<v-btn class="ma-1 accent--text" text icon @click="toggleTheme">
+			<v-btn class="ma-1 primary--text" text icon @click="toggleTheme">
 				<v-icon>mdi-theme-light-dark</v-icon>
 			</v-btn>
-			<v-btn v-if="isAdmin" class="ma-1 accent--text" fab text to="/profile">
+			<v-btn v-if="isAdmin" class="ma-1 primary--text" fab text to="/profile">
 				<v-icon>mdi-cog-outline</v-icon>
 			</v-btn>
-			<v-btn text class="accent--text" @click="quit">Cerrar sesión</v-btn>
+			<v-btn text class="primary--text" @click="quit">Cerrar sesión</v-btn>
 		</v-app-bar>
 		<!-- global appbar/drawer mobile -->
 		<v-app-bar
@@ -40,8 +40,8 @@
 			:flat="flatAppbar"
 			app
 			clipped-right
-			class="hidden-sm-and-up mx-auto appBarMobile"
-			dark
+			:class="{ bgDark: $vuetify.theme.isDark, bgLight: !$vuetify.theme.isDark }"
+			class="appBar hidden-sm-and-up mx-auto"
 		>
 			<v-app-bar-nav-icon dense @click.stop="drawer = !drawer" />
 			<router-link to="/" class="mx-auto">
@@ -50,7 +50,12 @@
 				</v-avatar>
 			</router-link>
 		</v-app-bar>
-		<v-navigation-drawer v-model="drawer" app disable-resize-watcher>
+		<v-navigation-drawer
+			v-model="drawer"
+			app
+			disable-resize-watcher
+			:class="{ bgDark: $vuetify.theme.isDark, bgLight: !$vuetify.theme.isDark }"
+		>
 			<v-list>
 				<Logo style="max-height: 80px;" />
 			</v-list>
@@ -158,14 +163,5 @@ export default {
 <style lang="scss" scoped>
 .appBar {
 	font-family: roboto;
-}
-
-.appBarMobile {
-	background: linear-gradient(
-		90deg,
-		rgba(213, 47, 143, 0.861782212885154) 27%,
-		rgba(255, 255, 255, 1) 50%,
-		rgba(106, 49, 255, 0.870185574229691) 80%
-	);
 }
 </style>

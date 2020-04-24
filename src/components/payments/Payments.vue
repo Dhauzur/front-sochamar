@@ -15,12 +15,12 @@
 						</v-btn>
 					</v-col>
 					<v-col cols="12" md="2" class="text-left py-0">
-						<v-btn small color="accent" @click="exportToPdf"
+						<v-btn small color="primary" @click="exportToPdf"
 							><span>Exportar pdf</span>
 						</v-btn>
 					</v-col>
 					<v-col cols="12" md="2" class="text-left py-0">
-						<v-btn small color="accent" @click="exportToCsv"
+						<v-btn small color="primary" @click="exportToCsv"
 							><span>Exportar csv</span>
 						</v-btn>
 					</v-col>

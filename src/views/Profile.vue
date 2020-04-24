@@ -107,7 +107,12 @@
 			</v-row>
 			<v-row v-if="isPerson">
 				<v-app-bar dense>
-					<v-tabs v-model="tab" color="primary" centered>
+					<v-tabs
+						v-model="tab"
+						:class="{ bgDark: $vuetify.theme.isDark, bgLight: !$vuetify.theme.isDark }"
+						color="primary"
+						centered
+					>
 						<v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
 					</v-tabs>
 				</v-app-bar>

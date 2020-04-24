@@ -31,7 +31,7 @@
 			></v-text-field>
 		</v-col>
 		<v-col cols="12" sm="6" md="3" lg="3">
-			<v-btn :loading="loading" color="accent" @click="submit">
+			<v-btn :loading="loading" color="primary" @click="submit">
 				<v-icon>mdi-plus</v-icon>Añadir Servicio
 			</v-btn>
 			<small v-if="errors" class="text-danger">Llene el formulario correctamente</small>

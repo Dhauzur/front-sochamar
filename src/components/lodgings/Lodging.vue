@@ -32,13 +32,13 @@
 				</v-col>
 				<!-- export pdf button -->
 				<v-col cols="12" sm="2" md="auto" class="mt-2">
-					<v-btn block color="accent" small @click="exportToPdf">
+					<v-btn block color="primary" small @click="exportToPdf">
 						<span>Exportar pdf</span>
 					</v-btn>
 				</v-col>
 				<!-- export csv button -->
 				<v-col cols="12" sm="2" md="auto" class="mt-2">
-					<v-btn block color="accent" small @click="exportToCsv">
+					<v-btn block color="primary" small @click="exportToCsv">
 						<span>Exportar csv</span>
 					</v-btn>
 				</v-col>
@@ -46,7 +46,7 @@
 				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
 						<template v-slot:activator="{ on }">
-							<v-btn color="accent" block @click="createOneLodging()" v-on="on">
+							<v-btn color="primary" block @click="createOneLodging()" v-on="on">
 								<v-icon>mdi-plus</v-icon><span>Actividad</span>
 							</v-btn>
 						</template>
@@ -59,7 +59,7 @@
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="accent"
+								color="primary"
 								v-on="on"
 								@click.stop="dialogPeriods = true"
 							>
@@ -75,7 +75,7 @@
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="accent"
+								color="primary"
 								v-on="on"
 								@click.stop="dialogPayments = true"
 							>
@@ -91,7 +91,7 @@
 						<template v-slot:activator="{ on }">
 							<v-btn
 								block
-								color="accent"
+								color="primary"
 								v-on="on"
 								@click.stop="setBottomSheet({ action: true, lodging: null })"
 							>

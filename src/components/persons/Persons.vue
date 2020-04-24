@@ -21,12 +21,12 @@
 				/>
 			</v-col>
 			<v-col cols="12" md="2" class="text-left pb-0">
-				<v-btn block color="accent" small @click="exportToPdf">
+				<v-btn block color="primary" small @click="exportToPdf">
 					<span>Exportar pdf</span>
 				</v-btn>
 			</v-col>
 			<v-col cols="12" md="2" class="text-left pb-0">
-				<v-btn block color="accent" small @click="exportToCsv">
+				<v-btn block color="primary" small @click="exportToCsv">
 					<span>Exportar csv</span>
 				</v-btn>
 			</v-col>
