@@ -23,13 +23,13 @@
 					</v-row>
 				</template>
 				<template v-else>
-					<v-row justify="center" align="center" style="height:100%">
-						<v-col cols="10" class="pt-0">
-							<v-alert color="info">
-								Comienza una conversación
-							</v-alert>
-						</v-col>
-					</v-row>
+					<v-overlay :value="overlay" absolute :opacity="0.8">
+						<v-icon x-large>mdi-email-alert-outline</v-icon>
+						<div>¡No tienes mensajes!</div>
+						<v-btn small class="ma-2" color="primary" @click="overlay = false">
+							Inicia una conversacion
+						</v-btn>
+					</v-overlay>
 				</template>
 			</v-col>
 		</v-row>
@@ -40,7 +40,7 @@
 					<v-text-field
 						v-model="text"
 						hide-details
-						color="accent"
+						color="primary"
 						outlined
 						dense
 						filled
@@ -81,6 +81,7 @@ export default {
 	},
 	data() {
 		return {
+			overlay: true,
 			person: null,
 			message: [],
 			text: '',
@@ -89,8 +90,10 @@ export default {
 	created() {
 		getPerson(this.id).then(person => {
 			this.person = person;
-			if (Array.isArray(person.conversation) && person.conversation.length)
+			if (Array.isArray(person.conversation) && person.conversation.length) {
+				this.overlay = false;
 				this.message = person.conversation;
+			}
 		});
 	},
 	methods: {
@@ -103,9 +106,6 @@ export default {
 				this.message = res;
 				this.text = '';
 			});
-		},
-		setConversation(participant) {
-			console.log(participant);
 		},
 		formatTime(time) {
 			return moment(time).format('LLL');

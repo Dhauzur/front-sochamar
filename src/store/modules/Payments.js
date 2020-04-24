@@ -5,6 +5,7 @@ const state = {
 	payments: [],
 	loading: false,
 	loadingSave: false,
+	paymentsForMonth: [],
 };
 
 const getters = {
@@ -19,6 +20,29 @@ const getters = {
 			if (element.paymentType == 'byDates') element.paymentType = 'Pago por fecha';
 		}
 		return typePayment;
+	},
+	paymentsForMonth: state => {
+		const paymentsMonth = state.payments;
+		const arrayMonth = paymentsMonth.map(payment => payment.startDate.slice(0, 7));
+		const removeDuplicates = [...new Set(arrayMonth)];
+		return removeDuplicates;
+	},
+	groupPayments: state => {
+		const initialValue = {};
+		const paymentsMonth = state.payments;
+		const paymentsByGroupMonth = arrayPayments => {
+			return Object.values(
+				arrayPayments.reduce((result, value) => {
+					const sliceMonth = value.startDate.slice(0, 7);
+					if (!result[sliceMonth]) {
+						result[sliceMonth] = [];
+					}
+					result[sliceMonth].push(value);
+					return result;
+				}, initialValue)
+			);
+		};
+		return paymentsByGroupMonth(paymentsMonth);
 	},
 };
 

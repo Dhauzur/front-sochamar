@@ -30,6 +30,18 @@
 					>
 					</v-select>
 				</v-col>
+				<!-- export pdf button -->
+				<v-col cols="12" sm="2" md="auto" class="mt-2">
+					<v-btn block color="accent" small @click="exportToPdf">
+						<span>Exportar pdf</span>
+					</v-btn>
+				</v-col>
+				<!-- export csv button -->
+				<v-col cols="12" sm="2" md="auto" class="mt-2">
+					<v-btn block color="accent" small @click="exportToCsv">
+						<span>Exportar csv</span>
+					</v-btn>
+				</v-col>
 				<!-- activity button -->
 				<v-col v-if="selectedPlace" cols="12" sm="2" md="auto">
 					<v-tooltip v-if="periods.length > 0" attach bottom>
@@ -252,6 +264,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
+import { generatePdfReport, generateCsvReport } from '@/service/lodgings';
 
 let moment = extendMoment(Moment);
 
@@ -392,6 +405,22 @@ export default {
 					end: moment(payload.end),
 				});
 			}
+		},
+		async exportToPdf() {
+			const pdf = await generatePdfReport(this.place);
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'hospedajes.pdf';
+			link.click();
+		},
+		async exportToCsv() {
+			const csv = await generateCsvReport(this.place);
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'hospedajes.csv';
+			link.click();
 		},
 		...mapActions({
 			deleteLodging: 'Lodging/deleteLodging',

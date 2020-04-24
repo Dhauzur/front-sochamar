@@ -12,10 +12,23 @@
 			</v-col>
 		</v-row>
 		<v-row justify="space-between">
+			<v-col cols="6" md="2" class="text-left pb-0">
+				<RequestPopup
+					:profile="profile"
+					:close="() => (popup = !popup)"
+					:open-form="openFormFrontPopup"
+					:persons="personsList"
+				/>
+			</v-col>
 			<v-col cols="12" md="2" class="text-left pb-0">
-				<v-col>
-					<RequestPopup :profile="profile" :open="() => (dialog = !dialog)" />
-				</v-col>
+				<v-btn block color="accent" small @click="exportToPdf">
+					<span>Exportar pdf</span>
+				</v-btn>
+			</v-col>
+			<v-col cols="12" md="2" class="text-left pb-0">
+				<v-btn block color="accent" small @click="exportToCsv">
+					<span>Exportar csv</span>
+				</v-btn>
 			</v-col>
 			<v-col cols="12" md="2" class="pb-0">
 				<v-text-field
@@ -23,7 +36,8 @@
 					outlined
 					filled
 					dense
-					label="Filtrar"
+					label="Buscar"
+					append-icon="mdi-magnify"
 					@input="filter"
 				/>
 			</v-col>
@@ -47,11 +61,7 @@
 				</v-responsive>
 			</v-col>
 			<v-col v-else cols="12">
-				<v-card color="secondary" flat>
-					<v-card-text>
-						No hay personas agregadas...
-					</v-card-text>
-				</v-card>
+				<p class="overline">No hay personas agregadas...</p>
 			</v-col>
 		</v-row>
 		<!-- chat drawer -->
@@ -68,17 +78,18 @@
 			</v-navigation-drawer>
 		</template>
 		<!-- dialog Form-->
-		<v-dialog v-if="dialog" v-model="dialog" persistent max-width="800px">
-			<Form
-				:selected="person"
-				:edit-mode="editMode"
-				:close="closeDialog"
-				:is-dialog="true"
-				:id-company="profile._id"
-				title="Agregar nuevo"
-				:get-persons="getPersons"
-				:toast="toast"
-			/>
+		<v-dialog v-model="dialogForm" persistent max-width="800px">
+			<template v-if="dialogForm">
+				<Form
+					:selected="person"
+					:edit-mode="editMode"
+					:close="closeDialog"
+					:is-dialog="true"
+					:id-company="profile._id"
+					:get-persons="getPersons"
+					:toast="toast"
+				/>
+			</template>
 		</v-dialog>
 	</v-container>
 </template>
@@ -86,8 +97,12 @@
 <script>
 import PersonsList from '@/components/persons/List';
 import { mapGetters } from 'vuex';
-import { getPersonsByCompany, deletePerson } from '@/service/persons';
-
+import {
+	getPersonsByCompany,
+	deletePerson,
+	generatePdfReport,
+	generateCsvReport,
+} from '@/service/persons';
 export default {
 	components: {
 		PersonsList,
@@ -101,7 +116,8 @@ export default {
 			drawer: false,
 			filteredWord: '',
 			list: [],
-			dialog: false,
+			dialogForm: false,
+			popup: false,
 			editMode: false,
 			person: null,
 			personsList: [],
@@ -135,6 +151,10 @@ export default {
 		this.getPersons();
 	},
 	methods: {
+		openFormFrontPopup() {
+			this.dialogForm = true;
+			this.popup = false;
+		},
 		chat(item) {
 			this.drawer = !this.drawer;
 			this.person = item;
@@ -150,13 +170,13 @@ export default {
 		closeDialog() {
 			this.editMode = false;
 			this.person = null;
-			this.dialog = false;
+			this.dialogForm = false;
 		},
 		editPerson(person) {
 			this.drawer = false;
 			this.editMode = true;
 			this.person = person;
-			this.dialog = true;
+			this.dialogForm = true;
 		},
 		filter() {
 			this.list = this.personsList.filter(person => {
@@ -169,6 +189,22 @@ export default {
 					.then(this.getPersons())
 					.then(this.toast('success', 'Eliminado exitosamente'))
 					.catch(error => this.toast('error', error.message));
+		},
+		async exportToPdf() {
+			const pdf = await generatePdfReport(this.profile._id);
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'personas.pdf';
+			link.click();
+		},
+		async exportToCsv() {
+			const csv = await generateCsvReport(this.profile._id);
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'personas.csv';
+			link.click();
 		},
 	},
 };

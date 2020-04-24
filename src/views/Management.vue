@@ -3,7 +3,7 @@
 		<v-app-bar dense>
 			<v-tabs
 				v-model="tab"
-				color="accent"
+				color="primary"
 				:class="{ bgDark: $vuetify.theme.isDark, bgLight: !$vuetify.theme.isDark }"
 				centered
 			>

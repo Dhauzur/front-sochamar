@@ -10,8 +10,18 @@
 				</v-row>
 				<v-row justify="space-between">
 					<v-col cols="12" md="2" class="text-left py-0">
-						<v-btn small color="accent" @click="dialog = true">
+						<v-btn small color="primary" @click="dialog = true">
 							<v-icon>mdi-plus</v-icon>Agregar
+						</v-btn>
+					</v-col>
+					<v-col cols="12" md="2" class="text-left py-0">
+						<v-btn small color="accent" @click="exportToPdf"
+							><span>Exportar pdf</span>
+						</v-btn>
+					</v-col>
+					<v-col cols="12" md="2" class="text-left py-0">
+						<v-btn small color="accent" @click="exportToCsv"
+							><span>Exportar csv</span>
 						</v-btn>
 					</v-col>
 					<v-col cols="12" md="3" class="py-0">
@@ -27,7 +37,18 @@
 				</v-row>
 			</v-col>
 			<!-- table -->
-			<payments-table :word-filter="wordForFilter"></payments-table>
+			<v-col v-if="paymentsForMonth.length <= 0" cols="12">No posee pagos</v-col>
+			<template v-else>
+				<payments-table
+					v-for="(item, index) in paymentsForMonth"
+					:key="index"
+					:payments-list="groupPayments[index]"
+					:title="item"
+					:word-filter="wordForFilter"
+					:id-place="selectedPlace.value"
+					:loading="loading"
+				></payments-table>
+			</template>
 			<!-- dialog steeper form -->
 			<v-dialog v-model="dialog" max-width="440" persistent>
 				<v-stepper v-model="stepper" class="elevation-12">
@@ -63,19 +84,19 @@
 						<v-stepper-content step="2">
 							<payments-form-lodging
 								v-if="visible == 1"
-								:id-place="idPlace"
+								:id-place="selectedPlace.value"
 								:back="() => (stepper = 1)"
 								:close="closeDialog"
 							/>
 							<payments-form-dates
 								v-if="visible == 2"
-								:id-place="idPlace"
+								:id-place="selectedPlace.value"
 								:back="() => (stepper = 1)"
 								:close="closeDialog"
 							/>
 							<payments-form-account
 								v-if="visible == 3"
-								:id-place="idPlace"
+								:id-place="selectedPlace.value"
 								:back="() => (stepper = 1)"
 								:close="closeDialog"
 							/>
@@ -88,9 +109,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import PaymentsFormDates from '@/components/payments/PaymentsFormDates';
 import PaymentsFormLodging from '@/components/payments/PaymentsFormWithLodging';
+import { generatePdfReport, generateCsvReport } from '@/service/payments';
+import moment from 'moment';
 import PaymentsFormAccount from '@/components/payments/PaymentsFormAccount';
 import PaymentsTable from '@/components/payments/PaymentsTable';
 
@@ -104,14 +127,6 @@ export default {
 	},
 	data() {
 		return {
-			fields: [
-				{ value: 'startDate', text: 'Inicio' },
-				{ value: 'endDate', text: 'Fin' },
-				{ value: 'mount', text: 'Monto' },
-				{ value: 'voucher', text: 'Voucher' },
-				{ value: 'comments', text: 'Comentarios' },
-				{ text: 'Acción', value: 'actions' },
-			],
 			stepper: 1,
 			dialog: false,
 			selected: {},
@@ -121,8 +136,24 @@ export default {
 	},
 	computed: {
 		...mapGetters({
-			idPlace: 'Lodging/place',
+			selectedPlace: 'Lodging/selectedPlace',
+			paymentsType: 'Payments/paymentsType',
+			loading: 'Payments/loading',
+			message: 'Payments/message',
+			paymentsForMonth: 'Payments/paymentsForMonth',
+			groupPayments: 'Payments/groupPayments',
 		}),
+	},
+	watch: {
+		message(newVal) {
+			this.$toasted.show(newVal.text, {
+				type: newVal.type,
+			});
+		},
+	},
+	created() {
+		this.fetchLodgingsForPlace(this.selectedPlace.value);
+		this.fetchPayments(this.selectedPlace.value);
 	},
 	methods: {
 		closeDialog() {
@@ -135,6 +166,33 @@ export default {
 		onClose(close) {
 			close();
 			this.$refs.selectableTable.clearSelected();
+		},
+		...mapActions({
+			fetchLodgingsForPlace: 'Lodging/fetchLodgingsForPlace',
+			fetchPayments: 'Payments/fetchPaymentsOfThePlace',
+		}),
+		saveComment(item) {
+			const date = moment().format('YYYY-MM-DD hh:mm');
+			const temp = [...item.comments, `${date}: ${this.newComment}`];
+			this.edit({ comments: temp, id: item._id })
+				.then((this.newComment = ''))
+				.then(this.fetchPayments(this.idPlace));
+		},
+		async exportToPdf() {
+			const pdf = await generatePdfReport(this.idPlace);
+			let blob = new Blob([pdf], { type: 'application/pdf' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'pagos.pdf';
+			link.click();
+		},
+		async exportToCsv() {
+			const csv = await generateCsvReport(this.idPlace);
+			let blob = new Blob([csv], { type: 'text/csv' });
+			let link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = 'pagos.csv';
+			link.click();
 		},
 	},
 };

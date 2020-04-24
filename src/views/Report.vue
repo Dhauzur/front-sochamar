@@ -28,7 +28,7 @@
 								></v-textarea>
 							</div>
 							<v-btn class="m-2" type="reset" small text>Borrar todo</v-btn>
-							<v-btn class="m-2" type="submit" small color="accent">Enviar</v-btn>
+							<v-btn class="m-2" type="submit" small color="primary">Enviar</v-btn>
 						</v-form>
 					</v-card-text>
 					<v-card-text>
