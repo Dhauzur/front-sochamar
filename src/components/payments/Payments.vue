@@ -179,7 +179,7 @@ export default {
 				.then(this.fetchPayments(this.idPlace));
 		},
 		async exportToPdf() {
-			const pdf = await generatePdfReport(this.idPlace);
+			const pdf = await generatePdfReport(this.selectedPlace.value);
 			let blob = new Blob([pdf], { type: 'application/pdf' });
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
@@ -187,7 +187,7 @@ export default {
 			link.click();
 		},
 		async exportToCsv() {
-			const csv = await generateCsvReport(this.idPlace);
+			const csv = await generateCsvReport(this.selectedPlace.value);
 			let blob = new Blob([csv], { type: 'text/csv' });
 			let link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
