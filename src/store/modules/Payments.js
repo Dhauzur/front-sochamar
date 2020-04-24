@@ -24,12 +24,15 @@ const getters = {
 	paymentsForMonth: state => {
 		const paymentsMonth = state.payments;
 		const arrayMonth = paymentsMonth.map(payment => payment.startDate.slice(0, 7));
-		const removeDuplicates = [...new Set(arrayMonth)];
+		const removeDuplicates = [...new Set(arrayMonth)].sort();
 		return removeDuplicates;
 	},
-	groupPayments: state => {
+	groupPaymentsByMonth: state => {
 		const initialValue = {};
 		const paymentsMonth = state.payments;
+		paymentsMonth.sort(
+			(a, b) => a.startDate.localeCompare(b.startDate) || a.endDate.localeCompare(b.endDate)
+		);
 		const paymentsByGroupMonth = arrayPayments => {
 			return Object.values(
 				arrayPayments.reduce((result, value) => {
