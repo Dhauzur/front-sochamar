@@ -61,7 +61,7 @@
 				</v-row>
 				<v-row class="mv-5 text-left">
 					<v-col cols="12" md class="mt-3">
-						<v-btn color="accent" @click="onsubmit()">
+						<v-btn color="primary" @click="onsubmit()">
 							Finalizar creación de lugar
 						</v-btn>
 						<small v-if="errors" class="mt-2 d-block text-danger">
