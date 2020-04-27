@@ -49,7 +49,7 @@
 			</v-tooltip>
 			<v-bottom-sheet v-model="dialogPeriods" inset @click:outside="dialogPeriods = false">
 				<v-sheet style="height: 75vh">
-					<Periods :id-place="selectedPlace.value" />
+					<periods :id-place="selectedPlace.value" />
 				</v-sheet>
 			</v-bottom-sheet>
 		</v-col>
@@ -90,11 +90,13 @@ import { generatePdfReport, generateCsvReport } from '@/service/lodgings';
 
 export default {
 	name: 'Header',
+	components: {
+		Periods: () => import('@/components/periods/Periods'),
+	},
 	data() {
 		return {
 			dialogPeriods: false,
 			placeSelected: '',
-			Periods: () => import('@/components/periods/Periods'),
 		};
 	},
 	computed: {
