@@ -2,12 +2,12 @@
 	<v-card elevation="6">
 		<v-container>
 			<v-row>
-				<v-col cols="10" class="text-left title">Lodging1</v-col>
+				<v-col cols="10" class="text-left title">{{ name }}</v-col>
 				<!-- save buttons -->
 				<v-col cols="2">
 					<v-tooltip attach bottom>
 						<template v-slot:activator="{ on }">
-							<v-btn fab color="success" small @click="submit" v-on="on">
+							<v-btn fab color="info" small @click="submit" v-on="on">
 								<v-icon>mdi-content-save</v-icon>
 							</v-btn>
 						</template>
@@ -215,11 +215,18 @@ export default {
 			}
 			return null;
 		},
+		name() {
+			if (this.lodging) {
+				return this.lodging.name;
+			}
+			return 'Agregar nuevo';
+		},
 		...mapGetters({
 			profile: 'User/profile',
 			rooms: 'Room/rooms',
+			editMode: 'Lodging/editMode',
 			periods: 'Lodging/periods',
-			lodgingSelect: 'Lodging/lodgingSelect',
+			lodging: 'Lodging/lodgingSelect',
 			selectedPlace: 'Lodging/selectedPlace',
 			countLogingsPlace: 'Lodging/countLogingsPlace',
 		}),

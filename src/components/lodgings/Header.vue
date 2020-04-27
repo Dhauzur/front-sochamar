@@ -12,10 +12,10 @@
 			>
 			</v-select>
 		</v-col>
-		<!-- export pdf button -->
+		<!-- timeline -->
 		<v-col cols="12" sm="2" md="auto" class="mt-2">
 			<v-btn outlined block color="primary" small @click="setSeeTimeline">
-				<span>Ver timeline</span>
+				{{ seeTimeline ? 'Ocultar timeline' : 'Ver timeline' }}
 			</v-btn>
 		</v-col>
 		<!-- export pdf button -->
@@ -29,24 +29,6 @@
 			<v-btn outlined block color="primary" small @click="exportToCsv">
 				<span>Exportar csv</span>
 			</v-btn>
-		</v-col>
-		<!-- activity button -->
-		<v-col v-if="selectedPlace" cols="12" sm="2" md="auto" class="mt-2">
-			<v-tooltip attach bottom>
-				<template v-slot:activator="{ on }">
-					<v-btn
-						outlined
-						color="primary"
-						block
-						small
-						@click="createOneLodging()"
-						v-on="on"
-					>
-						<v-icon>mdi-plus</v-icon><span>Actividad</span>
-					</v-btn>
-				</template>
-				<span>Añadir hospedaje</span>
-			</v-tooltip>
 		</v-col>
 		<!-- periods buttons -->
 		<v-col v-if="selectedPlace" cols="12" sm="2" md="auto" class="mt-2">
@@ -65,6 +47,11 @@
 				</template>
 				<span>Gestionar turnos del lugar</span>
 			</v-tooltip>
+			<v-bottom-sheet v-model="dialogPeriods" inset @click:outside="dialogPeriods = false">
+				<v-sheet style="height: 75vh">
+					<Periods :id-place="selectedPlace.value" />
+				</v-sheet>
+			</v-bottom-sheet>
 		</v-col>
 		<!-- payments buttons -->
 		<v-col v-if="selectedPlace" cols="12" sm="2" md="auto" class="mt-2">
@@ -77,6 +64,23 @@
 				<span>Gestionar pagos del lugar</span>
 			</v-tooltip>
 		</v-col>
+		<!-- activity button -->
+		<v-col
+			v-if="selectedPlace && !seeTimeline && editMode"
+			cols="12"
+			sm="2"
+			md="auto"
+			class="mt-2"
+		>
+			<v-tooltip attach bottom>
+				<template v-slot:activator="{ on }">
+					<v-btn color="primary" block small @click="setModeEdit(false)" v-on="on">
+						<v-icon>mdi-plus</v-icon><span>Actividad</span>
+					</v-btn>
+				</template>
+				<span>Añadir hospedaje</span>
+			</v-tooltip>
+		</v-col>
 	</v-row>
 </template>
 
@@ -85,13 +89,18 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { generatePdfReport, generateCsvReport } from '@/service/lodgings';
 
 export default {
+	name: 'Header',
 	data() {
 		return {
+			dialogPeriods: false,
 			placeSelected: '',
+			Periods: () => import('@/components/periods/Periods'),
 		};
 	},
 	computed: {
 		...mapGetters({
+			editMode: 'Lodging/editMode',
+			seeTimeline: 'Lodging/seeTimeline',
 			lodgingsAllPlace: 'Lodging/lodgingsAllPlace',
 			places: 'Lodging/places',
 			selectedPlace: 'Lodging/selectedPlace',
@@ -126,6 +135,7 @@ export default {
 			fetchRooms: 'Room/fetchRooms',
 		}),
 		...mapMutations({
+			setModeEdit: 'Lodging/setModeEdit',
 			setServicesComboBox: 'Lodging/setServicesComboBox',
 			setSelectedPlace: 'Lodging/setSelectedPlace',
 			setSeeTimeline: 'Lodging/setSeeTimeline',

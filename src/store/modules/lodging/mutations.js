@@ -90,27 +90,8 @@ const mutations = {
 		state.editMode = value;
 		if (!value) state.lodgingSelect = null;
 	},
-	createOneLodging(state) {
-		state.editMode = false;
-		const startDate = moment().hours(13);
-		const endDate = moment()
-			.hours(9)
-			.add(1, 'day');
-		state.lodgings.add({
-			group: state.periods[0].id,
-			start: startDate,
-			end: endDate,
-			content: state.selectedPlaceName,
-			days: generateDaysArray(state.selectedPlace.value, startDate, endDate),
-			place: state.selectedPlace.value,
-		});
-	},
 	setPlaces(state, values) {
 		let places = [];
-		places.push({
-			value: null,
-			text: 'Todas los lugares',
-		});
 		if (values) {
 			const mapValues = values.map(v => {
 				return {

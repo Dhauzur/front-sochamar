@@ -102,7 +102,7 @@ import { required } from 'vuelidate/lib/validators';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
-	name: 'Period',
+	name: 'Periods',
 	mixins: [validationMixin],
 	data() {
 		return {

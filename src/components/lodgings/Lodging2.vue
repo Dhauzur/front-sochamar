@@ -6,8 +6,8 @@
 				<Timeline />
 			</v-col>
 		</v-row>
-		<v-row v-else>
-			<v-col cols="12" sm="6" md="3">
+		<v-row v-else justify="center">
+			<v-col v-if="hasLodgings" cols="12" sm="6" md="3">
 				<List />
 			</v-col>
 			<v-col cols="12" sm="6" md="9">
@@ -28,7 +28,13 @@ export default {
 		Timeline: () => import('@/components/lodgings/Timeline'),
 	},
 	computed: {
+		hasLodgings() {
+			if (this.selectedPlace) return this.lodgings.length > 0;
+			return false;
+		},
 		...mapGetters({
+			selectedPlace: 'Lodging/selectedPlace',
+			lodgings: 'Lodging/lodgings',
 			seeTimeline: 'Lodging/seeTimeline',
 		}),
 	},

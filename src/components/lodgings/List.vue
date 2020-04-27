@@ -38,9 +38,11 @@ export default {
 	},
 	methods: {
 		currentLodgign(item) {
+			this.setModeEdit(true);
 			this.setLodgingSelect(item);
 		},
 		...mapMutations({
+			setModeEdit: 'Lodging/setModeEdit',
 			setLodgingSelect: 'Lodging/setLodgingSelect',
 		}),
 	},
