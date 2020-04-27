@@ -169,6 +169,9 @@ const mutations = {
 	// 		});
 	// 	}
 	// },
+	setLodgingsPlace(state, value) {
+		state.lodgingsPlace = value;
+	},
 	setPeriods(state, values) {
 		state.periods = values;
 	},

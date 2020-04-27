@@ -47,6 +47,7 @@
 				</template>
 				<span>Gestionar turnos del lugar</span>
 			</v-tooltip>
+			<!-- period dialog -->
 			<v-bottom-sheet v-model="dialogPeriods" inset @click:outside="dialogPeriods = false">
 				<v-sheet style="height: 75vh">
 					<periods :id-place="selectedPlace.value" />
@@ -57,12 +58,25 @@
 		<v-col v-if="selectedPlace" cols="12" sm="2" md="auto" class="mt-2">
 			<v-tooltip attach bottom>
 				<template v-slot:activator="{ on }">
-					<v-btn outlined block color="primary" small v-on="on">
+					<v-btn
+						outlined
+						block
+						color="primary"
+						small
+						v-on="on"
+						@click.stop="dialogPayments = true"
+					>
 						<span>Pagos</span>
 					</v-btn>
 				</template>
 				<span>Gestionar pagos del lugar</span>
 			</v-tooltip>
+			<!-- payments dialog -->
+			<v-bottom-sheet v-model="dialogPayments" inset @click:outside="dialogPayments = false">
+				<v-sheet style="height: 75vh; overflow-y: auto;">
+					<Payments :id-place="selectedPlace.value" />
+				</v-sheet>
+			</v-bottom-sheet>
 		</v-col>
 		<!-- activity button -->
 		<v-col
@@ -91,10 +105,12 @@ import { generatePdfReport, generateCsvReport } from '@/service/lodgings';
 export default {
 	name: 'Header',
 	components: {
+		Payments: () => import('@/components/payments/Payments'),
 		Periods: () => import('@/components/periods/Periods'),
 	},
 	data() {
 		return {
+			dialogPayments: false,
 			dialogPeriods: false,
 			placeSelected: '',
 		};

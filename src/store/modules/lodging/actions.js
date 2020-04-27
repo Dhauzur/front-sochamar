@@ -102,20 +102,20 @@ const actions = {
 	/**
 	 * get lodgings for place
 	 */
-	// async fetchLodgingsForPlace({ commit }, id) {
-	// 	try {
-	// 		const response = await fetch(`/lodgings/place/${id}`);
-	// 		commit('setLodgingsPlace', response.lodgings);
-	// 		commit('setRangeDatePayments', response.lodgings);
-	// 		commit('setcountLogingsPlace', response.count);
-	// 	} catch (error) {
-	// 		commit('setLodgingsPlace', null);
-	// 		commit('setMessage', {
-	// 			type: 'error',
-	// 			text: 'Fetch lodgings ' + error,
-	// 		});
-	// 	}
-	// },
+	async fetchLodgingsForPlace({ commit }, id) {
+		try {
+			const response = await fetch(`/lodgings/place/${id}`);
+			commit('setLodgingsPlace', response.lodgings);
+			commit('setRangeDatePayments', response.lodgings);
+			commit('setcountLogingsPlace', response.count);
+		} catch (error) {
+			commit('setLodgingsPlace', null);
+			commit('setMessage', {
+				type: 'error',
+				text: 'Fetch lodgings ' + error,
+			});
+		}
+	},
 	/**
 	 * Create new lodging
 	 * @param {Object} data to save

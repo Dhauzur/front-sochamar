@@ -10,7 +10,7 @@
 			<v-col v-if="hasLodgings" cols="12" sm="6" md="3">
 				<List />
 			</v-col>
-			<v-col cols="12" sm="6" md="9">
+			<v-col v-if="selectedPlace" cols="12" sm="6" md="9">
 				<Edit />
 			</v-col>
 		</v-row>
